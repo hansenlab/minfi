@@ -1,0 +1,57 @@
+import(matrixStats)
+importClassesFrom(Biobase, aggregator, container, eSet, phenoData,
+                  MIAxE, MIAME, characterORMIAME,
+                  annotatedDataset, AssayData, data.frameOrNULL,
+                  AnnotatedDataFrame,
+                  Versions, VersionsNull, Versioned, VersionedBiobase,
+                  ScalarObject, ScalarInteger, ScalarLogical, ScalarNumeric,
+                  ScalarCharacter)
+
+importMethodsFrom(Biobase, "[", "[[", "$", abstract, aggenv, aggfun,
+                  annotatedDataFrameFrom, annotation,
+                  channel, channelNames, coerce,
+                  combine, content, contents, description, dims, eList,
+                  experimentData, expinfo, exprs,
+                  featureNames, featureData, fData, fvarLabels, fvarMetadata,
+                  geneNames, getExpData,
+                  hybridizations, initfun,
+                  length, locked, makeDataPackage, normControls, notes, otherInfo, pData,
+                  phenoData, preproc, protocolData, sampleNames, samples, se.exprs,
+                  selectChannels, snpCall, snpCallProbability, storageMode,
+                  varLabels, varMetadata,
+                  "annotation<-", "description<-", "dimLabels<-", "eList<-",
+                  "experimentData<-", "exprs<-",
+                  "featureNames<-", "featureData<-", "fData<-", "fvarLabels<-", "fvarMetadata<-",
+                  "geneNames<-", "notes<-", "preproc<-", "pData<-",
+                  "phenoData<-", "protocolData<-", "sampleNames<-",
+                  "snpCall<-", "snpCallProbability<-", "varLabels<-",
+                  "varMetadata<-", "assayData<-", "se.exprs<-",  "storageMode<-",
+                  "write.exprs", dim, dimLabels, assayData, reporterNames, "reporterNames<-",
+                  pubMedIds, "pubMedIds<-",
+                  isVersioned, isCurrent, classVersion, "classVersion<-",
+                  updateObject, updateObjectTo,
+                  initialize, show, Compare)
+
+importFrom(Biobase, assayDataElementNames,
+           assayDataElement, assayDataElementReplace, "assayDataElement<-",
+           "cache", "copyEnv", "copySubstitute", "getObjectSlots")
+
+importFrom(reshape, melt) 
+#importFrom(mclust, Mclust) # mclust does not have a namespace
+importFrom(RColorBrewer, brewer.pal)
+importFrom(beanplot, beanplot)
+importFrom(nor1mix, norMix, pnorMix, qnorMix)
+importFrom(siggenes, pi0.est, qvalue.cal)
+importFrom(limma, squeezeVar, lmFit, eBayes, contrasts.fit)
+importFrom(preprocessCore, normalize.quantiles)
+## importFrom(crlmm, readIDAT) # request has been sent to crlmm authors about exporting readIDAT, they would do it soon
+
+
+export(manifestNew, getManifest, getProbeData, getProbeInfo, getManifestInfo,
+       getControlAddress, getRed, getGreen, getMeth, getUnmeth,
+       getBeta, getM, dmpFinder, mdsPlot, plotCpg, preprocessRaw,
+       normalize.illumina.control, bgcorrect.illumina, preprocessIllumina,
+       detectionP, qcReport, controlStripPlot, densityBeanPlot, densityPlot,
+       read.450k, read.450k.sheet, read.450k.exp, logit2, ilogit2)
+exportClasses(RGChannelSet, RGChannelSetExtended, MethylSet, IlluminaMethylationManifest)
+exportMethods(show, initialize)
