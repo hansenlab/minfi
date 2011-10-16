@@ -23,7 +23,7 @@ options(width=65)
 \title{The minfi User's Guide\\
   Analyzing Illumina 450k Methylation Arrays}
 \author{Kasper D.\ Hansen \and Martin J. Aryee}
-\date{Modified: September 28, 2011.  Compiled: \today}
+\date{Modified: October 9, 2011.  Compiled: \today}
 \maketitle
 
 \section{Introduction}
@@ -109,7 +109,7 @@ require(minfiData)
 
 This package supports analysis of IDAT files, containing the summarized bead information.
 
-In our experience, labs are using a ``Sample Sheet'' CSV file to describe the layout of the
+In our experience, most labs use a ``Sample Sheet'' CSV file to describe the layout of the
 experiment.  This is based on a sample sheet file provided by Illumina.  Our pipeline assumes the
 existence of such a file(s), but it is relatively easy to create such a file using for example Excel,
 if it is not available.
@@ -226,7 +226,10 @@ The \Rcode{densityPlot} function produces density plots of the methylation Beta 
 samples, typically colored by sample group. While the density plots in Figure \ref{fig:densityPlot}
 are useful for identifying deviant samples, it is not easy to identify the specific problem
 sample. If there is a concern about outlier samples, a useful follow-up is the ``bean'' plot (Figure
-\ref{fig:densityBeanPlot}) that shows each sample in its own section.
+\ref{fig:densityBeanPlot}) that shows each sample in its own section. While the shape of the 
+distribution for ``good'' samples will differ from experiment to experiment, many conditions 
+have methylation profiles characterized by  
+two modes - one with close to 0\% methylation, and a second at close to 100\% methylation.
 
 \begin{figure} 
 \begin{center}
@@ -342,10 +345,13 @@ getM(MSet.raw)[1:4,1:3]
 After preprocessing the raw data to obtain methylation estimates, Multi-dimensional scaling (MDS)
 plots provide a quick way to get a first sense of the relationship between samples. They are similar
 to the more familiar PCA plots and display a two-dimensional approximation of sample-to-sample
-Euclidean distance. One often expects to see greater between-group than within-group distances
+Euclidean distance. Note that while the plot visualizes the distance in epigenomic profiles between samples, 
+the absolute positions of the points is not meaningful. One often expects to see greater between-group 
+than within-group distances
 (although this clearly depends on the particular experiment).  The most variable locations are used
 when calculating sample distances, with the number specified by the \Rcode{numPositions} option. Adding
-sample labels to the MDS plot is a useful way of identifying outliers (figure \ref{fig:MDS}).
+sample labels to the MDS plot is a useful way of identifying outliers (figure \ref{fig:MDS}) that 
+behave differently from their peers.
 \begin{figure} 
 \begin{center}
 <<qcReport-mdsplot2,fig=TRUE>>=
