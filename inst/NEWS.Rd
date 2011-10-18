@@ -6,5 +6,6 @@
   \itemize{
     \item Initial release to Bioconductor.
     \item Added NEWS file.
+    \item Bugfix to vignette.
   }
 }
