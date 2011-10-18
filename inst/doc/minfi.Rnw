@@ -153,7 +153,7 @@ sub(baseDir, "", targets$Basename)
 
 With this \Rcode{data.frame}, it is easy to read in the data
 <<paths>>= 
-RGset <- read.450k.exp(targets = targets)
+RGset <- read.450k.exp(base = baseDir, targets = targets)
 @ 
 Let us look at the associated pheno data, which is really just the information contained in the
 targets object above.
