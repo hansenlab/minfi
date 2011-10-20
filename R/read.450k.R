@@ -17,12 +17,12 @@ read.450k <- function(basenames, extended = FALSE, verbose = FALSE) {
         G.idats <- lapply(G.files, function(xx) {
             if(verbose)
                 cat("Reading", basename(xx), "\n")
-            crlmm:::readIDAT(xx)
+            readIDAT(xx)
         })
         R.idats <- lapply(R.files, function(xx) {
             if(verbose)
                 cat("Reading", basename(xx), "\n")
-            crlmm:::readIDAT(xx)
+            readIDAT(xx)
         })
     })[3]
     if(verbose)

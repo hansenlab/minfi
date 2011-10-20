@@ -7,5 +7,7 @@
     \item Initial release to Bioconductor.
     \item Added NEWS file.
     \item Bugfix to vignette.
+    \item readIDAT is now exported by crlmm, implying that we can import
+  this function through NAMESPACE.
   }
 }
