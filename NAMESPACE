@@ -44,7 +44,7 @@ importFrom(nor1mix, norMix, pnorMix, qnorMix)
 importFrom(siggenes, pi0.est, qvalue.cal)
 importFrom(limma, squeezeVar, lmFit, eBayes, contrasts.fit)
 importFrom(preprocessCore, normalize.quantiles)
-## importFrom(crlmm, readIDAT) # request has been sent to crlmm authors about exporting readIDAT, they would do it soon
+importFrom(crlmm, readIDAT)
 
 
 export(manifestNew, getManifest, getProbeData, getProbeInfo, getManifestInfo,
