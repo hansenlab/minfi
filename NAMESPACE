@@ -1,4 +1,6 @@
+import(methods)
 import(matrixStats)
+importFrom(BiocGenerics, combine, updateObject, getObjectSlots)
 importClassesFrom(Biobase, aggregator, container, eSet, phenoData,
                   MIAxE, MIAME, characterORMIAME,
                   annotatedDataset, AssayData, data.frameOrNULL,
@@ -34,7 +36,7 @@ importMethodsFrom(Biobase, "[", "[[", "$", abstract, aggenv, aggfun,
 
 importFrom(Biobase, assayDataElementNames,
            assayDataElement, assayDataElementReplace, "assayDataElement<-",
-           "cache", "copyEnv", "copySubstitute", "getObjectSlots")
+           "cache", "copyEnv", "copySubstitute")
 
 importFrom(reshape, melt) 
 #importFrom(mclust, Mclust) # mclust does not have a namespace
