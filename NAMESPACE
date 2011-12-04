@@ -32,14 +32,17 @@ importMethodsFrom(Biobase, "[", "[[", "$", abstract, aggenv, aggfun,
                   pubMedIds, "pubMedIds<-",
                   isVersioned, isCurrent, classVersion, "classVersion<-",
                   updateObject, updateObjectTo,
-                  initialize, show, Compare)
+                  initialize, Compare)
+## including show in this import fails with obscure message during an installation
+## either R CMD build (which will install the package in order to build vignette
+## or by R CMD build --no-vignettes followed by R CMD INSTALL
 
 importFrom(Biobase, assayDataElementNames,
            assayDataElement, assayDataElementReplace, "assayDataElement<-",
            "cache", "copyEnv", "copySubstitute")
 
 importFrom(reshape, melt) 
-#importFrom(mclust, Mclust) # mclust does not have a namespace
+importFrom(mclust, Mclust)
 importFrom(RColorBrewer, brewer.pal)
 importFrom(beanplot, beanplot)
 importFrom(nor1mix, norMix, pnorMix, qnorMix)
@@ -47,7 +50,6 @@ importFrom(siggenes, pi0.est, qvalue.cal)
 importFrom(limma, squeezeVar, lmFit, eBayes, contrasts.fit)
 importFrom(preprocessCore, normalize.quantiles)
 importFrom(crlmm, readIDAT)
-
 
 export(manifestNew, getManifest, getProbeData, getProbeInfo, getManifestInfo,
        getControlAddress, getRed, getGreen, getMeth, getUnmeth,
