@@ -2,6 +2,12 @@
 \title{Minfi News}
 \encoding{UTF-8}
 
+\section{Version 1.1}{
+  \itemize{
+    \item Changed NAMESPACE file
+  }
+}
+
 \section{Version 0.99}{
   \itemize{
     \item Initial release to Bioconductor.
