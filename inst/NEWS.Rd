@@ -5,6 +5,11 @@
 \section{Version 1.1}{
   \itemize{
     \item Changed NAMESPACE file
+    \item Defined constructors for MethylSet, RGChannelSet,
+    RGChannelSetExtended.
+    \item Included a version number in the class definition for
+    MethylSet and RGChannelSet.  Old objects can be updated by calls of
+    the form updateObject(Mset).
   }
 }
 

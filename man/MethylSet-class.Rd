@@ -2,6 +2,7 @@
 \Rdversion{1.1}
 \docType{class}
 \alias{MethylSet-class}
+\alias{MethylSet}
 \alias{getMeth}
 \alias{getUnmeth}
 \alias{getBeta}
@@ -14,7 +15,8 @@
   This class holds preprocessed data for Illumina methylation microarrays.
 }
 \section{Objects from the Class}{
-  Objects can be created by calls of the form \code{new("MethylSet", Meth, Unmeth, ...)}.
+  Objects can be created by using the \code{MethylSet} constructor, ie.
+  by calls of the form \code{MethylSet(Meth, Unmeth, ...)}.  
 }
 \section{Slots}{
   \describe{
@@ -39,6 +41,16 @@
 Class \code{"\linkS4class{eSet}"}, directly.
 Class \code{"\linkS4class{VersionedBiobase}"}, by class \code{"eSet"}, distance 2.
 Class \code{"\linkS4class{Versioned}"}, by class \code{"eSet"}, distance 3.
+}
+\usage{
+  MethylSet(Meth = new("matrix"), Unmeth = new("matrix"),  ...)
+}
+\arguments{
+  \item{Meth}{A matrix of methylation values (between zero and infinity)
+  with each row being a methylation loci and each column a sample.}
+  \item{Unmeth}{See the \code{Meth} argument.}
+  \item{...}{Additional objects passes to the \code{eSet} constructor,
+    particular a \code{phenoData} slot.}
 }
 \section{Methods}{
   \describe{
