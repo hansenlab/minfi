@@ -1,4 +1,6 @@
 read.manifest <- function(file, returnAll = FALSE) {
+    if(!require(Biostrings))
+        stop("read.manifest requires the package Biostrings")
     ## As is, requires grep
     control.line <- system(sprintf("grep -n Controls %s", file), intern = TRUE)
     control.line <- as.integer(sub(":.*", "", control.line))
@@ -16,9 +18,12 @@ read.manifest <- function(file, returnAll = FALSE) {
                           "Next_Base", "AlleleA_ProbeSeq", "AlleleB_ProbeSeq")]
     names(TypeI)[c(2,3,4,5,6,7)] <- c("AddressA", "AddressB", "Color", "NextBase",
                                         "ProbeSeqA", "ProbeSeqB")
+    TypeI$nCpG <- as.integer(oligonucleotideFrequency(DNAStringSet(TypeI$ProbeSeqB),
+                                                      width = 2)[, "CG"] - 1)
     TypeII <- manifest[manifest$Infinium_Design_Type == "II",
                         c("Name", "AddressA_ID", "AlleleA_ProbeSeq")]
     names(TypeII)[c(2,3)] <- c("Address", "ProbeSeq")
+    TypeII$nCpG <- as.integer(letterFrequency(BStringSet(TypeII$ProbeSeq), letters = "R"))
     controls <- read.table(file, skip = control.line,
                            sep = ",", comment.char = "", quote = "",
                            colClasses = c(rep("character", 5)))
