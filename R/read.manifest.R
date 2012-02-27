@@ -20,6 +20,7 @@ read.manifest <- function(file, returnAll = FALSE) {
                                         "ProbeSeqA", "ProbeSeqB")
     TypeI$nCpG <- as.integer(oligonucleotideFrequency(DNAStringSet(TypeI$ProbeSeqB),
                                                       width = 2)[, "CG"] - 1)
+    TypeI$nCpG[TypeI$nCpG < 0] <- 0L
     TypeII <- manifest[manifest$Infinium_Design_Type == "II",
                         c("Name", "AddressA_ID", "AlleleA_ProbeSeq")]
     names(TypeII)[c(2,3)] <- c("Address", "ProbeSeq")

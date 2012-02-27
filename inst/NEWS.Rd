@@ -10,6 +10,7 @@
     \item Included a version number in the class definition for
     MethylSet and RGChannelSet.  Old objects can be updated by calls of
     the form updateObject(Mset).
+    \item read.manifest (not exported) updated to include nCpGs.
   }
 }
 
