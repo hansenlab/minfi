@@ -5,7 +5,7 @@ Description: Tools for analyzing and visualizing Illumina's 450k array data
 Author: Kasper Daniel Hansen, Martin Aryee
 Maintainer: Kasper Daniel Hansen <khansen@jhsph.edu>
 Depends: methods, BiocGenerics (>= 0.1.0), Biobase (>= 2.15.1), lattice, reshape
-Suggests: IlluminaHumanMethylation450kmanifest, minfiData
+Suggests: IlluminaHumanMethylation450kmanifest, minfiData, Biostrings
 Imports: beanplot, RColorBrewer, nor1mix, siggenes, limma, preprocessCore, crlmm, matrixStats, mclust
 License: Artistic-2.0
 LazyData: yes
