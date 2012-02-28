@@ -11,6 +11,7 @@
     MethylSet and RGChannelSet.  Old objects can be updated by calls of
     the form updateObject(Mset).
     \item read.manifest (not exported) updated to include nCpGs.
+    \item preprocessSwan was added.  Still work in progress.
   }
 }
 
