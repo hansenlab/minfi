@@ -55,9 +55,10 @@ export(manifestNew, getManifest, getProbeData, getProbeInfo, getManifestInfo,
        getControlAddress, getRed, getGreen, getMeth, getUnmeth,
        getBeta, getM, dmpFinder, mdsPlot, plotCpg, preprocessRaw,
        normalize.illumina.control, bgcorrect.illumina, preprocessIllumina,
-       preprocessSwan, 
+       preprocessSWAN, 
        detectionP, qcReport, controlStripPlot, densityBeanPlot, densityPlot,
        read.450k, read.450k.sheet, read.450k.exp, logit2, ilogit2,
        MethylSet, RGChannelSet, RGChannelSetExtended)
-exportClasses(RGChannelSet, RGChannelSetExtended, MethylSet, IlluminaMethylationManifest)
+exportClasses(RGChannelSet, RGChannelSetExtended, MethylSet,
+              IlluminaMethylationManifest, IlluminaMethylationAnnotation)
 exportMethods(show, initialize)

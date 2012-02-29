@@ -11,7 +11,7 @@ bgIntensitySwan <- function(rgSet){
                 median(getRed(rgSet)[getControlAddress(rgSet, controlType = "NEGATIVE"), ])))
 }
 
-preprocessSwan <- function(rgSet, mSet = NULL, subset = 10000){
+preprocessSWAN <- function(rgSet, mSet = NULL, subset = 10000){
     if(is.null(mSet))
         mSet <- preprocessRaw(rgSet)
     typeI <- getProbeInfo(rgSet, type = "I")[, c("Name", "nCpG")]

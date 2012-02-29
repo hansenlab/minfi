@@ -88,3 +88,21 @@ getM <- function (object, type = c("minfi", "Illumina")) {
     logit2(beta)
 }
 
+getLocations <- function(object, genomeBuild = "hg19", returnAs = c("data.frame", "GRanges")) {
+    returnAs <- match.arg(returnAs)
+    annotation <- get(paste(object@annotation, "annotation", sep = ""))
+    ## error checking
+    locs <- get(paste("Locations", genomeBuild, sep = "."), annotation@data)
+    locs <- locs[featureNames(object),]
+    if(returnAs == "data.frame")
+        return(locs)
+    if(returnAs == "GRanges")
+        return(GRanges(seqnames = locs$chr, ranges = IRanges(start = locs$pos, width = 2)))
+    ## get annotation from object
+    ## use this + genome build to get the locations
+    ## make sure that ordering is good, perhaps add orderByChromosome = TRUE
+}
+
+orderByChromosome <- function(x, genomeBuild = "hg19", drop = TRUE) {
+    return(list) # ordered
+}

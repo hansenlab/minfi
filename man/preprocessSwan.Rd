@@ -1,5 +1,5 @@
-\name{preprocessSwan}
-\alias{preprocessSwan}
+\name{preprocessSWAN}
+\alias{preprocessSWAN}
 
 \title{Subset-quantile Within Array Normalisation for Illumina Infinium
   HumanMethylation450 BeadChips}
@@ -10,7 +10,7 @@
   on a single array to be normalized together.} 
  
 \usage{
-  preprocessSwan(rgSet, mSet = NULL, subset = 10000)
+  preprocessSWAN(rgSet, mSet = NULL, subset = 10000)
 }
 
 \arguments{
@@ -50,9 +50,9 @@ between the subset probes.}
 if (require(minfiData)) {
   dat <- preprocessRaw(RGsetEx)
   slot(name="preprocessMethod", dat)[1]
-  datSwan <- preprocessSwan(RGsetEx, mSet = dat)
+  datSwan <- preprocessSWAN(RGsetEx, mSet = dat)
   datIlmn <- preprocessIllumina(RGsetEx)
   slot(name="preprocessMethod", datIlmn)[1]
-  datIlmnSwan <- preprocessSwan(RGsetEx, mSet = datIlmn)
+  datIlmnSwan <- preprocessSWAN(RGsetEx, mSet = datIlmn)
 }
 }

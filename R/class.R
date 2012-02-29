@@ -163,3 +163,27 @@ manifestNew <- function(TypeI = new("data.frame"), TypeII = new("data.frame"),
     manifest
 }
 
+
+setClass("IlluminaMethylationAnnotation",
+         representation(data = "environment",
+                        annotation = "character"))
+
+setValidity("IlluminaMethylationAnnotation", function(object) {
+    msg <- NULL
+    if (is.null(msg)) TRUE else msg
+})
+
+setMethod("show", "IlluminaMethylationAnnotation", function(object) {
+    cat("IlluminaMethylationAnnotation object\n")
+    cat("Annotation:", object@annotation, "\n")
+})
+
+annotationNew <- function(Locations.hg18, Locations.hg19, annotation = "") {
+    data <- new.env(parent = emptyenv())
+    data[["Locations.hg18"]] <- Locations.hg18
+    data[["Locations.hg19"]] <- Locations.hg19
+    lockEnvironment(data, bindings = TRUE)
+    anno <- new("IlluminaMethylationAnnotation",
+                annotation = annotation, data = data)
+    anno
+}
