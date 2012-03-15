@@ -10,7 +10,7 @@
   on a single array to be normalized together.} 
  
 \usage{
-  preprocessSWAN(rgSet, mSet = NULL, subset = 10000)
+  preprocessSWAN(rgSet, mSet = NULL)
 }
 
 \arguments{
@@ -19,7 +19,6 @@
   \code{NULL} preprocessSwan uses \code{preprocessRaw} on the
   \code{rgSet} argument.  In case \code{mSet} is supplied, make sure it
   is the result of preprocessing the \code{rgSet} argument.}
-  \item{subset}{The number of probes used in the preprocessing routine.}
 }
 
 \details{The SWAN method has two parts. First, an average quantile

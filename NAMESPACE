@@ -33,6 +33,8 @@ importMethodsFrom(Biobase, "[", "[[", "$", abstract, aggenv, aggfun,
                   isVersioned, isCurrent, classVersion, "classVersion<-",
                   updateObject, updateObjectTo,
                   initialize, Compare)
+import(GenomicRanges)
+
 ## including show in this import fails with obscure message during an installation
 ## either R CMD build (which will install the package in order to build vignette
 ## or by R CMD build --no-vignettes followed by R CMD INSTALL
@@ -55,7 +57,7 @@ export(manifestNew, getManifest, getProbeData, getProbeInfo, getManifestInfo,
        getControlAddress, getRed, getGreen, getMeth, getUnmeth,
        getBeta, getM, dmpFinder, mdsPlot, plotCpg, preprocessRaw,
        normalize.illumina.control, bgcorrect.illumina, preprocessIllumina,
-       preprocessSWAN, 
+       preprocessSWAN, plotBetasByType,
        detectionP, qcReport, controlStripPlot, densityBeanPlot, densityPlot,
        read.450k, read.450k.sheet, read.450k.exp, logit2, ilogit2,
        MethylSet, RGChannelSet, RGChannelSetExtended)
