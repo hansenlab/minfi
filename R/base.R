@@ -8,6 +8,8 @@ getProbeData <- function(object) {
         return(object@data)
     if(is(object, "RGChannelSet"))
         return(getManifest(object)@data)
+    if(is(object, "MethylSet"))
+        return(getManifest(object)@data)
     stop("cannot handle 'object'")
 }    
 

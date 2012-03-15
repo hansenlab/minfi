@@ -12,6 +12,8 @@
     the form updateObject(Mset).
     \item read.manifest (not exported) updated to include nCpGs.
     \item preprocessSwan was added.  Still work in progress.
+    \item Changed background calculation in preprocessSwan.
+    \item Added a section to the vignette describing preprocessSwan.
   }
 }
 

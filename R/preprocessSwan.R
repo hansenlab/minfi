@@ -7,22 +7,19 @@ getSubset <- function(counts, subset){
 }
 
 bgIntensitySwan <- function(rgSet){
-    return(mean(median(getGreen(rgSet)[getControlAddress(rgSet, controlType = "NEGATIVE"), ]),
-                median(getRed(rgSet)[getControlAddress(rgSet, controlType = "NEGATIVE"), ])))
+    grnMed <- colMedians(getGreen(rgSet)[getControlAddress(rgSet, controlType = "NEGATIVE"), ])
+    redMed <- colMedians(getRed(rgSet)[getControlAddress(rgSet, controlType = "NEGATIVE"), ])
+    return(rowMeans(cbind(grnMed, redMed)))
 }
 
-preprocessSWAN <- function(rgSet, mSet = NULL, subset = 10000){
+preprocessSWAN <- function(rgSet, mSet = NULL){
     if(is.null(mSet))
         mSet <- preprocessRaw(rgSet)
     typeI <- getProbeInfo(rgSet, type = "I")[, c("Name", "nCpG")]
     typeII <- getProbeInfo(rgSet, type = "II")[, c("Name", "nCpG")]
-    maxSubset <- min(table(typeI$nCpG[typeI$nCpG <= 3 & typeI$nCpG > 0]),
-                     table(typeII$nCpG[typeII$nCpG <= 3 & typeII$nCpG > 0]))
-        
-    if(subset > maxSubset) {
-        stop(sprintf("To sample an equal number of Infinium I & II probes with 1,2 and 3 body CpGs, subset cannot be greater than %d.", maxSubset))
-    }
-
+    subset <- min(table(typeI$nCpG[typeI$nCpG <= 3 & typeI$nCpG > 0]),
+                  table(typeII$nCpG[typeII$nCpG <= 3 & typeII$nCpG > 0]))
+    
     ## This next part should be fixed so it becomes more elegant
     CpG.counts <- rbind(typeI, typeII)
     CpG.counts$Name <- as.character(CpG.counts$Name)
@@ -42,16 +39,16 @@ preprocessSWAN <- function(rgSet, mSet = NULL, subset = 10000){
         
     for(i in 1:ncol(mSet)) {
         cat(sprintf("Normalizing array %d of %d\n", i, ncol(mSet)))
-        
+
         normMethData <- cbind(normMethData,
                               normaliseChannel(methData[rownames(methData) %in% counts$Name[counts$Type=="I"], i],
                                                methData[rownames(methData) %in% counts$Name[counts$Type=="II"], i],
-                                               xNormSet, bg))
+                                               xNormSet, bg[i]))
         
         normUnmethData <- cbind(normUnmethData,
                                 normaliseChannel(unmethData[rownames(unmethData) %in% counts$Name[counts$Type=="I"], i],
                                                  unmethData[rownames(unmethData) %in% counts$Name[counts$Type=="II"], i],
-                                                 xNormSet, bg))
+                                                 xNormSet, bg[i]))
     }
     
     colnames(normMethData) <- sampleNames(mSet)
@@ -60,7 +57,10 @@ preprocessSWAN <- function(rgSet, mSet = NULL, subset = 10000){
     normSet <- mSet
     assayDataElement(normSet,"Meth") <- normMethData
     assayDataElement(normSet,"Unmeth") <- normUnmethData
-    
+
+    normSet@preprocessMethod <- c(sprintf("SWAN (based on a MethylSet preprocesses as '%s'", mSet@preprocessMethod[1]),
+                                  as.character(packageVersion("minfi")),
+                                  as.character(packageVersion("IlluminaHumanMethylation450kmanifest")))
     normSet
 }
 
@@ -81,7 +81,7 @@ aveQuantile <- function(X) {
     if (maxNbrOfObservations == 1) {
         return(X)
     }
-    nbrOfFiniteObservations <- rep(maxNbrOfObservations, times = nbrOfChannels)
+    ## nbrOfFiniteObservations <- rep(maxNbrOfObservations, times = nbrOfChannels)
     quantiles <- (0:(maxNbrOfObservations - 1))/(maxNbrOfObservations - 1)
     xTarget <- vector("double", maxNbrOfObservations)
     for (cc in 1:nbrOfChannels) {
@@ -89,7 +89,7 @@ aveQuantile <- function(X) {
         Scc <- sort(Xcc)
         nobs <- length(Scc)
         if (nobs < maxNbrOfObservations) {
-            tt <- !is.na(Xcc)
+            ## tt <- !is.na(Xcc)
             bins <- (0:(nobs - 1))/(nobs - 1)
             Scc <- approx(x = bins, y = Scc, xout = quantiles,ties = "ordered")$y
         }
