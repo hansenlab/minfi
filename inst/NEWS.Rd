@@ -14,6 +14,11 @@
     \item preprocessSwan was added.  Still work in progress.
     \item Changed background calculation in preprocessSwan.
     \item Added a section to the vignette describing preprocessSwan.
+    \item Bug fix: ilogit2 is now in base (it used to be base e).  Thanks
+    to Time Triche, Jr <tim.triche@gmail.com>.
+    \item Added and dcoumented the IlluminaMethylationAnnotation class;
+    still work in progess.
+    \item Moved package vignette from inst/doc to vignettes.
   }
 }
 
