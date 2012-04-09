@@ -178,12 +178,3 @@ setMethod("show", "IlluminaMethylationAnnotation", function(object) {
     cat("Annotation:", object@annotation, "\n")
 })
 
-annotationNew <- function(Locations.hg18, Locations.hg19, annotation = "") {
-    data <- new.env(parent = emptyenv())
-    data[["Locations.hg18"]] <- Locations.hg18
-    data[["Locations.hg19"]] <- Locations.hg19
-    lockEnvironment(data, bindings = TRUE)
-    anno <- new("IlluminaMethylationAnnotation",
-                annotation = annotation, data = data)
-    anno
-}
