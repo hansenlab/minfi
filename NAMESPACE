@@ -1,7 +1,7 @@
 import(methods)
 import(matrixStats)
 importFrom(BiocGenerics, combine, updateObject, getObjectSlots)
-importClassesFrom(Biobase, aggregator, container, eSet, phenoData,
+importClassesFrom(Biobase, aggregator, container, eSet,
                   MIAxE, MIAME, characterORMIAME,
                   annotatedDataset, AssayData, data.frameOrNULL,
                   AnnotatedDataFrame,
