@@ -17,48 +17,40 @@ preprocessSWAN <- function(rgSet, mSet = NULL){
         mSet <- preprocessRaw(rgSet)
     typeI <- getProbeInfo(rgSet, type = "I")[, c("Name", "nCpG")]
     typeII <- getProbeInfo(rgSet, type = "II")[, c("Name", "nCpG")]
-    subset <- min(table(typeI$nCpG[typeI$nCpG <= 3 & typeI$nCpG > 0]),
-                  table(typeII$nCpG[typeII$nCpG <= 3 & typeII$nCpG > 0]))
-    
     ## This next part should be fixed so it becomes more elegant
     CpG.counts <- rbind(typeI, typeII)
     CpG.counts$Name <- as.character(CpG.counts$Name)
     CpG.counts$Type <- rep(c("I", "II"), times = c(nrow(typeI), nrow(typeII)))
     names(CpG.counts)[2] <- "CpGs"
     counts <- CpG.counts[CpG.counts$Name %in% featureNames(mSet),]
-    
+    subset <- min(table(counts$CpGs[counts$Type == "I" & counts$CpGs %in% 1:3]),
+                  table(counts$CpGs[counts$Type == "II" & counts$CpGs %in% 1:3]))
     bg <- bgIntensitySwan(rgSet)
     methData <- getMeth(mSet)
     unmethData <- getUnmeth(mSet)
     normMethData <- NULL
     normUnmethData <- NULL
-
     xNormSet <- vector("list", 2)
     xNormSet[[1]] <- getSubset(counts$CpGs[counts$Type=="I"], subset)
     xNormSet[[2]] <- getSubset(counts$CpGs[counts$Type=="II"], subset)
-        
     for(i in 1:ncol(mSet)) {
         cat(sprintf("Normalizing array %d of %d\n", i, ncol(mSet)))
-
         normMethData <- cbind(normMethData,
                               normaliseChannel(methData[rownames(methData) %in% counts$Name[counts$Type=="I"], i],
                                                methData[rownames(methData) %in% counts$Name[counts$Type=="II"], i],
                                                xNormSet, bg[i]))
-        
         normUnmethData <- cbind(normUnmethData,
                                 normaliseChannel(unmethData[rownames(unmethData) %in% counts$Name[counts$Type=="I"], i],
                                                  unmethData[rownames(unmethData) %in% counts$Name[counts$Type=="II"], i],
                                                  xNormSet, bg[i]))
     }
-    
     colnames(normMethData) <- sampleNames(mSet)
     colnames(normUnmethData) <- sampleNames(mSet)
-    
     normSet <- mSet
-    assayDataElement(normSet,"Meth") <- normMethData
-    assayDataElement(normSet,"Unmeth") <- normUnmethData
-
-    normSet@preprocessMethod <- c(sprintf("SWAN (based on a MethylSet preprocesses as '%s'", mSet@preprocessMethod[1]),
+    assayDataElement(normSet, "Meth") <- normMethData
+    assayDataElement(normSet, "Unmeth") <- normUnmethData
+    normSet@preprocessMethod <- c(sprintf("SWAN (based on a MethylSet preprocesses as '%s'",
+                                          mSet@preprocessMethod[1]),
                                   as.character(packageVersion("minfi")),
                                   as.character(packageVersion("IlluminaHumanMethylation450kmanifest")))
     normSet
