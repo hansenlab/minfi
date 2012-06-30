@@ -3,28 +3,33 @@
 %\VignetteDepends{minfiData}
 %\VignettePackage{minfi}
 \documentclass[12pt]{article}
-<<echo=FALSE>>=
-options(width=65)
+<<options,echo=FALSE,results=hide>>=
+options(width=70)
 @ 
 \SweaveOpts{eps=FALSE,echo=TRUE}
 \usepackage{times}
-\usepackage{hyperref}
+\usepackage{color,hyperref}
 \usepackage{fullpage}
-
+\usepackage[numbers]{natbib}
+\definecolor{darkblue}{rgb}{0.0,0.0,0.75}
+\hypersetup{colorlinks,breaklinks,
+            linkcolor=darkblue,urlcolor=darkblue,
+            anchorcolor=darkblue,citecolor=darkblue}
+\usepackage{parskip}
+          
 \newcommand{\Rcode}[1]{{\texttt{#1}}}
 \newcommand{\Rpackage}[1]{\textsf{#1}}
 \newcommand{\software}[1]{\textsf{#1}}
 \newcommand{\R}{\software{R}}
 
-\begin{document}
-\setlength{\parskip}{1\baselineskip}
-\setlength{\parindent}{0pt}
-\setcounter{secnumdepth}{1} 
 \title{The minfi User's Guide\\
   Analyzing Illumina 450k Methylation Arrays}
 \author{Kasper D.\ Hansen \and Martin J. Aryee}
 \date{Modified: October 9, 2011.  Compiled: \today}
+
+\begin{document}
 \maketitle
+\setcounter{secnumdepth}{1} 
 
 \section{Introduction}
 
@@ -94,7 +99,7 @@ DMPs or DMRs.
 
 \subsubsection{Getting Started}
 
-<<results=hide>>=
+<<load,results=hide>>=
 require(minfi)
 require(minfiData)
 @ 
@@ -529,32 +534,8 @@ a technical note describing this.
 toLatex(sessionInfo())
 @ 
 
-\begin{thebibliography}{9}
-\bibitem{Du:2010}
-Pan Du, Xiao Zhang, Chiang-Ching Huang, Nadereh Jafari, Warren A Kibbe, Lifang Hou, and Simon M Lin, 
-\emph{Comparison of Beta-value and M-value methods for quantifying methylation levels by microarray analysis},
-BMC Bioinformatics 11, 587 (2010).
-\bibitem{Sandoval:2011}
-Juan Sandoval, Holger A Heyn, Sebastian Moran, Jordi Serra-Musach, Miguel Angel Pujana, Marina
-Bibikova, and Manel Esteller,
-\emph{Validation of a DNA methylation microarray for 450,000 CpG sites in the human genome},
-Epigenetics 6, 692--702 (2011).
-\bibitem{Bibikova:2011}
-Marina Bibikova, Bret Barnes, Chan Tsan, Vincent Ho, Brandy Klotzle, Jennie M Le, David Delano, Lu
-Zhang, Gary P Schroth, Kevin L Gunderson, Jian-Bing Fan, and Richard Shen,
-\emph{High density DNA methylation array with single CpG site resolution},
-Genomics 98, 288--295 (2011)
-\bibitem{Dedeurwaerder:2011}
-Sarah Dedeurwaerder, Matthieu Defrance, Emilie Calonne, H\'{e}l\`{e}ne Denis, Christos Sotiriou, and
-Fran\c{c}ois Fuks,
-\emph{Evaluation of the Infinium Methylation 450K technology},
-Epigenomics 3, 771-784 (2011).
-\bibitem{Makismovic:2012}
-Jovana Makismovic, Lavinia Gordon, and Alicia Oshlack,
-\emph{Subset quantile within-array normalization for Illumina Infinium HumanMethylation450
-  BeadChips},
-submitted.
-\end{thebibliography}
+\bibliographystyle{unsrturl}
+\bibliography{minfi}
 \end{document}
 
 % Local Variables:

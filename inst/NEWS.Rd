@@ -2,6 +2,14 @@
 \title{Minfi News}
 \encoding{UTF-8}
 
+\section{Version 1.3}{
+  \itemize{
+    \item Updated preprocessSwan to fix a bug when mSet was not set to
+    the default value of NULL.  Specifically, now the "counts" tables is
+    used to construct "subset".
+  }
+}
+
 \section{Version 1.1}{
   \itemize{
     \item Changed NAMESPACE file

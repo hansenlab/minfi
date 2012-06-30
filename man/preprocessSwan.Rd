@@ -39,6 +39,12 @@ between the subset probes.}
 
 \value{an object of class \code{MethylSet}}
 
+\references{
+  J Maksimovic, L Gordon and A Oshlack (2012).  \emph{SWAN: Subset
+  quantile Within-Array Normalization for Illumina Infinium
+  HumanMethylation450 BeadChips}.  Genome Biology 13, R44.
+}
+
 \author{Jovana Maksimovic\email{jovana.maksimovic@mcri.edu.au}}
 
 \seealso{\code{\linkS4class{RGChannelSet}} and
