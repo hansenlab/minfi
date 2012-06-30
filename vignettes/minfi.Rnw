@@ -539,7 +539,7 @@ a technical note describing this.
 toLatex(sessionInfo())
 @ 
 
-\cite{*}
+\nocite{*}
 \bibliographystyle{unsrturl}
 \bibliography{minfi}
 \end{document}
