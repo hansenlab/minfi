@@ -183,13 +183,15 @@ beginning with \Rcode{[Data]} (or that there is no header present).
 It is also easy to read a sample sheet ``manually'', using the function \Rcode{read.csv}.  Here, we
 know that we want to skip the first 7 lines of the file.
 <<sampleSheet2>>=
-targets2 <- read.csv(file.path(baseDir, "SampleSheet.csv"), stringsAsFactors = FALSE, skip = 7)
+targets2 <- read.csv(file.path(baseDir, "SampleSheet.csv"), 
+                     stringsAsFactors = FALSE, skip = 7)
 targets2
 @ 
 We now need to populate a \Rcode{Basename} column.  On possible approach is the following
 <<Basename>>=
 targets2$Basename <- file.path(baseDir, targets2$Sentrix_ID, 
-                               paste(targets2$Sentrix_ID, targets2$Sentrix_Position, sep = "_"))
+                               paste0(targets2$Sentrix_ID, 
+                                      targets2$Sentrix_Position))
 @ 
 
 Finally, \Rpackage{minfi} contains a file-based parser: \Rcode{read.450k}.  The return object
@@ -233,7 +235,8 @@ two modes - one with close to 0\% methylation, and a second at close to 100\% me
 \begin{figure} 
 \begin{center}
 <<qcReport-density,fig=TRUE>>=
-densityPlot(RGset, sampGroups = pd$Sample_Group, main = "Beta", xlab = "Beta")
+densityPlot(RGset, sampGroups = pd$Sample_Group, 
+            main = "Beta", xlab = "Beta")
 @
 \end{center} 
 \caption{Beta density plots}
@@ -245,7 +248,8 @@ densityPlot(RGset, sampGroups = pd$Sample_Group, main = "Beta", xlab = "Beta")
 \begin{center}
 <<qcReport-bean,fig=TRUE>>=
 par(oma=c(2,10,1,1))
-densityBeanPlot(RGset, sampGroups = pd$Sample_Group, sampNames = pd$Sample_Name)
+densityBeanPlot(RGset, sampGroups = pd$Sample_Group, 
+                sampNames = pd$Sample_Name)
 @
 \end{center} 
 \caption{Beta beanplots} 
@@ -276,7 +280,8 @@ The following control probes are available on the array:
 \begin{figure} 
 \begin{center}
 <<qcReport-stripplot,fig=TRUE>>=
-controlStripPlot(RGset, controls="BISULFITE CONVERSION II", sampNames = pd$Sample_Name)
+controlStripPlot(RGset, controls="BISULFITE CONVERSION II", 
+                 sampNames = pd$Sample_Name)
 @
 \end{center} 
 \caption{Beta stripplot} 
@@ -399,9 +404,9 @@ Mset.swan <- preprocessSWAN(RGsetEx, MsetEx)
 @ 
 
 The technical differences between Infinium I and II assay designs can result in aberrant beta value
-distributions (Figure~\cite{fig:plotBetaTypes}, panel ``Raw''). Using SWAN corrects for the
+distributions (Figure~\ref{fig:plotBetaTypes}, panel ``Raw''). Using SWAN corrects for the
 technical differences between the Infinium I and II assay designs and produces a smoother overall
-beta value distribution (Figure~\cite{fig:plotBetaTypes}, panel ``SWAN'').
+beta value distribution (Figure~\ref{fig:plotBetaTypes}, panel ``SWAN'').
 
 \begin{figure}
   \centering
@@ -410,7 +415,7 @@ par(mfrow=c(1,2))
 plotBetasByType(MsetEx[,1], main = "Raw")
 plotBetasByType(Mset.swan[,1], main = "SWAN")
 @ 
-\caption{xx}\label{fig:plotBetaTypes}
+\caption{The effect of normalizing using SWAN.}\label{fig:plotBetaTypes}
 \end{figure}
 
 \section{Finding differentially methylated positions (DMPs)}
@@ -534,6 +539,7 @@ a technical note describing this.
 toLatex(sessionInfo())
 @ 
 
+\cite{*}
 \bibliographystyle{unsrturl}
 \bibliography{minfi}
 \end{document}
