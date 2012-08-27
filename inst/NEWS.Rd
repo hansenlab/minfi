@@ -10,6 +10,7 @@
     \item Changed the function manifestNew() to
     IlluminaMethylationManifest().
     \item Added IlluminaMethylationAnnotation().
+    \item Added placeholders for unit testing based on RUnit.
   }
 }
 

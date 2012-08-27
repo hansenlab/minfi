@@ -1,46 +1,17 @@
 import(methods)
 import(matrixStats)
 importFrom(BiocGenerics, combine, updateObject, getObjectSlots)
-importClassesFrom(Biobase, aggregator, container, eSet,
-                  MIAxE, MIAME, characterORMIAME,
-                  annotatedDataset, AssayData, data.frameOrNULL,
-                  AnnotatedDataFrame,
-                  Versions, VersionsNull, Versioned, VersionedBiobase,
-                  ScalarObject, ScalarInteger, ScalarLogical, ScalarNumeric,
-                  ScalarCharacter)
-importMethodsFrom(Biobase, "[", "[[", "$", abstract, aggenv, aggfun,
-                  annotatedDataFrameFrom, annotation,
-                  channel, channelNames, coerce,
-                  combine, content, contents, description, dims, eList,
-                  experimentData, expinfo, exprs,
-                  featureNames, featureData, fData, fvarLabels, fvarMetadata,
-                  geneNames, getExpData,
-                  hybridizations, initfun,
-                  length, locked, makeDataPackage, normControls, notes, otherInfo, pData,
-                  phenoData, preproc, protocolData, sampleNames, samples, se.exprs,
-                  selectChannels, snpCall, snpCallProbability, storageMode,
-                  varLabels, varMetadata,
-                  "annotation<-", "description<-", "dimLabels<-", "eList<-",
-                  "experimentData<-", "exprs<-",
-                  "featureNames<-", "featureData<-", "fData<-", "fvarLabels<-", "fvarMetadata<-",
-                  "geneNames<-", "notes<-", "preproc<-", "pData<-",
-                  "phenoData<-", "protocolData<-", "sampleNames<-",
-                  "snpCall<-", "snpCallProbability<-", "varLabels<-",
-                  "varMetadata<-", "assayData<-", "se.exprs<-",  "storageMode<-",
-                  "write.exprs", dim, dimLabels, assayData, reporterNames, "reporterNames<-",
-                  pubMedIds, "pubMedIds<-",
-                  isVersioned, isCurrent, classVersion, "classVersion<-",
-                  updateObject, updateObjectTo,
-                  initialize, Compare)
+importClassesFrom(Biobase, AnnotatedDataFrame, AssayData, eSet, MIAxE,
+                  Versions)
+importMethodsFrom(Biobase, annotation, "annotation<-", channel,
+                  classVersion, experimentData, featureData,
+                  featureNames, "featureNames<-", isCurrent, "pData<-",
+                  phenoData, protocolData, sampleNames)
 import(GenomicRanges)
-
-## including show in this import fails with obscure message during an installation
-## either R CMD build (which will install the package in order to build vignette
-## or by R CMD build --no-vignettes followed by R CMD INSTALL
-
 importFrom(Biobase, assayDataElementNames,
            assayDataElement, assayDataElementReplace, "assayDataElement<-",
            "cache", "copyEnv", "copySubstitute")
+
 importFrom(reshape, melt) 
 importFrom(mclust, Mclust)
 importFrom(RColorBrewer, brewer.pal)
