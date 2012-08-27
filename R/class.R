@@ -152,7 +152,7 @@ setMethod("show", "IlluminaMethylationManifest", function(object) {
     cat("Number of control probes:", nrow(object@data[["TypeControl"]]), "\n")
 })
 
-manifestNew <- function(TypeI = new("data.frame"), TypeII = new("data.frame"),
+IlluminaMethylationManifest <- function(TypeI = new("data.frame"), TypeII = new("data.frame"),
                         TypeControl = new("data.frame"), annotation = "") {
     data <- new.env(parent = emptyenv())
     data[["TypeI"]] <- TypeI
@@ -162,7 +162,6 @@ manifestNew <- function(TypeI = new("data.frame"), TypeII = new("data.frame"),
     manifest <- new("IlluminaMethylationManifest", annotation = annotation, data = data)
     manifest
 }
-
 
 setClass("IlluminaMethylationAnnotation",
          representation(data = "environment",
@@ -177,4 +176,18 @@ setMethod("show", "IlluminaMethylationAnnotation", function(object) {
     cat("IlluminaMethylationAnnotation object\n")
     cat("Annotation:", object@annotation, "\n")
 })
+
+IlluminaMethylationAnnotation <- function(listOfObjects,
+                                          annotation = "") {
+    data <- new.env(parent = emptyenv())
+    stopifnot(all(c("Locations.hg18", "Locations.hg19") %in% names(listOfObjects)))
+    for(nam in names(listOfObjects)) {
+        cat(nam, "\n")
+        assign(nam, listOfObjects[[nam]], envir = data)
+    }
+    lockEnvironment(data, bindings = TRUE)
+    anno <- new("IlluminaMethylationAnnotation",
+                annotation = annotation, data = data)
+    anno
+}
 

@@ -8,7 +8,6 @@ importClassesFrom(Biobase, aggregator, container, eSet,
                   Versions, VersionsNull, Versioned, VersionedBiobase,
                   ScalarObject, ScalarInteger, ScalarLogical, ScalarNumeric,
                   ScalarCharacter)
-
 importMethodsFrom(Biobase, "[", "[[", "$", abstract, aggenv, aggfun,
                   annotatedDataFrameFrom, annotation,
                   channel, channelNames, coerce,
@@ -42,7 +41,6 @@ import(GenomicRanges)
 importFrom(Biobase, assayDataElementNames,
            assayDataElement, assayDataElementReplace, "assayDataElement<-",
            "cache", "copyEnv", "copySubstitute")
-
 importFrom(reshape, melt) 
 importFrom(mclust, Mclust)
 importFrom(RColorBrewer, brewer.pal)
@@ -53,9 +51,10 @@ importFrom(limma, squeezeVar, lmFit, eBayes, contrasts.fit)
 importFrom(preprocessCore, normalize.quantiles)
 importFrom(crlmm, readIDAT)
 
-export(manifestNew, getManifest, getProbeData, getProbeInfo, getManifestInfo,
+export(getManifest, getProbeData, getProbeInfo, getManifestInfo,
        getControlAddress, getRed, getGreen, getMeth, getUnmeth,
        getBeta, getM, dmpFinder, mdsPlot, plotCpg, preprocessRaw,
+       IlluminaMethylationManifest, IlluminaMethylationAnnotation,
        normalize.illumina.control, bgcorrect.illumina, preprocessIllumina,
        preprocessSWAN, plotBetasByType,
        detectionP, qcReport, controlStripPlot, densityBeanPlot, densityPlot,

@@ -2,7 +2,7 @@
 \Rdversion{1.1}
 \docType{class}
 \alias{IlluminaMethylationManifest-class}
-\alias{manifestNew}
+\alias{IlluminaMethylationManifest}
 \alias{show,IlluminaMethylationManifest-method}
 \title{Class \code{"IlluminaMethylationManifest"}}
 \description{
@@ -12,7 +12,7 @@
 \section{Objects from the Class}{
 Objects can be created by calls of the form
 \code{new("IlluminaMethylationManifest", ...)}, but the preferred way is
-to use \code{manifestNew()}.
+to use \code{IlluminaMethylationManifest()}.
 }
 \section{Slots}{
   \describe{
