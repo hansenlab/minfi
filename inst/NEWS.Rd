@@ -7,6 +7,9 @@
     \item Updated preprocessSwan to fix a bug when mSet was not set to
     the default value of NULL.  Specifically, now the "counts" tables is
     used to construct "subset".
+    \item Changed the function manifestNew() to
+    IlluminaMethylationManifest().
+    \item Added IlluminaMethylationAnnotation().
   }
 }
 
