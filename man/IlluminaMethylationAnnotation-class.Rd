@@ -2,6 +2,7 @@
 \Rdversion{1.1}
 \docType{class}
 \alias{IlluminaMethylationAnnotation-class}
+\alias{IlluminaMethylationAnnotation}
 \alias{show,IlluminaMethylationAnnotation-method}
 \title{Class \code{"IlluminaMethylationAnnotation"}}
 \description{
@@ -12,7 +13,8 @@
 }
 \section{Objects from the Class}{
 Objects can be created by calls of the form
-\code{new("IlluminaMethylationAnnotation", ...)}.
+\code{new("IlluminaMethylationAnnotation", ...)}, but the preferred way
+is to use \code{IlluminaMethylationAnnotation()}.
 }
 \section{Slots}{
   \describe{
