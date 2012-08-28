@@ -11,6 +11,12 @@
     IlluminaMethylationManifest().
     \item Added IlluminaMethylationAnnotation().
     \item Added placeholders for unit testing based on RUnit.
+    \item Introduced a new show method for MethylSet and RGChannelSet,
+    derived from the eSet method in Biobase.
+    \item The annotation slot of a MethylSet/RGChannelSet is now
+    intended to _not_ be a scalar, but instead have length 2 with
+    components 'array' and 'annotation'.  This foreshadows introdution of
+    annotation packages for use with minfi.
   }
 }
 

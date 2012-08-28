@@ -1,3 +1,23 @@
+.show.ExpressionSet <- function(object) {
+    cat(class(object), " (storageMode: ", storageMode(object), ")\n", sep = "")
+    cat("assayData:", paste(dim(object)[[1]], "features,", dim(object)[[2]], "samples"), "\n")
+    cat("  element names:",
+        paste(assayDataElementNames(object), collapse=", "), "\n")
+    Biobase:::.showAnnotatedDataFrame(phenoData(object),
+                                      labels=list(object="phenoData"))
+}
+    
+.show.annotation <- function(annotation, indent = "  ") {
+    cat("Annotation\n")
+    if(length(annotation) == 1) {
+        cat(sprintf("%sarray: %s\n", indent, annotation))
+    } else {
+        sapply(seq(along = annotation), function(ii) {
+            cat(sprintf("%s%s: %s\n", indent, names(annotation)[ii], annotation[ii]))
+        })
+    }
+}
+
 setClass("RGChannelSet",
          contains = "eSet",
          prototype = prototype(new("VersionedBiobase",
@@ -19,6 +39,11 @@ RGChannelSet <- function(Green = new("matrix"), Red = new("matrix"), ...){
     rgSet <- new("RGChannelSet", Green = Green, Red = Red, ...)
     rgSet
 }
+
+setMethod("show", "RGChannelSet", function(object) {
+    .show.ExpressionSet(object)
+    .show.annotation(object@annotation)
+})
 
 setClass("RGChannelSetExtended",
          contains = "RGChannelSet")
@@ -101,7 +126,8 @@ MethylSet <- function(Meth = new("matrix"), Unmeth = new("matrix"),  ...) {
 }
 
 setMethod("show", "MethylSet", function(object) {
-    callNextMethod(object)
+    .show.ExpressionSet(object)
+    .show.annotation(object@annotation)
     preprocess <- object@preprocessMethod
     if(length(preprocess) == 0)
         preprocess <- c("unknown", "unknown", "unknown")
@@ -146,7 +172,7 @@ setValidity("IlluminaMethylationManifest", function(object) {
 
 setMethod("show", "IlluminaMethylationManifest", function(object) {
     cat("IlluminaMethylationManifest object\n")
-    cat("Annotation:", object@annotation, "\n")
+    .show.annotation(object@annotation)
     cat("Number of type I probes:", nrow(object@data[["TypeI"]]), "\n")
     cat("Number of type II probes:", nrow(object@data[["TypeII"]]), "\n")
     cat("Number of control probes:", nrow(object@data[["TypeControl"]]), "\n")
@@ -174,7 +200,7 @@ setValidity("IlluminaMethylationAnnotation", function(object) {
 
 setMethod("show", "IlluminaMethylationAnnotation", function(object) {
     cat("IlluminaMethylationAnnotation object\n")
-    cat("Annotation:", object@annotation, "\n")
+    .show.annotation(annotation(object))
 })
 
 IlluminaMethylationAnnotation <- function(listOfObjects,
