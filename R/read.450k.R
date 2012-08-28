@@ -50,7 +50,7 @@ read.450k <- function(basenames, extended = FALSE, verbose = FALSE) {
             out <- new("RGChannelSet", Red = RedMean, Green = GreenMean)
         }
         featureNames(out) <- rownames(G.idats[[1]]$Quants)
-        annotation(out) <- "IlluminaHumanMethylation450k"
+        annotation(out) <- c(array = "IlluminaHumanMethylation450k", annotation = minfi:::.default.450k.annotation)
     })[3]
     if(verbose)
         cat("done in", stime, "seconds\n")

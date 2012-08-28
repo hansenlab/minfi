@@ -1,6 +1,16 @@
+.getManifestString <- function(annotation) {
+    if(length(annotation) == 1)
+        return(paste0(annotation, "manifest"))
+    if("array" %in% names(annotation))
+        return(paste0(annotation["array"], "manifest"))
+    stop("unable to get the manifest string for this object")
+}
+
 getManifest <- function(object) {
-    name <- paste(annotation(object), "manifest", sep = "")
-    get(name)
+    maniString <- .getManifestString(object@annotation)
+    if(!require(maniString, character.only = TRUE))
+        stop(sprintf("cannot load manifest package %s", maniString))
+    get(maniString)
 }
 
 getProbeData <- function(object) {
@@ -11,7 +21,7 @@ getProbeData <- function(object) {
     if(is(object, "MethylSet"))
         return(getManifest(object)@data)
     stop("cannot handle 'object'")
-}    
+}
 
 getProbeInfo <- function(object, type = c("I", "II", "Control", "I-Green", "I-Red")) {
     type <- match.arg(type)
