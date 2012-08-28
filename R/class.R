@@ -200,7 +200,7 @@ setValidity("IlluminaMethylationAnnotation", function(object) {
 
 setMethod("show", "IlluminaMethylationAnnotation", function(object) {
     cat("IlluminaMethylationAnnotation object\n")
-    .show.annotation(annotation(object))
+    .show.annotation(object@annotation)
 })
 
 IlluminaMethylationAnnotation <- function(listOfObjects,
