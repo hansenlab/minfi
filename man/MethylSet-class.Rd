@@ -3,70 +3,75 @@
 \docType{class}
 \alias{MethylSet-class}
 \alias{MethylSet}
+%% generics
 \alias{getMeth}
 \alias{getUnmeth}
 \alias{getBeta}
 \alias{getM}
-\alias{getAnno}
+%%methods
+\alias{getMeth,MethylSet-method}
+\alias{getUnmeth,MethylSet-method}
+\alias{getBeta,MethylSet-method}
+\alias{getM,MethylSet-method}
 \alias{show,MethylSet-method}
 \alias{initialize,MethylSet-method}
-\title{Class MethylSet}
+
+\title{MethylSet instances}
+
 \description{
-  This class holds preprocessed data for Illumina methylation microarrays.
+  This class holds preprocessed data for Illumina methylation
+  microarrays.
 }
-\section{Objects from the Class}{
-  Objects can be created by using the \code{MethylSet} constructor, ie.
-  by calls of the form \code{MethylSet(Meth, Unmeth, ...)}.  
-}
-\section{Slots}{
-  \describe{
-    \item{\code{preprocessMethod}:}{Object of class \code{"character"}.
-    This contains the preprocess method used to create the data.  This
-    is a a character vector of length 3, the first component is the
-    preprocessing method, followed by the version of \pkg{minfi} used to do
-    the preprocessing followed by the version of the manifest package
-    used to do the preprocessing.}
-    \item{\code{assayData}:}{Object of class \code{"AssayData"}.  This
-      has to contain the following two elements: \code{Meth} and \code{Unmeth}.}
-    \item{\code{phenoData}:}{Object of class \code{"AnnotatedDataFrame"}.}
-    \item{\code{featureData}:}{Object of class \code{"AnnotatedDataFrame"}.}
-    \item{\code{experimentData}:}{Object of class \code{"MIAxE"}.}
-    \item{\code{annotation}:}{Object of class \code{"character"}.
-      Contains the type of array for this dataset.}
-    \item{\code{protocolData}:}{Object of class \code{"AnnotatedDataFrame"}.}
-    \item{\code{.__classVersion__}:}{Object of class \code{"Versions"}.}
-  }
-}
-\section{Extends}{
-Class \code{"\linkS4class{eSet}"}, directly.
-Class \code{"\linkS4class{VersionedBiobase}"}, by class \code{"eSet"}, distance 2.
-Class \code{"\linkS4class{Versioned}"}, by class \code{"eSet"}, distance 3.
-}
+
 \usage{
-  MethylSet(Meth = new("matrix"), Unmeth = new("matrix"),  ...)
+## Constructor
+MethylSet(Meth = new("matrix"), Unmeth = new("matrix"),  ...)
+
+## Data extraction / Accessors
+\S4method{getMeth}{MethylSet}(object)
+\S4method{getUnmeth}{MethylSet}(object)
+\S4method{getBeta}{MethylSet}(object, type = c("minfi", "Illumina"))
+\S4method{getM}{MethylSet}(object, type = c("minfi", "Illumina"))
 }
+
 \arguments{
+  \item{object}{A \code{MethylSet}.}
   \item{Meth}{A matrix of methylation values (between zero and infinity)
-  with each row being a methylation loci and each column a sample.}
+    with each row being a methylation loci and each column a sample.}
   \item{Unmeth}{See the \code{Meth} argument.}
   \item{...}{Additional objects passes to the \code{eSet} constructor,
     particular a \code{phenoData} slot.}
+  \item{type}{How is the values calculated?}
 }
-\section{Methods}{
+
+\details{
+  FIXME: Mention the preprocess, annotation slots
+}
+
+\section{Constructor}{
+Instances are constructed using the \code{MethylSet} function with the
+arguments outlined above.
+}
+
+\section{Accessors}{
+  In the following code, \code{object} is a \code{MethylSet}.
+
   \describe{
-    \item{\code{show}:}{The show method}
-    \item{\code{initialize}:}{The initialize method, see above}
-  } 
+    \item{\code{getMeth(object)}, \code{getUnmeth(object)}}{Get the
+    }
+    \item{\code{getBeta(object)}}{}
+    \item{\code{getM(object)}}{}
+  }
 }
-\author{
-  Kasper Daniel Hansen \email{khansen@jhsph.edu}.
-}
+
+\author{Kasper Daniel Hansen \email{khansen@jhsph.edu}}
+
 \seealso{
-  \code{\linkS4class{eSet}} for the basic class structure.  Objects of
-  this class are for example created from an
-  \code{\linkS4class{RGChannelSet}} using \code{\link{preprocessRaw}}.
+  \code{\linkS4class{eSet}} for the basic class structure.
+  Objects of this class are for example created from an
+  \code{\link{RGChannelSet}} using \code{\link{preprocessRaw}}.
 }
+
 \examples{
-showClass("MethylSet")
+  showClass("MethylSet")
 }
-\keyword{classes}
