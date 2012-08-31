@@ -1,0 +1,4 @@
+setGeneric("getMeth", function(object) standardGeneric("getMeth"))
+setGeneric("getUnmeth", function(object) standardGeneric("getUnmeth"))
+setGeneric("getBeta", function(object, ...) standardGeneric("getBeta"))
+setGeneric("getM", function(object, ...) standardGeneric("getM"))

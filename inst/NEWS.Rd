@@ -17,6 +17,9 @@
     intended to _not_ be a scalar, but instead have length 2 with
     components 'array' and 'annotation'.  This foreshadows introdution of
     annotation packages for use with minfi.
+    \item Reorganization of R files; rewriting of the man pages for
+    MethylSet, RGChannelSet.
+    \item getMeth, getUnmeth, getBeta, getM are now methods.
   }
 }
 
