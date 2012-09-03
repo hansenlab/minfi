@@ -24,3 +24,19 @@ ilogit2 <- function(x) { 2^(x) / (1+2^(x)) }
     }
 }
 
+.getManifestString <- function(annotation) {
+    if(length(annotation) == 1)
+        return(paste0(annotation, "manifest"))
+    if("array" %in% names(annotation))
+        return(paste0(annotation["array"], "manifest"))
+    stop("unable to get the manifest string for this object")
+}
+
+.getAnnotationString <- function(annotation) {
+    if(length(annotation) == 1)
+        return(paste0(annotation, "annotation"))
+    if(all(c("array", "annotation") %in% names(annotation)))
+        return(paste0(annotation["array"], "annotation.", annotation["annotation"]))
+    stop("unable to get the annotation string for this object")
+}
+

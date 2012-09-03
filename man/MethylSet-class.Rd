@@ -25,9 +25,11 @@
 
 \usage{
 ## Constructor
+
 MethylSet(Meth = new("matrix"), Unmeth = new("matrix"),  ...)
 
 ## Data extraction / Accessors
+
 \S4method{getMeth}{MethylSet}(object)
 \S4method{getUnmeth}{MethylSet}(object)
 \S4method{getBeta}{MethylSet}(object, type = c("minfi", "Illumina"))

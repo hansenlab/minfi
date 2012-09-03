@@ -6,13 +6,13 @@ qcReport <- function(rgSet, sampNames=NULL, sampGroups=NULL, pdf="qcReport.pdf",
         stop("argument 'rgSet' needs to be an 'RGChannelSet'")
     
     if (is.null(sampNames)) sampNames <- sampleNames(rgSet)
+    n <- ncol(rgSet)
     o <- rev(order(sampNames))
     rgSet <- rgSet[,o]
     sampNames <- sampNames[o]
     sampGroups <- sampGroups[o]
-    if (is.null(sampGroups)) sampGroups <- rep(1, n)
     sampGroups <- as.factor(sampGroups)
-    n <- ncol(rgSet)
+    if (is.null(sampGroups)) sampGroups <- rep(1, n)
     numPages <- ceiling(n/maxSamplesPerPage)
     samplesPerPage <- ceiling(n/numPages)
     sampleIdxs <- suppressWarnings(split(1:n, rep(1:numPages, each=samplesPerPage)))
