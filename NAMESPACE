@@ -33,4 +33,5 @@ export(getManifest, getProbeData, getProbeInfo, getManifestInfo,
        MethylSet, RGChannelSet, RGChannelSetExtended)
 exportClasses(RGChannelSet, RGChannelSetExtended, MethylSet,
               IlluminaMethylationManifest, IlluminaMethylationAnnotation)
-exportMethods(show, initialize)
+exportMethods(show, initialize, getBeta, getM, getMeth, getUnmeth)
+

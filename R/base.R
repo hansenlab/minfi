@@ -1,11 +1,3 @@
-.getManifestString <- function(annotation) {
-    if(length(annotation) == 1)
-        return(paste0(annotation, "manifest"))
-    if("array" %in% names(annotation))
-        return(paste0(annotation["array"], "manifest"))
-    stop("unable to get the manifest string for this object")
-}
-
 getManifest <- function(object) {
     maniString <- .getManifestString(object@annotation)
     if(!require(maniString, character.only = TRUE))
