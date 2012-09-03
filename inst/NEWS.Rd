@@ -20,6 +20,7 @@
     \item Reorganization of R files; rewriting of the man pages for
     MethylSet, RGChannelSet.
     \item getMeth, getUnmeth, getBeta, getM are now methods.
+    \item bug fix to qcReport thanks to Tao Shi.
   }
 }
 
