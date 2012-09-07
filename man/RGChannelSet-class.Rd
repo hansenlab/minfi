@@ -10,10 +10,10 @@
 \alias{initialize,RGChannelSet-method}
 \alias{initialize,RGChannelSetExtended-method}
 \alias{getBeta,RGChannelSet-method}
+\alias{getManifest,RGChannelSet-method}
 %% functions
 \alias{getGreen}
 \alias{getRed}
-\alias{getManifest,RGChannelSet-method}
 
 \title{Class \code{"RGChannelSet"}}
 
