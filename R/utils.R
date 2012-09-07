@@ -24,6 +24,17 @@ ilogit2 <- function(x) { 2^(x) / (1+2^(x)) }
     }
 }
 
+.show.preprocessMethod <- function(preprocessMethod) {
+    if(length(preprocessMethod) == 3 && is.null(names(preprocessMethod)))
+        names(preprocessMethod) <- c("rg.norm", "minfi", "manifest")
+    if(length(preprocessMethod) == 0)
+        preprocess <- c(rg.norm = "unknown", minfi = "unknown", manifest = "unknown")
+    cat("Preprocessing\n")
+    cat(sprintf("  Method: %s\n  minfi version: %s\n  Manifest version: %s\n",
+                preprocessMethod["rg.norm"], preprocessMethod["minfi"],
+                preprocessMethod["manifest"]))
+}
+
 .getManifestString <- function(annotation) {
     if(length(annotation) == 1)
         return(paste0(annotation, "manifest"))
@@ -38,5 +49,20 @@ ilogit2 <- function(x) { 2^(x) / (1+2^(x)) }
     if(all(c("array", "annotation") %in% names(annotation)))
         return(paste0(annotation["array"], "annotation.", annotation["annotation"]))
     stop("unable to get the annotation string for this object")
+}
+
+.betaFromMethUnmeth <- function(Meth, Unmeth, object, offset = 0,
+                                betaThreshold = 0, minZero = TRUE) {
+    stopifnot(offset >= 0)
+    stopifnot(betaThreshold >= 0 & betaThreshold <= 0.5)
+    if(minZero) {
+        Meth <- pmax(Meth, 0)
+        Unmeth <- pmax(Unmeth, 0)
+    }
+    beta <- Meth / (Meth + Unmeth + offset)
+    if(betaThreshold > 0) {
+        beta <- pmin(pmax(beta, betaThreshold), 1-betaThreshold)
+    }
+    beta
 }
 

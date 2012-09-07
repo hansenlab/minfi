@@ -1,25 +1,8 @@
-getManifest <- function(object) {
-    maniString <- .getManifestString(object@annotation)
-    if(!require(maniString, character.only = TRUE))
-        stop(sprintf("cannot load manifest package %s", maniString))
-    get(maniString)
-}
-
-getProbeData <- function(object) {
-    if(is(object, "IlluminaMethylationManifest"))
-        return(object@data)
-    if(is(object, "RGChannelSet"))
-        return(getManifest(object)@data)
-    if(is(object, "MethylSet"))
-        return(getManifest(object)@data)
-    stop("cannot handle 'object'")
-}
-
 getProbeInfo <- function(object, type = c("I", "II", "Control", "I-Green", "I-Red")) {
     type <- match.arg(type)
     if(type %in% c("I", "II", "Control"))
-        return(getProbeData(object)[[paste("Type", type, sep = "")]])
-    typeI <- getProbeData(object)[["TypeI"]]
+        return(getManifest(object)@data[[paste("Type", type, sep = "")]])
+    typeI <- getManifest(object)@data[["TypeI"]]
     if(type == "I-Green")
         return(typeI[typeI$Color == "Grn",])
     if(type == "I-Red")

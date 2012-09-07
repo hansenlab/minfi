@@ -43,7 +43,8 @@ if (require(minfiData)) {
 
 grp <- pData(MsetEx)$Sample_Group
 MsetExSmall <- MsetEx[1:1e4,] # To speed up the example
-dmp <- dmpFinder(MsetExSmall, pheno=grp, type="categorical")
+M <- getM(MsetExSmall, type = "beta", betaThreshold = 0.001)
+dmp <- dmpFinder(M, pheno=grp, type="categorical")
 sum(dmp$qval < 0.05, na.rm=TRUE)
 head(dmp)
 

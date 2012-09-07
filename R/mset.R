@@ -18,13 +18,43 @@ MethylSet <- function(Meth = new("matrix"), Unmeth = new("matrix"),  ...) {
 setMethod("show", "MethylSet", function(object) {
     .show.ExpressionSet(object)
     .show.annotation(object@annotation)
-    preprocess <- object@preprocessMethod
-    if(length(preprocess) == 0)
-        preprocess <- c("unknown", "unknown", "unknown")
-    cat("Preprocessing", preprocess[1],
-        "minfi version", preprocess[2],
-        "Manifest version", preprocess[3], fill = TRUE)
+    .show.preprocessMethod(object@preprocessMethod)
 })
+
+setMethod("getMeth", signature(object = "MethylSet"),
+          function(object) {
+              assayDataElement(object, "Meth")
+          })
+
+setMethod("getUnmeth", signature(object = "MethylSet"),
+          function(object) {
+              assayDataElement(object, "Unmeth")
+          })
+
+setMethod("getBeta", signature(object = "MethylSet"),
+          function(object, type = "", offset = 0, betaThreshold = 0) {
+              if(type == "Illumina") {
+                  offset <- 100
+              }
+              .betaFromMethUnmeth(Meth = getMeth(object), Unmeth = getUnmeth(object),
+                                  offset = offset, betaThreshold = betaThreshold)
+          })
+
+setMethod("getM", signature(object = "MethylSet"),
+          function (object, type = "", ...) {
+              if(type == "")
+                  return(log2(getMeth(object) / getUnmeth(object)))
+              if(type == "beta" || type == "Beta")
+                  return(logit2(getBeta(object, ...)))
+          })
+
+setMethod("getManifest", signature(object = "MethylSet"),
+          function(object) {
+              maniString <- .getManifestString(object@annotation)
+              if(!require(maniString, character.only = TRUE))
+                  stop(sprintf("cannot load manifest package %s", maniString))
+              get(maniString)
+          })
 
 setMethod("updateObject", signature(object="MethylSet"),
           function(object, ..., verbose=FALSE) {
@@ -45,33 +75,18 @@ setMethod("updateObject", signature(object="MethylSet"),
               newObject
           })
 
-
-setMethod("getMeth", signature(object = "MethylSet"),
-          function(object) {
-              assayDataElement(object, "Meth")
-          })
-
-setMethod("getUnmeth", signature(object = "MethylSet"),
-          function(object) {
-              assayDataElement(object, "Unmeth")
-          })
-
-setMethod("getBeta", signature(object = "MethylSet"),
-          function(object, type = c("minfi", "Illumina")) {
-              type <- match.arg(type)
-              Meth <- pmax(assayDataElement(object, "Meth"), 0)
-              Unmeth <- pmax(assayDataElement(object, "Unmeth"), 0)
-              if(type == "minfi")
-                  return(Meth / (Meth + Unmeth))
-              if(type == "Illumina")
-                  return(Meth / (Meth + Unmeth + 100))
-          })
-
-setMethod("getM", signature(object = "MethylSet"),
-          function (object, type = c("minfi", "Illumina")) {  
-              type <- match.arg(type)
-              beta <- getBeta(object, type = type)
-              beta <- pmin(beta, 0.999)
-              beta <- pmax(beta, 0.001)
-              logit2(beta)
-          })
+dropMethylationLoci <- function(object, dropRS = TRUE, dropCH = TRUE) {
+    stopifnot(class(object) %in% c("MethylSet", "GenomicMethylSet"))
+    dropRegEx <- ""
+    if(dropRS)
+        dropRegEx <- c(dropRegEx, "^rs")
+    if(dropCH)
+        dropRegEx <- c(dropRegEx, "^ch\\.")
+    dropRegEx <- dropRegEx[nchar(dropRegEx) > 0]
+    if(length(dropRegEx) == 0) return(object)
+    dropRegEx <- sprintf("(%s)", paste(dropRegEx, collapse = "|"))
+    whDrop <- grep(dropRegEx, featureNames(object))
+    if(length(whDrop) == 0)
+        return(object)
+    object[-whDrop, ]
+}

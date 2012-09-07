@@ -4,22 +4,57 @@
 \alias{IlluminaMethylationManifest-class}
 \alias{IlluminaMethylationManifest}
 \alias{show,IlluminaMethylationManifest-method}
+\alias{getManifest,IlluminaMethylationManifest-method}
+\alias{getManifest,character-method}
+\alias{getManifest}
+\alias{getProbeInfo}
+\alias{getManifestInfo}
+\alias{getControlAddress}
+
 \title{Class \code{"IlluminaMethylationManifest"}}
+
 \description{
   This is a class for representing an Illumina methylation microarray
-  design, ie. the physical location and the probe sequences.
+  design, ie. the physical location and the probe sequences.  This
+  information should be independent of genome build and annotation.
 }
-\section{Objects from the Class}{
-Objects can be created by calls of the form
-\code{new("IlluminaMethylationManifest", ...)}, but the preferred way is
-to use \code{IlluminaMethylationManifest()}.
+
+\usage{
+## Constructor
+
+IlluminaMethylationManifest(TypeI = new("data.frame"),
+                            TypeII = new("data.frame"),
+                            TypeControl = new("data.frame"),
+                            annotation = "")
+
+## Data extraction
+\S4method{getManifest}{IlluminaMethylationManifest}(object)
+\S4method{getManifest}{character}(object)
+getProbeInfo(object, type = c("I", "II", "Control", "I-Green", "I-Red"))
+getManifestInfo(object, type = c("nLoci", "locusNames"))
+getControlAddress(object, controlType = c("NORM_A", "NORM_C", "NORM_G", "NORM_T"))
 }
-\section{Slots}{
-  \describe{
-    \item{\code{data}:}{This environment holds the design objects.  See details.}
-    \item{\code{annotation}:}{A character vector giving the annotation name.}
-  }
+
+\arguments{
+  \item{object}{Either an object of class
+    \code{IlluminaMethylationManifest} or class \code{character} for
+  \code{getManifest}.  For \code{getProbeInfo}, \code{getManifestInfo}
+  and \code{getControlAddress} an object of either class
+  \code{RGChannelSet}, \code{IlluminaMethylationManifest}.}
+  \item{TypeI}{A \code{data.frame} of type I probes.}
+  \item{TypeII}{A \code{data.frame} of type II probes.}
+  \item{TypeControl}{A \code{data.frame} of control probes.}
+  \item{annotation}{An annotation \code{character}.}
+  \item{type}{A single character describing what kind of information
+    should be returned.  For \code{getProbeInfo} it represents the following
+    subtypes of probes on the array: Type I, Type II, Controls as well
+    as Type I (methylation measured in the Green channel) and Type II
+    (methylation measured in the Red channel).  For
+    \code{getManifestInfo} it represents either the number of
+    methylation loci (approx. number of CpGs) on the array or the locus names.}
+  \item{controlType}{A character vector of control types.}
 }
+
 \section{Details}{
   The \code{data} slot contains the following objects: \code{TypeI},
   \code{TypeII} and \code{TypeControl} which are all of class
@@ -36,16 +71,31 @@ to use \code{IlluminaMethylationManifest()}.
   with two different color channels.  The methylation signal is always
   measured in the green channel.
 }
-\section{Methods}{
+
+\section{Utilities}{
+  In the following code, \code{object} is a \code{IlluminaMethylationManifest}.
+
   \describe{
-    \item{\code{show}:}{The show method.}
+    \item{\code{getManifest(object)}}{Get the manifest object.}
+    \item{\code{getProbeInfo(object)}}{Returns a \code{data.frame}
+    giving the type I, type II or control probes.  It is also possible
+    to get the type I probes measured in the Green or Red channel.}
+   \item{\code{getManifestInfo(object)}}{Get some information about the
+    manifest object (the chip design).}
+   \item{\code{getControlAddress(object)}}{Get the control addresses for
+    control probes of a certain type.}
+    
   }
 }
+
 \author{
   Kasper Daniel Hansen \email{khansen@jhsph.edu}.
 }
+
 \seealso{
-  \code{\link{getProbeData}}
+  \code{\link{IlluminaMethylationAnnotation}} for annotation
+  information for the array (information depending on a specific genome
+  build).
 }
 \examples{
 if(require(IlluminaHumanMethylation450kmanifest)) {

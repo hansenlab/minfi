@@ -13,7 +13,7 @@
 %% functions
 \alias{getGreen}
 \alias{getRed}
-\alias{getManifest}
+\alias{getManifest,RGChannelSet-method}
 
 \title{Class \code{"RGChannelSet"}}
 
@@ -35,10 +35,7 @@ RGChannelSetExtended(Green = new("matrix"), Red = new("matrix"),
 \S4method{getBeta}{RGChannelSet}(object, ...)
 getGreen(object)
 getRed(object)
-
-## Utility functions
-
-getManifest(object)
+\S4method{getManifest}{RGChannelSet}(object)
 }
 
 \arguments{
@@ -94,8 +91,8 @@ getManifest(object)
 \seealso{
   See \code{\linkS4class{eSet}} for the basic class that is used as a
   building block for \code{"RGChannelSet(Extended)"}.  See
-  \code{\linkS4class{IlluminaMethylationManifest}} for a class
-  representing the design of the array.
+  \code{\link{IlluminaMethylationManifest}} for a class representing the
+  design of the array. 
 }
 
 \examples{

@@ -32,6 +32,19 @@ IlluminaMethylationManifest <- function(TypeI = new("data.frame"), TypeII = new(
     manifest
 }
 
+setMethod("getManifest", signature(object = "IlluminaMethylationManifest"),
+          function(object) {
+              object
+          })
+
+setMethod("getManifest", signature(object = "character"),
+          function(object) {
+              maniString <- .getManifestString(object)
+              if(!require(maniString, character.only = TRUE))
+                  stop(sprintf("cannot load manifest package %s", maniString))
+              get(maniString)
+          })
+
 setClass("IlluminaMethylationAnnotation",
          representation(data = "environment",
                         annotation = "character"))
@@ -60,3 +73,50 @@ IlluminaMethylationAnnotation <- function(listOfObjects,
     anno
 }
 
+setMethod("getManifest", signature(object = "IlluminaMethylationAnnotation"),
+          function(object) {
+              maniString <- .getManifestString(object@annotation)
+              if(!require(maniString, character.only = TRUE))
+                  stop(sprintf("cannot load manifest package %s", maniString))
+              get(maniString)
+          })
+
+setMethod("getLocations", signature(object = "IlluminaMethylationAnnotation"),
+          function(object, genomeBuild = "hg19", mergeManifest = FALSE) {
+              locName <- sprintf("Locations.%s", genomeBuild)
+              if(! locName %in% ls(object@data))
+                  stop(sprintf("genomeBuild '%s' not in object", genomeBuild))
+              locations <- get(locName, envir = object@data)
+              locations[locations[, "chr"] == "chr", "chr"] <- "unmapped"
+              wh.unmap <- which(locations[, "chr"] == "unmapped")
+              if(length(wh.unmap) > 0)
+                  locations[wh.unmap, "pos"] <- seq(from = 1, by = 2, length.out = length(wh.unmap))
+              if("strand" %in% colnames(locations))
+                  strand <- locations[, "strand"]
+              else
+                  strand <- rep("*", nrow(locations))
+              gr <- GRanges(seqnames = locations[, "chr"],
+                            strand = strand,
+                            ranges = IRanges(start = locations[, "pos"], width = 1))
+              genome(gr) <- genomeBuild
+              names(gr) <- rownames(locations)
+              if(mergeManifest) {
+                  typeI <- getProbeInfo(object, type = "I")
+                  typeI$Type <- "I"
+                  typeII <- getProbeInfo(object, type = "II")
+                  typeII$Type <- "II"
+                  names(typeII)[names(typeII) == "ProbeSeq"] <- "ProbeSeqA"
+                  names(typeII)[names(typeII) == "Address"] <- "AddressA"
+                  typeII$AddressB <- rep(NA_character_, nrow(typeII))
+                  typeII$Color <- rep(NA_character_, nrow(typeII))
+                  typeII$NextBase <- rep(NA_character_, nrow(typeII))
+                  typeII$ProbeSeqB <- rep(NA_character_, nrow(typeII))
+                  manifest <- as(rbind(typeI, typeII[, names(typeI)]), "DataFrame")
+                  rownames(manifest) <- manifest$Name
+                  manifest[, "ProbeSeqA"] <- DNAStringSet(manifest[, "ProbeSeqA"])
+                  manifest[, "ProbeSeqB"] <- DNAStringSet(manifest[, "ProbeSeqB"])
+                  manifest <- manifest[names(gr),]
+                  elementMetadata(gr) <- manifest
+              }
+              gr
+          })

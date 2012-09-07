@@ -20,9 +20,9 @@ preprocessRaw <- function(rgSet) {
     ## TODO:
     ## The manifest package version is currently not updated since 'packageVersion(getManifest(rgSet))' fails.          
     ## packageVersion expects a string
-    out@preprocessMethod <- c("Raw (no normalization or bg correction)",
-                              as.character(packageVersion("minfi")),
-                              as.character(packageVersion("IlluminaHumanMethylation450kmanifest")))
+    out@preprocessMethod <- c(rg.norm = "Raw (no normalization or bg correction)",
+                              minfi = as.character(packageVersion("minfi")),
+                              manifest = as.character(packageVersion("IlluminaHumanMethylation450kmanifest")))
                               #packageVersion(getManifest(rgSet)))
     out
 }
@@ -83,9 +83,9 @@ preprocessIllumina <- function(rgSet, bg.correct = TRUE, normalize = c("controls
     ## TODO:
     ## The manifest package version is currently not updated since 'packageVersion(getManifest(rgSet))' fails.          
     ## packageVersion expects a string
-    out@preprocessMethod <- c(preprocess,
-                              as.character(packageVersion("minfi")),
-                              as.character(packageVersion("IlluminaHumanMethylation450kmanifest")))
+    out@preprocessMethod <- c(rg.norm = preprocess,
+                              minfi = as.character(packageVersion("minfi")),
+                              manifest = as.character(packageVersion("IlluminaHumanMethylation450kmanifest")))
                               #packageVersion(getManifest(rgSet)))
     out
 }
