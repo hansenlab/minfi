@@ -22,7 +22,7 @@ RGChannelSet <- function(Green = new("matrix"), Red = new("matrix"), ...){
 
 setMethod("show", "RGChannelSet", function(object) {
     .show.ExpressionSet(object)
-    .show.annotation(object@annotation)
+    .show.annotation(annotation(object))
 })
 
 setClass("RGChannelSetExtended",
@@ -114,3 +114,4 @@ setMethod("getBeta", signature(object = "RGChannelSet"),
               object <- preprocessRaw(object)
               callGeneric(object, ...)
           })
+

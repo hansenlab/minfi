@@ -17,8 +17,8 @@ MethylSet <- function(Meth = new("matrix"), Unmeth = new("matrix"),  ...) {
 
 setMethod("show", "MethylSet", function(object) {
     .show.ExpressionSet(object)
-    .show.annotation(object@annotation)
-    .show.preprocessMethod(object@preprocessMethod)
+    .show.annotation(annotation(object))
+    .show.preprocessMethod(preprocessMethod(object))
 })
 
 setMethod("getMeth", signature(object = "MethylSet"),
@@ -48,12 +48,30 @@ setMethod("getM", signature(object = "MethylSet"),
                   return(logit2(getBeta(object, ...)))
           })
 
+setMethod("preprocessMethod", signature(object = "MethylSet"),
+          function(object) {
+              object@preprocessMethod
+          })
+
 setMethod("getManifest", signature(object = "MethylSet"),
           function(object) {
               maniString <- .getManifestString(object@annotation)
               if(!require(maniString, character.only = TRUE))
                   stop(sprintf("cannot load manifest package %s", maniString))
               get(maniString)
+          })
+
+setMethod("getLocations", signature(object = "MethylSet"),
+          function(object, genomeBuild = "hg19", drop = TRUE, mergeManifest = FALSE) {
+              annoString <- .getAnnotationString(object@annotation)
+              if(!require(annoString, character.only = TRUE))
+                  stop(sprintf("cannot load annotation package %s", annoString))
+              locations <- getLocations(get(annoString), genomeBuild = genomeBuild, mergeManifest = mergeManifest)
+              locations <- locations[featureNames(object)]
+              if(drop) {
+                  locations <- locations[seqnames(locations) != "unmapped"]
+              }
+              locations
           })
 
 setMethod("updateObject", signature(object="MethylSet"),

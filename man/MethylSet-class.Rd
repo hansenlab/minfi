@@ -8,11 +8,13 @@
 \alias{getUnmeth}
 \alias{getBeta}
 \alias{getM}
+\alias{preprocessMethod}
 %%methods
 \alias{getMeth,MethylSet-method}
 \alias{getUnmeth,MethylSet-method}
 \alias{getBeta,MethylSet-method}
 \alias{getM,MethylSet-method}
+\alias{preprocessMethod,MethylSet-method}
 \alias{getManifest,MethylSet-method}
 \alias{getLocations,MethylSet-method}
 \alias{show,MethylSet-method}
@@ -38,6 +40,7 @@ MethylSet(Meth = new("matrix"), Unmeth = new("matrix"),  ...)
 \S4method{getBeta}{MethylSet}(object, type = "", offset = 0, betaThreshold = 0)
 \S4method{getM}{MethylSet}(object, type = "", ...)
 \S4method{getManifest}{MethylSet}(object)
+\S4method{preprocessMethod}{MethylSet}(object)
 
 ## Utilities
 \S4method{getLocations}{MethylSet}(object, genomeBuild = "hg19", drop = TRUE, mergeManifest = FALSE)
@@ -106,7 +109,8 @@ arguments outlined above.
     \item{\code{getM(object)}}{get M-values, see details.}
     \item{\code{getManifest(object)}}{get the manifest associated with
       the object.}
-  }
+    \item{\code{preprocessMethod(object)}}{Get the preprocess method \code{character}.}
+      }
 }
 
 \section{Utilities}{

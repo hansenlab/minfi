@@ -8,10 +8,12 @@
 \alias{getUnmeth,GenomicMethylSet-method}
 \alias{getBeta,GenomicMethylSet-method}
 \alias{getM,GenomicMethylSet-method}
-% \alias{show,MethylSet-method}
+\alias{show,GenomicMethylSet-method}
 \alias{pData,GenomicMethylSet-method}
 \alias{sampleNames,GenomicMethylSet-method}
 \alias{featureNames,GenomicMethylSet-method}
+\alias{annotation,GenomicMethylSet-method}
+\alias{preprocessMethod,GenomicMethylSet-method}
 \alias{granges,GenomicMethylSet-method}
 \alias{start,GenomicMethylSet-method}
 \alias{end,GenomicMethylSet-method}
@@ -32,7 +34,7 @@
 \usage{
 ## Constructor
 
-GenomicMethylSet(gr, Meth, Unmeth, pData)
+GenomicMethylSet(gr, Meth, Unmeth, pData, annotation, preprocessMethod)
 
 ## Data extraction / Accessors
 
@@ -43,6 +45,8 @@ GenomicMethylSet(gr, Meth, Unmeth, pData)
 \S4method{pData}{GenomicMethylSet}(object)
 \S4method{sampleNames}{GenomicMethylSet}(object)
 \S4method{featureNames}{GenomicMethylSet}(object)
+\S4method{annotation}{GenomicMethylSet}(object)
+\S4method{preprocessMethod}{GenomicMethylSet}(object)
 \S4method{granges}{GenomicMethylSet}(x, ...)
 \S4method{start}{GenomicMethylSet}(x, ...)
 \S4method{end}{GenomicMethylSet}(x, ...)
@@ -62,6 +66,8 @@ GenomicMethylSet(gr, Meth, Unmeth, pData)
   \item{Meth}{A matrix of methylation values (between zero and infinity)
     with each row being a methylation loci and each column a sample.}
   \item{Unmeth}{See the \code{Meth} argument.}
+  \item{annotation}{An annotation character string.}
+  \item{preprocessMethod}{A preprocess method character string.}
   \item{type}{How are the values calculated?  For \code{getBeta} setting
   \code{type="Illumina"} sets \code{offset=100} as per Genome Studio.
   For \code{getM} setting \code{type=""} computes M-values as the
@@ -96,6 +102,9 @@ arguments outlined above.
       the object.}
     \item{\code{sampleNames(object)}, \code{featureNames(object)}}{Get
       the sampleNames (colnames) or the featureNames (rownames).}
+    \item{\code{preprocessMethod(object)},
+      \code{annotation(object)}}{Get the preprocess method or annotation
+      \code{character}.}
     \item{\code{granges(object)}}{Get the genomic locations associated
       with the object.}
     \item{\code{start}, \code{end}, \code{width}, \code{strand},

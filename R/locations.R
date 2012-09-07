@@ -16,20 +16,8 @@ setMethod("mapToGenome", signature(object = "MethylSet"),
               GenomicMethylSet(gr = gr, Meth = getMeth(object),
                                Unmeth = getUnmeth(object),
                                pData = pData(object),
-                               preprocessMethod = object@preprocessMethod)
-          })
-
-setMethod("getLocations", signature(object = "MethylSet"),
-          function(object, genomeBuild = "hg19", drop = TRUE, mergeManifest = FALSE) {
-              annoString <- minfi:::.getAnnotationString(object@annotation)
-              if(!require(annoString, character.only = TRUE))
-                  stop(sprintf("cannot load annotation package %s", annoString))
-              locations <- getLocations(get(annoString), genomeBuild = genomeBuild, mergeManifest = mergeManifest)
-              locations <- locations[featureNames(object)]
-              if(drop) {
-                  locations <- locations[seqnames(locations) != "unmapped"]
-              }
-              locations
+                               preprocessMethod = preprocessMethod(object),
+                               annotation = annotation(object))
           })
 
 getAnnotation <- function(object, genomeBuild = c("hg19", "hg18"), what = "everything",
@@ -102,17 +90,3 @@ orderByLocation <- function(x, what = "everything", genomeBuild = "hg19",
     return(out)
 }
 
-
-
-## setClass("MethylSetGenome",
-##          contains = "SummarizedExperiment")
-
-## library(minfiLocal)
-## data(MsetEx)
-
-
-## sset <- SummarizedExperiment(assays = SimpleList(Meth = getMeth(MsetEx),
-##                              Unmeth = getUnmeth(MsetEx)),
-##                              colData = phenoData(MsetEx),
-##                              rowData = getLocations(MsetEx, genomeBuild = "hg19", returnAs = "GRanges"))
-                             

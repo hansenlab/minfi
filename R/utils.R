@@ -28,7 +28,7 @@ ilogit2 <- function(x) { 2^(x) / (1+2^(x)) }
     if(length(preprocessMethod) == 3 && is.null(names(preprocessMethod)))
         names(preprocessMethod) <- c("rg.norm", "minfi", "manifest")
     if(length(preprocessMethod) == 0)
-        preprocess <- c(rg.norm = "unknown", minfi = "unknown", manifest = "unknown")
+        preprocessMethod <- c(rg.norm = "unknown", minfi = "unknown", manifest = "unknown")
     cat("Preprocessing\n")
     cat(sprintf("  Method: %s\n  minfi version: %s\n  Manifest version: %s\n",
                 preprocessMethod["rg.norm"], preprocessMethod["minfi"],

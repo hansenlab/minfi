@@ -1,17 +1,16 @@
 import(methods)
 import(matrixStats)
-importFrom(BiocGenerics, combine, updateObject, getObjectSlots)
+importMethodsFrom(BiocGenerics, density, get, updateObject)
 importClassesFrom(Biobase, AnnotatedDataFrame, AssayData, eSet, MIAxE,
                   Versions)
 importMethodsFrom(Biobase, annotation, "annotation<-", channel,
                   classVersion, experimentData, featureData,
                   featureNames, "featureNames<-", isCurrent, "pData<-",
                   phenoData, protocolData, sampleNames)
+import(Biostrings)
 import(GenomicRanges)
-importFrom(Biobase, assayDataElementNames,
-           assayDataElement, assayDataElementReplace, "assayDataElement<-",
-           "cache", "copyEnv", "copySubstitute")
-
+importFrom(Biobase, assayDataElementNames, assayDataElementReplace,
+           assayDataElement, "assayDataElement<-")
 importFrom(reshape, melt) 
 importFrom(mclust, Mclust)
 importFrom(RColorBrewer, brewer.pal)
@@ -21,6 +20,7 @@ importFrom(siggenes, pi0.est, qvalue.cal)
 importFrom(limma, squeezeVar, lmFit, eBayes, contrasts.fit)
 importFrom(preprocessCore, normalize.quantiles)
 importFrom(crlmm, readIDAT)
+importFrom(utils, packageVersion, read.csv, read.table)
 
 export(getManifest, getProbeInfo, getManifestInfo,
        getControlAddress, getRed, getGreen, getMeth, getUnmeth,
@@ -31,10 +31,10 @@ export(getManifest, getProbeInfo, getManifestInfo,
        preprocessSWAN, plotBetasByType,
        detectionP, qcReport, controlStripPlot, densityBeanPlot, densityPlot,
        read.450k, read.450k.sheet, read.450k.exp, logit2, ilogit2,
-       MethylSet, RGChannelSet, RGChannelSetExtended)
+       MethylSet, RGChannelSet, RGChannelSetExtended, GenomicMethylSet)
 exportClasses(RGChannelSet, RGChannelSetExtended, MethylSet, GenomicMethylSet,
               IlluminaMethylationManifest, IlluminaMethylationAnnotation)
 exportMethods(show, initialize, getBeta, getM, getMeth, getUnmeth,
-              getManifest, getLocations,
+              getManifest, getLocations, annotation, preprocessMethod,
               sampleNames, featureNames, pData, mapToGenome)
 
