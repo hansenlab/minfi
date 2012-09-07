@@ -22,16 +22,19 @@ importFrom(limma, squeezeVar, lmFit, eBayes, contrasts.fit)
 importFrom(preprocessCore, normalize.quantiles)
 importFrom(crlmm, readIDAT)
 
-export(getManifest, getProbeData, getProbeInfo, getManifestInfo,
+export(getManifest, getProbeInfo, getManifestInfo,
        getControlAddress, getRed, getGreen, getMeth, getUnmeth,
        getBeta, getM, dmpFinder, mdsPlot, plotCpg, preprocessRaw,
+       dropMethylationLoci, getLocations, mapToGenome,
        IlluminaMethylationManifest, IlluminaMethylationAnnotation,
        normalize.illumina.control, bgcorrect.illumina, preprocessIllumina,
        preprocessSWAN, plotBetasByType,
        detectionP, qcReport, controlStripPlot, densityBeanPlot, densityPlot,
        read.450k, read.450k.sheet, read.450k.exp, logit2, ilogit2,
        MethylSet, RGChannelSet, RGChannelSetExtended)
-exportClasses(RGChannelSet, RGChannelSetExtended, MethylSet,
+exportClasses(RGChannelSet, RGChannelSetExtended, MethylSet, GenomicMethylSet,
               IlluminaMethylationManifest, IlluminaMethylationAnnotation)
-exportMethods(show, initialize, getBeta, getM, getMeth, getUnmeth)
+exportMethods(show, initialize, getBeta, getM, getMeth, getUnmeth,
+              getManifest, getLocations,
+              sampleNames, featureNames, pData, mapToGenome)
 

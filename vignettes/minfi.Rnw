@@ -434,11 +434,16 @@ mset <- MSet.norm[1:20000,]
 
 The \Rcode{dmpFinder} function uses an F-test to identify positions that are differentially
 methylated between (two or more) groups. Tests are performed on logit transformed Beta values as
-recommended in Pan et al. Here we find the differences between GroupA and GroupB.
+recommended in Pan et al.  Care should be taken if you have zeroes in either the Meth or the Unmeth
+matrix.  One possibility is to threshold the beta values, so they are always in the interval
+$[\epsilon, 1-\epsilon]$.  We call $\epsilon$ the betaThreshold
+
+Here we find the differences between GroupA and GroupB.
 
 <<dmpFinder-categorical>>=
 table(pd$Sample_Group)
-dmp <- dmpFinder(mset, pheno=pd$Sample_Group, type="categorical")
+M <- getM(mset, type = "beta", betaThreshold = 0.001)
+dmp <- dmpFinder(M, pheno=pd$Sample_Group, type="categorical")
 head(dmp)
 @
 

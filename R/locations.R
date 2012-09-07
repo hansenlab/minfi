@@ -1,24 +1,3 @@
-setClass("GenomicMethylSet",
-         contains = "SummarizedExperiment")
-
-## show
-## initialize, perhaps ...
-
-GenomicMethylSet <- function() {
-}
-
-setMethod("getMeth", signature(object = "GenomicMethylSet"),
-          function(object) {
-              assay(object, "Meth")
-          })
-
-setMethod("getUnmeth", signature(object = "GenomicMethylSet"),
-          function(object) {
-              assay(object, "Unmeth")
-          })
-
-setGeneric("mapToGenome", function(object, ...) standardGeneric("mapToGenome"))
-
 setMethod("mapToGenome", signature(object = "RGChannelSet"),
           function(object, ...) {
               object <- preprocessRaw(object)
@@ -27,36 +6,31 @@ setMethod("mapToGenome", signature(object = "RGChannelSet"),
 
 setMethod("mapToGenome", signature(object = "MethylSet"),
           function(object, genomeBuild = c("hg19", "hg18"),
-                   drop = TRUE, order = TRUE) {
+                   drop = TRUE, mergeManifest = FALSE) {
+              genomeBuild <- match.arg(genomeBuild)
+              object <- dropMethylationLoci(object, dropRS = TRUE, dropCH = FALSE)
+              gr <- getLocations(object, genomeBuild = genomeBuild, drop = drop,
+                                 mergeManifest = mergeManifest)
+              gr <- sort(gr)
+              object <- object[names(gr),]
+              GenomicMethylSet(gr = gr, Meth = getMeth(object),
+                               Unmeth = getUnmeth(object),
+                               pData = pData(object),
+                               preprocessMethod = object@preprocessMethod)
           })
 
-
-getLocations <- function(object, genomeBuild = c("hg19", "hg18"),
-                         returnAs = c("GRanges", "data.frame"), drop = TRUE) {
-    returnAs <- match.arg(returnAs)
-    genomeBuild <- match.arg(genomeBuild)
-    annoString <- minfi:::.getAnnotationString(object@annotation)
-    locName <- paste("Locations", genomeBuild, sep = ".")
-    if(!require(annoString, character.only = TRUE))
-        stop(sprintf("cannot load annotation package %s", annoString))
-    annotation <- get(annoString)
-    locations <- get(locName, annotation@data)
-    ## We now assume that locations are a data.frame
-    locations <- locations[featureNames(object),]
-    if(drop)
-        locations <- locations[-which(locations$chr %in% c("chr", "unmapped")), ]
-    if(returnAs == "GRanges") {
-        out <- GRanges(seqnames = locations$chr, ranges = IRanges(start = locations$pos, width = 2))
-        names(out) <- rownames(locations)
-        genome(out) <- genomeBuild
-    } else {
-        out <- locations
-    }
-    out
-}
-
-          
-          
+setMethod("getLocations", signature(object = "MethylSet"),
+          function(object, genomeBuild = "hg19", drop = TRUE, mergeManifest = FALSE) {
+              annoString <- minfi:::.getAnnotationString(object@annotation)
+              if(!require(annoString, character.only = TRUE))
+                  stop(sprintf("cannot load annotation package %s", annoString))
+              locations <- getLocations(get(annoString), genomeBuild = genomeBuild, mergeManifest = mergeManifest)
+              locations <- locations[featureNames(object)]
+              if(drop) {
+                  locations <- locations[seqnames(locations) != "unmapped"]
+              }
+              locations
+          })
 
 getAnnotation <- function(object, genomeBuild = c("hg19", "hg18"), what = "everything",
                           returnAs = c("data.frame", "GRanges"),
@@ -104,7 +78,9 @@ getAnnotation <- function(object, genomeBuild = c("hg19", "hg18"), what = "every
         if(drop)
             locs <- locs[locs$chr != "chr",]
     }
-    out <- do.call(cbind, lapply(what, function(wh) get(wh, env = annotation@data)))
+    out <- do.call(cbind, lapply(what, function(wh) {
+        get(wh, envir = annotation@data)
+    }))
     out <- out[rownames(locs),]
     if(returnAs == "data.frame") {
         return(out)
@@ -112,14 +88,6 @@ getAnnotation <- function(object, genomeBuild = c("hg19", "hg18"), what = "every
     if(returnAs == "GRanges")
         return(GRanges(seqnames = out$chr, ranges = IRanges(start = out$pos, width = 2),
                        out[, !names(out) %in% c("chr", "pos")]))
-}
-
-getLocations2 <- function(object, genomeBuild = "hg19", returnAs = c("data.frame", "GRanges"),
-                         orderByLocation = FALSE, drop = FALSE) {
-    locs <- getAnnotation(object, what = "Locations",
-                          genomeBuild = genomeBuild, returnAs = returnAs,
-                          orderByLocation = orderByLocation, drop = drop)
-    return(locs)
 }
 
 orderByLocation <- function(x, what = "everything", genomeBuild = "hg19",

@@ -21,6 +21,8 @@
     MethylSet, RGChannelSet.
     \item getMeth, getUnmeth, getBeta, getM are now methods.
     \item bug fix to qcReport thanks to Tao Shi.
+    \item Changes to getBeta / getM, both in terms of which arguments
+    the methods take and how the values are computed.
   }
 }
 

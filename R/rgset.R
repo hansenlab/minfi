@@ -101,6 +101,14 @@ getGreen <- function(object) {
     assayDataElement(object, "Green")
 }
 
+setMethod("getManifest", signature(object = "RGChannelSet"),
+          function(object) {
+              maniString <- .getManifestString(object@annotation)
+              if(!require(maniString, character.only = TRUE))
+                  stop(sprintf("cannot load manifest package %s", maniString))
+              get(maniString)
+          })
+
 setMethod("getBeta", signature(object = "RGChannelSet"),
           function(object, ...) {
               object <- preprocessRaw(object)

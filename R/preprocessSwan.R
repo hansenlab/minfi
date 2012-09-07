@@ -49,10 +49,10 @@ preprocessSWAN <- function(rgSet, mSet = NULL){
     normSet <- mSet
     assayDataElement(normSet, "Meth") <- normMethData
     assayDataElement(normSet, "Unmeth") <- normUnmethData
-    normSet@preprocessMethod <- c(sprintf("SWAN (based on a MethylSet preprocesses as '%s'",
+    normSet@preprocessMethod <- c(rg.norm = sprintf("SWAN (based on a MethylSet preprocesses as '%s'",
                                           mSet@preprocessMethod[1]),
-                                  as.character(packageVersion("minfi")),
-                                  as.character(packageVersion("IlluminaHumanMethylation450kmanifest")))
+                                  minfi = as.character(packageVersion("minfi")),
+                                  manifest = as.character(packageVersion("IlluminaHumanMethylation450kmanifest")))
     normSet
 }
 

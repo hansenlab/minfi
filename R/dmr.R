@@ -1,8 +1,10 @@
-dmpFinder <- function(dat, pheno, type=c("categorical", "continuous"), qCutoff=1, shrinkVar=FALSE) {
+dmpFinder <- function(dat, pheno, type = c("categorical", "continuous"),
+                      qCutoff = 1, shrinkVar = FALSE) {
     type <- match.arg(type)
     if (is(dat, "MethylSet")) {
         M <- getM(dat)
     } else {
+        stopifnot(is.numeric(dat))
         M <- dat
         if (is.vector(M)) M <- matrix(M, nrow=1)
     }
