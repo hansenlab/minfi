@@ -6,8 +6,8 @@ preprocessRaw <- function(rgSet) {
                 dimnames = list(locusNames, sampleNames(rgSet)))
     U <- M
     TypeII.Name <- getProbeInfo(rgSet, type = "II")$Name
-    M[TypeII.Name,] <- getGreen(rgSet)[getProbeInfo(rgSet, type = "II")$Address,]
-    U[TypeII.Name,] <- getRed(rgSet)[getProbeInfo(rgSet, type = "II")$Address,]
+    M[TypeII.Name,] <- getGreen(rgSet)[getProbeInfo(rgSet, type = "II")$AddressA,]
+    U[TypeII.Name,] <- getRed(rgSet)[getProbeInfo(rgSet, type = "II")$AddressA,]
     TypeI.Red <- getProbeInfo(rgSet, type = "I-Red")
     TypeI.Green <- getProbeInfo(rgSet, type = "I-Green")
     M[TypeI.Red$Name,] <- getRed(rgSet)[TypeI.Red$AddressB,]
@@ -118,7 +118,7 @@ detectionP <- function(rgSet, type = "m+u") {
         intensity <- g[TypeI.Green$AddressA, i] + g[TypeI.Green$AddressB, i]
         detP[TypeI.Green$Name, i] <- 1-pnorm(intensity, mean=gMu[i]*2, sd=gSd[i]*2)
         # Type II
-        intensity <- r[TypeII$Address, i] + g[TypeII$Address, i]
+        intensity <- r[TypeII$AddressA, i] + g[TypeII$AddressA, i]
         detP[TypeII$Name, i] <- 1-pnorm(intensity, mean=rMu[i]+gMu[i], sd=rSd[i]+gSd[i])
     }
     detP

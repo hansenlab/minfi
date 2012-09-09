@@ -23,6 +23,22 @@
     \item bug fix to qcReport thanks to Tao Shi.
     \item Changes to getBeta / getM, both in terms of which arguments
     the methods take and how the values are computed.
+    \item Changes to the manifest structure; it now has separate slots
+    for genotype probes and these probes are no longer part of a MethylSet
+    (using eg. preprocessRaw).  They can be accessed using
+    getProbeInfo(rgSet, type) with type equal to "SnpI" or "SnpII".
+    \item Introduction of mapToGenome, getLocations and the new class
+    GenomicMethylSet.  man pages are reasonably complete, still need to
+    add examples to the vignette.  This will be a standard part of an
+    extended pipeline.
+    \item Introduction of
+    IlluminaHumanMethylation450lannotation.ilmn.v1.2 which contains some
+    new annotation needed for mapToGenome/getLocations.  This package will
+    be split into several packages moving forward, in an attempt to
+    harmonize efforts by us and Tim Triche.  getLocations/mapToGenome
+    will stay the same.
+    \item getControlTypes added (returns the different types of control
+    probes).
   }
 }
 

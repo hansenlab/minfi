@@ -1,6 +1,6 @@
 import(methods)
 import(matrixStats)
-importMethodsFrom(BiocGenerics, density, get, updateObject)
+importMethodsFrom(BiocGenerics, density, get, rbind, cbind, updateObject)
 importClassesFrom(Biobase, AnnotatedDataFrame, AssayData, eSet, MIAxE,
                   Versions)
 importMethodsFrom(Biobase, annotation, "annotation<-", channel,
@@ -23,7 +23,7 @@ importFrom(crlmm, readIDAT)
 importFrom(utils, packageVersion, read.csv, read.table)
 
 export(getManifest, getProbeInfo, getManifestInfo,
-       getControlAddress, getRed, getGreen, getMeth, getUnmeth,
+       getControlAddress, getControlTypes, getRed, getGreen, getMeth, getUnmeth,
        getBeta, getM, dmpFinder, mdsPlot, plotCpg, preprocessRaw,
        dropMethylationLoci, getLocations, mapToGenome,
        IlluminaMethylationManifest, IlluminaMethylationAnnotation,
