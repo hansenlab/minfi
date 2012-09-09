@@ -10,6 +10,7 @@
 \alias{getProbeInfo}
 \alias{getManifestInfo}
 \alias{getControlAddress}
+\alias{getControlTypes}
 
 \title{Class \code{"IlluminaMethylationManifest"}}
 
@@ -22,17 +23,21 @@
 \usage{
 ## Constructor
 
-IlluminaMethylationManifest(TypeI = new("data.frame"),
-                            TypeII = new("data.frame"),
-                            TypeControl = new("data.frame"),
+IlluminaMethylationManifest(TypeI = new("DataFrame"),
+                            TypeII = new("DataFrame"),
+                            TypeControl = new("DataFrame"),
+                            TypeSnpI = new("DataFrame"),
+                            TypeSnpII = new("DataFrame"),
                             annotation = "")
 
 ## Data extraction
 \S4method{getManifest}{IlluminaMethylationManifest}(object)
 \S4method{getManifest}{character}(object)
-getProbeInfo(object, type = c("I", "II", "Control", "I-Green", "I-Red"))
+getProbeInfo(object, type = c("I", "II", "Control",
+                              "I-Green", "I-Red", "SnpI", "SnpII"))
 getManifestInfo(object, type = c("nLoci", "locusNames"))
 getControlAddress(object, controlType = c("NORM_A", "NORM_C", "NORM_G", "NORM_T"))
+getControlTypes(object)
 }
 
 \arguments{
@@ -41,9 +46,11 @@ getControlAddress(object, controlType = c("NORM_A", "NORM_C", "NORM_G", "NORM_T"
   \code{getManifest}.  For \code{getProbeInfo}, \code{getManifestInfo}
   and \code{getControlAddress} an object of either class
   \code{RGChannelSet}, \code{IlluminaMethylationManifest}.}
-  \item{TypeI}{A \code{data.frame} of type I probes.}
-  \item{TypeII}{A \code{data.frame} of type II probes.}
-  \item{TypeControl}{A \code{data.frame} of control probes.}
+  \item{TypeI}{A \code{DataFrame} of type I probes.}
+  \item{TypeII}{A \code{DataFrame} of type II probes.}
+  \item{TypeControl}{A \code{DataFrame} of control probes.}
+  \item{TypeSnpI}{A \code{DataFrame} of SNP type I probes.}
+  \item{TypeSnpII}{A \code{DataFrame} of SNP type II probes.}
   \item{annotation}{An annotation \code{character}.}
   \item{type}{A single character describing what kind of information
     should be returned.  For \code{getProbeInfo} it represents the following
@@ -84,7 +91,8 @@ getControlAddress(object, controlType = c("NORM_A", "NORM_C", "NORM_G", "NORM_T"
     manifest object (the chip design).}
    \item{\code{getControlAddress(object)}}{Get the control addresses for
     control probes of a certain type.}
-    
+   \item{\code{getControlTypes(object)}}{Returns the types and the
+    numbers of control probes of each type.}
   }
 }
 
