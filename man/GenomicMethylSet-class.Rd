@@ -14,12 +14,6 @@
 \alias{featureNames,GenomicMethylSet-method}
 \alias{annotation,GenomicMethylSet-method}
 \alias{preprocessMethod,GenomicMethylSet-method}
-\alias{granges,GenomicMethylSet-method}
-\alias{start,GenomicMethylSet-method}
-\alias{end,GenomicMethylSet-method}
-\alias{width,GenomicMethylSet-method}
-\alias{strand,GenomicMethylSet-method}
-\alias{seqnames,GenomicMethylSet-method}
 \alias{seqlevels,GenomicMethylSet-method}
 \alias{seqlengths,GenomicMethylSet-method}
 \alias{genome,GenomicMethylSet-method}
@@ -47,12 +41,6 @@ GenomicMethylSet(gr, Meth, Unmeth, pData, annotation, preprocessMethod)
 \S4method{featureNames}{GenomicMethylSet}(object)
 \S4method{annotation}{GenomicMethylSet}(object)
 \S4method{preprocessMethod}{GenomicMethylSet}(object)
-\S4method{granges}{GenomicMethylSet}(x, ...)
-\S4method{start}{GenomicMethylSet}(x, ...)
-\S4method{end}{GenomicMethylSet}(x, ...)
-\S4method{width}{GenomicMethylSet}(x)
-\S4method{strand}{GenomicMethylSet}(x, ...)
-\S4method{seqnames}{GenomicMethylSet}(x)
 \S4method{seqlevels}{GenomicMethylSet}(x)
 \S4method{seqlengths}{GenomicMethylSet}(x)
 \S4method{genome}{GenomicMethylSet}(x)
@@ -105,11 +93,8 @@ arguments outlined above.
     \item{\code{preprocessMethod(object)},
       \code{annotation(object)}}{Get the preprocess method or annotation
       \code{character}.}
-    \item{\code{granges(object)}}{Get the genomic locations associated
-      with the object.}
-    \item{\code{start}, \code{end}, \code{width}, \code{strand},
-      \code{seqnames}, \code{seqlevels}, \code{seqlengths},
-    \code{genome}}{Works directly on \code{granges(object)}.}
+    \item{\code{seqlevels}, \code{seqlengths}, \code{genome}}{Works
+      directly on \code{granges(object)}.}
   }
 }
 
