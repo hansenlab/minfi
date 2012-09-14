@@ -74,36 +74,6 @@ setMethod("featureNames", signature("GenomicMethylSet"),
               rownames(object)
           })
 
-setMethod("granges", signature("GenomicMethylSet"),
-          function(x, ...) {
-              rowData(x)
-          })
-
-setMethod("start", signature("GenomicMethylSet"),
-          function(x, ...) {
-              start(rowData(x))
-          })
-
-setMethod("end", signature("GenomicMethylSet"),
-          function(x, ...) {
-              end(rowData(x))
-          })
-
-setMethod("width", signature("GenomicMethylSet"),
-          function(x) {
-              width(rowData(x))
-          })
-
-setMethod("strand", signature("GenomicMethylSet"),
-          function(x, ...) {
-              strand(rowData(x))
-          })
-
-setMethod("seqnames", signature("GenomicMethylSet"),
-          function(x) {
-              seqnames(rowData(x))
-          })
-
 setMethod("seqlevels", signature("GenomicMethylSet"),
           function(x) {
               seqlevels(rowData(x))

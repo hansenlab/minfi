@@ -39,6 +39,9 @@
     will stay the same.
     \item getControlTypes added (returns the different types of control
     probes).
+    \item GenomicMethylSet now inherits a number of methods including
+    granges(), start(), end() etc. from SummarizedExperiemnt.  They have
+    therefore been deleted from minfi.
   }
 }
 
