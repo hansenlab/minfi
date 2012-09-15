@@ -74,19 +74,3 @@ setMethod("featureNames", signature("GenomicMethylSet"),
               rownames(object)
           })
 
-setMethod("seqlevels", signature("GenomicMethylSet"),
-          function(x) {
-              seqlevels(rowData(x))
-          })
-
-setMethod("seqlengths", signature("GenomicMethylSet"),
-          function(x) {
-              seqlengths(rowData(x))
-          })
-
-setMethod("genome", signature("GenomicMethylSet"),
-          function(x) {
-              genome(rowData(x))
-          })
-
-

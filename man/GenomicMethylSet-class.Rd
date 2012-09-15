@@ -14,9 +14,6 @@
 \alias{featureNames,GenomicMethylSet-method}
 \alias{annotation,GenomicMethylSet-method}
 \alias{preprocessMethod,GenomicMethylSet-method}
-\alias{seqlevels,GenomicMethylSet-method}
-\alias{seqlengths,GenomicMethylSet-method}
-\alias{genome,GenomicMethylSet-method}
 
 \title{GenomicMethylSet instances}
 
@@ -41,14 +38,10 @@ GenomicMethylSet(gr, Meth, Unmeth, pData, annotation, preprocessMethod)
 \S4method{featureNames}{GenomicMethylSet}(object)
 \S4method{annotation}{GenomicMethylSet}(object)
 \S4method{preprocessMethod}{GenomicMethylSet}(object)
-\S4method{seqlevels}{GenomicMethylSet}(x)
-\S4method{seqlengths}{GenomicMethylSet}(x)
-\S4method{genome}{GenomicMethylSet}(x)
 }
 
 \arguments{
   \item{object}{A \code{GenomicMethylSet}.}
-  \item{x}{A \code{GenomicMethylSet}.}
   \item{gr}{A \code{GRanges} object.}
   \item{pData}{A \code{DataFrame} or \code{data.frame} object.}
   \item{Meth}{A matrix of methylation values (between zero and infinity)
@@ -79,6 +72,9 @@ arguments outlined above.
 }
 
 \section{Accessors}{
+  A number of useful accessors are inherited from
+  \code{SummarizedExperiment}.
+  
   In the following code, \code{object} is a \code{GenomicMethylSet}.
   
   \describe{
@@ -93,8 +89,6 @@ arguments outlined above.
     \item{\code{preprocessMethod(object)},
       \code{annotation(object)}}{Get the preprocess method or annotation
       \code{character}.}
-    \item{\code{seqlevels}, \code{seqlengths}, \code{genome}}{Works
-      directly on \code{granges(object)}.}
   }
 }
 
