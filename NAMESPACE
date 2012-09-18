@@ -1,9 +1,10 @@
 import(methods)
 import(matrixStats)
+importFrom(BiocGenerics, annotation, "annotation<-")
 importMethodsFrom(BiocGenerics, density, get, rbind, cbind, updateObject)
 importClassesFrom(Biobase, AnnotatedDataFrame, AssayData, eSet, MIAxE,
                   Versions)
-importMethodsFrom(Biobase, annotation, "annotation<-", channel,
+importMethodsFrom(Biobase, channel,
                   classVersion, experimentData, featureData,
                   featureNames, "featureNames<-", isCurrent, "pData<-",
                   phenoData, protocolData, sampleNames)
