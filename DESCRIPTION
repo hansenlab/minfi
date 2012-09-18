@@ -1,12 +1,12 @@
 Package: minfi
-Version: 1.3.11
+Version: 1.3.12
 Title: Analyze Illumina's 450k methylation arrays
 Description: Tools for analyzing and visualizing Illumina's 450k array data
 Author: Kasper Daniel Hansen, Martin Aryee
 Maintainer: Kasper Daniel Hansen <khansen@jhsph.edu>
-Depends: methods, BiocGenerics (>= 0.1.0), Biobase (>= 2.15.1), lattice, reshape, GenomicRanges, Biostrings, utils
+Depends: methods, BiocGenerics (>= 0.3.2), Biobase (>= 2.17.8), lattice, reshape, GenomicRanges, Biostrings, utils
 Suggests: IlluminaHumanMethylation450kmanifest (>= 0.2.0), minfiData (>= 0.2.0), RUnit
-Imports: beanplot, RColorBrewer, nor1mix, siggenes, limma, preprocessCore, crlmm, matrixStats, mclust
+Imports: BiocGenerics, beanplot, RColorBrewer, nor1mix, siggenes, limma, preprocessCore, crlmm, matrixStats, mclust
 Collate: generics.R rgset.R mset.R gmset.R utils.R 
          locations.R anno.R
          dmr.R plot.R plotBetasByType.R preprocess.R
