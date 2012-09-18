@@ -42,6 +42,8 @@
     \item GenomicMethylSet now inherits a number of methods including
     granges(), start(), end() etc. from SummarizedExperiemnt.  They have
     therefore been deleted from minfi.
+    \item Bugfix to getLocations(...,  mergeManifest = TRUE).  It now
+    longer throws an error.
   }
 }
 
