@@ -42,8 +42,8 @@ getAnnotation <- function(object, genomeBuild = c("hg19", "hg18"), what = "every
     what <- bestOrder[bestOrder %in% what]
     if("Locations" %in% what)
         what[what == "Locations"] <- locName
-    if(!is(object, "MethylSet"))
-        stop(sprintf("'objects' is of class '%s' which is not yet supported", class(object)))
+    ## if(!is(object, "MethylSet"))
+    ##     stop(sprintf("'objects' is of class '%s' which is not yet supported", class(object)))
     
     ## We need locs to filter out loci using the function arguments 'order' and 'drop'
     locs <- get(locName, annotation@data)
