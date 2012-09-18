@@ -151,14 +151,18 @@ setMethod("getLocations", signature(object = "IlluminaMethylationAnnotation"),
               genome(gr) <- genomeBuild
               names(gr) <- rownames(locations)
               if(mergeManifest) {
-                  typeI <- getProbeInfo(object, type = "I")
+                  typeI <- rbind(getProbeInfo(object, type = "I"),
+                                 getProbeInfo(object, type = "SnpI"))
                   typeI$Type <- "I"
-                  typeII <- getProbeInfo(object, type = "II")
+                  typeII <- rbind(getProbeInfo(object, type = "II"),
+                                  getProbeInfo(object, type = "SnpII"))
                   typeII$Type <- "II"
                   typeII$AddressB <- rep(NA_character_, nrow(typeII))
                   typeII$Color <- rep(NA_character_, nrow(typeII))
-                  typeII$NextBase <- rep(NA_character_, nrow(typeII))
-                  typeII$ProbeSeqB <- rep(NA_character_, nrow(typeII))
+                  typeII$NextBase <- DNAStringSet(character(nrow(typeII)))
+                  typeII$ProbeSeqB <- DNAStringSet(character(nrow(typeII)))
+                  stopifnot(setequal(names(typeI), names(typeII)))
+                  manifest <- rbind(typeI, typeII[, names(typeI)])
                   rownames(manifest) <- manifest$Name
                   manifest <- manifest[names(gr),]
                   elementMetadata(gr) <- manifest
