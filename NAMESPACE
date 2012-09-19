@@ -1,6 +1,7 @@
 import(methods)
 import(matrixStats)
-importFrom(BiocGenerics, annotation, "annotation<-")
+importMethodsFrom(BiocGenerics, density, get, rbind, cbind, updateObject,
+                  annotation, "annotation<-")
 importMethodsFrom(BiocGenerics, density, get, rbind, cbind, updateObject)
 importClassesFrom(Biobase, AnnotatedDataFrame, AssayData, eSet, MIAxE,
                   Versions)
@@ -11,7 +12,7 @@ importMethodsFrom(Biobase, channel,
 import(Biostrings)
 import(GenomicRanges)
 importFrom(Biobase, assayDataElementNames, assayDataElementReplace,
-           assayDataElement, "assayDataElement<-")
+           assayDataElement, "assayDataElement<-", validMsg)
 importFrom(reshape, melt) 
 importFrom(mclust, Mclust)
 importFrom(RColorBrewer, brewer.pal)
