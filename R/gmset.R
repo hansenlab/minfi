@@ -27,7 +27,6 @@ setMethod("show", signature(object = "GenomicMethylSet"),
               minfi:::.show.preprocessMethod(preprocessMethod(object))
           })
 
-
 setMethod("getMeth", signature(object = "GenomicMethylSet"),
           function(object) {
               assay(object, "Meth")
@@ -70,15 +69,14 @@ setMethod("pData", signature("GenomicMethylSet"),
               colData(object)
           })
 
-setReplaceMethod("pData", c("GenomicMethylSet", "DataFrame"),
-    function(x, ..., value)
-{
-    x <- clone(x, ..., colData=value)
-    msg <- GenomicRanges:::.valid.SummarizedExperiment.colData_dims(x)
-    if (!is.null(msg))
-        stop(msg)
-    x
-})
+setReplaceMethod("pData", signature(object = "GenomicMethylSet", value = "DataFrame"),
+                 function(object, value) {
+                     object <- SummarizedExperiment:::clone(object, colData=value)
+                     msg <- GenomicRanges:::.valid.SummarizedExperiment.colData_dims(object)
+                     if (!is.null(msg))
+                         stop(msg)
+                     object
+                 })
 
 setMethod("sampleNames", signature("GenomicMethylSet"),
           function(object) {
