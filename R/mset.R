@@ -5,7 +5,8 @@ setClass("MethylSet",
          versions = c(classVersion("eSet"), MethylSet = "1.0.0"))))
 
 setValidity("MethylSet", function(object) {
-    msg <- validMsg(NULL, .checkAssayNames(object, c("Meth", "Unmeth")))
+    msg <- validMsg(NULL, assayDataValidMembers(assayData(object),
+                                                c("Meth", "Unmeth")))
     if (is.null(msg)) TRUE else msg
 })
 
