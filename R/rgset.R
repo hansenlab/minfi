@@ -115,3 +115,8 @@ setMethod("getBeta", signature(object = "RGChannelSet"),
               callGeneric(object, ...)
           })
 
+setMethod("mapToGenome", signature(object = "RGChannelSet"),
+          function(object, ...) {
+              object <- preprocessRaw(object)
+              callGeneric(object, ...)
+          })

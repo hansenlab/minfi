@@ -1,25 +1,3 @@
-setMethod("mapToGenome", signature(object = "RGChannelSet"),
-          function(object, ...) {
-              object <- preprocessRaw(object)
-              callGeneric(object, ...)
-          })
-
-setMethod("mapToGenome", signature(object = "MethylSet"),
-          function(object, genomeBuild = c("hg19", "hg18"),
-                   drop = TRUE, mergeManifest = FALSE) {
-              genomeBuild <- match.arg(genomeBuild)
-              object <- dropMethylationLoci(object, dropRS = TRUE, dropCH = FALSE)
-              gr <- getLocations(object, genomeBuild = genomeBuild, drop = drop,
-                                 mergeManifest = mergeManifest)
-              gr <- sort(gr)
-              object <- object[names(gr),]
-              GenomicMethylSet(gr = gr, Meth = getMeth(object),
-                               Unmeth = getUnmeth(object),
-                               pData = pData(object),
-                               preprocessMethod = preprocessMethod(object),
-                               annotation = annotation(object))
-          })
-
 getAnnotation <- function(object, genomeBuild = c("hg19", "hg18"), what = "everything",
                           returnAs = c("data.frame", "GRanges"),
                           orderByLocation = FALSE, drop = FALSE) {
@@ -76,17 +54,5 @@ getAnnotation <- function(object, genomeBuild = c("hg19", "hg18"), what = "every
     if(returnAs == "GRanges")
         return(GRanges(seqnames = out$chr, ranges = IRanges(start = out$pos, width = 2),
                        out[, !names(out) %in% c("chr", "pos")]))
-}
-
-orderByLocation <- function(x, what = "everything", genomeBuild = "hg19",
-                              returnAs = "data.frame", drop = TRUE) {
-    anno <- getAnnotation(object = x, what = what,
-                          genomeBuild = genomeBuild, returnAs = returnAs,
-                          orderByLocation = TRUE, drop = drop)
-    out <- list(meth = getMeth(x)[rownames(anno),],
-                unmeth = getUnmeth(x)[rownames(anno),],
-                locs = anno[, c("chr", "pos")],
-                everything = anno)
-    return(out)
 }
 
