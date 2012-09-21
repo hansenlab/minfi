@@ -63,15 +63,32 @@ setMethod("getManifest", signature(object = "MethylSet"),
 
 setMethod("getLocations", signature(object = "MethylSet"),
           function(object, genomeBuild = "hg19", drop = TRUE, mergeManifest = FALSE) {
-              annoString <- .getAnnotationString(object@annotation)
+              annoString <- minfi:::.getAnnotationString(object@annotation)
               if(!require(annoString, character.only = TRUE))
                   stop(sprintf("cannot load annotation package %s", annoString))
               locations <- getLocations(get(annoString), genomeBuild = genomeBuild, mergeManifest = mergeManifest)
               locations <- locations[featureNames(object)]
-              if(drop) {
-                  locations <- locations[seqnames(locations) != "unmapped"]
-              }
+              if(drop)
+                  seql <- setdiff(as.character(runValue(seqnames(locations))), "unmapped")
+              else
+                  seql <- unique(as.character(runValue(seqnames(locations))))
+              seqlevels(locations, force = TRUE) <- .seqnames.order[.seqnames.order %in% seql]
               locations
+          })
+
+setMethod("mapToGenome", signature(object = "MethylSet"),
+          function(object, genomeBuild = c("hg19", "hg18"),
+                   drop = TRUE, mergeManifest = FALSE) {
+              genomeBuild <- match.arg(genomeBuild)
+              gr <- getLocations(object, genomeBuild = genomeBuild, drop = drop,
+                                 mergeManifest = mergeManifest)
+              gr <- sort(gr)
+              object <- object[names(gr),]
+              GenomicMethylSet(gr = gr, Meth = getMeth(object),
+                               Unmeth = getUnmeth(object),
+                               pData = pData(object),
+                               preprocessMethod = preprocessMethod(object),
+                               annotation = annotation(object))
           })
 
 setMethod("updateObject", signature(object="MethylSet"),

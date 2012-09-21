@@ -44,6 +44,9 @@
     therefore been deleted from minfi.
     \item Bugfix to getLocations(...,  mergeManifest = TRUE).  It now
     longer throws an error.
+    \item mapToGenome now returns a GenomicMethylSet ordered according
+    to the chromosome name ordering chr1,..,chr22,chrX,chrY,unmapped,
+    the last one not present if drop=TRUE (default).
   }
 }
 

@@ -3,6 +3,7 @@ logit2 <- function(x) { log2(x) - log2(1-x) }
 ilogit2 <- function(x) { 2^(x) / (1+2^(x)) }
 
 .default.450k.annotation <- "ilmn.v1.2"
+.seqnames.order <- c(paste0("chr", c(1:22, "X", "Y")), "unmapped")
 
 .show.ExpressionSet <- function(object) {
     cat(class(object), " (storageMode: ", storageMode(object), ")\n", sep = "")
