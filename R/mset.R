@@ -63,7 +63,7 @@ setMethod("getManifest", signature(object = "MethylSet"),
 
 setMethod("getLocations", signature(object = "MethylSet"),
           function(object, genomeBuild = "hg19", drop = TRUE, mergeManifest = FALSE) {
-              annoString <- minfi:::.getAnnotationString(object@annotation)
+              annoString <- .getAnnotationString(object@annotation)
               if(!require(annoString, character.only = TRUE))
                   stop(sprintf("cannot load annotation package %s", annoString))
               locations <- getLocations(get(annoString), genomeBuild = genomeBuild, mergeManifest = mergeManifest)
