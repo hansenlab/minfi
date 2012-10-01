@@ -23,8 +23,8 @@ GenomicMethylSet <- function(gr, Meth, Unmeth, pData, annotation, preprocessMeth
 setMethod("show", signature(object = "GenomicMethylSet"),
           function(object) {
               callNextMethod()
-              minfi:::.show.annotation(annotation(object))
-              minfi:::.show.preprocessMethod(preprocessMethod(object))
+              .show.annotation(annotation(object))
+              .show.preprocessMethod(preprocessMethod(object))
           })
 
 setMethod("getMeth", signature(object = "GenomicMethylSet"),
@@ -71,7 +71,7 @@ setMethod("pData", signature("GenomicMethylSet"),
 
 setReplaceMethod("pData", signature(object = "GenomicMethylSet", value = "DataFrame"),
                  function(object, value) {
-                     object <- SummarizedExperiment:::clone(object, colData=value)
+                     object <- GenomicRanges:::clone(object, colData=value)
                      msg <- GenomicRanges:::.valid.SummarizedExperiment.colData_dims(object)
                      if (!is.null(msg))
                          stop(msg)
