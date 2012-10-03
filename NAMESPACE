@@ -25,7 +25,7 @@ importFrom(crlmm, readIDAT)
 importFrom(utils, packageVersion, read.csv, read.table)
 
 export(getManifest, getProbeInfo, getManifestInfo,
-       getControlAddress, getControlTypes, getRed, getGreen, getMeth, getUnmeth,
+       getControlAddress, getControlTypes, getRed, getCN, getGreen, getMeth, getUnmeth,
        getBeta, getM, dmpFinder, mdsPlot, plotCpg, preprocessRaw,
        dropMethylationLoci, getLocations, mapToGenome,
        IlluminaMethylationManifest, IlluminaMethylationAnnotation,
@@ -34,9 +34,10 @@ export(getManifest, getProbeInfo, getManifestInfo,
        detectionP, qcReport, controlStripPlot, densityBeanPlot, densityPlot,
        read.450k, read.450k.sheet, read.450k.exp, logit2, ilogit2,
        MethylSet, RGChannelSet, RGChannelSetExtended, GenomicMethylSet)
-exportClasses(RGChannelSet, RGChannelSetExtended, MethylSet, GenomicMethylSet,
+exportClasses(RGChannelSet, RGChannelSetExtended, MethylSet,
+              GenomicMethylSet, GenomicRatioSet,
               IlluminaMethylationManifest, IlluminaMethylationAnnotation)
-exportMethods(show, initialize, getBeta, getM, getMeth, getUnmeth,
+exportMethods(show, initialize, getBeta, getM, getCN, getMeth, getUnmeth,
               getManifest, getLocations, annotation, preprocessMethod,
               sampleNames, featureNames, pData, mapToGenome)
 

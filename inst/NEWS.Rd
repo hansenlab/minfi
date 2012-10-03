@@ -2,6 +2,15 @@
 \title{Minfi News}
 \encoding{UTF-8}
 
+\section{Version 1.5}{
+  \itemize{
+    \item Added the new class "GenomicRatioSet".  It is akin to
+    "GenomicMethylSet" but instead of containing Meth and Unmeth it
+    contains M and/or Beta and copy number.
+  }
+}
+
+
 \section{Version 1.3}{
   \itemize{
     \item Updated preprocessSwan to fix a bug when mSet was not set to
