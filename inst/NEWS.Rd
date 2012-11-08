@@ -7,6 +7,8 @@
     \item Added the new class "GenomicRatioSet".  It is akin to
     "GenomicMethylSet" but instead of containing Meth and Unmeth it
     contains M and/or Beta and copy number.
+    \item We now depend on illuminaio instead of crlmm in order to get
+    readIDAT.
   }
 }
 

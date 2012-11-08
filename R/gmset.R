@@ -2,8 +2,6 @@ setClass("GenomicMethylSet",
          representation(preprocessMethod = "character", annotation = "character"),
          contains = "SummarizedExperiment")
 
-## FIXME: add show method
-
 setValidity("GenomicMethylSet", function(object) {
     msg <- validMsg(NULL, .checkAssayNames(object, c("Meth", "Unmeth")))
     if(class(rowData(object)) != "GRanges")
