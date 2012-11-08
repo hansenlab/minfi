@@ -1,16 +1,44 @@
 Package: minfi
-Version: 1.5.1
+Version: 1.5.2
 Title: Analyze Illumina's 450k methylation arrays
 Description: Tools for analyzing and visualizing Illumina's 450k array data
 Author: Kasper Daniel Hansen, Martin Aryee
 Maintainer: Kasper Daniel Hansen <khansen@jhsph.edu>
-Depends: methods, BiocGenerics (>= 0.3.2), Biobase (>= 2.17.8), lattice, reshape, GenomicRanges, Biostrings, utils
+Depends: methods,
+	 BiocGenerics (>= 0.3.2),
+	 Biobase (>= 2.17.8),
+	 lattice,
+	 reshape,
+	 GenomicRanges,
+	 Biostrings,
+	 utils
 Suggests: IlluminaHumanMethylation450kmanifest (>= 0.2.0), minfiData (>= 0.2.0), RUnit
-Imports: BiocGenerics, beanplot, RColorBrewer, nor1mix, siggenes, limma, preprocessCore, crlmm, matrixStats, mclust
-Collate: generics.R rgset.R mset.R gmset.R grset.R utils.R 
-         locations.R anno.R
-         dmr.R plot.R plotBetasByType.R preprocess.R
-	 preprocessSwan.R qc.R read.450k.R read.manifest.R
+Imports: BiocGenerics, 
+	 beanplot, 
+	 RColorBrewer, 
+	 nor1mix, 
+	 siggenes, 
+	 limma, 
+	 preprocessCore, 
+	 illuminaio, 
+	 matrixStats, 
+	 mclust
+Collate: generics.R 
+	 rgset.R
+	 mset.R
+	 gmset.R
+	 grset.R
+	 utils.R 
+         locations.R
+	 anno.R
+         dmr.R
+	 plot.R
+	 plotBetasByType.R
+	 preprocess.R
+	 preprocessSwan.R
+	 qc.R
+	 read.450k.R
+	 read.manifest.R
 License: Artistic-2.0
 LazyData: yes
 biocViews: DNAMethylation, Microarray, TwoChannel, DataImport, Preprocessing, QualityControl

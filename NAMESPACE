@@ -21,7 +21,7 @@ importFrom(nor1mix, norMix, pnorMix, qnorMix)
 importFrom(siggenes, pi0.est, qvalue.cal)
 importFrom(limma, squeezeVar, lmFit, eBayes, contrasts.fit)
 importFrom(preprocessCore, normalize.quantiles)
-importFrom(crlmm, readIDAT)
+importFrom(illuminaio, readIDAT)
 importFrom(utils, packageVersion, read.csv, read.table)
 
 export(getManifest, getProbeInfo, getManifestInfo,
