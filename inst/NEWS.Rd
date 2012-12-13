@@ -9,6 +9,8 @@
     contains M and/or Beta and copy number.
     \item We now depend on illuminaio instead of crlmm in order to get
     readIDAT.
+    \item Added unsrturl.bst to minimize dependences for running
+    Sweave.
   }
 }
 
