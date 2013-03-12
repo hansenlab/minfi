@@ -28,24 +28,21 @@ preprocessSWAN <- function(rgSet, mSet = NULL){
     bg <- bgIntensitySwan(rgSet)
     methData <- getMeth(mSet)
     unmethData <- getUnmeth(mSet)
-    normMethData <- NULL
-    normUnmethData <- NULL
     xNormSet <- vector("list", 2)
     xNormSet[[1]] <- getSubset(counts$CpGs[counts$Type=="I"], subset)
     xNormSet[[2]] <- getSubset(counts$CpGs[counts$Type=="II"], subset)
+    normMethData <- matrix(NA_real_, ncol = ncol(methData), nrow = nrow(methData))
+    colnames(normMethData) <- sampleNames(mSet)
+    normUnmethData <- normMethData
     for(i in 1:ncol(mSet)) {
         cat(sprintf("Normalizing array %d of %d\n", i, ncol(mSet)))
-        normMethData <- cbind(normMethData,
-                              normaliseChannel(methData[rownames(methData) %in% counts$Name[counts$Type=="I"], i],
-                                               methData[rownames(methData) %in% counts$Name[counts$Type=="II"], i],
-                                               xNormSet, bg[i]))
-        normUnmethData <- cbind(normUnmethData,
-                                normaliseChannel(unmethData[rownames(unmethData) %in% counts$Name[counts$Type=="I"], i],
-                                                 unmethData[rownames(unmethData) %in% counts$Name[counts$Type=="II"], i],
-                                                 xNormSet, bg[i]))
+        normMethData[, i] <- normaliseChannel(methData[rownames(methData) %in% counts$Name[counts$Type=="I"], i],
+                                              methData[rownames(methData) %in% counts$Name[counts$Type=="II"], i],
+                                              xNormSet, bg[i])
+        normUnmethData[, i] <- normaliseChannel(unmethData[rownames(unmethData) %in% counts$Name[counts$Type=="I"], i],
+                                                unmethData[rownames(unmethData) %in% counts$Name[counts$Type=="II"], i],
+                                                xNormSet, bg[i])
     }
-    colnames(normMethData) <- sampleNames(mSet)
-    colnames(normUnmethData) <- sampleNames(mSet)
     normSet <- mSet
     assayDataElement(normSet, "Meth") <- normMethData
     assayDataElement(normSet, "Unmeth") <- normUnmethData
