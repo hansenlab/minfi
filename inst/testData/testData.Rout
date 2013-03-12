@@ -117,7 +117,7 @@ other attached packages:
  [1] digest_0.6.3                              
  [2] minfiData_0.3.1                           
  [3] IlluminaHumanMethylation450kmanifest_0.4.0
- [4] minfi_1.5.3                               
+ [4] minfi_1.5.4                               
  [5] Biostrings_2.27.11                        
  [6] GenomicRanges_1.11.35                     
  [7] IRanges_1.17.35                           
@@ -137,4 +137,4 @@ loaded via a namespace (and not attached):
 > 
 > proc.time()
    user  system elapsed 
- 84.453   0.887  85.568 
+ 83.375   0.871  84.396 
