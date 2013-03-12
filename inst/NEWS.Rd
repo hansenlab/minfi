@@ -4,6 +4,8 @@
 
 \section{Version 1.5}{
   \itemize{
+    \item Added unit testing for the preprocessing algorithms.
+    \item Improved the speed of SWAN for large datasets.
     \item Added the new class "GenomicRatioSet".  It is akin to
     "GenomicMethylSet" but instead of containing Meth and Unmeth it
     contains M and/or Beta and copy number.

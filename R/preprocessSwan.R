@@ -34,16 +34,20 @@ preprocessSWAN <- function(rgSet, mSet = NULL){
     normMethData <- matrix(NA_real_, ncol = ncol(methData), nrow = nrow(methData))
     colnames(normMethData) <- sampleNames(mSet)
     normUnmethData <- normMethData
+    normSet <- mSet
     for(i in 1:ncol(mSet)) {
         cat(sprintf("Normalizing array %d of %d\n", i, ncol(mSet)))
-        normMethData[, i] <- normaliseChannel(methData[rownames(methData) %in% counts$Name[counts$Type=="I"], i],
-                                              methData[rownames(methData) %in% counts$Name[counts$Type=="II"], i],
-                                              xNormSet, bg[i])
-        normUnmethData[, i] <- normaliseChannel(unmethData[rownames(unmethData) %in% counts$Name[counts$Type=="I"], i],
-                                                unmethData[rownames(unmethData) %in% counts$Name[counts$Type=="II"], i],
-                                                xNormSet, bg[i])
+        normMeth <- normaliseChannel(methData[rownames(methData) %in% counts$Name[counts$Type=="I"], i],
+                                     methData[rownames(methData) %in% counts$Name[counts$Type=="II"], i],
+                                     xNormSet, bg[i])
+        normMethData[, i] <- normMeth
+        normUnmeth <- normaliseChannel(unmethData[rownames(unmethData) %in% counts$Name[counts$Type=="I"], i],
+                                       unmethData[rownames(unmethData) %in% counts$Name[counts$Type=="II"], i],
+                                       xNormSet, bg[i])
+        normUnmethData[, i] <- normUnmeth
     }
-    normSet <- mSet
+    rownames(normMethData) <- names(normMeth)
+    rownames(normUnmethData) <- names(normUnmeth)
     assayDataElement(normSet, "Meth") <- normMethData
     assayDataElement(normSet, "Unmeth") <- normUnmethData
     normSet@preprocessMethod <- c(rg.norm = sprintf("SWAN (based on a MethylSet preprocesses as '%s'",
@@ -56,7 +60,7 @@ preprocessSWAN <- function(rgSet, mSet = NULL){
 normaliseChannel <- function(intensityI, intensityII, xNormSet, bg) {
     xTarget <- aveQuantile(list(intensityI[xNormSet[[1]]], intensityII[xNormSet[[2]]]))
     xNorm <- unlist(subsetQuantileNorm(list(intensityI, intensityII), xNormSet, xTarget, bg))
-    names(xNorm) <- names(c(intensityI, intensityII))
+    names(xNorm) <- c(names(intensityI), names(intensityII))
     xNorm
 }
 
