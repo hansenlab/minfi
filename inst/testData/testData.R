@@ -14,4 +14,5 @@ testDigests <- list(
     )
 
 save(testDigests, file = "../unitTests/testDigests.rda")
-                         
+
+sessionInfo()                         
