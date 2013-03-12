@@ -1,5 +1,5 @@
 Package: minfi
-Version: 1.5.3
+Version: 1.5.4
 Title: Analyze Illumina's 450k methylation arrays
 Description: Tools for analyzing and visualizing Illumina's 450k array data
 Author: Kasper Daniel Hansen, Martin Aryee
@@ -12,7 +12,7 @@ Depends: methods,
 	 GenomicRanges,
 	 Biostrings,
 	 utils
-Suggests: IlluminaHumanMethylation450kmanifest (>= 0.2.0), minfiData (>= 0.2.0), RUnit
+Suggests: IlluminaHumanMethylation450kmanifest (>= 0.2.0), minfiData (>= 0.2.0), RUnit, digest
 Imports: BiocGenerics, 
 	 beanplot, 
 	 RColorBrewer, 
