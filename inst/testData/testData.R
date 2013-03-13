@@ -1,9 +1,9 @@
 library(minfiData)
 library(digest)
 Mset.raw <- preprocessRaw(RGsetEx)
-Mset.swan <- preprocessSWAN(RGsetEx)
-set.seed(456)
 Mset.illumina <- preprocessIllumina(RGsetEx)
+set.seed(456)
+Mset.swan <- preprocessSWAN(RGsetEx)
 
 testDigests <- list(
     preprocessRaw = list(Meth = digest(getMeth(Mset.raw)),
