@@ -77,6 +77,8 @@ Loading required package: Biostrings
 Loading required package: IlluminaHumanMethylation450kmanifest
 > library(digest)
 > Mset.raw <- preprocessRaw(RGsetEx)
+> Mset.illumina <- preprocessIllumina(RGsetEx)
+> set.seed(456)
 > Mset.swan <- preprocessSWAN(RGsetEx)
 Normalizing array 1 of 6
 Normalizing array 2 of 6
@@ -84,8 +86,6 @@ Normalizing array 3 of 6
 Normalizing array 4 of 6
 Normalizing array 5 of 6
 Normalizing array 6 of 6
-> set.seed(456)
-> Mset.illumina <- preprocessIllumina(RGsetEx)
 > 
 > testDigests <- list(
 +     preprocessRaw = list(Meth = digest(getMeth(Mset.raw)),
@@ -138,4 +138,4 @@ loaded via a namespace (and not attached):
 > 
 > proc.time()
    user  system elapsed 
-342.074   2.772 397.085 
+268.434   3.096 298.296 
