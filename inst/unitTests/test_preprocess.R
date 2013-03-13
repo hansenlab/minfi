@@ -20,16 +20,17 @@ test_preprocessIllumina <- function() {
                 digest(getUnmeth(Mset)))
 }
 
-## test_preprocessSWAN <- function() {
-##     stopifnot(require(minfiData))
-##     stopifnot(require(digest))
-##     load(file.path(path.package("minfi"), "unitTests", "testDigests.rda"))
-##     Mset <- preprocessSWAN(RGsetEx)
-##     checkEquals(testDigests$preprocessSwan$Meth,
-##                 digest(getMeth(Mset)))
-##     checkEquals(testDigests$preprocessSwan$Unmeth,
-##                 digest(getUnmeth(Mset)))
-## }
+test_preprocessSWAN <- function() {
+    stopifnot(require(minfiData))
+    stopifnot(require(digest))
+    load(file.path(path.package("minfi"), "unitTests", "testDigests.rda"))
+    set.seed(456)
+    Mset <- preprocessSWAN(RGsetEx)
+    checkEquals(testDigests$preprocessSWAN$Meth,
+                digest(getMeth(Mset)))
+    checkEquals(testDigests$preprocessSWAN$Unmeth,
+                digest(getUnmeth(Mset)))
+}
 
 
 
