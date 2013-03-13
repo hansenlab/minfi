@@ -37,6 +37,12 @@ quantile procedure. The intensities of the remaining probes are then
 separately adjusted for each probe type using linear interpolation
 between the subset probes.}
 
+\note{
+  SWAN uses a random subset of probes to do the between array
+  normalization.  In order to achive reproducible results, the seed
+  needs to be set using \code{set.seed}.
+}
+
 \value{an object of class \code{MethylSet}}
 
 \references{
@@ -54,10 +60,10 @@ between the subset probes.}
 \examples{
 if (require(minfiData)) {
   dat <- preprocessRaw(RGsetEx)
-  slot(name="preprocessMethod", dat)[1]
+  preprocessMethod(dat)
   datSwan <- preprocessSWAN(RGsetEx, mSet = dat)
   datIlmn <- preprocessIllumina(RGsetEx)
-  slot(name="preprocessMethod", datIlmn)[1]
+  preprocessMethod(datIlmn)
   datIlmnSwan <- preprocessSWAN(RGsetEx, mSet = datIlmn)
 }
 }
