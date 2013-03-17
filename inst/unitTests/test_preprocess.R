@@ -4,9 +4,9 @@ test_preprocessRaw <- function() {
     load(file.path(path.package("minfi"), "unitTests", "testDigests.rda"))
     Mset <- preprocessRaw(RGsetEx)
     checkEquals(testDigests$preprocessRaw$Meth,
-                digest(getMeth(Mset)))
+                minfi:::.digestMatrix(getMeth(Mset)))
     checkEquals(testDigests$preprocessRaw$Unmeth,
-                digest(getUnmeth(Mset)))
+                minfi:::.digestMatrix(getUnmeth(Mset)))
 }
 
 test_preprocessIllumina <- function() {
@@ -15,9 +15,9 @@ test_preprocessIllumina <- function() {
     load(file.path(path.package("minfi"), "unitTests", "testDigests.rda"))
     Mset <- preprocessIllumina(RGsetEx)
     checkEquals(testDigests$preprocessIllumina$Meth,
-                digest(getMeth(Mset)))
+                minfi:::.digestMatrix(getMeth(Mset)))
     checkEquals(testDigests$preprocessIllumina$Unmeth,
-                digest(getUnmeth(Mset)))
+                minfi:::.digestMatrix(getUnmeth(Mset)))
 }
 
 test_preprocessSWAN <- function() {
@@ -27,9 +27,9 @@ test_preprocessSWAN <- function() {
     set.seed(456)
     Mset <- preprocessSWAN(RGsetEx)
     checkEquals(testDigests$preprocessSWAN$Meth,
-                digest(getMeth(Mset)))
+                minfi:::.digestMatrix(getMeth(Mset)))
     checkEquals(testDigests$preprocessSWAN$Unmeth,
-                digest(getUnmeth(Mset)))
+                minfi:::.digestMatrix(getUnmeth(Mset)))
 }
 
 

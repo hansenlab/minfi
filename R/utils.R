@@ -75,3 +75,11 @@ ilogit2 <- function(x) { 2^(x) / (1+2^(x)) }
     else
         NULL
 }
+
+.digestMatrix <- function(mat) {
+    stopifnot(require(digest))
+    content <- sprintf("%.6f", mat)
+    digest(c(content, rownames(mat), colnames(mat)))
+}
+
+    
