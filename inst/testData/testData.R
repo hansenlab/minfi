@@ -6,14 +6,15 @@ set.seed(456)
 Mset.swan <- preprocessSWAN(RGsetEx)
 
 testDigests <- list(
-    preprocessRaw = list(Meth = digest(getMeth(Mset.raw)),
-    Unmeth = digest(getUnmeth(Mset.raw))),
-    preprocessIllumina = list(Meth = digest(getMeth(Mset.illumina)),
-    Unmeth = digest(getUnmeth(Mset.illumina))),
-    preprocessSWAN = list(Meth = digest(getMeth(Mset.swan)),
-    Unmeth = digest(getUnmeth(Mset.swan)))
+    preprocessRaw = list(Meth = minfi:::.digestMatrix(getMeth(Mset.raw)),
+    Unmeth = minfi:::.digestMatrix(getUnmeth(Mset.raw))),
+    preprocessIllumina = list(Meth = minfi:::.digestMatrix(getMeth(Mset.illumina)),
+    Unmeth = minfi:::.digestMatrix(getUnmeth(Mset.illumina))),
+    preprocessSWAN = list(Meth = minfi:::.digestMatrix(getMeth(Mset.swan)),
+    Unmeth = minfi:::.digestMatrix(getUnmeth(Mset.swan)))
     )
 
 save(testDigests, file = "../unitTests/testDigests.rda")
 
+gc()
 sessionInfo()                         
