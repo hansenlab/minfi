@@ -2,6 +2,13 @@
 \title{Minfi News}
 \encoding{UTF-8}
 
+\section{Version 1.7}{
+  \itemize{
+    \item Added getMethSignal(), a convenience function for
+    programming.
+  }
+}
+
 \section{Version 1.5}{
   \itemize{
     \item Added unit testing for the preprocessing algorithms.

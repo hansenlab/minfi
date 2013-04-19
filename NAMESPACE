@@ -34,7 +34,8 @@ export(getManifest, getProbeInfo, getManifestInfo,
        detectionP, qcReport, controlStripPlot, densityBeanPlot, densityPlot,
        read.450k, read.450k.sheet, read.450k.exp, logit2, ilogit2,
        MethylSet, RGChannelSet, RGChannelSetExtended,
-       GenomicMethylSet, GenomicRatioSet)
+       GenomicMethylSet, GenomicRatioSet,
+       getMethSignal)
 exportClasses(RGChannelSet, RGChannelSetExtended, MethylSet,
               GenomicMethylSet, GenomicRatioSet,
               IlluminaMethylationManifest, IlluminaMethylationAnnotation)
