@@ -6,6 +6,8 @@
   \itemize{
     \item Added getMethSignal(), a convenience function for
     programming.
+    \item Changed the argument name of 'type' to 'what' for
+    getMethSignal(). 
   }
 }
 

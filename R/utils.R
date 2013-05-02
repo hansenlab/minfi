@@ -82,9 +82,9 @@ ilogit2 <- function(x) { 2^(x) / (1+2^(x)) }
     digest(c(content, rownames(mat), colnames(mat)))
 }
 
-getMethSignal <- function(object, type = c("Beta", "M"), ...) {
-    type <- match.arg(type)
-    switch(type,
+getMethSignal <- function(object, what = c("Beta", "M"), ...) {
+    what <- match.arg(what)
+    switch(what,
            "Beta" = getBeta(object, ...),
            "M" = getM(object, ...)
            )
