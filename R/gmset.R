@@ -52,6 +52,12 @@ setMethod("getM", signature(object = "GenomicMethylSet"),
                   return(logit2(getBeta(object, ...)))
           })
 
+setMethod("getCN", signature(object = "GenomicMethylSet"),
+          function(object, ...) {
+              CN <- getMeth(object) + getUnmeth(object)
+              CN
+          })
+
 setMethod("preprocessMethod", signature(object = "GenomicMethylSet"),
           function(object) {
               object@preprocessMethod
@@ -84,5 +90,32 @@ setMethod("sampleNames", signature("GenomicMethylSet"),
 setMethod("featureNames", signature("GenomicMethylSet"),
           function(object) {
               rownames(object)
+          })
+
+setMethod("ratioConvert", signature(object = "GenomicMethylSet"),
+          function(object, what = c("beta", "M", "both"), keepCN = TRUE, ...) {
+              what <- match.arg(what)
+              if(what == "beta") {
+                  Beta <- getBeta(object, ...)
+                  M <- NULL
+              }
+              if(what == "M") {
+                  Beta <- NULL
+                  M <- getM(object, ...)
+              }
+              if(what == "both") {
+                  Beta <- getBeta(object, ...)
+                  M <- getM(object, ...)
+              }
+              if(keepCN) {
+                  CN <- getCN(object)
+              } else {
+                  CN <- NULL
+              }
+              GenomicRatioSet(Beta = Beta, M = M, CN = CN,
+                              gr = granges(object),
+                              pData = pData(object),
+                              annotation = annotation(object),
+                              preprocessMethod = preprocessMethod(object))
           })
 
