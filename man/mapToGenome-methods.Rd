@@ -3,6 +3,7 @@
 \alias{mapToGenome}
 \alias{mapToGenome-methods}
 \alias{mapToGenome,MethylSet-method}
+\alias{mapToGenome,RatioSet-method}
 \alias{mapToGenome,RGChannelSet-method}
 \title{Mapping methylation data to the genome}
 \description{
@@ -13,12 +14,16 @@
 
 \usage{
 
-\S4method{mapToGenome}{MethylSet}(object, genomeBuild = c("hg19", "hg18"), drop = TRUE, mergeManifest = FALSE)
+\S4method{mapToGenome}{MethylSet}(object, genomeBuild = c("hg19", "hg18"),
+  drop = TRUE, mergeManifest = FALSE)
+\S4method{mapToGenome}{MethylSet}(object, genomeBuild = c("hg19", "hg18"), 
+  drop = TRUE, mergeManifest = FALSE)
 \S4method{mapToGenome}{RGChannelSet}(object, ...)
 }
 
 \arguments{
-  \item{object}{Either a \code{MethylSet} or \code{RGChannelSet}.}
+  \item{object}{Either a \code{MethylSet}, a \code{RGChannelSet} or a
+    \code{RatioSet}.} 
   \item{genomeBuild}{Which version of the genome to use?}
   \item{drop}{Should unmapped loci be dropped?}
   \item{mergeManifest}{Should the information in the associated manifest

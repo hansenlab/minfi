@@ -8,6 +8,7 @@
 \alias{getUnmeth,GenomicMethylSet-method}
 \alias{getBeta,GenomicMethylSet-method}
 \alias{getM,GenomicMethylSet-method}
+\alias{getCN,GenomicMethylSet-method}
 \alias{show,GenomicMethylSet-method}
 \alias{pData,GenomicMethylSet-method}
 \alias{sampleNames,GenomicMethylSet-method}
@@ -33,6 +34,7 @@ GenomicMethylSet(gr, Meth, Unmeth, pData, annotation, preprocessMethod)
 \S4method{getUnmeth}{GenomicMethylSet}(object)
 \S4method{getBeta}{GenomicMethylSet}(object, type = "", offset = 0, betaThreshold = 0)
 \S4method{getM}{GenomicMethylSet}(object, type = "", ...)
+\S4method{getCN}{GenomicMethylSet}(object, ...)
 \S4method{pData}{GenomicMethylSet}(object)
 \S4method{sampleNames}{GenomicMethylSet}(object)
 \S4method{featureNames}{GenomicMethylSet}(object)
@@ -82,6 +84,8 @@ arguments outlined above.
       Meth or Unmeth matrix.}
     \item{\code{getBeta(object)}}{Get Beta, see details.}
     \item{\code{getM(object)}}{get M-values, see details.}
+    \item{\code{getCN(object)}}{get copy number values which are defined
+      as the sum of the methylation and unmethylation channel.}
     \item{\code{getManifest(object)}}{get the manifest associated with
       the object.}
     \item{\code{sampleNames(object)}, \code{featureNames(object)}}{Get

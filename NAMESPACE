@@ -33,13 +33,17 @@ export(getManifest, getProbeInfo, getManifestInfo,
        preprocessSWAN, plotBetasByType,
        detectionP, qcReport, controlStripPlot, densityBeanPlot, densityPlot,
        read.450k, read.450k.sheet, read.450k.exp, logit2, ilogit2,
-       MethylSet, RGChannelSet, RGChannelSetExtended,
+       RGChannelSet, RGChannelSetExtended,
+       MethylSet, RatioSet,
        GenomicMethylSet, GenomicRatioSet,
        getMethSignal)
-exportClasses(RGChannelSet, RGChannelSetExtended, MethylSet,
+
+exportClasses(RGChannelSet, RGChannelSetExtended,
+              MethylSet, RatioSet,
               GenomicMethylSet, GenomicRatioSet,
               IlluminaMethylationManifest, IlluminaMethylationAnnotation)
+
 exportMethods(show, initialize, getBeta, getM, getCN, getMeth, getUnmeth,
               getManifest, getLocations, annotation, preprocessMethod,
-              sampleNames, featureNames, pData, mapToGenome)
+              sampleNames, featureNames, pData, mapToGenome, ratioConvert)
 

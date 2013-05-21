@@ -48,6 +48,12 @@ setMethod("getM", signature(object = "MethylSet"),
                   return(logit2(getBeta(object, ...)))
           })
 
+setMethod("getCN", signature(object = "MethylSet"),
+          function(object, ...) {
+              CN <- getMeth(object) + getUnmeth(object)
+              CN
+          })
+
 setMethod("preprocessMethod", signature(object = "MethylSet"),
           function(object) {
               object@preprocessMethod
@@ -91,7 +97,7 @@ setMethod("mapToGenome", signature(object = "MethylSet"),
                                annotation = annotation(object))
           })
 
-setMethod("updateObject", signature(object="MethylSet"),
+setMethod("updateObject", signature(object = "MethylSet"),
           function(object, ..., verbose=FALSE) {
               if (verbose) message("updateObject(object = 'MethylSet')")
               ## object <- callNextMethod()
@@ -110,8 +116,37 @@ setMethod("updateObject", signature(object="MethylSet"),
               newObject
           })
 
+setMethod("ratioConvert", signature(object = "MethylSet"),
+          function(object, what = c("beta", "M", "both"), keepCN = TRUE, ...) {
+              what <- match.arg(what)
+              if(what == "beta") {
+                  Beta <- getBeta(object, ...)
+                  M <- NULL
+              }
+              if(what == "M") {
+                  Beta <- NULL
+                  M <- getM(object, ...)
+              }
+              if(what == "both") {
+                  Beta <- getBeta(object, ...)
+                  M <- getM(object, ...)
+              }
+              if(keepCN) {
+                  CN <- getCN(object)
+              } else {
+                  CN <- NULL
+              }
+              RatioSet(Beta = Beta, M = M, CN = CN,
+                       phenoData = phenoData(object),
+                       annotation = annotation(object),
+                       featureData = featureData(object),
+                       preprocessMethod = preprocessMethod(object))
+          })
+    
+
+
 dropMethylationLoci <- function(object, dropRS = TRUE, dropCH = TRUE) {
-    stopifnot(class(object) %in% c("MethylSet", "GenomicMethylSet"))
+    stopifnot(class(object) %in% c("MethylSet", "GenomicMethylSet", "RatioSet", "GenomicRatioSet"))
     dropRegEx <- ""
     if(dropRS)
         dropRegEx <- c(dropRegEx, "^rs")

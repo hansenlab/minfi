@@ -1,0 +1,104 @@
+setClass("RatioSet",
+         representation(preprocessMethod = "character"),
+         contains = "eSet",
+         prototype = prototype(new("VersionedBiobase",
+         versions = c(classVersion("eSet"), RatioSet = "1.0.0"))))
+
+setValidity("RatioSet", function(object) {
+    slotsPresent <- intersect(c("Beta", "M", "CN"), assayDataElementNames(object))
+    msg <- NULL
+    if(! any(c("Beta", "M") %in% slotsPresent))
+        msg <- validMsg(msg, sprintf("objects of class '%s' needs to have assayData elements either 'Beta' or 'M' or both"),
+                        class(object))
+    msg <- validMsg(msg, assayDataValidMembers(assayData(object), slotsPresent))
+    if (is.null(msg)) TRUE else msg
+})
+
+RatioSet <- function(Beta = NULL, M = NULL, CN=NULL, ...) {
+    if(is.null(Beta) && is.null(M)) {
+        Beta <- new("matrix")
+    }
+    if(!is.null(Beta) && is.null(M) && is.null(CN))
+        Rset <- new("RatioSet", Beta = Beta, ...)
+    if(!is.null(Beta) && is.null(M) && !is.null(CN))
+        Rset <- new("RatioSet", Beta = Beta, CN = CN, ...)
+    if(!is.null(Beta) && !is.null(M) && is.null(CN))
+        Rset <- new("RatioSet", Beta = Beta, M = M, ...)
+    if(!is.null(Beta) && !is.null(M) && !is.null(CN))
+        Rset <- new("RatioSet", Beta = Beta, M = M, CN = CN, ...)
+    if(is.null(Beta) && !is.null(M) && is.null(CN))
+        Rset <- new("RatioSet", M = M, ...)
+    if(is.null(Beta) && !is.null(M) && !is.null(CN))
+        Rset <- new("RatioSet", M = M, CN = CN, ...)
+    Rset
+}
+
+setMethod("show", "RatioSet", function(object) {
+    .show.ExpressionSet(object)
+    .show.annotation(annotation(object))
+    .show.preprocessMethod(preprocessMethod(object))
+})
+
+setMethod("getBeta", signature(object = "RatioSet"),
+          function (object) {
+              nms <- assayDataElementNames(object)
+              if("Beta" %in% nms)
+                  return(assayDataElement(object, "Beta"))
+              if("M" %in% nms)
+                  return(ilogit2(assayDataElement(object, "M")))
+              stop("object does not contain either 'M' nor 'Beta' amongst assay slots")
+          })
+
+setMethod("getM", signature(object = "RatioSet"),
+          function (object) {
+              nms <- assayDataElementNames(object)
+              if("M" %in% nms)
+                  return(assayDataElement(object, "M"))
+              if("Beta" %in% nms)
+                  return(logit2(assayDataElement(object, "Beta")))
+              stop("object does not contain either 'M' nor 'Beta' amongst assay slots")
+          })
+
+setMethod("getCN", signature(object = "RatioSet"),
+          function (object) {
+              nms <- assayDataElementNames(object)
+              if("CN" %in% nms)
+                  return(assayDataElement(object, "CN"))
+              stop("object does not contain 'CN' amongst assay slots")
+          })
+
+setMethod("preprocessMethod", signature(object = "RatioSet"),
+          function(object) {
+              object@preprocessMethod
+          })
+
+setMethod("getLocations", signature(object = "RatioSet"),
+          function(object, genomeBuild = "hg19", drop = TRUE, mergeManifest = FALSE) {
+              annoString <- .getAnnotationString(object@annotation)
+              if(!require(annoString, character.only = TRUE))
+                  stop(sprintf("cannot load annotation package %s", annoString))
+              locations <- getLocations(get(annoString), genomeBuild = genomeBuild, mergeManifest = mergeManifest)
+              locations <- locations[featureNames(object)]
+              if(drop)
+                  seql <- setdiff(as.character(runValue(seqnames(locations))), "unmapped")
+              else
+                  seql <- unique(as.character(runValue(seqnames(locations))))
+              seqlevels(locations, force = TRUE) <- .seqnames.order[.seqnames.order %in% seql]
+              locations
+          })
+
+setMethod("mapToGenome", signature(object = "RatioSet"),
+          function(object, genomeBuild = c("hg19", "hg18"),
+                   drop = TRUE, mergeManifest = FALSE) {
+              genomeBuild <- match.arg(genomeBuild)
+              gr <- getLocations(object, genomeBuild = genomeBuild, drop = drop,
+                                 mergeManifest = mergeManifest)
+              gr <- sort(gr)
+              object <- object[names(gr),]
+              GenomicRatioSet(gr = gr, Beta = getBeta(object),
+                              M = getM(object), CN = getCN(object),
+                              pData = pData(object),
+                              preprocessMethod = preprocessMethod(object),
+                              annotation = annotation(object))
+          })
+

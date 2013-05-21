@@ -4,29 +4,28 @@ setClass("GenomicRatioSet",
          contains = "SummarizedExperiment")
 
 setValidity("GenomicRatioSet", function(object) {
-    msg <- validMsg(NULL, .checkAssayNames(object, c("CN")))
+    msg <- validMsg(NULL, NULL)
+    ## It is intentional I do not check for the presence of 'CN'; it is optional
     msgBeta <- .checkAssayNames(object, c("Beta"))
     msgM <- .checkAssayNames(object, c("M"))
     if(!is.null(msgBeta) && !is.null(msgM))
-        msg <- validMsg(msg, sprintf("objects of class '%s% needs to have assays slots either 'Beta' or 'M' or both",
+        msg <- validMsg(msg, sprintf("objects of class '%s needs to have assays slots either 'Beta' or 'M' or both",
                                      class(object)))
-    if(class(rowData(object)) != "GRanges")
+    if(!is(rowData(object), "GRanges"))
         msg <- validMsg(msg, sprintf("object of class '%s' needs to have a 'GRanges' in slot 'rowData'", class(object)))
     if (is.null(msg)) TRUE else msg
 })
 
 
-GenomicRatioSet <- function(gr, Beta = NULL, M = NULL, CN = NULL, pData, annotation, preprocessMethod) {
+GenomicRatioSet <- function(gr = GRanges(), Beta = NULL, M = NULL, CN = NULL,
+                            pData = DataFrame(),
+                            annotation = character(0),
+                            preprocessMethod = character(0)) {
     msg <- "Need either 'Beta' or 'M' or both"
     if(is.null(Beta) && is.null(M))
         stop(msg)
-    if(!is.null(Beta) && is.null(M))
-        assays <- SimpleList(Beta = Beta, CN = CN)
-    if(is.null(Beta) && !is.null(M))
-        assays <- SimpleList(M = M, CN = CN)
-    if(!is.null(Beta) && !is.null(M))
-        assays <- SimpleList(M = M, Beta = Beta, CN = CN)
-    assays <- GenomicRanges:::.ShallowSimpleListAssays$new(data = assays)
+    assays <- SimpleList(Beta = Beta, M = M, CN = CN)
+    assays <- GenomicRanges:::.ShallowSimpleListAssays$new(data = assays[!sapply(assays, is.null)])
     colData <- as(pData, "DataFrame")
     rowData <- as(gr, "GRanges")
     new("GenomicRatioSet", assays = assays, colData = colData,
@@ -56,22 +55,18 @@ setMethod("getM", signature(object = "GenomicRatioSet"),
               if("M" %in% nms)
                   return(assay(object, "M"))
               if("Beta" %in% nms)
-                  return(logit2(assay(object, "M")))
+                  return(logit2(assay(object, "Beta")))
               stop("object does not contain either 'M' nor 'Beta' amongst assay slots")
 
           })
 
-
-
-setGeneric("getCN", function(object, ...) standardGeneric("getCN"))
-
 setMethod("getCN", signature(object = "GenomicRatioSet"),
           function (object) {
-            nms <- names(assays(object, withDimnames = FALSE))
-            if("CN" %in% nms)
-                return(assay(object, "CN"))
-            stop("object does not contain either 'CN' amongst assay slots")
-        })
+              nms <- names(assays(object, withDimnames = FALSE))
+              if("CN" %in% nms)
+                  return(assay(object, "CN"))
+              return(NULL)
+          })
 
 setMethod("pData", signature("GenomicRatioSet"),
           function(object) {

@@ -14,6 +14,7 @@
 \alias{getUnmeth,MethylSet-method}
 \alias{getBeta,MethylSet-method}
 \alias{getM,MethylSet-method}
+\alias{getCN,MethylSet-method}
 \alias{preprocessMethod,MethylSet-method}
 \alias{getManifest,MethylSet-method}
 \alias{getLocations,MethylSet-method}
@@ -39,6 +40,7 @@ MethylSet(Meth = new("matrix"), Unmeth = new("matrix"),  ...)
 \S4method{getUnmeth}{MethylSet}(object)
 \S4method{getBeta}{MethylSet}(object, type = "", offset = 0, betaThreshold = 0)
 \S4method{getM}{MethylSet}(object, type = "", ...)
+\S4method{getCN}{MethylSet}(object, ...)
 \S4method{getManifest}{MethylSet}(object)
 \S4method{preprocessMethod}{MethylSet}(object)
 
@@ -107,6 +109,8 @@ arguments outlined above.
       Meth or the Unmeth matrix }
     \item{\code{getBeta(object)}}{Get Beta, see details.}
     \item{\code{getM(object)}}{get M-values, see details.}
+    \item{\code{getCN(object)}}{get copy number values which are defined
+      as the sum of the methylation and unmethylation channel.}
     \item{\code{getManifest(object)}}{get the manifest associated with
       the object.}
     \item{\code{preprocessMethod(object)}}{Get the preprocess method \code{character}.}

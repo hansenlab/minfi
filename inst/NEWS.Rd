@@ -6,8 +6,13 @@
   \itemize{
     \item Added getMethSignal(), a convenience function for
     programming.
-    \item Changed the argument name of 'type' to 'what' for
+    \item Changed the argument name of "type" to "what" for
     getMethSignal(). 
+    \item Added the class "RatioSet", like "GenomicRatioSet" but without 
+    the genome information.
+    \item Bugfixes to the "GenomicRatioSet()" constructor.
+    \item Added the method ratioConvert(), for converting a "MethylSet"
+    to a "RatioSet" or a "GenomicMethylSet" to a "GenomicRatioSet".
   }
 }
 
