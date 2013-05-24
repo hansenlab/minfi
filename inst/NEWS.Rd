@@ -13,6 +13,10 @@
     \item Bugfixes to the "GenomicRatioSet()" constructor.
     \item Added the method ratioConvert(), for converting a "MethylSet"
     to a "RatioSet" or a "GenomicMethylSet" to a "GenomicRatioSet".
+    \item Fixed an issue with GenomicMethylSet() and GenomicRatioSet()
+    caused by a recent change to a non-exported function in the
+    GenomicRanges package (Reported by Gustavo Fernandez Bayon
+    <gbayon@gmail.com>).
   }
 }
 

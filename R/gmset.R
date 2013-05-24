@@ -9,9 +9,10 @@ setValidity("GenomicMethylSet", function(object) {
     if (is.null(msg)) TRUE else msg
 })
 
-GenomicMethylSet <- function(gr, Meth, Unmeth, pData, annotation, preprocessMethod) {
+GenomicMethylSet <- function(gr = GRanges(), Meth = new("matrix"), Unmeth = new("matrix"),
+                             pData = DataFrame(), annotation = "", preprocessMethod = "") {
     assays <- SimpleList(Meth = Meth, Unmeth = Unmeth)
-    assays <- GenomicRanges:::.ShallowSimpleListAssays$new(data = assays)
+    assays <- GenomicRanges:::.ShallowSimpleListAssays(data = assays)
     colData <- as(pData, "DataFrame")
     rowData <- as(gr, "GRanges")
     new("GenomicMethylSet", assays = assays, colData = colData,

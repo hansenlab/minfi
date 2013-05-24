@@ -26,7 +26,9 @@
 \usage{
 ## Constructor
 
-GenomicMethylSet(gr, Meth, Unmeth, pData, annotation, preprocessMethod)
+GenomicMethylSet(gr = GRanges(), Meth = new("matrix"),
+                 Unmeth = new("matrix"), pData = DataFrame(),
+                 annotation = "", preprocessMethod = "")
 
 ## Data extraction / Accessors
 

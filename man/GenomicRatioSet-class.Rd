@@ -25,7 +25,9 @@
 \usage{
 ## Constructor
 
-GenomicRatioSet(gr, Beta = NULL, M = NULL, CN = NULL, pData, annotation, preprocessMethod)
+GenomicRatioSet(gr = GRanges(), Beta = NULL, M = NULL,
+                CN = NULL, pData = DataFrame(),
+                annotation = "", preprocessMethod = "")
 
 ## Data extraction / Accessors
 
