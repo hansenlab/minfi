@@ -19,13 +19,13 @@ setValidity("GenomicRatioSet", function(object) {
 
 GenomicRatioSet <- function(gr = GRanges(), Beta = NULL, M = NULL, CN = NULL,
                             pData = DataFrame(),
-                            annotation = character(0),
-                            preprocessMethod = character(0)) {
+                            annotation = "",
+                            preprocessMethod = "") {
     msg <- "Need either 'Beta' or 'M' or both"
     if(is.null(Beta) && is.null(M))
         stop(msg)
     assays <- SimpleList(Beta = Beta, M = M, CN = CN)
-    assays <- GenomicRanges:::.ShallowSimpleListAssays$new(data = assays[!sapply(assays, is.null)])
+    assays <- GenomicRanges:::.ShallowSimpleListAssays(data = assays[!sapply(assays, is.null)])
     colData <- as(pData, "DataFrame")
     rowData <- as(gr, "GRanges")
     new("GenomicRatioSet", assays = assays, colData = colData,
