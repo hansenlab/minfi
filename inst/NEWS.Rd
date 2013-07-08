@@ -17,6 +17,14 @@
     caused by a recent change to a non-exported function in the
     GenomicRanges package (Reported by Gustavo Fernandez Bayon
     <gbayon@gmail.com>).
+    \item Added fixMethOutliers for thresholding extreme observations in
+    the [un]methylation channels.
+    \item Added getSex, addSex, plotSex for estimating sex of the
+    samples.
+    \item Added getQC, addQC, plotQC for a very simple quality control
+    measure.
+    \item Added minfiQC for a one-stop function for quality control
+    measures.
   }
 }
 

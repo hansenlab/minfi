@@ -89,3 +89,19 @@ getMethSignal <- function(object, what = c("Beta", "M"), ...) {
            "M" = getM(object, ...)
            )
 }
+
+pDataAdd <- function(object, df) {
+    stopifnot(is(df, "data.frame") || is(df, "DataFrame"))
+    pD <- pData(object)
+    if(any(names(df) %in% names(pD))) {
+        alreadyPresent <- intersect(names(df), names(pD))
+        warning(sprintf("replacing the following columns in pData(object): %s",
+                        paste(alreadyPresent, collapse = ", ")))
+        pD[, alreadyPresent] <- df[, alreadyPresent]
+        df <- df[, ! names(df) %in% alreadyPresent]
+    }
+    if(ncol(df) > 0)
+        pD <- cbind(pD, df)
+    pData(object) <- pD
+    object
+}
