@@ -36,7 +36,9 @@ export(getManifest, getProbeInfo, getManifestInfo,
        RGChannelSet, RGChannelSetExtended,
        MethylSet, RatioSet,
        GenomicMethylSet, GenomicRatioSet,
-       getMethSignal)
+       getMethSignal,
+       getQC, plotQC, addQC, minfiQC, fixMethOutliers,
+       getSex, plotSex, addSex)
 
 exportClasses(RGChannelSet, RGChannelSetExtended,
               MethylSet, RatioSet,
