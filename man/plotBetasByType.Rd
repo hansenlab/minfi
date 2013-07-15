@@ -54,13 +54,13 @@ plotBetasByType(data, probeTypes = NULL, legendPos = "top",
   \code{\link[graphics]{par}}, \code{\link[graphics]{legend}}
 }
 \examples{
+\dontrun{
 if (require(minfiData)) {
-
-Mset.swan <- preprocessSWAN(RGsetEx, MsetEx)
-
-par(mfrow=c(1,2))
-plotBetasByType(MsetEx[,1], main="Raw")
-plotBetasByType(Mset.swan[,1], main="SWAN")
+  Mset.swan <- preprocessSWAN(RGsetEx, MsetEx)
+  par(mfrow=c(1,2))
+  plotBetasByType(MsetEx[,1], main="Raw")
+  plotBetasByType(Mset.swan[,1], main="SWAN")
+}
 }
 
 }

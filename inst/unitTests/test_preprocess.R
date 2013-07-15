@@ -32,5 +32,16 @@ test_preprocessSWAN <- function() {
                 minfi:::.digestMatrix(getUnmeth(Mset)))
 }
 
+test_preprocessQuantile <- function() {
+    stopifnot(require(minfiData))
+    stopifnot(require(digest))
+    load(file.path(path.package("minfi"), "unitTests", "testDigests.rda"))
+    GMset <- preprocessQuantile(MsetEx)
+    checkEquals(testDigests$preprocessQuantile$M,
+                minfi:::.digestMatrix(getM(GMset)))
+    checkEquals(testDigests$preprocessQuantile$CN,
+                minfi:::.digestMatrix(getCN(GMset)))
+}
+
 
 

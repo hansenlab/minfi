@@ -10,15 +10,16 @@
   on a single array to be normalized together.} 
  
 \usage{
-  preprocessSWAN(rgSet, mSet = NULL)
+  preprocessSWAN(rgSet, mSet = NULL, verbose = FALSE)
 }
 
 \arguments{
   \item{rgSet}{An object of class \code{RGChannelSet}.}
   \item{mSet}{An optional object of class \code{MethylSet}.  If set to
-  \code{NULL} preprocessSwan uses \code{preprocessRaw} on the
-  \code{rgSet} argument.  In case \code{mSet} is supplied, make sure it
-  is the result of preprocessing the \code{rgSet} argument.}
+    \code{NULL} preprocessSwan uses \code{preprocessRaw} on the
+    \code{rgSet} argument.  In case \code{mSet} is supplied, make sure it
+    is the result of preprocessing the \code{rgSet} argument.}
+  \item{verbose}{Should the function be verbose?}
 }
 
 \details{The SWAN method has two parts. First, an average quantile
@@ -58,6 +59,7 @@ between the subset probes.}
 \code{\linkS4class{IlluminaMethylationManifest}}.}
 
 \examples{
+\dontrun{
 if (require(minfiData)) {
   dat <- preprocessRaw(RGsetEx)
   preprocessMethod(dat)
@@ -65,5 +67,6 @@ if (require(minfiData)) {
   datIlmn <- preprocessIllumina(RGsetEx)
   preprocessMethod(datIlmn)
   datIlmnSwan <- preprocessSWAN(RGsetEx, mSet = datIlmn)
+}
 }
 }
