@@ -12,7 +12,7 @@ bgIntensitySwan <- function(rgSet){
     return(rowMeans(cbind(grnMed, redMed)))
 }
 
-preprocessSWAN <- function(rgSet, mSet = NULL){
+preprocessSWAN <- function(rgSet, mSet = NULL, verbose = FALSE){
     if(is.null(mSet))
         mSet <- preprocessRaw(rgSet)
     typeI <- getProbeInfo(rgSet, type = "I")[, c("Name", "nCpG")]
@@ -36,7 +36,7 @@ preprocessSWAN <- function(rgSet, mSet = NULL){
     normUnmethData <- normMethData
     normSet <- mSet
     for(i in 1:ncol(mSet)) {
-        cat(sprintf("Normalizing array %d of %d\n", i, ncol(mSet)))
+        if(verbose) cat(sprintf("[preprocessSwan] Normalizing array %d of %d\n", i, ncol(mSet)))
         normMeth <- normaliseChannel(methData[rownames(methData) %in% counts$Name[counts$Type=="I"], i],
                                      methData[rownames(methData) %in% counts$Name[counts$Type=="II"], i],
                                      xNormSet, bg[i])
