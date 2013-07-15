@@ -56,7 +56,7 @@ setMethod("getM", signature(object = "GenomicMethylSet"),
 
 setMethod("getCN", signature(object = "GenomicMethylSet"),
           function(object, ...) {
-              CN <- getMeth(object) + getUnmeth(object)
+              CN <- log2(getMeth(object) + getUnmeth(object))
               CN
           })
 

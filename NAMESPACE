@@ -24,6 +24,9 @@ importFrom(limma, squeezeVar, lmFit, eBayes, contrasts.fit)
 importFrom(preprocessCore, normalize.quantiles)
 importFrom(illuminaio, readIDAT)
 importFrom(utils, packageVersion, read.csv, read.table)
+importFrom(bumphunter, bumphunter)
+importMethodsFrom(bumphunter, bumphunter)
+
 
 export(getManifest, getProbeInfo, getManifestInfo,
        getControlAddress, getControlTypes, getRed, getCN, getGreen, getMeth, getUnmeth,
@@ -31,7 +34,7 @@ export(getManifest, getProbeInfo, getManifestInfo,
        dropMethylationLoci, getLocations, mapToGenome,
        IlluminaMethylationManifest, IlluminaMethylationAnnotation,
        normalize.illumina.control, bgcorrect.illumina, preprocessIllumina,
-       preprocessSWAN, plotBetasByType,
+       preprocessSWAN, preprocessQuantile, plotBetasByType,
        detectionP, qcReport, controlStripPlot, densityBeanPlot, densityPlot,
        read.450k, read.450k.sheet, read.450k.exp, logit2, ilogit2,
        RGChannelSet, RGChannelSetExtended,

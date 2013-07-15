@@ -25,6 +25,9 @@
     measure.
     \item Added minfiQC for a one-stop function for quality control
     measures.
+    \item Changed some verbose=TRUE output in various functions.
+    \item Added preprocessQuantile.
+    \item Added bumphunter method for "GenomicRatioSet".
   }
 }
 

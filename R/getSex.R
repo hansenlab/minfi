@@ -2,9 +2,9 @@ getSex <- function(object = NULL, cutoff = -2){
     if(!(is(object, "GenomicMethylSet") || is(object, "GenomicRatioSet")))
         stop("'object' needs to be either a 'GenomicMethylSet' or a 'GenomicRatioSet'")
     if(is(object, "GenomicMethylSet"))
-        CN <- log2(getCN(object))
+        CN <- getCN(object)
     if(is(object, "GenomicRatioSet"))
-        CN <- log2(getCN(object))
+        CN <- getCN(object)
     ## FIXME: add test for logarithmic scale or non-log scale
     xIndex <- which(seqnames(object) == "chrX")
     yIndex <- which(seqnames(object) == "chrY")
