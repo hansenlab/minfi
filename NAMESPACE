@@ -42,7 +42,7 @@ export(getManifest, getProbeInfo, getManifestInfo,
        GenomicMethylSet, GenomicRatioSet,
        getMethSignal,
        getQC, plotQC, addQC, minfiQC, fixMethOutliers,
-       getSex, plotSex, addSex)
+       getSex, plotSex, addSex, bumphunter)
 
 exportClasses(RGChannelSet, RGChannelSetExtended,
               MethylSet, RatioSet,
@@ -51,5 +51,6 @@ exportClasses(RGChannelSet, RGChannelSetExtended,
 
 exportMethods(show, initialize, getBeta, getM, getCN, getMeth, getUnmeth,
               getManifest, getLocations, annotation, preprocessMethod,
-              sampleNames, featureNames, pData, mapToGenome, ratioConvert)
+              sampleNames, featureNames, pData, mapToGenome, ratioConvert,
+              bumphunter)
 
