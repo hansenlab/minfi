@@ -11,6 +11,7 @@ importMethodsFrom(Biobase, channel,
                   phenoData, protocolData, sampleNames)
 import(Biostrings)
 import(GenomicRanges)
+import(IRanges)
 importFrom(Biobase, assayDataElementNames, assayDataElementReplace,
            assayDataElement, "assayDataElement<-", validMsg)
 importFrom(reshape, melt) 
