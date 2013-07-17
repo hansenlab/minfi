@@ -25,7 +25,7 @@ preprocessQuantile <- function(object, fixOutliers=TRUE,
     if(length(keepIndex) == 0) stop("All samples found to be bad")
     if(length(keepIndex) < ncol(object)) {
         if(verbose) cat(sprintf("[preprocessQuantile] Found and removed %s bad samples.\n",
-                                ncol(U) - length(keepIndex)))
+                                ncol(object) - length(keepIndex)))
         object <- object[, keepIndex]
     }
 
