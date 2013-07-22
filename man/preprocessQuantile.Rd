@@ -20,7 +20,7 @@ preprocessQuantile(object, fixOutliers = TRUE, removeBadSamples = FALSE,
   \item{stratified}{}
   \item{mergeManifest}{}
   \item{sex}{}
-  \item{verbose}{}
+  \item{verbose}{Should the function be verbose?}
   \item{\dots}{}
 }
 \details{
