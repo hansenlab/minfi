@@ -14,7 +14,7 @@ addSex(object, sex = NULL)
 plotSex(object, id = NULL)
 }
 \arguments{
-  \item{object}{}
+  \item{object}{An object of class \code{[Genomic]MethylSet}.}
   \item{cutoff}{}
   \item{sex}{}
   \item{id}{}

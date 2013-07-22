@@ -28,6 +28,8 @@
     \item Changed some verbose=TRUE output in various functions.
     \item Added preprocessQuantile.
     \item Added bumphunter method for "GenomicRatioSet".
+    \item Handling signed zero in minfi:::.digestMatrix which caused
+    unit tests to fail on Windows.
   }
 }
 

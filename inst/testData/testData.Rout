@@ -1,5 +1,5 @@
 
-R version 3.0.1 Patched (2013-07-06 r63204) -- "Good Sport"
+R version 3.0.1 Patched (2013-07-17 r63343) -- "Good Sport"
 Copyright (C) 2013 The R Foundation for Statistical Computing
 Platform: x86_64-apple-darwin12.4.0 (64-bit)
 
@@ -81,7 +81,20 @@ The following object is masked from ‘package:plyr’:
     compact
 
 Loading required package: Biostrings
+Loading required package: bumphunter
+Loading required package: foreach
+Loading required package: iterators
+Loading required package: locfit
+locfit 1.5-9.1 	 2013-03-22
+
+Attaching package: ‘locfit’
+
+The following object is masked from ‘package:GenomicRanges’:
+
+    left, right
+
 Loading required package: IlluminaHumanMethylation450kmanifest
+Loading required package: IlluminaHumanMethylation450kannotation.ilmn.v1.2
 > library(digest)
 > Mset.raw <- preprocessRaw(RGsetEx)
 > Mset.illumina <- preprocessIllumina(RGsetEx)
@@ -89,7 +102,6 @@ Loading required package: IlluminaHumanMethylation450kmanifest
 > Mset.swan <- preprocessSWAN(RGsetEx)
 > Mset.quantile <- preprocessQuantile(MsetEx)
 [preprocessQuantile] Mapping to genome.
-Loading required package: IlluminaHumanMethylation450kannotation.ilmn.v1.2
 [preprocessQuantile] Fixing outliers.
 [preprocessQuantile] Quantile normalizing.
 > 
@@ -108,10 +120,10 @@ Loading required package: IlluminaHumanMethylation450kannotation.ilmn.v1.2
 > 
 > gc()
            used  (Mb) gc trigger   (Mb)  max used   (Mb)
-Ncells  4908993 262.2    7700734  411.3   7700734  411.3
-Vcells 91642485 699.2  175332471 1337.7 175324820 1337.7
+Ncells  4936103 263.7    7700734  411.3   7700734  411.3
+Vcells 91658314 699.3  175015781 1335.3 174983790 1335.1
 > sessionInfo()                         
-R version 3.0.1 Patched (2013-07-06 r63204)
+R version 3.0.1 Patched (2013-07-17 r63343)
 Platform: x86_64-apple-darwin12.4.0 (64-bit)
 
 locale:
@@ -122,29 +134,34 @@ attached base packages:
 [8] base     
 
 other attached packages:
- [1] IlluminaHumanMethylation450kannotation.ilmn.v1.2_0.1.3
- [2] digest_0.6.3                                          
- [3] minfiData_0.3.1                                       
+ [1] digest_0.6.3                                          
+ [2] minfiData_0.3.4                                       
+ [3] IlluminaHumanMethylation450kannotation.ilmn.v1.2_0.1.3
  [4] IlluminaHumanMethylation450kmanifest_0.4.0            
- [5] minfi_1.7.7                                           
- [6] Biostrings_2.29.13                                    
- [7] GenomicRanges_1.13.33                                 
- [8] XVector_0.1.0                                         
- [9] IRanges_1.19.16                                       
-[10] reshape_0.8.4                                         
-[11] plyr_1.8                                              
-[12] lattice_0.20-15                                       
-[13] Biobase_2.21.6                                        
-[14] BiocGenerics_0.7.3                                    
+ [5] minfi_1.7.11                                          
+ [6] bumphunter_1.1.10                                     
+ [7] locfit_1.5-9.1                                        
+ [8] iterators_1.0.6                                       
+ [9] foreach_1.4.1                                         
+[10] Biostrings_2.29.14                                    
+[11] GenomicRanges_1.13.35                                 
+[12] XVector_0.1.0                                         
+[13] IRanges_1.19.19                                       
+[14] reshape_0.8.4                                         
+[15] plyr_1.8                                              
+[16] lattice_0.20-15                                       
+[17] Biobase_2.21.6                                        
+[18] BiocGenerics_0.7.3                                    
 
 loaded via a namespace (and not attached):
- [1] base64_1.1            beanplot_1.1          grid_3.0.1           
- [4] illuminaio_0.3.2      limma_3.17.16         MASS_7.3-27          
- [7] matrixStats_0.8.1     mclust_4.1            multtest_2.17.0      
-[10] nor1mix_1.1-4         preprocessCore_1.23.0 R.methodsS3_1.4.4    
-[13] RColorBrewer_1.0-5    siggenes_1.35.0       splines_3.0.1        
-[16] stats4_3.0.1          survival_2.37-4      
+ [1] base64_1.1            beanplot_1.1          codetools_0.2-8      
+ [4] doRNG_1.5.3           grid_3.0.1            illuminaio_0.3.2     
+ [7] itertools_0.1-1       limma_3.17.16         MASS_7.3-27          
+[10] matrixStats_0.8.5     mclust_4.1            multtest_2.17.0      
+[13] nor1mix_1.1-4         preprocessCore_1.23.0 R.methodsS3_1.4.4    
+[16] RColorBrewer_1.0-5    siggenes_1.35.0       splines_3.0.1        
+[19] stats4_3.0.1          survival_2.37-4      
 > 
 > proc.time()
    user  system elapsed 
-110.321   8.048 118.413 
+124.277   8.894 135.804 

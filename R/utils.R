@@ -79,6 +79,8 @@ ilogit2 <- function(x) { 2^(x) / (1+2^(x)) }
 .digestMatrix <- function(mat) {
     stopifnot(require(digest))
     content <- sprintf("%.6f", mat)
+    ## Handling signed zero as per IEEE specs
+    content[content == "-0.000000"] <- "0.000000"
     digest(c(content, rownames(mat), colnames(mat)))
 }
 

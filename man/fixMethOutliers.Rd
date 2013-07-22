@@ -9,9 +9,9 @@
 fixMethOutliers(object, K = -3, verbose = FALSE)
 }
 \arguments{
-  \item{object}{}
+  \item{object}{An object of class \code{[Genomic]MethylSet}.}
   \item{K}{}
-  \item{verbose}{}
+  \item{verbose}{Should the function be verbose?}
 }
 \details{
 %%  ~~ If necessary, more details than the description above ~~

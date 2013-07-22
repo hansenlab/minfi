@@ -14,7 +14,7 @@ addQC(object, qc)
 plotQC(qc, badSampleCutoff = 10.5)
 }
 \arguments{
-  \item{object}{}
+  \item{object}{An object of class \code{[Genomic]MethylSet}.}
   \item{qc}{}
   \item{badSampleCutoff}{}
 }

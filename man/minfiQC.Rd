@@ -9,9 +9,10 @@
 minfiQC(object, fixOutliers = TRUE, verbose = FALSE)
 }
 \arguments{
-  \item{object}{}
-  \item{fixOutliers}{}
-  \item{verbose}{}
+  \item{object}{An object of class \code{[Genomic]MethylSet}.}
+  \item{fixOutliers}{Should the function fix outlying observations
+    (using \code{fixMethOutliers}) before running QC?}
+  \item{verbose}{Should the function be verbose?}
 }
 \details{
 }
