@@ -30,6 +30,9 @@
     \item Added bumphunter method for "GenomicRatioSet".
     \item Handling signed zero in minfi:::.digestMatrix which caused
     unit tests to fail on Windows.
+    \item addSex and addQC lead to sampleNames() being dropped because
+    of a likely bug in cbind(DataFrame, DataFrame).  Work-around has
+    been implemented.
   }
 }
 
