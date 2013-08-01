@@ -102,8 +102,12 @@ pDataAdd <- function(object, df) {
         pD[, alreadyPresent] <- df[, alreadyPresent]
         df <- df[, ! names(df) %in% alreadyPresent]
     }
-    if(ncol(df) > 0)
+    if(ncol(df) > 0) {
+        ## Work around for bug in cbind(DataFrame, DataFrame)
+        rownam <- rownames(pD)
         pD <- cbind(pD, df)
+        rownames(pD) <- rownam
+    }
     pData(object) <- pD
     object
 }
