@@ -1,55 +1,54 @@
 Package: minfi
-Version: 1.7.12
+Version: 1.7.13
 Title: Analyze Illumina's 450k methylation arrays
 Description: Tools for analyzing and visualizing Illumina's 450k array data
 Author: Kasper Daniel Hansen, Martin Aryee
 Maintainer: Kasper Daniel Hansen <khansen@jhsph.edu>
-Depends: methods,
-	 BiocGenerics (>= 0.3.2),
-	 Biobase (>= 2.17.8),
-	 lattice,
-	 reshape,
-	 GenomicRanges,
-	 Biostrings,
-	 utils,
-	 bumphunter (>= 1.1.9)
+Depends:  methods,
+	  BiocGenerics (>= 0.3.2),
+	  Biobase (>= 2.17.8),
+	  lattice,
+	  reshape,
+	  GenomicRanges,
+	  Biostrings,
+	  utils,
+	  bumphunter (>= 1.1.9)
 Suggests: IlluminaHumanMethylation450kmanifest (>= 0.2.0),
 	  IlluminaHumanMethylation450kannotation.ilmn.v1.2,
 	  minfiData (>= 0.2.0),
 	  RUnit,
 	  digest
-Imports: BiocGenerics, 
-         IRanges,
-	 beanplot, 
-	 RColorBrewer, 
-	 nor1mix, 
-	 siggenes, 
-	 limma, 
-	 preprocessCore, 
-	 illuminaio, 
-	 matrixStats, 
-	 mclust
-Collate: generics.R
-	 mset.R
-	 rset.R
-	 rgset.R
-	 gmset.R
-	 grset.R
-	 utils.R 
-         locations.R
-	 anno.R
-	 minfiQC.R
-	 getSex.R
-         dmr.R
-	 plot.R
-	 plotBetasByType.R
-	 preprocess.R
-	 preprocessSwan.R
-	 preprocessQuantile.R
-	 qc.R
-	 read.450k.R
-	 read.manifest.R
-	 bumphunter.R
+Imports:  IRanges,
+	  beanplot, 
+	  RColorBrewer, 
+	  nor1mix, 
+	  siggenes, 
+	  limma, 
+	  preprocessCore, 
+	  illuminaio, 
+	  matrixStats, 
+	  mclust
+Collate:  generics.R
+	  mset.R
+	  rset.R
+	  rgset.R
+	  gmset.R
+	  grset.R
+	  utils.R 
+          locations.R
+	  anno.R
+	  minfiQC.R
+	  getSex.R
+          dmr.R
+	  plot.R
+	  plotBetasByType.R
+	  preprocess.R
+	  preprocessSwan.R
+	  preprocessQuantile.R
+	  qc.R
+	  read.450k.R
+	  read.manifest.R
+	  bumphunter.R
 License: Artistic-2.0
 LazyData: yes
 biocViews: DNAMethylation, Microarray, TwoChannel, DataImport, Preprocessing, QualityControl

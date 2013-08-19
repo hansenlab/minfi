@@ -44,7 +44,7 @@ preprocessQuantile <- function(object, fixOutliers=TRUE,
             U <- .qnormNotStratified(getUnmeth(object), auIndex, xIndex, yIndex, sex)
             M <- .qnormNotStratified(getMeth(object), auIndex, xIndex, yIndex, sex)
         } else {
-            anno <- minfi:::getAnnotation(object)
+            anno <- getAnnotation(object)
             ## get the type of probe
             probeType <- anno$Type
             ## get the type of region

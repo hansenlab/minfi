@@ -1,6 +1,4 @@
 read.manifest <- function(file) {
-    if(!require(Biostrings))
-        stop("read.manifest requires the package Biostrings")
     ## As is, requires grep
     control.line <- system(sprintf("grep -n Controls %s", file), intern = TRUE)
     control.line <- as.integer(sub(":.*", "", control.line))
@@ -52,8 +50,6 @@ read.manifest <- function(file) {
 
 
 read.manifest.27k <- function(file) {
-    if(!require(Biostrings))
-        stop("read.manifest requires the package Biostrings")
     ## As is, requires grep
     control.line <- system(sprintf("grep -a -n \\\\[Controls\\\\] %s", file), intern = TRUE)
     control.line <- as.integer(sub(":.*", "", control.line))
