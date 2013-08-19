@@ -1,9 +1,11 @@
 \name{fixMethOutliers}
 \alias{fixMethOutliers}
 \title{
-  FIXME
+  Fix methylation outliers
 }
 \description{
+  Methylation outliers (loci with very extreme values of the Meth or
+  Unmeth channel) are identified and fixed (see details).
 }
 \usage{
 fixMethOutliers(object, K = -3, verbose = FALSE)
@@ -14,7 +16,7 @@ fixMethOutliers(object, K = -3, verbose = FALSE)
   \item{verbose}{Should the function be verbose?}
 }
 \details{
-%%  ~~ If necessary, more details than the description above ~~
+  
 }
 \value{
 %%  ~Describe the value returned
@@ -26,7 +28,7 @@ fixMethOutliers(object, K = -3, verbose = FALSE)
 \references{
 }
 \author{
-%%  ~~who you are~~
+  Rafael A. Irizarry
 }
 \note{
 %%  ~~further notes~~

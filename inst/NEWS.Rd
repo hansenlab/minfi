@@ -33,6 +33,9 @@
     \item addSex and addQC lead to sampleNames() being dropped because
     of a likely bug in cbind(DataFrame, DataFrame).  Work-around has
     been implemented.
+    \item Re-ran the test data generator.
+    \item Fixed some Depends and Imports issues revealed by new features
+    of R CMD check.
   }
 }
 

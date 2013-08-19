@@ -6,6 +6,12 @@ set.seed(456)
 Mset.swan <- preprocessSWAN(RGsetEx)
 Mset.quantile <- preprocessQuantile(MsetEx)
 
+## save(Mset.raw, file = "Mset.raw.rda")
+## save(Mset.illumina, file = "Mset.illumina.rda")
+## save(Mset.swan, file = "Mset.swan.rda")
+save(Mset.quantile, file = "Mset.quantile.rda")
+
+
 testDigests <- list(
     preprocessRaw = list(Meth = minfi:::.digestMatrix(getMeth(Mset.raw)),
       Unmeth = minfi:::.digestMatrix(getUnmeth(Mset.raw))),
@@ -21,3 +27,5 @@ save(testDigests, file = "../unitTests/testDigests.rda")
 
 gc()
 sessionInfo()                         
+
+rm(list = ls())

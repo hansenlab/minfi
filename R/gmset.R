@@ -1,4 +1,3 @@
-
 setClass("GenomicMethylSet",
          representation(preprocessMethod = "character", annotation = "character"),
          contains = "SummarizedExperiment")
