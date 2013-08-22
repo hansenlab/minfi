@@ -36,6 +36,7 @@
     \item Re-ran the test data generator.
     \item Fixed some Depends and Imports issues revealed by new features
     of R CMD check.
+    \item Added blockFinder and cpgCollapse.
   }
 }
 

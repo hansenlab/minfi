@@ -1,14 +1,12 @@
 import(methods)
 import(matrixStats)
-importMethodsFrom(BiocGenerics, density, get, rbind, cbind, updateObject,
-                  annotation, "annotation<-")
-importMethodsFrom(BiocGenerics, density, get, rbind, cbind, updateObject)
+import(BiocGenerics)
 importClassesFrom(Biobase, AnnotatedDataFrame, AssayData, eSet, MIAxE,
                   Versions)
 importMethodsFrom(Biobase, channel,
                   classVersion, experimentData, featureData,
-                  featureNames, "featureNames<-", isCurrent, "pData<-",
-                  phenoData, protocolData, sampleNames)
+                  featureNames, "featureNames<-", isCurrent, pData, "pData<-",
+                  phenoData, protocolData, sampleNames, storageMode)
 import(Biostrings)
 import(GenomicRanges)
 import(IRanges)
@@ -24,8 +22,9 @@ importFrom(limma, squeezeVar, lmFit, eBayes, contrasts.fit)
 importFrom(preprocessCore, normalize.quantiles)
 importFrom(illuminaio, readIDAT)
 importFrom(utils, packageVersion, read.csv, read.table)
-importFrom(bumphunter, bumphunter)
+importFrom(bumphunter, bumphunter, clusterMaker, boundedClusterMaker)
 importMethodsFrom(bumphunter, bumphunter)
+importFrom(lattice, panel.abline, panel.stripplot, xyplot)
 
 
 export(getManifest, getProbeInfo, getManifestInfo,
@@ -42,7 +41,8 @@ export(getManifest, getProbeInfo, getManifestInfo,
        GenomicMethylSet, GenomicRatioSet,
        getMethSignal,
        getQC, plotQC, addQC, minfiQC, fixMethOutliers,
-       getSex, plotSex, addSex, bumphunter)
+       getSex, plotSex, addSex, bumphunter,
+       blockFinder, cpgCollapse)
 
 exportClasses(RGChannelSet, RGChannelSetExtended,
               MethylSet, RatioSet,
