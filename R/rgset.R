@@ -90,14 +90,12 @@ setMethod("updateObject", signature(object="RGChannelSetExtended"),
 
 
 getRed <- function(object) {
-    if(!is(object, "RGChannelSet"))
-        stop("'object' needs to be a 'RGChannelSet'")
+    .isRG(object)
     assayDataElement(object, "Red")
 }
 
 getGreen <- function(object) {
-    if(!is(object, "RGChannelSet"))
-        stop("'object' needs to be a 'RGChannelSet'")
+    .isRG(object)
     assayDataElement(object, "Green")
 }
 

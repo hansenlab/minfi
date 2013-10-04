@@ -1,18 +1,20 @@
 \name{preprocessQuantile}
 \alias{preprocessQuantile}
 \title{
-  FIXME
+  Stratified quantile normalization for an Illumina methylation array.
 }
 \description{
+  Stratified quantile normalization for Illumina amethylation arrays.
 }
 \usage{
 preprocessQuantile(object, fixOutliers = TRUE, removeBadSamples = FALSE,
                    badSampleCutoff = 10.5, quantileNormalize = TRUE,
                    stratified = TRUE, mergeManifest = FALSE, sex = NULL,
-                   verbose = TRUE, ...)
+                   verbose = TRUE)
 }
 \arguments{
-  \item{object}{}
+  \item{object}{An object of class \code{RGChannelSet} or
+    \code{[Genomic]MethylSet}.}
   \item{fixOutliers}{}
   \item{removeBadSamples}{}
   \item{badSampleCutoff}{}
@@ -21,7 +23,6 @@ preprocessQuantile(object, fixOutliers = TRUE, removeBadSamples = FALSE,
   \item{mergeManifest}{}
   \item{sex}{}
   \item{verbose}{Should the function be verbose?}
-  \item{\dots}{}
 }
 \details{
 %%  ~~ If necessary, more details than the description above ~~
@@ -37,10 +38,13 @@ preprocessQuantile(object, fixOutliers = TRUE, removeBadSamples = FALSE,
 %% ~put references to the literature/web site here ~
 }
 \author{
-%%  ~~who you are~~
+  Rafael A. Irizarry
 }
 \seealso{
 %% ~~objects to See Also as \code{\link{help}}, ~~~
 }
 \examples{
+if(require(minfiData)) {
+
+}
 }

@@ -1,6 +1,5 @@
 preprocessRaw <- function(rgSet) {
-    if(!is(rgSet, "RGChannelSet"))
-        stop("'rgSet' needs to be a 'RGChannelSet'")
+    .isRG(rgSet)
     locusNames <- getManifestInfo(rgSet, "locusNames")
     M <- matrix(NA_real_, ncol = ncol(rgSet), nrow = length(locusNames),
                 dimnames = list(locusNames, sampleNames(rgSet)))
@@ -50,8 +49,7 @@ normalize.illumina.control <- function(rgSet, reference=1) {
 }
 
 bgcorrect.illumina <- function(rgSet) {
-    if (!is(rgSet, "RGChannelSet")) 
-        stop("'rgSet' needs to be a 'RGChannelSet'")
+    .isRG(rgSet)
     Green <- getGreen(rgSet)
     Red <- getRed(rgSet)
     NegControls <- getControlAddress(rgSet, controlType = "NEGATIVE")
@@ -67,8 +65,7 @@ bgcorrect.illumina <- function(rgSet) {
 
 preprocessIllumina <- function(rgSet, bg.correct = TRUE, normalize = c("controls", "no"),
                                 reference = 1) {
-    if(!is(rgSet, "RGChannelSet"))
-        stop("'rgSet' needs to be a 'RGChannelSet'")
+    .isRG(rgSet)
     normalize <- match.arg(normalize)
 
     if(normalize == "controls") {

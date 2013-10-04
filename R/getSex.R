@@ -1,6 +1,5 @@
 getSex <- function(object = NULL, cutoff = -2){
-    if(!(is(object, "GenomicMethylSet") || is(object, "GenomicRatioSet")))
-        stop("'object' needs to be either a 'GenomicMethylSet' or a 'GenomicRatioSet'")
+    .isGenomic(object)
     if(is(object, "GenomicMethylSet"))
         CN <- getCN(object)
     if(is(object, "GenomicRatioSet"))
@@ -31,7 +30,8 @@ plotSex <- function(object, id = NULL) {
     plot(object$xMed, object$yMed, type = "n",
          xlab = "X chr, median total intensity (log2)",
          ylab = "Y chr, median total intensity (log2)")
-    text(object$xMed, object$yMed, id, col=ifelse(object$predictedSex == "M", "deepskyblue", "deeppink3"))
+    text(object$xMed, object$yMed, id,
+         col=ifelse(object$predictedSex == "M", "deepskyblue", "deeppink3"))
     legend("bottomleft", c("M","F"), col = c("deepskyblue", "deeppink3"), pch = 16)
 }
 

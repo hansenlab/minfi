@@ -52,6 +52,21 @@ ilogit2 <- function(x) { 2^(x) / (1+2^(x)) }
     stop("unable to get the annotation string for this object")
 }
 
+.getAnnotationObject <- function(object) {
+    if(is(object, "MethylSet") || is(object, "RatioSet") ||
+       is(object, "GenomicMethylSet") || is(object, "GenomicRatioSet") ||
+       is(object, "RGChannelSet"))
+        object <- .getAnnotationString(object)
+    if(is.character(object)) {
+        if(!require(object, character.only = TRUE))
+            stop(sprintf("cannot load annotation package %s", object))
+        object <- get(object)
+    }
+    if(!is(object, "IlluminaMethylationAnnotation"))
+        stop("Could not locate annotation object for 'object' of class", class(object))
+    object
+}
+
 .betaFromMethUnmeth <- function(Meth, Unmeth, object, offset = 0,
                                 betaThreshold = 0, minZero = TRUE) {
     stopifnot(offset >= 0)
@@ -82,6 +97,30 @@ ilogit2 <- function(x) { 2^(x) / (1+2^(x)) }
     ## Handling signed zero as per IEEE specs
     content[content == "-0.000000"] <- "0.000000"
     digest(c(content, rownames(mat), colnames(mat)))
+}
+
+.isGenomic <- function(object) {
+    if(!is(object, "GenomicMethylSet") && !is(object, "GenomicRatioSet"))
+        stop(sprintf("object is of class '%s', but needs to be of class 'GenomicMethylSet' or 'GenomicRatioSet'",
+                     class(object)))
+}
+
+.isMethyl <- function(object) {
+    if(!is(object, "MethylSet") && !is(object, "GenomicMethylSet"))
+        stop(sprintf("object is of class '%s', but needs to be of class 'MethylSet' or 'GenomicMethylSet'",
+                     class(object)))
+}
+
+.isGenomicMethyl <- function(object) {
+    if(!is(object, "GenomicMethylSet"))
+        stop(sprintf("object is of class '%s', but needs to be of class 'GenomicMethylSet'",
+                     class(object)))
+}
+
+.isRG <- function(object) {
+    if(!is(object, "RGChannelSet"))
+        stop(sprintf("object is of class '%s', but needs to be of class 'RGChannelSet' or 'RGChannelSetExtended'",
+                     class(object)))
 }
 
 getMethSignal <- function(object, what = c("Beta", "M"), ...) {
