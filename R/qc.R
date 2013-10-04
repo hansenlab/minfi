@@ -1,10 +1,7 @@
 qcReport <- function(rgSet, sampNames=NULL, sampGroups=NULL, pdf="qcReport.pdf", maxSamplesPerPage=24, 
         controls=c("BISULFITE CONVERSION I", "BISULFITE CONVERSION II", "EXTENSION", "HYBRIDIZATION", 
         "NON-POLYMORPHIC", "SPECIFICITY I", "SPECIFICITY II", "TARGET REMOVAL")) {
-
-    if(!is(rgSet, "RGChannelSet"))
-        stop("argument 'rgSet' needs to be an 'RGChannelSet'")
-    
+    .isRG(rgSet)
     if (is.null(sampNames)) sampNames <- sampleNames(rgSet)
     n <- ncol(rgSet)
     o <- rev(order(sampNames))
@@ -35,9 +32,7 @@ qcReport <- function(rgSet, sampNames=NULL, sampGroups=NULL, pdf="qcReport.pdf",
 
 controlStripPlot <- function(rgSet, controls=c("BISULFITE CONVERSION I", "BISULFITE CONVERSION II"), 
     sampNames=NULL, xlim=c(5, 17)) {
-
-    if(!is(rgSet, "RGChannelSet"))
-        stop("argument 'rgSet' needs to be an 'RGChannelSet'")
+    .isRG(rgSet)
     
     r <- getRed(rgSet)
     g <- getGreen(rgSet)

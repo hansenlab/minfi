@@ -1,7 +1,7 @@
 preprocessQuantile <- function(object, fixOutliers=TRUE,
                                removeBadSamples=FALSE, badSampleCutoff=10.5,
                                quantileNormalize=TRUE, stratified=TRUE,
-                               mergeManifest=FALSE, sex=NULL, verbose=TRUE, ...){
+                               mergeManifest=FALSE, sex=NULL, verbose=TRUE){
     ## We could use [Genomic]MethylSet if the object has been processed with preprocessRaw()
     if(! (is(object, "RGChannelSet") || is(object, "MethylSet") ||
           is(object, "GenomicMethylSet") ))

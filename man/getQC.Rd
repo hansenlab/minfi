@@ -15,23 +15,28 @@ plotQC(qc, badSampleCutoff = 10.5)
 }
 \arguments{
   \item{object}{An object of class \code{[Genomic]MethylSet}.}
-  \item{qc}{}
-  \item{badSampleCutoff}{}
-}
-\details{
+  \item{qc}{An object as produced by \code{getQC}.}
+  \item{badSampleCutoff}{The cutoff for identifying a bad sample.}
 }
 \value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
+  For \code{getQC}, a \code{DataFrame} with two columns: \code{mMed} and
+  \code{uMed} which are the chipwide medians of the Meth and Unmeth
+  channels.
+
+  For \code{addQC}, essentially \code{object} supplied to the function,
+  but with two new columns added to the pheno data slot: \code{uMed} and
+  \code{mMed}.
 }
 \author{
-}
-\note{
+  Rafael A. Irizarry and Kasper D. Hansen
 }
 \seealso{
+  \code{\link{minfiQC}} for an all-in-one function.
 }
 \examples{
+if(require(minfiData)){
+  qc <- getQC(MsetEx)
+  MsetEx <- addQC(MsetEx, qc = qc)
+  ## plotQC(qc)
+}
 }

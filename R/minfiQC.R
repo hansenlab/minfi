@@ -16,18 +16,21 @@
 }
 
 fixMethOutliers <- function(object, K=-3, verbose = FALSE){
-    if(!is(object, "MethylSet") && !is(object, "GenomicMethylSet"))
-        stop("object must be a '[Genomic]MethylSet'")
+    .isMethyl(object)
     if(verbose) cat("[fixMethOutliers] fixing Meth channel\n")
-    assay(object, "Meth") <- .fixMethOutliers(getMeth(object), K=K, verbose = verbose)$mat
+    if(is(object, "GenomicMethylSet"))
+        assay(object, "Meth") <- .fixMethOutliers(getMeth(object), K=K, verbose = verbose)$mat
+    else
+        assayData(object)[["Meth"]] <- .fixMethOutliers(getMeth(object), K=K, verbose = verbose)$mat
     if(verbose) cat("[fixMethOutliers] fixing Unmeth channel\n")
-    assay(object, "Unmeth") <- .fixMethOutliers(getUnmeth(object), K=K, verbose = verbose)$mat
-    return(object)
+    if(is(object, "GenomicMethylSet"))
+        assay(object, "Unmeth") <- .fixMethOutliers(getUnmeth(object), K=K, verbose = verbose)$mat
+    else
+        assayData(object)[["Unmeth"]] <- .fixMethOutliers(getUnmeth(object), K=K, verbose = verbose)$mat
+      return(object)
 }
 
 addQC <- function(object, qc) {
-    if(!is(object, "GenomicMethylSet"))
-        stop("'object' must be a 'GenomicMethylSet'")
     pDataAdd(object, qc)
 }
 
@@ -53,8 +56,7 @@ plotQC <- function(qc, badSampleCutoff = 10.5) {
 }
 
 getQC <- function(object) {
-    if(!is(object, "MethylSet") && !is(object, "GenomicMethylSet"))
-        stop("object must be a '[Genomic]MethylSet'")
+    .isMethyl(object)
     U.medians <- log2(matrixStats::colMedians(getUnmeth(object)))
     M.medians <- log2(matrixStats::colMedians(getMeth(object)))
     df <- DataFrame(mMed = M.medians, uMed = U.medians)
@@ -63,17 +65,20 @@ getQC <- function(object) {
 }
 
 minfiQC <- function(object, fixOutliers=TRUE, verbose = FALSE){
-    if(!is(object, "MethylSet") && !is(object, "GenomicMethylSet"))
-        stop("object must be a '[Genomic]MethylSet'")
-
+    .isMethyl(object)
     subverbose <- max(as.integer(verbose) - 1L, 0L)
     if(fixOutliers){
         if(verbose) cat("[minfiQC] fixing outliers\n")
         fixMethOutliers(object, verbose = subverbose)
     }
     qc <- getQC(object)
-    sex <- getSex(object)
-    object <- addSex(object)
+    object <- addQC(object, qc = qc)
+    if(!is(object, "GenomicMethylSet")) {
+        sex <- getSex(mapToGenome(object))
+    } else {
+        sex <- getSex(object)
+    }
+    object <- addSex(object, sex = sex)
     return(list(object = object, qc = cbind(qc, sex)))
 }
 

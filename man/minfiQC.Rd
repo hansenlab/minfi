@@ -1,9 +1,11 @@
 \name{minfiQC}
 \alias{minfiQC}
 \title{
-  FIXME
+  easy one-step QC of methylation object
 }
 \description{
+  This function combines a number of functions into a simple to use, one
+  step QC step/
 }
 \usage{
 minfiQC(object, fixOutliers = TRUE, verbose = FALSE)
@@ -15,20 +17,29 @@ minfiQC(object, fixOutliers = TRUE, verbose = FALSE)
   \item{verbose}{Should the function be verbose?}
 }
 \details{
+  A number of functions are run sequentially on the \code{object}.
+
+  First outlier values are thresholded using \code{fixMethOutliers}.
+  Then qc is performed using \code{getQC} and then sample specific sex
+  is estimated using \code{getSex}.
 }
 \value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
+  A list with two values,
+  \item{object}{The \code{object} processed by \code{fixMethOutliers}
+    and with a column \code{predictedSex} added to the pheno data.}
+  \item{qc}{A \code{DataFrame} with columns from the output of
+  \code{getQC} and \code{getSex}}
 }
 \author{
-}
-\note{
+  Kasper D. Hansen
 }
 \seealso{
   \code{\link{getSex}}, \code{\link{getQC}}, \code{\link{fixMethOutliers}}
 }
 \examples{
+if(require(minfiData)) {
+  out <- minfiQC(MsetEx)
+  ## plotQC(out$qc)
+  ## plotSex(out$sex)
+}
 }

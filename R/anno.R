@@ -101,6 +101,9 @@ setClass("IlluminaMethylationAnnotation",
 
 setValidity("IlluminaMethylationAnnotation", function(object) {
     msg <- NULL
+    if(!(all(sapply(object@data, class) == "DataFrame")))
+        msg <- paste(msg,
+                     "All objects in 'objects@data' has to be of class 'DataFrame'", sep = "\n")
     if (is.null(msg)) TRUE else msg
 })
 
@@ -112,10 +115,13 @@ setMethod("show", "IlluminaMethylationAnnotation", function(object) {
 IlluminaMethylationAnnotation <- function(listOfObjects,
                                           annotation = "") {
     data <- new.env(parent = emptyenv())
-    stopifnot(all(c("Locations.hg18", "Locations.hg19") %in% names(listOfObjects)))
+    stopifnot("Manifest" %in% names(listOfObjects))
+    stopifnot(all(sapply(listOfObjects, class) %in% c("DataFrame", "data.frame")))
+    stopifnot(length(grep("^Locations\\.", names(listOfObjects))) >= 1)
+    stopifnot(all(nrow(listOfObjects[["Manifest"]]) == sapply(listOfObjects, nrow)))
     for(nam in names(listOfObjects)) {
         cat(nam, "\n")
-        assign(nam, listOfObjects[[nam]], envir = data)
+        assign(nam, as(listOfObjects[[nam]], "DataFrame"), envir = data)
     }
     lockEnvironment(data, bindings = TRUE)
     anno <- new("IlluminaMethylationAnnotation",
@@ -129,6 +135,11 @@ setMethod("getManifest", signature(object = "IlluminaMethylationAnnotation"),
               if(!require(maniString, character.only = TRUE))
                   stop(sprintf("cannot load manifest package %s", maniString))
               get(maniString)
+          })
+
+setMethod("getLocations", signature(object = "character"),
+          function(object, genomeBuild = "hg19", mergeManifest = FALSE) {
+              callNextMethod(get(object), genomeBuild = genomeBuild, mergeManifest = mergeManifest)
           })
 
 setMethod("getLocations", signature(object = "IlluminaMethylationAnnotation"),
@@ -170,6 +181,19 @@ setMethod("getLocations", signature(object = "IlluminaMethylationAnnotation"),
               gr
           })
 
+getIslandStatus <- function() {
+    regionType <- sub("^N_","", sub("^S_","", anno$Relation_to_UCSC_CpG_Island))
+    regionType[regionType %in% c("Shelf","")] <- "Far"
+
+    ## from rafa
+    ann <- minfi:::getAnnotation(Mset1)
+    relationToIsland=ann$Relation_to_UCSC_CpG_Island
+    type <- rep("OpenSea", length(type))
+    type[relationToIsland == "Island"] <- "Island"
+    type[grep("Shore", relationToIsland)] <- "Shore"
+    type[grep("Shelf", relationToIsland)] <- "Shelf"
+}
+
 getProbeInfo <- function(object, type = c("I", "II", "Control", "I-Green", "I-Red", "SnpI", "SnpII")) {
     type <- match.arg(type)
     if(type %in% c("I", "II", "Control", "SnpI", "SnpII"))
@@ -204,6 +228,37 @@ getControlTypes <- function(object) {
     table(ctrls[, ""])
 }
 
+getProbePositionsDetailed <- function(map) {
+    ## map is GR with metadata columns strand and type
+    stopifnot(is(map, "GRanges"))
+    stopifnot(c("Strand", "Type") %in% names(elementMetadata(map)))
 
+    probeStart <- rep(NA, length(map))
+    wh.II.F <- which(map$Type=="II" & map$Strand=="F")
+    wh.II.R <- which(map$Type=="II" & map$Strand=="R")
+    wh.I.F <- which(map$Type=="I" & map$Strand=="F")
+    wh.I.R <- which(map$Type=="I" & map$Strand=="R")
+    
+    probeStart[wh.II.F] <- start(map)[wh.II.F]
+    probeStart[wh.II.R] <- start(map)[wh.II.R] - 50
+    probeStart[wh.I.F] <- start(map)[wh.I.F] - 1
+    probeStart[wh.I.R] <- start(map)[wh.I.R] - 49
+    map$probeStart <- probeStart
 
+    probeEnd <- rep(NA, length(map))
+    probeEnd[wh.II.F] <- start(map)[wh.II.F] + 50 
+    probeEnd[wh.II.R] <- start(map)[wh.II.R] 
+    probeEnd[wh.I.F] <- start(map)[wh.I.F] + 49
+    probeEnd[wh.I.R] <- start(map)[wh.I.R] + 1
+    map$probeEnd <- probeEnd
+    
+    sbe <- rep(NA, length(map))
+    sbe[wh.II.F] <- start(map)[wh.II.F] 
+    sbe[wh.II.R] <- start(map)[wh.II.R] + 1
+    sbe[wh.I.F] <- start(map)[wh.I.F] - 1
+    sbe[wh.I.R] <- start(map)[wh.I.R] + 2
+    map$SBE <- sbe
 
+    map
+}
+    

@@ -37,6 +37,7 @@
     \item Fixed some Depends and Imports issues revealed by new features
     of R CMD check.
     \item Added blockFinder and cpgCollapse.
+    \item (internal) added convenience functions for argument checking.
   }
 }
 

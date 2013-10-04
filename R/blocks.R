@@ -52,7 +52,7 @@ cpgCollapse <- function(object, what = c("Beta", "M"), maxGap = 500,
                         returnBlockInfo = TRUE, verbose = TRUE, ...) { ### ... is for illumna type
     what <- match.arg(what)
     gr <- granges(object)
-    ann <- minfi:::getAnnotation(object)
+    ann <- getAnnotation(object)
     relationToIsland <- ann$Relation_to_UCSC_CpG_Island
     islandName <- ann$UCSC_CpG_Islands_Name
     if(verbose) cat("[cpgCollapse] Creating annotation.\n")
@@ -133,7 +133,7 @@ cpgCollapseAnnotation <- function(gr, relationToIsland, islandName,
                     type = tapply(as.character(blocktab$type), blocktab$pns,function(x)x[1]))
     res <- list(anno = anno, indexes = groupIndexes)
     seql <- seqlevels(res$anno)
-    seqlevels(res$anno, force = TRUE) <- minfi:::.seqnames.order[minfi:::.seqnames.order %in% seql]
+    seqlevels(res$anno, force = TRUE) <- .seqnames.order[.seqnames.order %in% seql]
     
     if(verbose) cat("[cpgCollapseAnnotation] Defining blocks.\n")
     ind <- (res$anno$type == "OpenSea")
