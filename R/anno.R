@@ -114,18 +114,32 @@ setMethod("show", "IlluminaMethylationAnnotation", function(object) {
 
 IlluminaMethylationAnnotation <- function(listOfObjects,
                                           annotation = "") {
-    data <- new.env(parent = emptyenv())
-    stopifnot("Manifest" %in% names(listOfObjects))
+    stopifnot(annotation != "")
+    stopifnot(all(c("array", "annotation", "genomeBuild") %in% names(annotation)))
+    stopifnot(genomeBuild != "")
+    stopifnot(all(c("Manifest", "Locations") %in% names(listOfObjects)))
+    Manifest <- listOfObjects[["Manifest"]]
+    stopifnot(set.equal(names(Manifest),
+                        c("Name", "AddressA", "AddressB", "ProbeSeqA",
+                          "ProbeSeqB", "Type", "NextBase", "Color")))
     stopifnot(all(sapply(listOfObjects, class) %in% c("DataFrame", "data.frame")))
-    stopifnot(length(grep("^Locations\\.", names(listOfObjects))) >= 1)
-    stopifnot(all(nrow(listOfObjects[["Manifest"]]) == sapply(listOfObjects, nrow)))
+    stopifnot(all(nrow(Manifest) == sapply(listOfObjects, nrow)))
+    stopifnot(all(sapply(listOfObjects, function(obj) {
+        all(rownames(obj) == rownames(Manifest))
+    })))
+    stopifnot(all(c("chr", "pos") %in% names(Locations)))
+    stopifnot(all(Locations$chr %in% .seqnames.order.all))
+    ## FIXME: Check column names of any Islands object
+    
+    ## Instantiating
+    data <- new.env(parent = emptyenv())
     for(nam in names(listOfObjects)) {
         cat(nam, "\n")
         assign(nam, as(listOfObjects[[nam]], "DataFrame"), envir = data)
     }
     lockEnvironment(data, bindings = TRUE)
     anno <- new("IlluminaMethylationAnnotation",
-                annotation = annotation, data = data)
+                annotation = annotation, data = data, genomeBuild = genomeBuild)
     anno
 }
 

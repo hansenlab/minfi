@@ -59,77 +59,52 @@ getAnnotation <- function(object, genomeBuild = c("hg19", "hg18"), what = "every
 
 availableAnnotation <- function(object) {
     object <- .getAnnotationObject(object)
-    annoNames <- ls(object@data)
-    annoNames
+    defaults <- object@defaults
+    allAnnoNames <- ls(object@data)
+    annoClasses <- sub("\\..*", "", allAnnoNames)
+    annoClassesChoices <- sub(".*\\.", "", allAnnoNames)
+    annoClassesChoices <- split(annoClassesChoices, annoClasses)
+    annoClasses <- unique(annoClasses)
+    out <- list(names = allAnnoNames, classes = annoClasses,
+                classChoices = annoClassesChoices, defaults = defaults)
+    out
 }
 
-getAnnotation2 <- function(object, what = "everything", probeNames = NULL,
-                           returnAs = c("data.frame", "GRanges"),
-                           orderByLocation = FALSE, drop = FALSE) {
+getAnnotation2 <- function(object, what = "everything", lociNames = NULL,
+                           orderByLocation = FALSE, dropNonMapping = FALSE) {
     ## processing of arguments and check
     object <- .getAnnotationObject(object)
     available <- availableAnnotation(object)
-    possible <- unique(sub("\\..*$", "", available))
     if("everything" %in% what)
-        what <- possible
-    if(!(all(what %in% possible)))
+        what <- available$defaults
+    if(!(all(what %in% available$classes)))
         stop("the value of argument 'what' is not part of the annotation package or 'everything'")
-    withDot <- what[grep(paste0(what, "."), available)]
-    
-
-    
-
-    
-    returnAs <- match.arg(returnAs)
-    genomeBuild <- match.arg(genomeBuild)
-    annoString <- .getAnnotationString(object@annotation)
-    if(!require(annoString, character.only = TRUE))
-        stop(sprintf("cannot load annotation package %s", annoString))
-    annotation <- get(annoString)
-    possible <- unique(sub("\\.hg.*$", "", ls(annotation@data)))
-    if("everything" %in% what)
-        what <- possible
-    if(!(all(what %in% possible)))
-        stop("the value of argument 'what' is not part of the annotation package or 'everything'")
-    if(returnAs == "GRanges" && ! ("Locations" %in% what))
-        what <- c("Locations", what)
-    locName <- paste("Locations", genomeBuild, sep = ".")
-    bestOrder <- c("Locations", "Manifest", "IlluminaSNPs", "Annotation")
-    what <- bestOrder[bestOrder %in% what]
-    if("Locations" %in% what)
-        what[what == "Locations"] <- locName
-    ## if(!is(object, "MethylSet"))
-    ##     stop(sprintf("'objects' is of class '%s' which is not yet supported", class(object)))
-    
-    ## We need locs to filter out loci using the function arguments 'order' and 'drop'
-    locs <- get(locName, annotation@data)
-    locs <- locs[featureNames(object),]
-    locs$Name <- rownames(locs)
-    if(orderByLocation == TRUE) {
-        if(drop) {
-            chrs <- paste("chr", c(1:22, "X", "Y"), sep = "")
-        } else {
-            chrs <- paste("chr", c(1:22, "X", "Y", ""), sep = "")
-        }
-        sp <- split(locs, locs$chr)[chrs]
-        locs <- do.call(rbind, lapply(sp, function(df) {
-            od <- order(df$pos)
-            df[od,]
-        }))
-        rownames(locs) <- locs$Name
-        locs$Name <- NULL
-    } else {
-        if(drop)
-            locs <- locs[locs$chr != "chr",]
-    }
+    if(any(sapply(available$classes, function(cl) {length(grep(cl, what))} ) > 1))
+        stop("only on choice per allowable class")
+    if(grepl("^Locations", what) && (orderByLocation || dropNonMapping))
+        stop("To use 'orderbyLocation' or 'dropNonMapping' specify Locations as part of 'what'")
     out <- do.call(cbind, lapply(what, function(wh) {
         get(wh, envir = annotation@data)
     }))
-    out <- out[rownames(locs),]
-    if(returnAs == "data.frame") {
-        return(out)
+    out <- out[rownames(out) %in% lociNames,]
+    if(dropNonMapping) {
+        wh <- which(! out$chr %in% .seqnames.order)
+        out <- out[wh,]
     }
-    if(returnAs == "GRanges")
-        return(GRanges(seqnames = out$chr, ranges = IRanges(start = out$pos, width = 2),
-                       out[, !names(out) %in% c("chr", "pos")]))
+    if(orderByLocation) {
+        if(dropNonMapping)
+            seqOrder <- .seqnames.order
+        else
+            seqOrder <- .seqnames.order.all
+        sp <- split(out, out$chr)[seqOrder]
+        out <- do.call(rbind, lapply(sp, function(df) {
+            od <- order(df$pos)
+            df[od,]
+        }))
+    }
+
+    bestOrder <- c("Locations", "Manifest", "IlluminaSNPs", "Annotation")
+    what <- bestOrder[bestOrder %in% what]
+    
+    out
 }
