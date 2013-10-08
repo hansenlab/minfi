@@ -2,7 +2,7 @@ logit2 <- function(x) { log2(x) - log2(1-x) }
 
 ilogit2 <- function(x) { 2^(x) / (1+2^(x)) }
 
-.default.450k.annotation <- "ilmn.v1.2"
+.default.450k.annotation <- "ilmn12.hg19"
 .seqnames.order.all <- c(paste0("chr", c(1:22, "X", "Y")), "multi", "unmapped")
 .seqnames.order <- paste0("chr", c(1:22, "X", "Y"))
 
@@ -48,9 +48,9 @@ ilogit2 <- function(x) { 2^(x) / (1+2^(x)) }
 
 .getAnnotationString <- function(annotation) {
     if(length(annotation) == 1)
-        return(paste0(annotation, "annotation"))
+        return(sprintf("%sanno", annotation))
     if(all(c("array", "annotation") %in% names(annotation)))
-        return(paste0(annotation["array"], "annotation.", annotation["annotation"]))
+        return(sprintf("%sanno.%s", annotation["array"], annotation["annotation"]))
     stop("unable to get the annotation string for this object")
 }
 
@@ -58,7 +58,7 @@ ilogit2 <- function(x) { 2^(x) / (1+2^(x)) }
     if(is(object, "MethylSet") || is(object, "RatioSet") ||
        is(object, "GenomicMethylSet") || is(object, "GenomicRatioSet") ||
        is(object, "RGChannelSet"))
-        object <- .getAnnotationString(object)
+        object <- .getAnnotationString(object@annotation)
     if(is.character(object)) {
         if(!require(object, character.only = TRUE))
             stop(sprintf("cannot load annotation package %s", object))

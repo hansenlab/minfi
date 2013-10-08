@@ -1,103 +1,7 @@
-setClass("IlluminaMethylationManifest",
-         representation(data = "environment",
-                        annotation = "character"))
-
-setValidity("IlluminaMethylationManifest", function(object) {
-    msg <- NULL
-    if(! "TypeI" %in% ls(object@data) || !is(object@data[["TypeI"]], "DataFrame"))
-        msg <- paste(msg, "'data' slot must contain a DataFrame with TypeI probes", sep = "\n")
-    if(! "TypeII" %in% ls(object@data) || !is(object@data[["TypeII"]], "DataFrame"))
-        msg <- paste(msg, "'data' slot must contain a DataFrame with TypeII probes", sep = "\n")
-    if(! "TypeControl" %in% ls(object@data) || !is(object@data[["TypeControl"]], "DataFrame"))
-        msg <- paste(msg, "'data' slot must contain a DataFrame with Control probes", sep = "\n")
-    if(! "TypeSnpI" %in% ls(object@data) || !is(object@data[["TypeSnpI"]], "DataFrame"))
-        msg <- paste(msg, "'data' slot must contain a DataFrame with Snp I probes", sep = "\n")
-    if(! "TypeSnpII" %in% ls(object@data) || !is(object@data[["TypeSnpII"]], "DataFrame"))
-        msg <- paste(msg, "'data' slot must contain a DataFrame with Snp II probes", sep = "\n")
-
-    ## Check Names
-    if(! all(c("Name", "AddressA", "AddressB", "Color", "nCpG") %in% colnames(object@data[["TypeI"]])))
-        msg <- paste(msg, "'TypeI' has to have column names 'Name', 'AddressA', 'AddressB', 'Color', 'nCpG'")
-    if(!is.character(object@data[["TypeI"]]$Name) ||
-       !is.character(object@data[["TypeI"]]$AddressA) ||
-       !is.character(object@data[["TypeI"]]$AddressB) ||
-       !is.character(object@data[["TypeI"]]$Color) ||
-       !is.integer(object@data[["TypeI"]]$nCpG))
-        msg <- paste(msg, "'TypeI' columns has wrong classes")
-    
-    if(! all(c("Name", "AddressA", "nCpG") %in% colnames(object@data[["TypeII"]])))
-        msg <- paste(msg, "'TypeII' has to have column names 'Name', 'AddressA', 'nCpG'")
-    if(!is.character(object@data[["TypeII"]]$Name) ||
-       !is.character(object@data[["TypeII"]]$AddressA) ||
-       !is.integer(object@data[["TypeII"]]$nCpG))
-        msg <- paste(msg, "'TypeII' columns has wrong classes")
-    
-    if(! all(c("Type", "Address") %in% colnames(object@data[["TypeControl"]])))
-        msg <- paste(msg, "'TypeControl' has to have column names 'Type', 'Address'")
-    if(!is.character(object@data[["TypeControl"]]$Type) ||
-       !is.character(object@data[["TypeControl"]]$Address))
-        msg <- paste(msg, "'TypeControl' columns has wrong classes")
-    
-    if(! all(c("Name", "AddressA", "AddressB", "Color") %in% colnames(object@data[["TypeSnpI"]])))
-        msg <- paste(msg, "'TypeSnpI' has to have column names 'Name', 'AddressA', 'AddressB', 'Color'")
-    if(!is.character(object@data[["TypeSnpI"]]$Name) ||
-       !is.character(object@data[["TypeSnpI"]]$AddressA) ||
-       !is.character(object@data[["TypeSnpI"]]$AddressB) ||
-       !is.character(object@data[["TypeSnpI"]]$Color))
-        msg <- paste(msg, "'TypeSnpI' columns has wrong classes")
-
-    if(! all(c("Name", "AddressA") %in% colnames(object@data[["TypeSnpII"]])))
-        msg <- paste(msg, "'TypeSnpII' has to have column names 'Name', 'AddressA'")
-    if(!is.character(object@data[["TypeSnpII"]]$Name) ||
-       !is.character(object@data[["TypeSnpII"]]$AddressA))
-        msg <- paste(msg, "'TypeSnpII' columns has wrong classes")
-    
-    if (is.null(msg)) TRUE else msg
-})
-
-setMethod("show", "IlluminaMethylationManifest", function(object) {
-    cat("IlluminaMethylationManifest object\n")
-    .show.annotation(object@annotation)
-    cat("Number of type I probes:", nrow(object@data[["TypeI"]]), "\n")
-    cat("Number of type II probes:", nrow(object@data[["TypeII"]]), "\n")
-    cat("Number of control probes:", nrow(object@data[["TypeControl"]]), "\n")
-    cat("Number of SNP type I probes:", nrow(object@data[["TypeSnpI"]]), "\n")
-    cat("Number of SNP type II probes:", nrow(object@data[["TypeSnpII"]]), "\n")
-})
-
-IlluminaMethylationManifest <- function(TypeI = new("DataFrame"),
-                                        TypeII = new("DataFrame"),
-                                        TypeControl = new("DataFrame"),
-                                        TypeSnpI = new("DataFrame"),
-                                        TypeSnpII = new("DataFrame"),
-                                        annotation = "") {
-    data <- new.env(parent = emptyenv())
-    data[["TypeI"]] <- TypeI
-    data[["TypeII"]] <- TypeII
-    data[["TypeControl"]] <- TypeControl
-    data[["TypeSnpI"]] <- TypeSnpI
-    data[["TypeSnpII"]] <- TypeSnpII
-    lockEnvironment(data, bindings = TRUE)
-    manifest <- new("IlluminaMethylationManifest", annotation = annotation, data = data)
-    manifest
-}
-
-setMethod("getManifest", signature(object = "IlluminaMethylationManifest"),
-          function(object) {
-              object
-          })
-
-setMethod("getManifest", signature(object = "character"),
-          function(object) {
-              maniString <- .getManifestString(object)
-              if(!require(maniString, character.only = TRUE))
-                  stop(sprintf("cannot load manifest package %s", maniString))
-              get(maniString)
-          })
-
 setClass("IlluminaMethylationAnnotation",
          representation(data = "environment",
-                        annotation = "character"))
+                        annotation = "character",
+                        defaults = "character"))
 
 setValidity("IlluminaMethylationAnnotation", function(object) {
     msg <- NULL
@@ -112,23 +16,25 @@ setMethod("show", "IlluminaMethylationAnnotation", function(object) {
     .show.annotation(object@annotation)
 })
 
-IlluminaMethylationAnnotation <- function(listOfObjects,
-                                          annotation = "") {
+IlluminaMethylationAnnotation <- function(listOfObjects, annotation = "",
+                                          defaults = "") {
     stopifnot(annotation != "")
     stopifnot(all(c("array", "annotation", "genomeBuild") %in% names(annotation)))
-    stopifnot(genomeBuild != "")
     stopifnot(all(c("Manifest", "Locations") %in% names(listOfObjects)))
     Manifest <- listOfObjects[["Manifest"]]
-    stopifnot(set.equal(names(Manifest),
-                        c("Name", "AddressA", "AddressB", "ProbeSeqA",
-                          "ProbeSeqB", "Type", "NextBase", "Color")))
+    stopifnot(setequal(names(Manifest),
+                       c("Name", "AddressA", "AddressB", "ProbeSeqA",
+                         "ProbeSeqB", "Type", "NextBase", "Color")))
     stopifnot(all(sapply(listOfObjects, class) %in% c("DataFrame", "data.frame")))
     stopifnot(all(nrow(Manifest) == sapply(listOfObjects, nrow)))
     stopifnot(all(sapply(listOfObjects, function(obj) {
         all(rownames(obj) == rownames(Manifest))
     })))
-    stopifnot(all(c("chr", "pos") %in% names(Locations)))
-    stopifnot(all(Locations$chr %in% .seqnames.order.all))
+    stopifnot(all(c("chr", "pos") %in% names(listOfObjects[["Locations"]])))
+    stopifnot(all(Locations$chr %in% minfi:::.seqnames.order.all))
+    available <- minfi:::availableAnnotation(listOfObjects, constructorCheck = TRUE)
+    stopifnot(all(defaults %in% names(listOfObjects)))
+    stopifnot(!anyDuplicated(sub("\\..*", "", defaults)))
     ## FIXME: Check column names of any Islands object
     
     ## Instantiating
@@ -139,7 +45,7 @@ IlluminaMethylationAnnotation <- function(listOfObjects,
     }
     lockEnvironment(data, bindings = TRUE)
     anno <- new("IlluminaMethylationAnnotation",
-                annotation = annotation, data = data, genomeBuild = genomeBuild)
+                annotation = annotation, data = data, defaults = defaults)
     anno
 }
 
@@ -152,15 +58,13 @@ setMethod("getManifest", signature(object = "IlluminaMethylationAnnotation"),
           })
 
 setMethod("getLocations", signature(object = "character"),
-          function(object, genomeBuild = "hg19", mergeManifest = FALSE) {
-              callNextMethod(get(object), genomeBuild = genomeBuild, mergeManifest = mergeManifest)
+          function(object, mergeManifest = FALSE) {
+              callNextMethod(get(object), mergeManifest = mergeManifest)
           })
 
 setMethod("getLocations", signature(object = "IlluminaMethylationAnnotation"),
-          function(object, genomeBuild = "hg19", mergeManifest = FALSE) {
-              locName <- sprintf("Locations.%s", genomeBuild)
-              if(! locName %in% ls(object@data))
-                  stop(sprintf("genomeBuild '%s' not in object", genomeBuild))
+          function(object, mergeManifest = FALSE) {
+              locName <- "Locations"
               locations <- get(locName, envir = object@data)
               locations[locations[, "chr"] == "chr", "chr"] <- "unmapped"
               wh.unmap <- which(locations[, "chr"] == "unmapped")
@@ -173,7 +77,8 @@ setMethod("getLocations", signature(object = "IlluminaMethylationAnnotation"),
               gr <- GRanges(seqnames = locations[, "chr"],
                             strand = strand,
                             ranges = IRanges(start = locations[, "pos"], width = 1))
-              genome(gr) <- genomeBuild
+              ## FIXME
+              ## genome(gr) <- genomeBuild
               names(gr) <- rownames(locations)
               if(mergeManifest) {
                   typeI <- rbind(getProbeInfo(object, type = "I"),
@@ -195,84 +100,33 @@ setMethod("getLocations", signature(object = "IlluminaMethylationAnnotation"),
               gr
           })
 
-getIslandStatus <- function() {
-    regionType <- sub("^N_","", sub("^S_","", anno$Relation_to_UCSC_CpG_Island))
-    regionType[regionType %in% c("Shelf","")] <- "Far"
-
-    ## from rafa
-    ann <- minfi:::getAnnotation(Mset1)
-    relationToIsland=ann$Relation_to_UCSC_CpG_Island
-    type <- rep("OpenSea", length(type))
-    type[relationToIsland == "Island"] <- "Island"
-    type[grep("Shore", relationToIsland)] <- "Shore"
-    type[grep("Shelf", relationToIsland)] <- "Shelf"
+getIslandStatus <- function(object, islandType = "UCSC") {
+    regionType <- minfi:::getAnnotation(object, what = sprintf("Islands.%s", islandType))$Relation_to_Island
+    regionType <- sub("^[SN]_", "", regionType)
+    regionType
 }
 
-getProbeInfo <- function(object, type = c("I", "II", "Control", "I-Green", "I-Red", "SnpI", "SnpII")) {
-    type <- match.arg(type)
-    if(type %in% c("I", "II", "Control", "SnpI", "SnpII"))
-        return(getManifest(object)@data[[paste("Type", type, sep = "")]])
-    typeI <- getManifest(object)@data[["TypeI"]]
-    if(type == "I-Green")
-        return(typeI[typeI$Color == "Grn",])
-    if(type == "I-Red")
-        return(typeI[typeI$Color == "Red",])
-}
-
-getManifestInfo <- function(object, type = c("nLoci", "locusNames")) {
-    type <- match.arg(type)
-    switch(type,
-           "nLoci" = {
-               nrow(getProbeInfo(object, type = "I")) +
-                   nrow(getProbeInfo(object, type = "II"))
-           },
-           "locusNames" = {
-               c(getProbeInfo(object, type = "I")$Name,
-                 getProbeInfo(object, type = "II")$Name)
-           })
-}
-
-getControlAddress <- function(object, controlType = c("NORM_A", "NORM_C", "NORM_G", "NORM_T")) {
-    ctrls <- getProbeInfo(object, type = "Control")
-    ctrls[ctrls$Type %in% controlType, "Address"]
-}
-
-getControlTypes <- function(object) {
-    ctrls <- getProbeInfo(object, type = "Control")
-    table(ctrls[, ""])
-}
-
-getProbePositionsDetailed <- function(map) {
-    ## map is GR with metadata columns strand and type
+doSnpOverlap <- function(map, grSnp) {
     stopifnot(is(map, "GRanges"))
-    stopifnot(c("Strand", "Type") %in% names(elementMetadata(map)))
-
-    probeStart <- rep(NA, length(map))
-    wh.II.F <- which(map$Type=="II" & map$Strand=="F")
-    wh.II.R <- which(map$Type=="II" & map$Strand=="R")
-    wh.I.F <- which(map$Type=="I" & map$Strand=="F")
-    wh.I.R <- which(map$Type=="I" & map$Strand=="R")
-    
-    probeStart[wh.II.F] <- start(map)[wh.II.F]
-    probeStart[wh.II.R] <- start(map)[wh.II.R] - 50
-    probeStart[wh.I.F] <- start(map)[wh.I.F] - 1
-    probeStart[wh.I.R] <- start(map)[wh.I.R] - 49
-    map$probeStart <- probeStart
-
-    probeEnd <- rep(NA, length(map))
-    probeEnd[wh.II.F] <- start(map)[wh.II.F] + 50 
-    probeEnd[wh.II.R] <- start(map)[wh.II.R] 
-    probeEnd[wh.I.F] <- start(map)[wh.I.F] + 49
-    probeEnd[wh.I.R] <- start(map)[wh.I.R] + 1
-    map$probeEnd <- probeEnd
-    
-    sbe <- rep(NA, length(map))
-    sbe[wh.II.F] <- start(map)[wh.II.F] 
-    sbe[wh.II.R] <- start(map)[wh.II.R] + 1
-    sbe[wh.I.F] <- start(map)[wh.I.F] - 1
-    sbe[wh.I.R] <- start(map)[wh.I.R] + 2
-    map$SBE <- sbe
-
-    map
+    stopifnot(is(grSnp, "GRanges"))
+    stopifnot(all(c("SBE", "probeStart", "probeEnd") %in% names(elementMetadata(map))))
+    cpgGR <- GRanges(seqnames(map), IRanges(start(map), width=2))
+    ooCpG <- findOverlaps(cpgGR, snpGR)
+    sbeGR <- GRanges(seqnames(map), IRanges(map$SBE, map$SBE))
+    ooSbe <- findOverlaps(sbeGR, snpGR)
+    ## just match to whole probe then drop CpG overlaps
+    probeGR <- GRanges(seqnames(map), IRanges(map$probeStart, map$probeEnd))
+    ooProbe <- findOverlaps(probeGR, snpGR, ignore.strand=TRUE)
+    ooProbe <- ooProbe[-which(queryHits(ooProbe) %in% queryHits(ooCpG))]
+    snpAnno <- DataFrame(matrix(nr = length(map), nc = 6))
+    colnames(snpAnno) = c("Probe_rs" , "Probe_maf", "CpG_rs",
+            "CpG_maf" ,  "SBE_rs" ,   "SBE_maf")
+    rownames(snpAnno) <- names(map)
+    snpAnno$Probe_rs[queryHits(ooProbe)] <- names(snpGR)[subjectHits(ooProbe)]
+    snpAnno$Probe_maf[queryHits(ooProbe)] <- snpGR$MAF[subjectHits(ooProbe)]
+    snpAnno$CpG_rs[queryHits(ooCpG)] <- names(snpGR)[subjectHits(ooCpG)]
+    snpAnno$CpG_maf[queryHits(ooCpG)] <- snpGR$MAF[subjectHits(ooCpG)]
+    snpAnno$SBE_rs[queryHits(ooSbe)] <- names(snpGR)[subjectHits(ooSbe)]
+    snpAnno$SBE_maf[queryHits(ooSbe)] <- snpGR$MAF[subjectHits(ooSbe)]
+    snpAnno
 }
-    

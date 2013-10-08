@@ -53,7 +53,11 @@ setMethod("updateObject", signature(object="RGChannelSet"),
           function(object, ..., verbose=FALSE) {
               if (verbose) message("updateObject(object = 'RGChannelSet')")
               ## object <- callNextMethod()
-              if (isCurrent(object)["RGChannelSet"]) return(object)
+              if(object@annotation["annotation"] == "ilmn.v1.2")
+                  object@annotation["annotation"] <- .default.450k.annotation
+              if (isCurrent(object)["RGChannelSet"]) {
+                  return(object)
+              }
               if (! "RGChannelSet" %in% names(classVersion(object)))
                   newObject <- RGChannelSet(Red = assayDataElement(object, "Red"),
                                             Green = assayDataElement(object, "Green"),
@@ -71,7 +75,11 @@ setMethod("updateObject", signature(object="RGChannelSetExtended"),
           function(object, ..., verbose=FALSE) {
               if (verbose) message("updateObject(object = 'RGChannelSetExtended')")
               ## object <- callNextMethod()
-              if (isCurrent(object)["RGChannelSet"]) return(object)
+              if(object@annotation["annotation"] == "ilmn.v1.2")
+                  object@annotation["annotation"] <- .default.450k.annotation
+              if (isCurrent(object)["RGChannelSet"]) {
+                  return(object)
+              }
               if (! "RGChannelSet" %in% names(classVersion(object)))
                   newObject <- RGChannelSet(Red = assayDataElement(object, "Red"),
                                             Green = assayDataElement(object, "Green"),
