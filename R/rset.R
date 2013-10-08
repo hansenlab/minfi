@@ -73,11 +73,11 @@ setMethod("preprocessMethod", signature(object = "RatioSet"),
           })
 
 setMethod("getLocations", signature(object = "RatioSet"),
-          function(object, genomeBuild = "hg19", drop = TRUE, mergeManifest = FALSE) {
+          function(object, drop = TRUE, mergeManifest = FALSE) {
               annoString <- .getAnnotationString(object@annotation)
               if(!require(annoString, character.only = TRUE))
                   stop(sprintf("cannot load annotation package %s", annoString))
-              locations <- getLocations(get(annoString), genomeBuild = genomeBuild, mergeManifest = mergeManifest)
+              locations <- getLocations(get(annoString), mergeManifest = mergeManifest)
               locations <- locations[featureNames(object)]
               if(drop)
                   seql <- setdiff(as.character(runValue(seqnames(locations))), "unmapped")
@@ -88,10 +88,8 @@ setMethod("getLocations", signature(object = "RatioSet"),
           })
 
 setMethod("mapToGenome", signature(object = "RatioSet"),
-          function(object, genomeBuild = c("hg19", "hg18"),
-                   drop = TRUE, mergeManifest = FALSE) {
-              genomeBuild <- match.arg(genomeBuild)
-              gr <- getLocations(object, genomeBuild = genomeBuild, drop = drop,
+          function(object, drop = TRUE, mergeManifest = FALSE) {
+              gr <- getLocations(object, drop = drop,
                                  mergeManifest = mergeManifest)
               gr <- sort(gr)
               object <- object[names(gr),]
@@ -102,3 +100,9 @@ setMethod("mapToGenome", signature(object = "RatioSet"),
                               annotation = annotation(object))
           })
 
+setMethod("updateObject", signature(object = "RatioSet"),
+          function(object, ..., verbose = FALSE) {
+              if(object@annotation["annotation"] == "ilmn.v1.2")
+                  object@annotation["annotation"] <- .default.450k.annotation
+              object
+          })

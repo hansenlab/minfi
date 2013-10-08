@@ -14,7 +14,7 @@ Depends:  methods,
 	  utils,
 	  bumphunter (>= 1.1.9)
 Suggests: IlluminaHumanMethylation450kmanifest (>= 0.2.0),
-	  IlluminaHumanMethylation450kannotation.ilmn.v1.2,
+	  IlluminaHumanMethylation450kanno.ilmn12.hg19,
 	  minfiData (>= 0.2.0),
 	  RUnit,
 	  digest
@@ -36,6 +36,7 @@ Collate:  generics.R
 	  grset.R
 	  utils.R 
           locations.R
+	  manifest.R
 	  anno.R
 	  minfiQC.R
 	  getSex.R

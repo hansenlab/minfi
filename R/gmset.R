@@ -120,3 +120,10 @@ setMethod("ratioConvert", signature(object = "GenomicMethylSet"),
                               preprocessMethod = preprocessMethod(object))
           })
 
+setMethod("updateObject", signature(object = "GenomicMethylSet"),
+          function(object, ..., verbose = FALSE) {
+              if(object@annotation["annotation"] == "ilmn.v1.2")
+                  object@annotation["annotation"] <- .default.450k.annotation
+              object
+          })
+

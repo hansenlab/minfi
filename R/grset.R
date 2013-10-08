@@ -100,3 +100,10 @@ setMethod("annotation", signature(object = "GenomicRatioSet"),
           function(object) {
               object@annotation
           })
+
+setMethod("updateObject", signature(object = "GenomicRatioSet"),
+          function(object, ..., verbose = FALSE) {
+              if(object@annotation["annotation"] == "ilmn.v1.2")
+                  object@annotation["annotation"] <- .default.450k.annotation
+              object
+          })

@@ -44,13 +44,9 @@ preprocessQuantile <- function(object, fixOutliers=TRUE,
             U <- .qnormNotStratified(getUnmeth(object), auIndex, xIndex, yIndex, sex)
             M <- .qnormNotStratified(getMeth(object), auIndex, xIndex, yIndex, sex)
         } else {
-            anno <- getAnnotation(object)
-            ## get the type of probe
-            probeType <- anno$Type
-            ## get the type of region
-            regionType <- sub("^N_","", sub("^S_","", anno$Relation_to_UCSC_CpG_Island))
+            probeType <- getAnnotation(object, what = "Manifest")$Type
+            regionType <- getIslandStatus(object)
             regionType[regionType %in% c("Shelf","")] <- "Far"
-            rm(anno)
             U <- .qnormStratified(getUnmeth(object), auIndex,
                                   xIndex, yIndex, sex, probeType, regionType)
             M <- .qnormStratified(getMeth(object), auIndex,
