@@ -67,26 +67,10 @@ setMethod("getManifest", signature(object = "MethylSet"),
               get(maniString)
           })
 
-setMethod("getLocations", signature(object = "MethylSet"),
-          function(object, drop = TRUE, mergeManifest = FALSE) {
-              annoString <- .getAnnotationString(object@annotation)
-              if(!require(annoString, character.only = TRUE))
-                  stop(sprintf("cannot load annotation package %s", annoString))
-              locations <- getLocations(get(annoString), mergeManifest = mergeManifest)
-              locations <- locations[featureNames(object)]
-              if(drop)
-                  seql <- setdiff(as.character(runValue(seqnames(locations))), "unmapped")
-              else
-                  seql <- unique(as.character(runValue(seqnames(locations))))
-              seqlevels(locations, force = TRUE) <- .seqnames.order[.seqnames.order %in% seql]
-              locations
-          })
-
 setMethod("mapToGenome", signature(object = "MethylSet"),
-          function(object, drop = TRUE, mergeManifest = FALSE) {
-              gr <- getLocations(object, drop = drop,
-                                 mergeManifest = mergeManifest)
-              gr <- sort(gr)
+          function(object, mergeManifest = FALSE) {
+              gr <- getLocations(object, mergeManifest = mergeManifest,
+                                 orderByLocation = TRUE, lociNames = featureNames(object))
               object <- object[names(gr),]
               GenomicMethylSet(gr = gr, Meth = getMeth(object),
                                Unmeth = getUnmeth(object),

@@ -26,13 +26,13 @@ importFrom(bumphunter, bumphunter, clusterMaker, boundedClusterMaker)
 importMethodsFrom(bumphunter, bumphunter)
 importFrom(lattice, panel.abline, panel.stripplot, xyplot)
 
-
 export(getManifest, getProbeInfo, getManifestInfo,
        IlluminaMethylationManifest, IlluminaMethylationAnnotation,
        getControlAddress, getControlTypes,
        getRed, getGreen, getMeth, getUnmeth,
        getBeta, getM, getCN, getMethSignal,
-       dropMethylationLoci, getLocations, mapToGenome,
+       dropMethylationLoci, getLocations, getAnnotation, mapToGenome,
+       getIslandStatus, getProbeType, getSnpInfo, addSnpInfo,
        normalize.illumina.control, bgcorrect.illumina,
        preprocessRaw, preprocessIllumina,
        preprocessSWAN, preprocessQuantile,
@@ -53,7 +53,7 @@ exportClasses(RGChannelSet, RGChannelSetExtended,
               IlluminaMethylationManifest, IlluminaMethylationAnnotation)
 
 exportMethods(show, initialize, getBeta, getM, getCN, getMeth, getUnmeth,
-              getManifest, getLocations, annotation, preprocessMethod,
+              getManifest, annotation, preprocessMethod,
               sampleNames, featureNames, pData, mapToGenome, ratioConvert,
               bumphunter)
 

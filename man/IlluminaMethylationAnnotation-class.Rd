@@ -5,8 +5,6 @@
 \alias{IlluminaMethylationAnnotation}
 \alias{show,IlluminaMethylationAnnotation-method}
 \alias{getManifest,IlluminaMethylationAnnotation-method}
-\alias{getLocations,IlluminaMethylationAnnotation-method}
-\alias{getLocations}
 
 \title{Class \code{IlluminaMethylationAnnotation}}
 
@@ -19,25 +17,21 @@
 
 \usage{
 ## Constructor
-
-IlluminaMethylationAnnotation(listOfObjects, annotation = "")
+IlluminaMethylationAnnotation(listOfObjects, annotation = "",
+                              defaults = "")
 
 ## Data extraction
 \S4method{getManifest}{IlluminaMethylationAnnotation}(object)
-
-\S4method{getLocations}{IlluminaMethylationAnnotation}(object, genomeBuild = "hg19", mergeManifest = FALSE)
 }
 
 \arguments{
   \item{object}{An object of class
     \code{IlluminaMethylationAnnotation}.}
   \item{annotation}{An annotation \code{character}.}
+  \item{defaults}{A vector of default choices for
+    \code{getAnnotation(what = "everything")}.}
   \item{listOfObjects}{A list of objects to be put into the data slot of
     the annotation object.}
-  \item{genomeBuild}{Which genome build to use.}
-  \item{mergeManifest}{Should the information in the associated manifest
-    package be merged in (added as \code{elementMetadata} in the output
-    \code{GRanges}).}
 }
 
 \section{Details}{
@@ -51,10 +45,8 @@ IlluminaMethylationAnnotation(listOfObjects, annotation = "")
   \describe{
     \item{\code{getManifest(object)}}{Get the manifest object associated
       with the array.}
-    \item{\code{getLocation}}{FIXME}
   }
 }
-
 
 \author{
   Kasper Daniel Hansen \email{khansen@jhsph.edu}.

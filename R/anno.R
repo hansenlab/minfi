@@ -31,7 +31,7 @@ IlluminaMethylationAnnotation <- function(listOfObjects, annotation = "",
         all(rownames(obj) == rownames(Manifest))
     })))
     stopifnot(all(c("chr", "pos") %in% names(listOfObjects[["Locations"]])))
-    stopifnot(all(Locations$chr %in% minfi:::.seqnames.order.all))
+    stopifnot(all(listOfObjects[["Locations"]]$chr %in% minfi:::.seqnames.order.all))
     available <- minfi:::availableAnnotation(listOfObjects, constructorCheck = TRUE)
     stopifnot(all(defaults %in% names(listOfObjects)))
     stopifnot(!anyDuplicated(sub("\\..*", "", defaults)))
@@ -57,48 +57,89 @@ setMethod("getManifest", signature(object = "IlluminaMethylationAnnotation"),
               get(maniString)
           })
 
-setMethod("getLocations", signature(object = "character"),
-          function(object, mergeManifest = FALSE) {
-              callNextMethod(get(object), mergeManifest = mergeManifest)
-          })
+.availableAnnotation <- function(object) {
+    object <- minfi:::.getAnnotationObject(object)
+    allAnnoNames <- ls(object@data)
+    annoClasses <- sub("\\..*", "", allAnnoNames)
+    annoClassesChoices <- sub(".*\\.", "", allAnnoNames)
+    annoClassesChoices[grep("\\.", allAnnoNames, invert = TRUE)] <- ""
+    annoClassesChoices <- split(annoClassesChoices, annoClasses)
+    annoClasses <- unique(annoClasses)
+    defaults <- object@defaults
+    out <- list(names = allAnnoNames, classes = annoClasses,
+                classChoices = annoClassesChoices, defaults = defaults)
+    out
+}
 
-setMethod("getLocations", signature(object = "IlluminaMethylationAnnotation"),
-          function(object, mergeManifest = FALSE) {
-              locName <- "Locations"
-              locations <- get(locName, envir = object@data)
-              locations[locations[, "chr"] == "chr", "chr"] <- "unmapped"
-              wh.unmap <- which(locations[, "chr"] == "unmapped")
-              if(length(wh.unmap) > 0)
-                  locations[wh.unmap, "pos"] <- seq(from = 1, by = 2, length.out = length(wh.unmap))
-              if("strand" %in% colnames(locations))
-                  strand <- locations[, "strand"]
-              else
-                  strand <- rep("*", nrow(locations))
-              gr <- GRanges(seqnames = locations[, "chr"],
-                            strand = strand,
-                            ranges = IRanges(start = locations[, "pos"], width = 1))
-              ## FIXME
-              ## genome(gr) <- genomeBuild
-              names(gr) <- rownames(locations)
-              if(mergeManifest) {
-                  typeI <- rbind(getProbeInfo(object, type = "I"),
-                                 getProbeInfo(object, type = "SnpI"))
-                  typeI$Type <- "I"
-                  typeII <- rbind(getProbeInfo(object, type = "II"),
-                                  getProbeInfo(object, type = "SnpII"))
-                  typeII$Type <- "II"
-                  typeII$AddressB <- rep(NA_character_, nrow(typeII))
-                  typeII$Color <- rep(NA_character_, nrow(typeII))
-                  typeII$NextBase <- DNAStringSet(character(nrow(typeII)))
-                  typeII$ProbeSeqB <- DNAStringSet(character(nrow(typeII)))
-                  stopifnot(setequal(names(typeI), names(typeII)))
-                  manifest <- rbind(typeI, typeII[, names(typeI)])
-                  rownames(manifest) <- manifest$Name
-                  manifest <- manifest[names(gr),]
-                  elementMetadata(gr) <- manifest
-              }
-              gr
-          })
+getAnnotation <- function(object, what = "everything", lociNames = NULL,
+                          orderByLocation = FALSE, dropNonMapping = FALSE) {
+    ## processing of arguments and check
+    annoObject <- minfi:::.getAnnotationObject(object)
+    available <- minfi:::.availableAnnotation(annoObject)
+    if("everything" %in% what)
+        what <- available$defaults
+    if(!(all(what %in% available$names)))
+        stop("the value of argument 'what' is not part of the annotation package or 'everything'")
+    if(any(sapply(available$classes, function(cl) {length(grep(cl, what))} ) > 1))
+        stop("only on choice per allowable class")
+    if(!any(grepl("^Locations", what)) && (orderByLocation || dropNonMapping))
+        stop("To use 'orderbyLocation' or 'dropNonMapping' specify Locations as part of 'what'")
+    ## FIXME: ensure same order always
+    ## Old code for inspiration
+    ## bestOrder <- c("Locations", "Manifest", "IlluminaSNPs", "Annotation")
+    ## what <- bestOrder[bestOrder %in% what]
+    
+    out <- do.call(cbind, lapply(what, function(wh) {
+        get(wh, envir = annoObject@data)
+    }))
+
+    if(!is.null(lociNames)) {
+        lociNames <- lociNames[lociNames %in% rownames(out)]
+    }
+    if(is(object, "MethylSet") || is(object, "RatioSet") ||
+       is(object, "GenomicMethylSet") || is(object, "GenomicRatioSet")) {
+        fNames <- featureNames(object)
+        if(is.null(lociNames))
+            lociNames <- fNames[fNames %in% rownames(out)]
+        else
+            lociNames <- fNames[fNames %in% lociNames]
+    }
+    if(!is.null(lociNames))
+        out <- out[lociNames,]
+    if(dropNonMapping) {
+        seqOrder <- minfi:::.seqnames.order
+        wh <- which(out$chr %in% seqOrder)
+        out <- out[wh,]
+    } else {
+        seqOrder <- minfi:::.seqnames.order.all
+    }
+    if(orderByLocation) {
+        sp <- split(out, out$chr)
+        sp <- sp[seqOrder[seqOrder %in% names(sp)]]
+        out <- do.call(rbind, lapply(sp, function(df) {
+            od <- order(df$pos)
+            df[od,]
+        }))
+    }
+    out
+}
+
+getLocations <- function(object, mergeManifest = FALSE,
+                         orderByLocation = FALSE, lociNames = NULL) {
+    if(mergeManifest)
+        what <- c("Locations", "Manifest")
+    else
+        what <- "Locations"
+    locs <- getAnnotation(object, what = what, dropNonMapping = TRUE,
+                          orderByLocation = orderByLocation, lociNames = lociNames)
+    gr <- GRanges(seqnames = locs$chr,
+                  ranges = IRanges(start = locs$pos, width = 1))
+    names(gr) <- rownames(locs)
+    if(mergeManifest)
+        elementMetadata(gr) <- locs[, ! names(locs) %in% c("chr", "pos")]
+    genome(gr) <- unname(.getAnnotationObject(object)@annotation["genomeBuild"])
+    gr
+}
 
 getIslandStatus <- function(object, islandType = "UCSC") {
     regionType <- minfi:::getAnnotation(object, what = sprintf("Islands.%s", islandType))$Relation_to_Island
@@ -106,27 +147,57 @@ getIslandStatus <- function(object, islandType = "UCSC") {
     regionType
 }
 
-doSnpOverlap <- function(map, grSnp) {
+getProbeType <- function(object) {
+    probeType <- minfi:::getAnnotation(object, what = "Manifest")$Type
+    probeType
+}
+
+getSnpInfo <- function(object, snpType = NULL) {
+    av <- .availableAnnotation(object)
+    if(is.null(snpType)) {
+        snpType <- grep("^SNPs\\.", .getAnnotationObject(object)@defaults, value = TRUE)
+    } else if(! snpType %in% av$annoClassesChoices) {
+        stop(sprintf("snpType '%s' is not part of the annotation", snpType))
+    } else {
+        snpType <- sprintf("SNPs.%s", snpType)
+    }
+    snps <- minfi:::getAnnotation(object, what = snpType)
+    snps
+}
+
+addSnpInfo <- function(object, snpType = NULL) {
+    .isGenomic(object)
+    snps <- getSnpInfo(object = object, snpType = snpType)
+    elmNames <- names(elementMetadata(granges(object)))
+    if(any(elmNames %in% names(snps)))
+        cat("Replacing existing snp information\n")
+    elementMetadata(object@rowData) <- cbind(elementMetadata(granges(object)), snps)
+    object
+}
+
+.doSnpOverlap <- function(map, grSnp) {
     stopifnot(is(map, "GRanges"))
     stopifnot(is(grSnp, "GRanges"))
     stopifnot(all(c("SBE", "probeStart", "probeEnd") %in% names(elementMetadata(map))))
+    cat("removing Snps with width != 1\n")
+    grSnp <- grSnp[width(grSnp) == 1]
     cpgGR <- GRanges(seqnames(map), IRanges(start(map), width=2))
-    ooCpG <- findOverlaps(cpgGR, snpGR)
+    ooCpG <- findOverlaps(cpgGR, grSnp)
     sbeGR <- GRanges(seqnames(map), IRanges(map$SBE, map$SBE))
-    ooSbe <- findOverlaps(sbeGR, snpGR)
+    ooSbe <- findOverlaps(sbeGR, grSnp)
     ## just match to whole probe then drop CpG overlaps
     probeGR <- GRanges(seqnames(map), IRanges(map$probeStart, map$probeEnd))
-    ooProbe <- findOverlaps(probeGR, snpGR, ignore.strand=TRUE)
+    ooProbe <- findOverlaps(probeGR, grSnp, ignore.strand=TRUE)
     ooProbe <- ooProbe[-which(queryHits(ooProbe) %in% queryHits(ooCpG))]
-    snpAnno <- DataFrame(matrix(nr = length(map), nc = 6))
+    snpAnno <- DataFrame(matrix(nrow = length(map), ncol = 6))
     colnames(snpAnno) = c("Probe_rs" , "Probe_maf", "CpG_rs",
             "CpG_maf" ,  "SBE_rs" ,   "SBE_maf")
     rownames(snpAnno) <- names(map)
-    snpAnno$Probe_rs[queryHits(ooProbe)] <- names(snpGR)[subjectHits(ooProbe)]
-    snpAnno$Probe_maf[queryHits(ooProbe)] <- snpGR$MAF[subjectHits(ooProbe)]
-    snpAnno$CpG_rs[queryHits(ooCpG)] <- names(snpGR)[subjectHits(ooCpG)]
-    snpAnno$CpG_maf[queryHits(ooCpG)] <- snpGR$MAF[subjectHits(ooCpG)]
-    snpAnno$SBE_rs[queryHits(ooSbe)] <- names(snpGR)[subjectHits(ooSbe)]
-    snpAnno$SBE_maf[queryHits(ooSbe)] <- snpGR$MAF[subjectHits(ooSbe)]
+    snpAnno$Probe_rs[queryHits(ooProbe)] <- names(grSnp)[subjectHits(ooProbe)]
+    snpAnno$Probe_maf[queryHits(ooProbe)] <- grSnp$MAF[subjectHits(ooProbe)]
+    snpAnno$CpG_rs[queryHits(ooCpG)] <- names(grSnp)[subjectHits(ooCpG)]
+    snpAnno$CpG_maf[queryHits(ooCpG)] <- grSnp$MAF[subjectHits(ooCpG)]
+    snpAnno$SBE_rs[queryHits(ooSbe)] <- names(grSnp)[subjectHits(ooSbe)]
+    snpAnno$SBE_maf[queryHits(ooSbe)] <- grSnp$MAF[subjectHits(ooSbe)]
     snpAnno
 }
