@@ -31,7 +31,7 @@ fixMethOutliers <- function(object, K=-3, verbose = FALSE){
 }
 
 addQC <- function(object, qc) {
-    pDataAdd(object, qc)
+    .pDataAdd(object, qc)
 }
 
 plotQC <- function(qc, badSampleCutoff = 10.5) {

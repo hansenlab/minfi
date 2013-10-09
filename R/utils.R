@@ -27,6 +27,19 @@ ilogit2 <- function(x) { 2^(x) / (1+2^(x)) }
     }
 }
 
+.show.availableAnnotation <- function(object, indent = "  ") {
+    available <- .availableAnnotation(object)
+    cat("Available annotation\n")
+    sapply(available$names, function(xx) {
+        cat(sprintf("%s%s\n", indent, xx))
+    })
+    cat("Defaults\n")
+    sapply(available$defaults, function(xx) {
+        cat(sprintf("%s%s\n", indent, xx))
+    })
+}
+           
+
 .show.preprocessMethod <- function(preprocessMethod) {
     if(length(preprocessMethod) == 3 && is.null(names(preprocessMethod)))
         names(preprocessMethod) <- c("rg.norm", "minfi", "manifest")
@@ -140,7 +153,7 @@ getMethSignal <- function(object, what = c("Beta", "M"), ...) {
            )
 }
 
-pDataAdd <- function(object, df) {
+.pDataAdd <- function(object, df) {
     stopifnot(is(df, "data.frame") || is(df, "DataFrame"))
     pD <- pData(object)
     if(any(names(df) %in% names(pD))) {

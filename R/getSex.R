@@ -18,7 +18,7 @@ addSex <- function(object, sex = NULL) {
     if(is(sex, "DataFrame") && "predictedSex" %in% names(sex))
         sex <- sex$predictedSex
     sex <- .checkSex(sex)
-    pDataAdd(object, DataFrame(predictedSex = sex))
+    .pDataAdd(object, DataFrame(predictedSex = sex))
 }
 
 plotSex <- function(object, id = NULL) {
