@@ -38,6 +38,16 @@
     of R CMD check.
     \item Added blockFinder and cpgCollapse.
     \item (internal) added convenience functions for argument checking.
+    \item Exposed and re-wrote getAnnotation().
+    \item Changed getLocations() from being a method to a simple
+    function. Arguments have been removed (for example, now the function
+    always drops non-mapping loci).
+    \item Implemented getIslandStatus(), getProbeType(), getSnpInfo()
+    and addSnpInfo().  The two later functions retrieve pre-computed SNP
+    overlaps, and the new annotation object includes SNPs based on dbSNP
+    137, 135 and 132.
+    \item Changed the IlluminaMethylatioAnnotation class to now include
+    genomeBuild information as well as defaults.
   }
 }
 

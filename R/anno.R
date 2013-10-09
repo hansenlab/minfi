@@ -14,6 +14,7 @@ setValidity("IlluminaMethylationAnnotation", function(object) {
 setMethod("show", "IlluminaMethylationAnnotation", function(object) {
     cat("IlluminaMethylationAnnotation object\n")
     .show.annotation(object@annotation)
+    .show.availableAnnotation(object)
 })
 
 IlluminaMethylationAnnotation <- function(listOfObjects, annotation = "",
@@ -141,8 +142,19 @@ getLocations <- function(object, mergeManifest = FALSE,
     gr
 }
 
-getIslandStatus <- function(object, islandType = "UCSC") {
-    regionType <- minfi:::getAnnotation(object, what = sprintf("Islands.%s", islandType))$Relation_to_Island
+getIslandStatus <- function(object, islandAnno = NULL) {
+    av <- .availableAnnotation(object)
+    if(is.null(islandAnno)) {
+        islandAnno <- grep("^Islands\\.", .getAnnotationObject(object)@defaults, value = TRUE)
+    } else {
+        islandAnno <- sub("^Islands\\.", "", islandAnno)
+        if(! islandAnno %in% av$annoClassesChoices) {
+            stop(sprintf("islandAnno '%s' is not part of the annotation", islandAnno))
+        } else {
+            islandAnno <- sprintf("Islands.%s", islandAnno)
+        }
+    }
+    regionType <- getAnnotation(object, what = islandAnno)$Relation_to_Island
     regionType <- sub("^[SN]_", "", regionType)
     regionType
 }
@@ -152,22 +164,25 @@ getProbeType <- function(object) {
     probeType
 }
 
-getSnpInfo <- function(object, snpType = NULL) {
+getSnpInfo <- function(object, snpAnno = NULL) {
     av <- .availableAnnotation(object)
-    if(is.null(snpType)) {
-        snpType <- grep("^SNPs\\.", .getAnnotationObject(object)@defaults, value = TRUE)
-    } else if(! snpType %in% av$annoClassesChoices) {
-        stop(sprintf("snpType '%s' is not part of the annotation", snpType))
+    if(is.null(snpAnno)) {
+        snpAnno <- grep("^SNPs\\.", .getAnnotationObject(object)@defaults, value = TRUE)
     } else {
-        snpType <- sprintf("SNPs.%s", snpType)
+        snpAnno <- sub("^SNPs\\.", "", snpAnno)
+        if(! snpAnno %in% av$annoClassesChoices) {
+            stop(sprintf("snpAnno '%s' is not part of the annotation", snpAnno))
+        } else {
+            snpAnno <- sprintf("SNPs.%s", snpAnno)
+        }
     }
-    snps <- minfi:::getAnnotation(object, what = snpType)
+    snps <- minfi:::getAnnotation(object, what = snpAnno)
     snps
 }
 
-addSnpInfo <- function(object, snpType = NULL) {
+addSnpInfo <- function(object, snpAnno = NULL) {
     .isGenomic(object)
-    snps <- getSnpInfo(object = object, snpType = snpType)
+    snps <- getSnpInfo(object = object, snpAnno = snpAnno)
     elmNames <- names(elementMetadata(granges(object)))
     if(any(elmNames %in% names(snps)))
         cat("Replacing existing snp information\n")
