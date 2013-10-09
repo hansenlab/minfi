@@ -3,8 +3,14 @@
 \title{
   Stratified quantile normalization for an Illumina methylation array.
 }
+
 \description{
   Stratified quantile normalization for Illumina amethylation arrays.
+  
+  This function implements stratified quantile normalization preprocessing for 
+  Illumina methylation microarrays. Probes are stratified by region (CpG island,
+  shore, etc.)
+
 }
 \usage{
 preprocessQuantile(object, fixOutliers = TRUE, removeBadSamples = FALSE,
@@ -15,36 +21,74 @@ preprocessQuantile(object, fixOutliers = TRUE, removeBadSamples = FALSE,
 \arguments{
   \item{object}{An object of class \code{RGChannelSet} or
     \code{[Genomic]MethylSet}.}
-  \item{fixOutliers}{}
-  \item{removeBadSamples}{}
-  \item{badSampleCutoff}{}
-  \item{quantileNormalize}{}
-  \item{stratified}{}
-  \item{mergeManifest}{}
-  \item{sex}{}
+  \item{fixOutliers}{Should low outlier Meth and Unmeth signals be
+    fixed?} 
+  \item{removeBadSamples}{Should bad samples be removed?}
+  \item{badSampleCutoff}{Samples with median Meth and Umneth signals
+    below this cutoff will be labelled \sQuote{bad}.} 
+  \item{quantileNormalize}{Should quantile normalization be performed?}
+  \item{stratified}{Should quantile normalization be performed within
+    genomic region strata (e.g. CpG island, shore, etc.)?}
+  \item{mergeManifest}{Should the information in the associated manifest
+    package be merged into the output object?}
+  \item{sex}{Gender}
   \item{verbose}{Should the function be verbose?}
 }
 \details{
-%%  ~~ If necessary, more details than the description above ~~
+
+This function implements stratified quantile normalization preprocessing
+for Illumina methylation microarrays. If \code{removeBadSamples} is
+\code{TRUE} we calculate the median Meth and median Unmeth signal for
+each sample, and remove those samples where their average falls below
+\code{badSampleCutoff}. The normalization procedure is applied to the
+Meth and Unmeth intensities separately. The distribution of type I and
+type II signals is forced to be the same by first quantile normalizing
+the type II probes across samples and then interpolating a reference
+distribution to which we normalize the type I probes. Since probe types
+and probe regions are confounded and we know that DNAm distributions
+vary across regions we stratify the probes by region before applying
+this interpolation. For the probes on the X and Y chromosomes we
+normalize males and females separately using the gender information
+provided in the \code{sex} argument. If gender is unspecified
+(\code{NULL}), a guess is made using by the \code{getSex} function using
+copy number information. Background correction is not used, but very
+small intensities close to zero are thresholded using the
+\code{fixMethOutlier}. Note that this algorithm relies on the
+assumptions necessary for quantile normalization to be applicable and
+thus is not recommended for cases where global changes are expected such
+as in cancer-normal comparisons.
+
+Note that this normalization procedure is essentially similar to one
+previously presented (Touleimat and Tost, 2012), but has been
+independently re-implemented due to the present lack of a released,
+supported version.
+
 }
 \value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
+  a \code{GenomicRatioSet}
 }
+
 \references{
-%% ~put references to the literature/web site here ~
+  
+Touleimat, N. and Tost, J. Complete pipeline for Infinium Human
+Methylation 450K BeadChip data processing using subset quantile
+normalization for accurate DNA methylation estimation. Epigenomics 4,
+325-341 (2012).
+
 }
+
 \author{
   Rafael A. Irizarry
 }
+
 \seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
-}
+  \code{\link{getSex}}, \code{\link{minfiQC}},
+  \code{\link{fixMethOutliers}} for functions used as part of
+  \code{preprocessQuantile}.
+  }
+
 \examples{
 if(require(minfiData)) {
-
+  GMset <- preprocessQuantile(RGsetEx)
 }
 }
