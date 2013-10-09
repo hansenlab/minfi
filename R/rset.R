@@ -72,26 +72,10 @@ setMethod("preprocessMethod", signature(object = "RatioSet"),
               object@preprocessMethod
           })
 
-setMethod("getLocations", signature(object = "RatioSet"),
-          function(object, drop = TRUE, mergeManifest = FALSE) {
-              annoString <- .getAnnotationString(object@annotation)
-              if(!require(annoString, character.only = TRUE))
-                  stop(sprintf("cannot load annotation package %s", annoString))
-              locations <- getLocations(get(annoString), mergeManifest = mergeManifest)
-              locations <- locations[featureNames(object)]
-              if(drop)
-                  seql <- setdiff(as.character(runValue(seqnames(locations))), "unmapped")
-              else
-                  seql <- unique(as.character(runValue(seqnames(locations))))
-              seqlevels(locations, force = TRUE) <- .seqnames.order[.seqnames.order %in% seql]
-              locations
-          })
-
 setMethod("mapToGenome", signature(object = "RatioSet"),
           function(object, drop = TRUE, mergeManifest = FALSE) {
-              gr <- getLocations(object, drop = drop,
-                                 mergeManifest = mergeManifest)
-              gr <- sort(gr)
+              gr <- getLocations(object, mergeManifest = mergeManifest,
+                                 orderByLocation = TRUE)
               object <- object[names(gr),]
               GenomicRatioSet(gr = gr, Beta = getBeta(object),
                               M = getM(object), CN = getCN(object),

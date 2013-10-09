@@ -35,7 +35,6 @@ Collate:  generics.R
 	  gmset.R
 	  grset.R
 	  utils.R 
-          locations.R
 	  manifest.R
 	  anno.R
 	  minfiQC.R

@@ -8,7 +8,6 @@
 \alias{getM,RatioSet-method}
 \alias{getCN,RatioSet-method}
 \alias{preprocessMethod,RatioSet-method}
-\alias{getLocations,RatioSet-method}
 \alias{show,RatioSet-method}
 \alias{initialize,RatioSet-method}
 
@@ -30,9 +29,6 @@ RatioSet(Beta = NULL, M = NULL, CN = NULL,  ...)
 \S4method{getM}{RatioSet}(object)
 \S4method{getCN}{RatioSet}(object)
 \S4method{preprocessMethod}{RatioSet}(object)
-
-## Utilities
-\S4method{getLocations}{RatioSet}(object, genomeBuild = "hg19", drop = TRUE, mergeManifest = FALSE)
 }
 
 \arguments{
@@ -43,10 +39,6 @@ RatioSet(Beta = NULL, M = NULL, CN = NULL,  ...)
     with each row being a methylation loci and each column a sample.}
   \item{CN}{An optional matrix of copy number estimates
     with each row being a methylation loci and each column a sample.}
-  \item{genomeBuild}{Which genome build to use.}
-  \item{drop}{Should unmapped loci be dropped?}
-  \item{mergeManifest}{Should the information in the associated manifest
-    package be merged in (added as \code{elementMetadata} to the output \code{GRanges}).}
   \item{...}{For the constructor: additional objects passes to the
     \code{eSet} constructor, particular a \code{phenoData} slot.  For
     \code{getM} these values gets passed onto \code{getBeta}.}
@@ -84,18 +76,6 @@ arguments outlined above.
       the object.}
     \item{\code{preprocessMethod(object)}}{Get the preprocess method \code{character}.}
       }
-}
-
-\section{Utilities}{
-  In the following code, \code{object} is a \code{RatioSet}.
-  
-  \describe{
-    \item{\code{getLocations(object)}}{This function obtains the genomic locations based on an
-      annotation package.  There is the option of merging in data from the manifest package in the
-      resulting \code{GRanges}.  Finally, the result is ordered according to the order of loci in the
-      \code{RatioSet}, unless \code{drop=TRUE} where the number of locations is less than or equal to
-      the number of loci.  Unmapped locations have a \code{seqname} of \code{unmapped}.}
-  }
 }
 
 \author{Kasper Daniel Hansen \email{khansen@jhsph.edu}}

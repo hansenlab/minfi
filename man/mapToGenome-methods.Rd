@@ -14,18 +14,14 @@
 
 \usage{
 
-\S4method{mapToGenome}{MethylSet}(object, genomeBuild = c("hg19", "hg18"),
-  drop = TRUE, mergeManifest = FALSE)
-\S4method{mapToGenome}{MethylSet}(object, genomeBuild = c("hg19", "hg18"), 
-  drop = TRUE, mergeManifest = FALSE)
+\S4method{mapToGenome}{MethylSet}(object, mergeManifest = FALSE)
+\S4method{mapToGenome}{MethylSet}(object, mergeManifest = FALSE)
 \S4method{mapToGenome}{RGChannelSet}(object, ...)
 }
 
 \arguments{
   \item{object}{Either a \code{MethylSet}, a \code{RGChannelSet} or a
     \code{RatioSet}.} 
-  \item{genomeBuild}{Which version of the genome to use?}
-  \item{drop}{Should unmapped loci be dropped?}
   \item{mergeManifest}{Should the information in the associated manifest
     package be merged into the location \code{GRanges}?}
   \item{...}{Passed to the method for \code{MethylSet}.}
@@ -38,6 +34,9 @@
   function: the \code{RGChannelSet} is first transformed into a
   \code{MethylSet} using \code{preprocessRaw}.  The resulting
   \code{MethylSet} is then mapped directly to the genome.
+
+  This function silently drops loci which cannot be mapped to a genomic
+  position, based on the associated annotation package.
 }
 
 \author{Kasper Daniel Hansen \email{khansen@jhsph.edu}}

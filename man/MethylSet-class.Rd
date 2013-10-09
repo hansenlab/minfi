@@ -17,7 +17,6 @@
 \alias{getCN,MethylSet-method}
 \alias{preprocessMethod,MethylSet-method}
 \alias{getManifest,MethylSet-method}
-\alias{getLocations,MethylSet-method}
 \alias{show,MethylSet-method}
 \alias{initialize,MethylSet-method}
 \alias{dropMethylationLoci}
@@ -45,7 +44,6 @@ MethylSet(Meth = new("matrix"), Unmeth = new("matrix"),  ...)
 \S4method{preprocessMethod}{MethylSet}(object)
 
 ## Utilities
-\S4method{getLocations}{MethylSet}(object, genomeBuild = "hg19", drop = TRUE, mergeManifest = FALSE)
 dropMethylationLoci(object, dropRS = TRUE, dropCH = TRUE)
 }
 
@@ -62,10 +60,6 @@ dropMethylationLoci(object, dropRS = TRUE, dropCH = TRUE)
   \item{offset}{Offset in the beta ratio, see detail.}
   \item{betaThreshold}{Constrains the beta values to be in the inverval
     betwen \code{betaThreshold} and 1-\code{betaThreshold}.}  
-  \item{genomeBuild}{Which genome build to use.}
-  \item{drop}{Should unmapped loci be dropped?}
-  \item{mergeManifest}{Should the information in the associated manifest
-    package be merged in (added as \code{elementMetadata} to the output \code{GRanges}).}
   \item{dropRS}{Should SNP probes be dropped?}
   \item{dropCH}{Should CH probes be dropped}
   \item{...}{For the constructor: additional objects passes to the
@@ -121,11 +115,6 @@ arguments outlined above.
   In the following code, \code{object} is a \code{MethylSet}.
   
   \describe{
-    \item{\code{getLocations(object)}}{This function obtains the genomic locations based on an
-      annotation package.  There is the option of merging in data from the manifest package in the
-      resulting \code{GRanges}.  Finally, the result is ordered according to the order of loci in the
-      \code{MethylSet}, unless \code{drop=TRUE} where the number of locations is less than or equal to
-      the number of loci.  Unmapped locations have a \code{seqname} of \code{unmapped}.}
     \item{\code{dropMethylationLoci}(object)}{A unifed interface to removing methylation loci.  You
       can drop SNP probes (probes that measure SNPs, not probes containing SNPs) or CH probes (non-CpG
       methylation).}
