@@ -48,6 +48,8 @@
     137, 135 and 132.
     \item Changed the IlluminaMethylatioAnnotation class to now include
     genomeBuild information as well as defaults.
+    \item Added estimateCellCounts for deconvolution of cell types in
+    whole blood.  Thanks to Andrew Jaffe and Andres Houseman.
   }
 }
 

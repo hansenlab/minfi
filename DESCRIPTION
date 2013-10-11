@@ -1,5 +1,5 @@
 Package: minfi
-Version: 1.7.18
+Version: 1.7.19
 Title: Analyze Illumina's 450k methylation arrays
 Description: Tools for analyzing and visualizing Illumina's 450k array data
 Author: Kasper Daniel Hansen, Martin Aryee
@@ -15,7 +15,9 @@ Depends:  methods,
 	  bumphunter (>= 1.1.9)
 Suggests: IlluminaHumanMethylation450kmanifest (>= 0.2.0),
 	  IlluminaHumanMethylation450kanno.ilmn12.hg19,
-	  minfiData (>= 0.4.0),
+	  minfiData (>= 0.4.1),
+	  quadprog,
+	  FlowSorted.Blood.450k,
 	  RUnit,
 	  digest
 Imports:  IRanges,
@@ -27,7 +29,9 @@ Imports:  IRanges,
 	  preprocessCore, 
 	  illuminaio, 
 	  matrixStats, 
-	  mclust
+	  mclust,
+	  genefilter,
+	  nlme
 Collate:  generics.R
 	  mset.R
 	  rset.R
@@ -50,6 +54,7 @@ Collate:  generics.R
 	  read.450k.R
 	  read.manifest.R
 	  bumphunter.R
+	  estimateCellCounts.R
 License: Artistic-2.0
 LazyData: yes
 biocViews: DNAMethylation, Microarray, TwoChannel, DataImport, Preprocessing, QualityControl
