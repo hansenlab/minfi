@@ -81,6 +81,11 @@ setReplaceMethod("pData", c("GenomicRatioSet", "DataFrame"), function(object, va
     object
 })
 
+setMethod("mapToGenome", signature(object = "GenomicRatioSet"),
+          function(object, ...) {
+              object
+          })
+
 setMethod("sampleNames", signature("GenomicRatioSet"),
           function(object) {
               colnames(object)

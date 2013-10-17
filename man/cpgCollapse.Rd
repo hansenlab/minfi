@@ -17,7 +17,7 @@ single methylation estimate per cluster.
 cpgCollapse(object, what = c("Beta", "M"), maxGap = 500,
             blockMaxGap = 2.5 * 10^5, maxClusterWidth = 1500,
             dataSummary = colMeans, na.rm = FALSE,
-            returnBlockInfo = TRUE, verbose = TRUE, ...)
+            returnBlockInfo = TRUE, verbose = TRUE, \dots)
 }
 
 \arguments{

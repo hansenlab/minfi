@@ -9,7 +9,7 @@ Estimates the relative proportion of pure cell types within a sample. For exampl
 	of lymphocytes, monocytes, B-cells, and neutrophils. 
 }
 \usage{
-estimateCellCounts(RGset, meanPlot = TRUE, cellType = "Blood", verbose = TRUE, ...)
+estimateCellCounts(RGset, meanPlot = TRUE, cellType = "Blood", verbose = TRUE, \dots)
 }
 \arguments{
   \item{RGset}{The input \code{RGChannelSet} for the procedure.}

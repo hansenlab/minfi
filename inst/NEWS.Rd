@@ -4,6 +4,15 @@
 
 \section{Version 1.7}{
   \itemize{
+    \item preprocessQuantile(object) would fail if object was a
+    GenomicMethylSet.  This is now fixed.
+    \item Cleanup of Rd markdown in various help files.
+  }
+}
+
+
+\section{Version 1.7}{
+  \itemize{
     \item Added getMethSignal(), a convenience function for
     programming.
     \item Changed the argument name of "type" to "what" for

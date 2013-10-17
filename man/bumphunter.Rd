@@ -16,7 +16,7 @@
           coef=2, cutoff=NULL, cutoffQ = 0.99,
           maxGap=500, smooth=FALSE, smoothFunction=loessByCluster,
           useWeights=FALSE, B=1000, verbose=TRUE, 
-          type = c("M", "Beta"), ...)
+          type = c("M", "Beta"), \dots)
 }
 
 \arguments{

@@ -7,13 +7,13 @@
   Utility functions operating on objects from the minfi package.
 }
 \usage{
-getMethSignal(object, what = c("Beta", "M"), ...)
+getMethSignal(object, what = c("Beta", "M"), \dots)
 }
 \arguments{
   \item{object}{An object from the minfi package supporting either
     \code{getBeta} or \code{getM}.}
   \item{what}{Which signal is returned.}
-  \item{...}{Passed to the method described by argument \code{what}.}
+  \item{\dots}{Passed to the method described by argument \code{what}.}
 }
 \value{A matrix.}
 \author{

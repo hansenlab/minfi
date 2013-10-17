@@ -9,7 +9,7 @@ Density plots of methylation Beta values, primarily for QC.
 \usage{
 densityPlot(dat, sampGroups = NULL, main = "", xlab = "Beta",
     pal = brewer.pal(8, "Dark2"), xlim, ylim, add = TRUE, legend = TRUE,
-    ...)
+    \dots)
 }
 \arguments{
   \item{dat}{An \code{RGChannelSet}, a \code{MethylSet} or a
