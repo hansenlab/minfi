@@ -59,6 +59,11 @@ setMethod("getCN", signature(object = "GenomicMethylSet"),
               CN
           })
 
+setMethod("mapToGenome", signature(object = "GenomicMethylSet"),
+          function(object, ...) {
+              object
+          })
+
 setMethod("preprocessMethod", signature(object = "GenomicMethylSet"),
           function(object) {
               object@preprocessMethod

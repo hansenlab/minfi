@@ -12,7 +12,7 @@
 blockFinder(object, design, coef = 2, what = c("Beta", "M"),
             cluster = NULL, cutoff = NULL, pickCutoff = FALSE,
             smooth = TRUE, smoothFunction = locfitByCluster,
-            B = 1000, verbose = TRUE, bpSpan = 2.5 * 10^5, ...)
+            B = 1000, verbose = TRUE, bpSpan = 2.5 * 10^5, \dots)
 }
 
 \arguments{

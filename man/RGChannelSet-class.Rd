@@ -25,14 +25,14 @@
 \usage{
 ## Constructors
 
-RGChannelSet(Green = new("matrix"), Red = new("matrix"), ...)
+RGChannelSet(Green = new("matrix"), Red = new("matrix"), \dots)
 RGChannelSetExtended(Green = new("matrix"), Red = new("matrix"),
                      GreenSD = new("matrix"), RedSD = new("matrix"),
-                     NBeads = new("matrix"), ...)
+                     NBeads = new("matrix"), \dots)
 
 ## Accessors
 
-\S4method{getBeta}{RGChannelSet}(object, ...)
+\S4method{getBeta}{RGChannelSet}(object, \dots)
 getGreen(object)
 getRed(object)
 \S4method{getManifest}{RGChannelSet}(object)
@@ -49,7 +49,7 @@ getRed(object)
     Red channel summaries.} 
   \item{NBeads}{See the \code{Green} argument, but contains the number
     of beads used to summarize the Green and Red channels.}
-  \item{...}{Additional objects passes to the \code{eSet} constructor,
+  \item{\dots}{Additional objects passes to the \code{eSet} constructor,
     particular a \code{phenoData} slot.}
 }
 

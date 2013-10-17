@@ -12,8 +12,8 @@
 
 \usage{
 
-\S4method{ratioConvert}{MethylSet}(object, what = c("beta", "M", "both"), keepCN = TRUE, ...)
-\S4method{ratioConvert}{GenomicMethylSet}(object, what = c("beta", "M", "both"), keepCN = TRUE, ...)
+\S4method{ratioConvert}{MethylSet}(object, what = c("beta", "M", "both"), keepCN = TRUE, \dots)
+\S4method{ratioConvert}{GenomicMethylSet}(object, what = c("beta", "M", "both"), keepCN = TRUE, \dots)
 }
 
 \arguments{
@@ -21,7 +21,7 @@
   \item{what}{Which ratios should be computed and stored?}
   \item{keepCN}{A logical, should compy number values be computed and stored in the
     object?}
-  \item{...}{Passed to \code{getBeta}, \code{getM} methods.}
+  \item{\dots}{Passed to \code{getBeta}, \code{getM} methods.}
 }
 
 \author{Kasper Daniel Hansen \email{khansen@jhsph.edu}}

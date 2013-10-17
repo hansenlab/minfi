@@ -16,7 +16,7 @@
 
 \S4method{mapToGenome}{MethylSet}(object, mergeManifest = FALSE)
 \S4method{mapToGenome}{MethylSet}(object, mergeManifest = FALSE)
-\S4method{mapToGenome}{RGChannelSet}(object, ...)
+\S4method{mapToGenome}{RGChannelSet}(object, \dots)
 }
 
 \arguments{
@@ -24,7 +24,7 @@
     \code{RatioSet}.} 
   \item{mergeManifest}{Should the information in the associated manifest
     package be merged into the location \code{GRanges}?}
-  \item{...}{Passed to the method for \code{MethylSet}.}
+  \item{\dots}{Passed to the method for \code{MethylSet}.}
 }
 
 \details{

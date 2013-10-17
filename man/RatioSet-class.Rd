@@ -21,7 +21,7 @@
 \usage{
 ## Constructor
 
-RatioSet(Beta = NULL, M = NULL, CN = NULL,  ...)
+RatioSet(Beta = NULL, M = NULL, CN = NULL,  \dots)
 
 ## Data extraction / Accessors
 
@@ -39,7 +39,7 @@ RatioSet(Beta = NULL, M = NULL, CN = NULL,  ...)
     with each row being a methylation loci and each column a sample.}
   \item{CN}{An optional matrix of copy number estimates
     with each row being a methylation loci and each column a sample.}
-  \item{...}{For the constructor: additional objects passes to the
+  \item{\dots}{For the constructor: additional objects passes to the
     \code{eSet} constructor, particular a \code{phenoData} slot.  For
     \code{getM} these values gets passed onto \code{getBeta}.}
   

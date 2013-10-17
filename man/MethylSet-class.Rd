@@ -31,15 +31,15 @@
 \usage{
 ## Constructor
 
-MethylSet(Meth = new("matrix"), Unmeth = new("matrix"),  ...)
+MethylSet(Meth = new("matrix"), Unmeth = new("matrix"),  \dots)
 
 ## Data extraction / Accessors
 
 \S4method{getMeth}{MethylSet}(object)
 \S4method{getUnmeth}{MethylSet}(object)
 \S4method{getBeta}{MethylSet}(object, type = "", offset = 0, betaThreshold = 0)
-\S4method{getM}{MethylSet}(object, type = "", ...)
-\S4method{getCN}{MethylSet}(object, ...)
+\S4method{getM}{MethylSet}(object, type = "", \dots)
+\S4method{getCN}{MethylSet}(object, \dots)
 \S4method{getManifest}{MethylSet}(object)
 \S4method{preprocessMethod}{MethylSet}(object)
 
@@ -62,7 +62,7 @@ dropMethylationLoci(object, dropRS = TRUE, dropCH = TRUE)
     betwen \code{betaThreshold} and 1-\code{betaThreshold}.}  
   \item{dropRS}{Should SNP probes be dropped?}
   \item{dropCH}{Should CH probes be dropped}
-  \item{...}{For the constructor: additional objects passes to the
+  \item{\dots}{For the constructor: additional objects passes to the
     \code{eSet} constructor, particular a \code{phenoData} slot.  For
     \code{getM} these values gets passed onto \code{getBeta}.}
   

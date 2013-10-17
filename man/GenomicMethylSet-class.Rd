@@ -15,6 +15,7 @@
 \alias{featureNames,GenomicMethylSet-method}
 \alias{annotation,GenomicMethylSet-method}
 \alias{preprocessMethod,GenomicMethylSet-method}
+\alias{mapToGenome,GenomicMethylSet-method}
 
 \title{GenomicMethylSet instances}
 
@@ -35,13 +36,14 @@ GenomicMethylSet(gr = GRanges(), Meth = new("matrix"),
 \S4method{getMeth}{GenomicMethylSet}(object)
 \S4method{getUnmeth}{GenomicMethylSet}(object)
 \S4method{getBeta}{GenomicMethylSet}(object, type = "", offset = 0, betaThreshold = 0)
-\S4method{getM}{GenomicMethylSet}(object, type = "", ...)
-\S4method{getCN}{GenomicMethylSet}(object, ...)
+\S4method{getM}{GenomicMethylSet}(object, type = "", \dots)
+\S4method{getCN}{GenomicMethylSet}(object, \dots)
 \S4method{pData}{GenomicMethylSet}(object)
 \S4method{sampleNames}{GenomicMethylSet}(object)
 \S4method{featureNames}{GenomicMethylSet}(object)
 \S4method{annotation}{GenomicMethylSet}(object)
 \S4method{preprocessMethod}{GenomicMethylSet}(object)
+\S4method{mapToGenome}{GenomicMethylSet}(object, \dots)
 }
 
 \arguments{
@@ -61,8 +63,8 @@ GenomicMethylSet(gr = GRanges(), Meth = new("matrix"),
   \item{offset}{Offset in the beta ratio, see detail.}
   \item{betaThreshold}{Constrains the beta values to be in the inverval
     betwen \code{betaThreshold} and 1-\code{betaThreshold}.}  
-  \item{...}{ For \code{getM} these values gets passed onto
-  \code{getBeta}.} 
+  \item{\dots}{ For \code{getM} these values gets passed onto
+    \code{getBeta}. For \code{mapToGenome}, this is ignored.} 
 }
 
 \details{
@@ -97,6 +99,15 @@ arguments outlined above.
       \code{character}.}
   }
 }
+
+\section{Utilities}{
+  \describe{
+    \item{\code{mapToGenome(object)}}{ Since \code{object} is already
+ 	mapped to the genome, this method simply returns \code{object}
+	unchanged.}
+  }
+}
+
 
 \author{Kasper Daniel Hansen \email{khansen@jhsph.edu}}
 

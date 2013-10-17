@@ -14,6 +14,7 @@
 \alias{featureNames,GenomicRatioSet-method}
 \alias{annotation,GenomicRatioSet-method}
 \alias{preprocessMethod,GenomicRatioSet-method}
+\alias{mapToGenome,GenomicRatioSet-method}
 
 \title{GenomicRatioSet instances}
 
@@ -39,6 +40,7 @@ GenomicRatioSet(gr = GRanges(), Beta = NULL, M = NULL,
 \S4method{featureNames}{GenomicRatioSet}(object)
 \S4method{annotation}{GenomicRatioSet}(object)
 \S4method{preprocessMethod}{GenomicRatioSet}(object)
+\S4method{mapToGenome}{GenomicRatioSet}(object, \dots)
 }
 
 \arguments{
@@ -50,6 +52,7 @@ GenomicRatioSet(gr = GRanges(), Beta = NULL, M = NULL,
   \item{pData}{A \code{DataFrame} or \code{data.frame} object.}
   \item{annotation}{An annotation character string.}
   \item{preprocessMethod}{A preprocess method character string.}
+  \item{\dots}{For \code{mapToGenome}, this is ignored.}
 }
 
 \details{
@@ -85,6 +88,14 @@ arguments outlined above.
     \item{\code{preprocessMethod(object)},
       \code{annotation(object)}}{Get the preprocess method or annotation
       \code{character}.}
+  }
+}
+
+\section{Utilities}{
+  \describe{
+    \item{\code{mapToGenome(object)}}{ Since \code{object} is already
+ 	mapped to the genome, this method simply returns \code{object}
+	unchanged.}
   }
 }
 
