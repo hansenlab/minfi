@@ -13,9 +13,10 @@
     \item preprocessQuantile(object) would fail if object was a
     GenomicMethylSet.  This is now fixed.
     \item Cleanup of Rd markdown in various help files.
+    \item estimateCellCounts would throw an error.  This is now fixed.
+    The function arguments have changed.
   }
 }
-
 
 \section{Version 1.7}{
   \itemize{
