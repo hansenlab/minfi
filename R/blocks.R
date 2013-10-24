@@ -49,10 +49,10 @@ blockFinder <- function(object, design, coef = 2, what = c("Beta", "M"),
 cpgCollapse <- function(object, what = c("Beta", "M"), maxGap = 500,
                         blockMaxGap = 2.5*10^5, maxClusterWidth = 1500,
                         dataSummary = colMeans, na.rm = FALSE,
-                        returnBlockInfo = TRUE, verbose = TRUE, ...) { ### ... is for illumna type
+                        returnBlockInfo = TRUE, islandAnno = NULL, verbose = TRUE, ...) { ### ... is for illumna type
     what <- match.arg(what)
     gr <- granges(object)
-    islands <- getAnnotation(object, what = "Islands.UCSC") # FIXME : allow more flexible Island possibility
+    islands <- .getIslandAnnotation(object = object, islandAnno = islandAnno)
     relationToIsland <- islands$Relation_to_Island
     islandName <- islands$Islands_Name
     if(verbose) cat("[cpgCollapse] Creating annotation.\n")
@@ -130,7 +130,7 @@ cpgCollapseAnnotation <- function(gr, relationToIsland, islandName,
     anno <- GRanges(seqnames = Rle(tapply(as.vector(seqnames(gr)), blocktab$pns,function(x) x[1])),
                     ranges = IRanges(start = tmpRanges[,1], end = tmpRanges[,2]),
                     id = as.numeric(names(groupIndexes)),
-                    type = tapply(as.character(blocktab$type), blocktab$pns,function(x)x[1]))
+                    type = as.vector(tapply(as.character(blocktab$type), blocktab$pns, function(x) x[1])))
     res <- list(anno = anno, indexes = groupIndexes)
     seql <- seqlevels(res$anno)
     seqlevels(res$anno, force = TRUE) <- .seqnames.order[.seqnames.order %in% seql]
@@ -147,14 +147,23 @@ cpgCollapseAnnotation <- function(gr, relationToIsland, islandName,
 
 clusterMaker4Blocks <- function(gr, relationToIsland, islandName, maxGap, maxClusterWidth) {
     ## get middle position of each island
-    tmpName <- paste0(islandName, relationToIsland)
-    isNotSea <- (tmpName != "OpenSea")
+    if(!is.character(relationToIsland) ||
+       ! all(unique(relationToIsland) %in% c("OpenSea", "Island", "Shelf", "N_Shelf",
+                                             "S_Shelf", "Shore", "N_Shore", "S_Shore")) ||
+       length(gr) != length(relationToIsland))
+        stop("argument 'relationToIsland' is either not a character or seems to have wrong values")
+    if(!is.character(islandName) ||
+       length(gr) != length(islandName))
+        stop("argument 'islandName' is not a character or it has the wrong length")
+    
+    fullName <- paste0(islandName, relationToIsland)
+    isNotSea <- (fullName != "OpenSea")
 
     pos <- start(gr)
     ## these are the "average positions" on shelfs, shores, and islands
-    ipos <- round(tapply(pos[isNotSea], tmpName[isNotSea], mean))
+    ipos <- round(tapply(pos[isNotSea], fullName[isNotSea], mean))
     ## make non-island/shore/shelf positions their own island
-    islFactor <- ifelse(isNotSea, tmpName, seq_along(pos))
+    islFactor <- ifelse(isNotSea, fullName, seq_along(pos))
     ## check which of the new positions correspond to
     ## islands/shores/shelfs, i.e. open sea
     ## assign probes in islands/shores/shelves just one position

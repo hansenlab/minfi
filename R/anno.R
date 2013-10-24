@@ -32,8 +32,8 @@ IlluminaMethylationAnnotation <- function(listOfObjects, annotation = "",
         all(rownames(obj) == rownames(Manifest))
     })))
     stopifnot(all(c("chr", "pos") %in% names(listOfObjects[["Locations"]])))
-    stopifnot(all(listOfObjects[["Locations"]]$chr %in% minfi:::.seqnames.order.all))
-    available <- minfi:::availableAnnotation(listOfObjects, constructorCheck = TRUE)
+    stopifnot(all(listOfObjects[["Locations"]]$chr %in% .seqnames.order.all))
+    available <- .availableAnnotation(listOfObjects)
     stopifnot(all(defaults %in% names(listOfObjects)))
     stopifnot(!anyDuplicated(sub("\\..*", "", defaults)))
     ## FIXME: Check column names of any Islands object
@@ -59,7 +59,7 @@ setMethod("getManifest", signature(object = "IlluminaMethylationAnnotation"),
           })
 
 .availableAnnotation <- function(object) {
-    object <- minfi:::.getAnnotationObject(object)
+    object <- .getAnnotationObject(object)
     allAnnoNames <- ls(object@data)
     annoClasses <- sub("\\..*", "", allAnnoNames)
     annoClassesChoices <- sub(".*\\.", "", allAnnoNames)
@@ -75,8 +75,8 @@ setMethod("getManifest", signature(object = "IlluminaMethylationAnnotation"),
 getAnnotation <- function(object, what = "everything", lociNames = NULL,
                           orderByLocation = FALSE, dropNonMapping = FALSE) {
     ## processing of arguments and check
-    annoObject <- minfi:::.getAnnotationObject(object)
-    available <- minfi:::.availableAnnotation(annoObject)
+    annoObject <- .getAnnotationObject(object)
+    available <- .availableAnnotation(annoObject)
     if("everything" %in% what)
         what <- available$defaults
     if(!(all(what %in% available$names)))
@@ -108,11 +108,11 @@ getAnnotation <- function(object, what = "everything", lociNames = NULL,
     if(!is.null(lociNames))
         out <- out[lociNames,]
     if(dropNonMapping) {
-        seqOrder <- minfi:::.seqnames.order
+        seqOrder <- .seqnames.order
         wh <- which(out$chr %in% seqOrder)
         out <- out[wh,]
     } else {
-        seqOrder <- minfi:::.seqnames.order.all
+        seqOrder <- .seqnames.order.all
     }
     if(orderByLocation) {
         sp <- split(out, out$chr)
@@ -143,7 +143,7 @@ getLocations <- function(object, mergeManifest = FALSE,
     gr
 }
 
-getIslandStatus <- function(object, islandAnno = NULL) {
+.getIslandAnnotation <- function(object, islandAnno = NULL) {
     av <- .availableAnnotation(object)
     if(is.null(islandAnno)) {
         islandAnno <- grep("^Islands\\.", .getAnnotationObject(object)@defaults, value = TRUE)
@@ -155,13 +155,17 @@ getIslandStatus <- function(object, islandAnno = NULL) {
             islandAnno <- sprintf("Islands.%s", islandAnno)
         }
     }
-    regionType <- getAnnotation(object, what = islandAnno)$Relation_to_Island
+    getAnnotation(object, what = islandAnno)
+}
+    
+getIslandStatus <- function(object, islandAnno = NULL) {
+    regionType <- .getIslandAnnotation(object, islandAnno = islandAnno)$Relation_to_Island
     regionType <- sub("^[SN]_", "", regionType)
     regionType
 }
 
 getProbeType <- function(object) {
-    probeType <- minfi:::getAnnotation(object, what = "Manifest")$Type
+    probeType <- getAnnotation(object, what = "Manifest")$Type
     probeType
 }
 
@@ -177,7 +181,7 @@ getSnpInfo <- function(object, snpAnno = NULL) {
             snpAnno <- sprintf("SNPs.%s", snpAnno)
         }
     }
-    snps <- minfi:::getAnnotation(object, what = snpAnno)
+    snps <- getAnnotation(object, what = snpAnno)
     snps
 }
 
