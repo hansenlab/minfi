@@ -21,6 +21,9 @@
     chromosomes were ordered as chr1, chr2, chr3 (used in minfi) or chr1,
     chr10, chr11 (lexigraphically).  Reported by Florence Cavalli
     <florence@ebi.ac.uk>.
+    \item Bug in cpgCollapse led to incorrect results. Your output is
+    affected if table(granges(output[[1]])$type) is all 'OpenSea'.
+    Reported by Florence Cavalli <florence@ebi.ac.uk>.
   }
 }
 

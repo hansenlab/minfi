@@ -17,7 +17,8 @@ single methylation estimate per cluster.
 cpgCollapse(object, what = c("Beta", "M"), maxGap = 500,
             blockMaxGap = 2.5 * 10^5, maxClusterWidth = 1500,
             dataSummary = colMeans, na.rm = FALSE,
-            returnBlockInfo = TRUE, verbose = TRUE, \dots)
+            returnBlockInfo = TRUE, islandAnno = NULL, verbose = TRUE,
+            \dots)
 }
 
 \arguments{
@@ -32,7 +33,10 @@ cpgCollapse(object, what = c("Beta", "M"), maxGap = 500,
   \item{na.rm}{Should NAs be removed when summarizing? Passed on to the
     dataSummary function.}
   \item{returnBlockInfo}{Should the block annotation table be returned
-    in addition to the block table?} 
+    in addition to the block table?}
+  \item{islandAnno}{Which Island annotation should be used.  \code{NULL}
+    indicates the default.  This argument is only useful if the
+    annotatio object contains more than one island annotation.}
   \item{verbose}{Should the function be verbose?}
   \item{\dots}{Passed on to getMethSignal and getCN. Can be used to
     specify } 
