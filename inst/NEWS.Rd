@@ -15,6 +15,12 @@
     \item Cleanup of Rd markdown in various help files.
     \item estimateCellCounts would throw an error.  This is now fixed.
     The function arguments have changed.
+    \item The function mapToGenome would return something that looked
+    like an unordered GenomicMethylSet.  Actually, loci were correctly
+    ordered within chromosomes, the issue had to do with whether the
+    chromosomes were ordered as chr1, chr2, chr3 (used in minfi) or chr1,
+    chr10, chr11 (lexigraphically).  Reported by Florence Cavalli
+    <florence@ebi.ac.uk>.
   }
 }
 

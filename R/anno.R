@@ -135,6 +135,7 @@ getLocations <- function(object, mergeManifest = FALSE,
                           orderByLocation = orderByLocation, lociNames = lociNames)
     gr <- GRanges(seqnames = locs$chr,
                   ranges = IRanges(start = locs$pos, width = 1))
+    seqlevels(gr) <- .seqnames.order[.seqnames.order %in% seqlevels(gr)]
     names(gr) <- rownames(locs)
     if(mergeManifest)
         elementMetadata(gr) <- locs[, ! names(locs) %in% c("chr", "pos")]
