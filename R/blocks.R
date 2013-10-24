@@ -177,7 +177,7 @@ clusterMaker4Blocks <- function(gr, relationToIsland, islandName, maxGap, maxClu
     ## island,shore,shelf)
     types <- unique(relationToIsland)
     ## take out open sea
-    types <- types[types != ""]
+    types <- types[types != "OpenSea"]
     for(i in types) {
         ind <- relationToIsland == i
         StartEnd <- abs(diff(c(0,ind) != 0))
@@ -188,11 +188,7 @@ clusterMaker4Blocks <- function(gr, relationToIsland, islandName, maxGap, maxClu
     pns <- as.numeric(as.factor(pns))
     
     ## annotation
-    type <- rep("OpenSea", length(pos))
-    type[relationToIsland == "Island"] <- "Island"
-    type[grep("Shore", relationToIsland)] <- "Shore"
-    type[grep("Shelf", relationToIsland)] <- "Shelf"
-    
+    type <- sub("^[NS]_", "", relationToIsland)
     return(data.frame(pns = pns, type = type))
 }
 
