@@ -52,9 +52,9 @@ cpgCollapse <- function(object, what = c("Beta", "M"), maxGap = 500,
                         returnBlockInfo = TRUE, verbose = TRUE, ...) { ### ... is for illumna type
     what <- match.arg(what)
     gr <- granges(object)
-    ann <- getAnnotation(object)
-    relationToIsland <- ann$Relation_to_UCSC_CpG_Island
-    islandName <- ann$UCSC_CpG_Islands_Name
+    islands <- getAnnotation(object, what = "Islands.UCSC") # FIXME : allow more flexible Island possibility
+    relationToIsland <- islands$Relation_to_Island
+    islandName <- islands$Islands_Name
     if(verbose) cat("[cpgCollapse] Creating annotation.\n")
     anno <- cpgCollapseAnnotation(gr, relationToIsland, islandName,
                                   maxGap = maxGap, blockMaxGap = blockMaxGap,
@@ -148,7 +148,7 @@ cpgCollapseAnnotation <- function(gr, relationToIsland, islandName,
 clusterMaker4Blocks <- function(gr, relationToIsland, islandName, maxGap, maxClusterWidth) {
     ## get middle position of each island
     tmpName <- paste0(islandName, relationToIsland)
-    isNotSea <- (tmpName != "")
+    isNotSea <- (tmpName != "OpenSea")
 
     pos <- start(gr)
     ## these are the "average positions" on shelfs, shores, and islands
@@ -181,8 +181,8 @@ clusterMaker4Blocks <- function(gr, relationToIsland, islandName, maxGap, maxClu
     ## annotation
     type <- rep("OpenSea", length(pos))
     type[relationToIsland == "Island"] <- "Island"
-    type[grep("Shore",relationToIsland)] <- "Shore"
-    type[grep("Shelf",relationToIsland)] <- "Shelf"
+    type[grep("Shore", relationToIsland)] <- "Shore"
+    type[grep("Shelf", relationToIsland)] <- "Shelf"
     
     return(data.frame(pns = pns, type = type))
 }
