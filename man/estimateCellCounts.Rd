@@ -77,6 +77,7 @@ Andrew E. Jaffe, E. Andres Houseman
 \seealso{\code{\link{preprocessQuantile}}}
 
 \examples{
+\dontrun{
 if(require(FlowSorted.Blood.450k)) {
   wh.WBC <- which(FlowSorted.Blood.450k$CellType == "WBC")
   wh.PBMC <- which(FlowSorted.Blood.450k$CellType == "PBMC")
@@ -87,5 +88,6 @@ if(require(FlowSorted.Blood.450k)) {
     c(seq(along = wh.WBC), seq(along = wh.PBMC)), sep = "_")
   counts <- estimateCellCounts(RGset, meanPlot = FALSE)
   round(counts, 2)
+}
 }
 }
