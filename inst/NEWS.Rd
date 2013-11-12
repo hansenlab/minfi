@@ -24,6 +24,10 @@
     \item Bug in cpgCollapse led to incorrect results. Your output is
     affected if table(granges(output[[1]])$type) is all 'OpenSea'.
     Reported by Florence Cavalli <florence@ebi.ac.uk>.
+    \item Encapsulated the example for estimateCellCounts() in 'dontrun',
+    to disable it on the build servers.
+    \item preprocessQuantile would work as if removeBadSamples=TRUE no
+    matter the value of the argument.
   }
 }
 
