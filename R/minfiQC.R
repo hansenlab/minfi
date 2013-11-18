@@ -21,12 +21,12 @@ fixMethOutliers <- function(object, K=-3, verbose = FALSE){
     if(is(object, "GenomicMethylSet"))
         assay(object, "Meth") <- .fixMethOutliers(getMeth(object), K=K, verbose = verbose)$mat
     else
-        assayData(object)[["Meth"]] <- .fixMethOutliers(getMeth(object), K=K, verbose = verbose)$mat
+        assayDataElement(object, "Meth") <- .fixMethOutliers(getMeth(object), K=K, verbose = verbose)$mat
     if(verbose) cat("[fixMethOutliers] fixing Unmeth channel\n")
     if(is(object, "GenomicMethylSet"))
         assay(object, "Unmeth") <- .fixMethOutliers(getUnmeth(object), K=K, verbose = verbose)$mat
     else
-        assayData(object)[["Unmeth"]] <- .fixMethOutliers(getUnmeth(object), K=K, verbose = verbose)$mat
+        assayDataElement(object, "Unmeth") <- .fixMethOutliers(getUnmeth(object), K=K, verbose = verbose)$mat
       return(object)
 }
 
