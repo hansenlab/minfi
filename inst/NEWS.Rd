@@ -28,6 +28,9 @@
     to disable it on the build servers.
     \item preprocessQuantile would work as if removeBadSamples=TRUE no
     matter the value of the argument.
+    \item Fixing replace bug in fixMethOutliers; it would not work on
+    the output of preprocessSWAN.  Reported by David McGaughey
+    <david.mcgaughey@nih.gov>.
   }
 }
 
