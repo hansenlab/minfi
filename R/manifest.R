@@ -119,9 +119,17 @@ getManifestInfo <- function(object, type = c("nLoci", "locusNames")) {
            })
 }
 
-getControlAddress <- function(object, controlType = c("NORM_A", "NORM_C", "NORM_G", "NORM_T")) {
-    ctrls <- getProbeInfo(object, type = "Control")
-    ctrls[ctrls$Type %in% controlType, "Address"]
+getControlAddress <- function(object, controlType = c("NORM_A", "NORM_C", "NORM_G", "NORM_T"),
+                              asList = FALSE) {
+    if(asList) {
+        ctrls <- getProbeInfo(object, type = "Control")
+        out <- split(ctrls$Address, ctrls$Type)
+        out <- out[names(out) %in% controlType]
+    } else {
+        ctrls <- getProbeInfo(object, type = "Control")
+        out <- ctrls[ctrls$Type %in% controlType, "Address"]
+    }
+    out
 }
 
 getControlTypes <- function(object) {
