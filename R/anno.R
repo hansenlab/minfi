@@ -164,8 +164,13 @@ getIslandStatus <- function(object, islandAnno = NULL) {
     regionType
 }
 
-getProbeType <- function(object) {
-    probeType <- getAnnotation(object, what = "Manifest")$Type
+getProbeType <- function(object, withColor = FALSE) {
+    if(withColor) {
+        probeType <- paste0(getAnnotation(object, what = "Manifest")$Type,
+                           getAnnotation(object, what = "Manifest")$Color)
+    } else {
+        probeType <- getAnnotation(object, what = "Manifest")$Type
+    }
     probeType
 }
 
