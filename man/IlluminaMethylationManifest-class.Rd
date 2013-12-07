@@ -36,7 +36,9 @@ IlluminaMethylationManifest(TypeI = new("DataFrame"),
 getProbeInfo(object, type = c("I", "II", "Control",
                               "I-Green", "I-Red", "SnpI", "SnpII"))
 getManifestInfo(object, type = c("nLoci", "locusNames"))
-getControlAddress(object, controlType = c("NORM_A", "NORM_C", "NORM_G", "NORM_T"))
+getControlAddress(object, controlType = c("NORM_A", "NORM_C",
+                                          "NORM_G", "NORM_T"),
+                  asList = FALSE)
 getControlTypes(object)
 }
 
@@ -60,6 +62,8 @@ getControlTypes(object)
     \code{getManifestInfo} it represents either the number of
     methylation loci (approx. number of CpGs) on the array or the locus names.}
   \item{controlType}{A character vector of control types.}
+  \item{asList}{If \code{TRUE} the return object is a list with one
+  component for each \code{controlType}.}
 }
 
 \section{Details}{
