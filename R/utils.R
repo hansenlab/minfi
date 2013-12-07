@@ -145,6 +145,25 @@ ilogit2 <- function(x) { 2^(x) / (1+2^(x)) }
                      class(object)))
 }
 
+.harmonizeSex <- function(vector) {
+    ## FIXME: not done
+    stop("function not done")
+    validMale <- c("M", "MALE")
+    validFemale <- c("F", "FEMALE")
+    ## validUnknown <- c("U", "Unknown")
+    if(is.factor(vector))
+        vector <- as.character(vector)
+    if(!is.character(vector))
+        stop("[.harmonizeSet] argument 'vector' needs to be either a character or a factor")
+    vector <- toupper(vector)
+    vector[vector %in% validMale] <- "M"
+    vector[vector %in% validFemale] <- "F"
+    if(any(! vector %in% c("M", "F")))
+        stop("[.harmonizeSet] could not harmonize the vector argument to be either 'M' or 'F'")
+    vector
+}
+
+
 getMethSignal <- function(object, what = c("Beta", "M"), ...) {
     what <- match.arg(what)
     switch(what,

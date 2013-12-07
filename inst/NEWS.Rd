@@ -36,6 +36,7 @@
     chromosomes were ordered as chr1, chr2, chr3 (used in minfi) or chr1,
     chr10, chr11 (lexigraphically).  Reported by Florence Cavalli
     <florence@ebi.ac.uk>.
+    \item Switched to using new author format in DESCRIPTION.
   }
 }
 
