@@ -13,9 +13,8 @@ preprocessRaw <- function(rgSet) {
     M[TypeI.Green$Name,] <- getGreen(rgSet)[TypeI.Green$AddressB,]
     U[TypeI.Red$Name,] <- getRed(rgSet)[TypeI.Red$AddressA,]
     U[TypeI.Green$Name,] <- getGreen(rgSet)[TypeI.Green$AddressA,]
-    out <- new("MethylSet",Meth = M, Unmeth = U,
-               phenoData = phenoData(rgSet),
-               annotation = annotation(rgSet))
+    out <- MethylSet(Meth = M, Unmeth = U, phenoData = phenoData(rgSet),
+                     annotation = annotation(rgSet))
     ## TODO:
     ## The manifest package version is currently not updated since 'packageVersion(getManifest(rgSet))' fails.          
     ## packageVersion expects a string

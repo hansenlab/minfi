@@ -22,7 +22,7 @@ getLocations(object, mergeManifest = FALSE,
 getSnpInfo(object, snpAnno = NULL)
 addSnpInfo(object, snpAnno = NULL)
 
-getProbeType(object)
+getProbeType(object, withColor = FALSE)
 
 getIslandStatus(object, islandAnno = NULL)
 }
@@ -40,6 +40,8 @@ getIslandStatus(object, islandAnno = NULL)
     object?}
   \item{snpAnno}{The snp annotation you want to use; \code{NULL}
     signifies picking the default.}
+  \item{withColor}{Should the return object have the type I probe color
+    labelled?}
   \item{islandAnno}{Like \code{snpAnno}, but for islands.}
 }
 

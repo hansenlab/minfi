@@ -10,6 +10,8 @@
     "I", "II".
     \item Added asList argument to getControlAddress to return result as
     a list.
+    \item Moved reshape from Depends to Imports.
+    \item Dramatic improvement in memory usage of preprocessRaw.
   }
 }
 

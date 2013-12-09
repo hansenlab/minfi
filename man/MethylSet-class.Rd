@@ -31,7 +31,7 @@
 \usage{
 ## Constructor
 
-MethylSet(Meth = new("matrix"), Unmeth = new("matrix"),  \dots)
+MethylSet(Meth, Unmeth, phenoData, annotation = NULL)
 
 ## Data extraction / Accessors
 
@@ -52,6 +52,8 @@ dropMethylationLoci(object, dropRS = TRUE, dropCH = TRUE)
   \item{Meth}{A matrix of methylation values (between zero and infinity)
     with each row being a methylation loci and each column a sample.}
   \item{Unmeth}{See the \code{Meth} argument.}
+  \item{phenoData}{a \code{phenoData} object.}
+  \item{annotation}{An annotation string, optional.}
   \item{type}{How are the values calculated?  For \code{getBeta} setting
     \code{type="Illumina"} sets \code{offset=100} as per Genome Studio.
     For \code{getM} setting \code{type=""} computes M-values as the
