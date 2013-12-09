@@ -10,9 +10,21 @@ setValidity("MethylSet", function(object) {
     if (is.null(msg)) TRUE else msg
 })
 
-MethylSet <- function(Meth = new("matrix"), Unmeth = new("matrix"),  ...) {
-    Mset <- new("MethylSet", Meth = Meth, Unmeth = Unmeth, ...)
-    Mset
+MethylSet <- function(Meth, Unmeth, phenoData, annotation = NULL) {
+    if(is.null(annotation))
+        annotation <- c(array = "IlluminaHumanMethylation450k",
+                        annotation = .default.450k.annotation)
+    stopifnot(rownames(Meth) == rownames(Unmeth))
+    stopifnot(colnames(Meth) == colnames(Unmeth))
+    stopifnot(colnames(Meth) == rownames(phenoData))
+    tmp <- matrix(nrow = 0, ncol = ncol(Meth))
+    out <- new("MethylSet", Meth = tmp, Unmeth = tmp,
+               phenoData = phenoData, annotation = annotation)
+    assayDataElement(out, "Meth") <- Meth
+    assayDataElement(out, "Unmeth") <- Unmeth
+    featureData(out) <- AnnotatedDataFrame(data = data.frame(row.names = row.names(Meth)),
+                                           dimLabels = c("featureNames", "featureColumns"))
+    out
 }
 
 setMethod("show", "MethylSet", function(object) {
@@ -89,7 +101,7 @@ setMethod("updateObject", signature(object = "MethylSet"),
                   return(object)
               }
               if (! "MethylSet" %in% names(classVersion(object)))
-                  newObject <- MethylSet(preprocessMethod = object@preprocessMethod,
+                  newObject <- new("MethylSet", preprocessMethod = object@preprocessMethod,
                                          Meth = assayDataElement(object, "Meth"),
                                          Unmeth = assayDataElement(object, "Unmeth"),
                                          phenoData = updateObject(phenoData(object), ..., verbose=verbose),

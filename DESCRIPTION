@@ -1,5 +1,5 @@
 Package: minfi
-Version: 1.9.8
+Version: 1.9.9
 Title: Analyze Illumina's 450k methylation arrays
 Description: Tools for analyzing and visualizing Illumina's 450k array data
 Authors@R: c(person(c("Kasper", "Daniel"), "Hansen", role = c("cre", "aut"),
@@ -13,7 +13,6 @@ Depends:  methods,
 	  BiocGenerics (>= 0.3.2),
 	  Biobase (>= 2.17.8),
 	  lattice,
-	  reshape,
 	  GenomicRanges,
 	  Biostrings,
 	  utils,
@@ -36,7 +35,8 @@ Imports:  IRanges,
 	  matrixStats, 
 	  mclust,
 	  genefilter,
-	  nlme
+	  nlme,
+	  reshape
 Collate:  generics.R
 	  mset.R
 	  rset.R
