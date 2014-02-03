@@ -12,6 +12,7 @@
     a list.
     \item Moved reshape from Depends to Imports.
     \item Dramatic improvement in memory usage of preprocessRaw.
+    \item Updated CITATION, the minif paper is in press.
   }
 }
 
