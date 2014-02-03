@@ -1,0 +1,65 @@
+Package: minfi
+Version: 1.9.10
+Title: Analyze Illumina's 450k methylation arrays
+Description: Tools for analyzing and visualizing Illumina's 450k array data
+Authors@R: c(person(c("Kasper", "Daniel"), "Hansen", role = c("cre", "aut"),
+                    email = "khansen@jhsph.edu"),
+             person("Martin", "Ayree", role = "aut"),
+             person(c("Rafael", "A."), "Irizarry", role = "aut"),
+	     person(c("Andrew", "E."), "Jaffe", role = "ctb"),
+	     person("Jovana", "Maksimovic", role = "ctb"),
+             person(c("E.", "Andres"), "Houseman", role = "ctb"))
+Depends:  methods,
+	  BiocGenerics (>= 0.3.2),
+	  Biobase (>= 2.17.8),
+	  lattice,
+	  GenomicRanges,
+	  Biostrings,
+	  utils,
+	  bumphunter (>= 1.1.9)
+Suggests: IlluminaHumanMethylation450kmanifest (>= 0.2.0),
+	  IlluminaHumanMethylation450kanno.ilmn12.hg19,
+	  minfiData (>= 0.4.1),
+	  quadprog,
+	  FlowSorted.Blood.450k (>= 1.0.1),
+	  RUnit,
+	  digest
+Imports:  IRanges,
+	  beanplot, 
+	  RColorBrewer, 
+	  nor1mix, 
+	  siggenes, 
+	  limma, 
+	  preprocessCore, 
+	  illuminaio, 
+	  matrixStats, 
+	  mclust,
+	  genefilter,
+	  nlme,
+	  reshape
+Collate:  generics.R
+	  mset.R
+	  rset.R
+	  rgset.R
+	  gmset.R
+	  grset.R
+	  utils.R 
+	  manifest.R
+	  anno.R
+	  minfiQC.R
+	  getSex.R
+          dmr.R
+          blocks.R
+	  plot.R
+	  plotBetasByType.R
+	  preprocess.R
+	  preprocessSwan.R
+	  preprocessQuantile.R
+	  qc.R
+	  read.450k.R
+	  read.manifest.R
+	  bumphunter.R
+	  estimateCellCounts.R
+License: Artistic-2.0
+LazyData: yes
+biocViews: DNAMethylation, Microarray, TwoChannel, DataImport, Preprocessing, QualityControl

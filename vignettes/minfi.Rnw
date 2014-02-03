@@ -1,0 +1,564 @@
+%\VignetteIndexEntry{Minfi Guide}
+%\VignetteDepends{minfi}
+%\VignetteDepends{minfiData}
+%\VignettePackage{minfi}
+\documentclass[12pt]{article}
+<<options,echo=FALSE,results=hide>>=
+options(width=70)
+@ 
+\SweaveOpts{eps=FALSE,echo=TRUE}
+\usepackage{times}
+\usepackage{color,hyperref}
+\usepackage{fullpage}
+\usepackage[numbers]{natbib}
+\definecolor{darkblue}{rgb}{0.0,0.0,0.75}
+\hypersetup{colorlinks,breaklinks,
+            linkcolor=darkblue,urlcolor=darkblue,
+            anchorcolor=darkblue,citecolor=darkblue}
+\usepackage{parskip}
+          
+\newcommand{\Rcode}[1]{{\texttt{#1}}}
+\newcommand{\Rpackage}[1]{\textsf{#1}}
+\newcommand{\software}[1]{\textsf{#1}}
+\newcommand{\R}{\software{R}}
+
+\title{The minfi User's Guide\\
+  Analyzing Illumina 450k Methylation Arrays}
+\author{Kasper D.\ Hansen \and Martin J. Aryee}
+\date{Modified: October 9, 2011.  Compiled: \today}
+
+\begin{document}
+\maketitle
+\setcounter{secnumdepth}{1} 
+
+\section{Introduction}
+
+The \Rpackage{minfi} package provides tools for analyzing Illumina's Methylation arrays, with a
+special focus on the new 450k array for humans.  At the moment Illumina's 27k methylation arrays are
+not supported.
+
+The tasks addressed in this package include preprocessing, QC assessments, identification of
+interesting methylation loci and plotting functionality.  Analyzing these types of arrays is ongoing
+research in ours and others groups.  In general, the analysis of 450k data is not straightforward
+and we anticipate many advances in this area in the near future.
+
+The input data to this package are IDAT files, representing two different color channels prior to
+normalization.  It is possible to use Genome Studio files together with the data structures
+contained in this package, but in general Genome Studio files are already normalized and we do not
+recommend this.
+
+If you are using \Rpackage{minfi} in a publication, please cite \citet{minfi}.  The SWAN
+normalization method is described in \citep{Maksimovic:2012}.
+
+
+
+\subsubsection{Chip design and terminology}
+
+The 450k array has a complicated design.  What follows is a quick overview.
+
+Each sample is measured on a single array, in two different color channels (red and green).  Each
+array measures roughly 450,000 CpG positions.  Each CpG is associated with two measurements: a
+methylated measurement and an ``un''-methylated measurement.  These two values can be measured in
+one of two ways: using a ``Type I'' design or a ``Type II design''.  CpGs measured using a Type I
+design are measured using a single color, with two different probes in the same color channel
+providing the methylated and the unmethylated measurements.  CpGs measured using a Type II design
+are measured using a single probe, and two different colors provide the methylated and the
+unmethylated measurements.  Practically, this implies that on this array there is \emph{not} a
+one-to-one correspondence between probes and CpG positions.  We have therefore tried to be precise
+about this and we refer to a ``methylation position'' (or ``CpG'') when we refer to a single-base
+genomic locus.  The previous generation 27k methlation array uses only the Type I design.
+
+In this package we refer to differentially methylated positions (DMPs) by which we mean a single
+genomic position that has a different methylation level in two different groups of samples (or
+conditions).  This is different from differentially methylated regions (DMRs) which imply more that
+more than one methylation positions are different between conditions.
+
+Physically, each sample is measured on a single ``array''.  There are 12 arrays on a single physical
+``slide'' (organized in a 6 by 2 grid).  Slides are organized into ``plates'' containing at most 8
+slides (96 arrays).
+
+
+\subsubsection{Workflow and R data classes}
+
+A set of 450k data files will initially be read into an \Rcode{RGChannelSet}, representing the raw
+intensities as two matrices: one being the green channel and one being the red channel.  This is a
+class which is very similar to an \Rcode{ExpressionSet} or an \Rcode{NChannelSet}.
+
+The \Rcode{RGChannelSet} is, together with a \Rcode{IlluminaMethylationManifest} object,
+preprocessed into a \Rcode{MethylSet}.  The \Rcode{IlluminaMethylationManifest} object contains the
+array design, and describes how probes and color channels are paired together to measure the
+methylation level at a specific CpG.  The object also contains information about control probes
+(also known as QC probes).  The \Rcode{MethylSet} contains normalized data and essentially consists
+of two matrices containing the methylated and the unmethylated evidence for each CpG.  Only the
+\Rcode{RGChannelSet} contains information about the control probes.
+
+The process described in the previous paragraph is very similar to the paradigm for analyzing
+Affymetrix expression arrays using the \Rpackage{affy} package (an \Rcode{AffyBatch} is preprocessed
+into an \Rcode{ExpressionSet} using array design information stored in a CDF environment (package)).
+
+A \Rcode{MethylSet} is the starting point for any post-normalization analysis, such as searching for
+DMPs or DMRs.
+
+
+
+\subsubsection{Getting Started}
+
+<<load,results=hide>>=
+require(minfi)
+require(minfiData)
+@ 
+
+\section{Reading Data}
+
+This package supports analysis of IDAT files, containing the summarized bead information.
+
+In our experience, most labs use a ``Sample Sheet'' CSV file to describe the layout of the
+experiment.  This is based on a sample sheet file provided by Illumina.  Our pipeline assumes the
+existence of such a file(s), but it is relatively easy to create such a file using for example Excel,
+if it is not available.
+
+We use an example dataset with 6 samples, spread across two slides.  First we obtain the system path
+to the IDAT files; this requires a bit since the data comes from an installed package
+
+<<baseDir>>=
+baseDir <- system.file("extdata", package = "minfiData")
+list.files(baseDir)
+@ 
+This shows the typical layout of 450k data: each ``slide'' (containing 12 arrays) is stored in a
+separate directory, with a numeric name.  The top level directory contains the sample sheet file.
+Inside the slide directories we find the IDAT files (and possible a number of JPG images or other
+files):
+<<baseDir>>=
+list.files(file.path(baseDir, "5723646052"))
+@ 
+The files for each array has another numeric number and consists of a Red and a Grn (Green) IDAT
+file.  Note that for this example data, each slide contains only 3 arrays and not 12.  This was done
+because of file size limitations and because we only need 6 arrays to illustrate the package's
+functionality. 
+
+First we read the sample sheet.  We provide a convenience function for reading in this file
+\Rcode{read.450k.sheet}.  This function has a couple of attractive bells and whistles.  Let us look
+at the output
+<<sampleSheet>>=
+targets <- read.450k.sheet(baseDir)
+targets
+@ 
+First the output: this is just a \Rcode{data.frame}.  It contains a column \Rcode{Basename} that
+describes the location of the IDAT file corresponding to the sample, as well as two columns
+\Rcode{Array} and \Rcode{Slide}.  In the sample sheet provided by Illumina, these two columns are
+named \Rcode{Sentrix\_Position} and \Rcode{Sentrix\_ID}, but we rename them.  We provide more detail
+on the use of this function below.  The \Rcode{Basename} column tend to be too large for display,
+here it is simplified relative to \Rcode{baseDir}:
+<<BasenameColumn>>=
+sub(baseDir, "", targets$Basename)
+@ 
+(This is just for display purposes).
+
+With this \Rcode{data.frame}, it is easy to read in the data
+<<paths>>= 
+RGset <- read.450k.exp(base = baseDir, targets = targets)
+@ 
+Let us look at the associated pheno data, which is really just the information contained in the
+targets object above.
+<<pData>>=
+RGset
+pd <- pData(RGset)
+pd[,1:4]
+@ 
+
+The \Rcode{read.450k.exp} also makes it possible to read in an entire directory or directory tree
+(with \Rcode{recursive} set to \Rcode{TRUE}) by using the function just with the argument \Rcode{base}
+and \Rcode{targets=NULL}, like
+<<read2>>=
+RGset2 = read.450k.exp(file.path(baseDir, "5723646052"))
+RGset3 = read.450k.exp(baseDir, recursive = TRUE)
+@ 
+
+\subsubsection{Advanced notes on Reading Data}
+
+The only important column in sheet \Rcode{data.frame} used in the \Rcode{targets} argument for the
+\Rcode{read.450k.exp} function is a column names \Rcode{Basename}.  Typically, such an object would
+also have columns named \Rcode{Array}, \Rcode{Slide}, and (optionally) \Rcode{Plate}.
+
+We used sheet data files build on top of the Sample Sheet data file provided by Illumina.  This is a
+CSV file, with a header.  In this case we assume that the phenotype data starts after a line
+beginning with \Rcode{[Data]} (or that there is no header present).
+
+It is also easy to read a sample sheet ``manually'', using the function \Rcode{read.csv}.  Here, we
+know that we want to skip the first 7 lines of the file.
+<<sampleSheet2>>=
+targets2 <- read.csv(file.path(baseDir, "SampleSheet.csv"), 
+                     stringsAsFactors = FALSE, skip = 7)
+targets2
+@ 
+We now need to populate a \Rcode{Basename} column.  On possible approach is the following
+<<Basename>>=
+targets2$Basename <- file.path(baseDir, targets2$Sentrix_ID, 
+                               paste0(targets2$Sentrix_ID, 
+                                      targets2$Sentrix_Position))
+@ 
+
+Finally, \Rpackage{minfi} contains a file-based parser: \Rcode{read.450k}.  The return object
+represents the red and the green channel measurements of the samples.  A useful function that we get
+from the package \Rpackage{Biobase} is \Rcode{combine} that combines (``adds'') two sets of samples.
+This allows the user to manually build up an \Rcode{RGChannelSet}.
+
+\section{Quality Control}
+
+\Rcode{minfi} provides several plots that can be useful for identifying samples with data quality
+problems.  These functions can display summaries of signal from the array (e.g. density plots) as
+well as the values of several types of control probes included on the array. Our understanding of
+the expected sample behavior in the QC plots is still evolving and will improve as the number of
+available samples from the array increases. A good rule of thumb is to be wary of samples whose
+behavior deviates from that of others in the same or similar experiments.
+
+The wrapper function \Rcode{qcReport} function can be used to produce a PDF QC report of the most
+common plots.  If provided, the optional sample name and group options will be used to label and
+color plots. Samples within a group are assigned the same color. The sample group option can also be
+used as a very cursory way to check for batch effects (e.g. by setting it to a processing day
+variable.)
+
+<<qcReport-quick,eval=FALSE>>=
+qcReport(RGset, sampNames = pd$Sample_Name, 
+         sampGroups = pd$Sample_Group, pdf = "qcReport.pdf")
+@
+
+The components of the QC report can also be customized and produced individually as detailed below.
+
+\subsubsection{Density plots}
+
+The \Rcode{densityPlot} function produces density plots of the methylation Beta values for all
+samples, typically colored by sample group. While the density plots in Figure \ref{fig:densityPlot}
+are useful for identifying deviant samples, it is not easy to identify the specific problem
+sample. If there is a concern about outlier samples, a useful follow-up is the ``bean'' plot (Figure
+\ref{fig:densityBeanPlot}) that shows each sample in its own section. While the shape of the 
+distribution for ``good'' samples will differ from experiment to experiment, many conditions 
+have methylation profiles characterized by  
+two modes - one with close to 0\% methylation, and a second at close to 100\% methylation.
+
+\begin{figure} 
+\begin{center}
+<<qcReport-density,fig=TRUE>>=
+densityPlot(RGset, sampGroups = pd$Sample_Group, 
+            main = "Beta", xlab = "Beta")
+@
+\end{center} 
+\caption{Beta density plots}
+\label{fig:densityPlot}
+\end{figure}
+
+
+\begin{figure} 
+\begin{center}
+<<qcReport-bean,fig=TRUE>>=
+par(oma=c(2,10,1,1))
+densityBeanPlot(RGset, sampGroups = pd$Sample_Group, 
+                sampNames = pd$Sample_Name)
+@
+\end{center} 
+\caption{Beta beanplots} 
+\label{fig:densityBeanPlot}
+\end{figure}
+
+\subsubsection{Control probe plots}
+
+The \Rcode{controlStripPlot} function allows plotting of individual control probe types (Figure \ref{fig:controlStripPlot}).
+The following control probes are available on the array:
+\begin{verbatim}
+  BISULFITE CONVERSION I    12
+  BISULFITE CONVERSION II    4
+  EXTENSION                  4
+  HYBRIDIZATION              3
+  NEGATIVE                 614
+  NON-POLYMORPHIC            4
+  NORM_A                    32
+  NORM_C                    61
+  NORM_G                    32
+  NORM_T                    61
+  SPECIFICITY I             12
+  SPECIFICITY II             3
+  STAINING                   6
+  TARGET REMOVAL             2
+\end{verbatim}
+
+\begin{figure} 
+\begin{center}
+<<qcReport-stripplot,fig=TRUE>>=
+controlStripPlot(RGset, controls="BISULFITE CONVERSION II", 
+                 sampNames = pd$Sample_Name)
+@
+\end{center} 
+\caption{Beta stripplot} 
+\label{fig:controlStripPlot}
+\end{figure}
+
+
+\section{Preprocessing (normalization)}
+
+Preprocessing (normalization) takes as input a \Rcode{RGChannelSet} and returns a \Rcode{MethylSet}.
+
+A number of preprocessing options are available (and we are working on more methods).  Each set of
+methods are implemented as a function \Rcode{preprocessXXX} with \Rcode{XXX} being the name of the
+method.  Each method may have a number of tuning parameters.
+
+``Raw'' preprocessing  means simply converting the Red and the Green channel into a Methylated and
+Unmethylated signal
+
+<<Msetraw>>=
+MSet.raw <- preprocessRaw(RGset)
+@ 
+
+We have also implemented preprocessing choices as available in Genome Studio.  These choices follow
+the description provided in the Illumina documentation and has been validated by comparing the
+output of Genome Studio to the output of these algorithms, and this shows the two approaches to be
+roughly equivalent (for a precise statement, see the manual pages).
+
+Genome studio allows for background subtraction (also called background normalization) as well as
+something they term control normalization.  Both of these are optional and turning both of them off
+is equivalent to raw preprocessing (\Rcode{preprocessRaw}).
+
+<<allMsets>>=
+MSet.norm <- preprocessIllumina(RGset, bg.correct = TRUE,
+                                 normalize = "controls", reference = 2)
+@ 
+
+The \Rcode{reference = 2} selects which array to use as ``reference'' which is an arbitrary array
+(we are not sure how Genome Studio makes its choice of reference).
+
+\subsubsection{Operating on a MethylSet}
+
+Once a \Rcode{MethylSet} has been generated, we have a various ways of getting access to the
+methylation data.  The most basic functions are \Rcode{getMeth} and \Rcode{getUnmeth}, which returns
+unlogged methylation channels.  The function \Rcode{getBeta} gets ``beta''-values which are values
+between 0 and 1 with 1 interpreted as very high methylation.  If \Rcode{type = "Illumina"} (not the
+default) these are computed using Illumina's formula
+\begin{displaymath}
+  \beta = \frac{M}{M + U + 100}
+\end{displaymath}
+Finally, we have the ``M-values'' (not to be confused with the methylation channel obtained by
+\Rcode{getMeth}).   M-values are perhaps an unfortunate terminology, but it
+seems to be standard in the methylation array world.  These are computed as
+$\textrm{logit}(\beta)$ and are obtained by \Rcode{getM}. 
+
+
+<<MSet>>=
+getMeth(MSet.raw)[1:4,1:3]
+getUnmeth(MSet.raw)[1:4,1:3]
+getBeta(MSet.raw, type = "Illumina")[1:4,1:3]
+getM(MSet.raw)[1:4,1:3]
+@ 
+
+\subsubsection{MDS plots}
+
+After preprocessing the raw data to obtain methylation estimates, Multi-dimensional scaling (MDS)
+plots provide a quick way to get a first sense of the relationship between samples. They are similar
+to the more familiar PCA plots and display a two-dimensional approximation of sample-to-sample
+Euclidean distance. Note that while the plot visualizes the distance in epigenomic profiles between samples, 
+the absolute positions of the points is not meaningful. One often expects to see greater between-group 
+than within-group distances
+(although this clearly depends on the particular experiment).  The most variable locations are used
+when calculating sample distances, with the number specified by the \Rcode{numPositions} option. Adding
+sample labels to the MDS plot is a useful way of identifying outliers (figure \ref{fig:MDS}) that 
+behave differently from their peers.
+\begin{figure} 
+\begin{center}
+<<qcReport-mdsplot2,fig=TRUE>>=
+mdsPlot(MSet.norm, numPositions = 1000, sampGroups = pd$Sample_Group, 
+	sampNames = pd$Sample_Name)
+@
+\end{center} 
+\caption{Multi-dimensional scaling plot}
+\label{fig:MDS}
+\end{figure}
+
+
+
+\subsubsection{The validation of \Rcode{preprocessIllumina}}
+
+By validation we mean ``yielding output that is equivalent to Genome Studio''.
+
+Illumina offers two steps: control normalization and background subtraction (normalization).  Using
+output from Genome Studio we are certain that the control normalization step is validated, with the
+following caveat: control normalization requires the selection of one array among the 12 arrays on a
+chip as a reference array.  It is currently unclear how Genome Studio selects the reference; if you
+know the reference array we can recreate Genome Studio exactly.  Background subtraction
+(normalization) is almost correct: for 18 out of 24 arrays we see exact equivalence and for the
+remaining 6 out of 24 arrays we only see small discrepancies (a per-array max difference of 1-4 for
+unlogged intensities).  A script for doing this is in \texttt{scripts/GenomeStudio.R}.
+
+\subsubsection{Subset-quantile within array normalisation (SWAN)}
+
+SWAN (subset-quantile within array normalisation) is a new normalization method for Illumina 450k
+arrays.  What follows is a brief description of the methodology (written by the authors of SWAN):
+
+Technical differences have been demonstrated to exist between the Type I and Type II assay designs
+within a single 450K array\citep{Bibikova:2011,Dedeurwaerder:2011}. Using the SWAN method
+substantially reduces the technical variability between the assay designs whilst maintaining the
+important biological differences.  The SWAN method makes the assumption that the number of CpGs
+within the 50bp probe sequence reflects the underlying biology of the region being
+interrogated. Hence, the overall distribution of intensities of probes with the same number of CpGs
+in the probe body should be the same regardless of design type. The method then uses a subset
+quantile normalization approach to adjust the intensities of each array \citep{Maksimovic:2012}.
+SWAN takes a \Rcode{MethylSet} as input. This can be generated by either \Rcode{preprocessRaw} or
+\Rcode{preprocessIllumina}.  Calling the function without specifying a \Rcode{MethylSet} uses
+\Rcode{preprocessRaw}.  It should be noted that, in order to create the normalization subset, SWAN
+randomly selects Infinium I and II probes that have one, two and three underlying CpGs; as such, we
+recommend setting a seed (using \Rcode{set.seed})before using \Rcode{preprocessSWAN} to ensure that
+the normalized intensities will be identical, if the normalization is repeated.
+
+<<preprocessSwan>>=
+Mset.swan <- preprocessSWAN(RGsetEx, MsetEx)
+@ 
+
+The technical differences between Infinium I and II assay designs can result in aberrant beta value
+distributions (Figure~\ref{fig:plotBetaTypes}, panel ``Raw''). Using SWAN corrects for the
+technical differences between the Infinium I and II assay designs and produces a smoother overall
+beta value distribution (Figure~\ref{fig:plotBetaTypes}, panel ``SWAN'').
+
+\begin{figure}
+  \centering
+<<plotBetaType,fig=TRUE,width=8,height=4>>=
+par(mfrow=c(1,2))
+plotBetasByType(MsetEx[,1], main = "Raw")
+plotBetasByType(Mset.swan[,1], main = "SWAN")
+@ 
+\caption{The effect of normalizing using SWAN.}\label{fig:plotBetaTypes}
+\end{figure}
+
+\section{Finding differentially methylated positions (DMPs)}
+
+We are now ready to use the normalized data to identify DMPs, defined as CpG positions where the 
+methylation level correlates with a phenotype of interest. The phenotype may be categorical (e.g. cancer vs.
+normal) or continuous (e.g. blood pressure).
+
+We will create a 20,000 CpG subset of our dataset to speed up the demo:
+
+<<subset-mset>>=
+mset <- MSet.norm[1:20000,]
+@
+
+\subsubsection{Categorical phenotypes}
+
+The \Rcode{dmpFinder} function uses an F-test to identify positions that are differentially
+methylated between (two or more) groups. Tests are performed on logit transformed Beta values as
+recommended in Pan et al.  Care should be taken if you have zeroes in either the Meth or the Unmeth
+matrix.  One possibility is to threshold the beta values, so they are always in the interval
+$[\epsilon, 1-\epsilon]$.  We call $\epsilon$ the betaThreshold
+
+Here we find the differences between GroupA and GroupB.
+
+<<dmpFinder-categorical>>=
+table(pd$Sample_Group)
+M <- getM(mset, type = "beta", betaThreshold = 0.001)
+dmp <- dmpFinder(M, pheno=pd$Sample_Group, type="categorical")
+head(dmp)
+@
+
+\Rcode{dmpFinder} returns a table of CpG positions sorted by differential methylation p-value.
+
+We can use the \Rcode{plotCpG} function to plot methylation levels at individual positions:
+<<plot-dmps-categorical,fig=TRUE>>=
+cpgs <- rownames(dmp)[1:4]
+par(mfrow=c(2,2))
+plotCpg(mset, cpg=cpgs, pheno=pd$Sample_Group)
+@
+
+
+\subsubsection{Continuous phenotypes}
+We can also identify DMPs where the mean methylation level varies with a continuous covariate 
+using linear regression. Since the sample dataset does not contain any continuous phenotypes 
+we will simulate one for demonstration purposes:
+
+<<set-seed, echo=FALSE>>=
+set.seed(123)
+@
+<<sim-pheno>>=
+continuousPheno <- rnorm(nrow(pd))
+@
+
+We now search for DMPs associated with this phenotype. 
+<<dmpFinder-continuous>>=
+dmp <- dmpFinder(mset, pheno=continuousPheno, type="continuous")
+dmp[1:3,]
+@
+
+The \Rcode{beta} column gives the change in mean phenotype for each unit increase of methylation.
+We can filter the DMP list to exclude positions with a small effect size:
+<<filter-dmp>>=
+dmp <- subset(dmp, abs(beta)>1)
+@
+
+The \Rcode{plotCpg} function can be used to visualise these continuous DMPs:
+<<plot-dmps-continuous,fig=TRUE>>=
+cpgs <- rownames(dmp)[1:4]
+par(mfrow=c(2,2))
+plotCpg(mset, cpg=cpgs, type="continuous",
+        pheno=continuousPheno, xlab="Phenotype 1")
+@
+
+
+
+
+\section{Advanced: The manifest object}
+
+In order to preprocess the data we need a ``manifest'' object.  This object is similar to the union
+of a CDF environment and a probe package (and may be restructured).  Essentially it describes what
+probes are on the array and how they are matched together.
+
+\emph{The manifest object only depends on the array design.  It is not related to annotating the
+  CpGs measured by the array.}
+
+The internal structure of the manifest object should not be of concern to users. However, it may be
+useful to know something about the array design.  First we have a look at the object:
+
+<<manifest>>=
+IlluminaHumanMethylation450kmanifest
+head(getProbeInfo(IlluminaHumanMethylation450kmanifest, type = "I"), n = 3)
+head(getProbeInfo(IlluminaHumanMethylation450kmanifest, type = "II"), n = 3)
+head(getProbeInfo(IlluminaHumanMethylation450kmanifest, type = "Control"), n = 3)
+@
+
+The 450k array has a rather special design.  It is a two-color array, so each array will have an
+associated Green signal and a Red signal.
+
+On the 450k array, a CpG may be measured by a ``type I'' or ``type II'' design.  The literature
+often uses the term``type I/II probes'' which we believe is unfortunate (see next paragraph).
+
+Each CpG has an associated methylated and un-methylated signal.  If the CpG is of ``type I'', the
+methylation and un-methylation signal are originating from two different probes (physical location
+on the array).  There is one set of ``type I'' CpGs where the signal comes from the Green channel
+for both probes (and the Red channel measures nothing) and another set where the signal comes from
+the Red channel.  If the CpG is of ``type II'', a single probe (physical location) is being used to
+measure the methylated/un-methylated signal and the methylated signal is always measured in the
+Green channel.
+
+This is reflected in the manifest object seen above: ``type I'' CpGs have ``AddressA'', ``AddressB''
+(this is a link to the physical location on the array) as well as ``ProbeSeqA'' and ``ProbeSeqB''.
+They also have a ``Col'' indicator (which channel is the methylated signal coming from).  In
+contrast ``type II'' CpGs have a single ``Address'', one ``ProbeSeq'' and no color information.
+
+Because CpGs of ``type I'' are measured using two different physical probes, we dislike calling the
+probes ``type I/II'' and instead attaches the type to the CpG itself.
+
+Note that Illumina uses a special ``cgXXX'' name for the CpGs.  There is actually a meaning to this,
+not unlike the meaning associated with ``rsXXX'' numbers for SNPs.  Essentially the XXX is a hash of
+the bases surrounding the CpG, making the cgXXX numbers independent of genome version.  Illumina has
+a technical note describing this.
+
+\section{SessionInfo}
+
+<<sessionInfo,results=tex,echo=FALSE>>=
+toLatex(sessionInfo())
+@ 
+
+\nocite{*}
+\bibliographystyle{unsrturl}
+\bibliography{minfi}
+\end{document}
+
+% Local Variables:
+% eval: (add-hook 'LaTeX-mode-hook '(lambda () (if (string= (buffer-name) "minfi.Rnw") (setq fill-column 100))))
+% LocalWords: LocalWords methylation CpG CDF ExpressionSet Affymetrix preprocessed preprocessing unlogged
+% LocalWords: methylated Methylated unmethylated Unmethylated Grn IDAT dataset Illumina CSV
+% End:
+
