@@ -37,7 +37,6 @@ IlluminaMethylationAnnotation <- function(listOfObjects, annotation = "",
     stopifnot(all(defaults %in% names(listOfObjects)))
     stopifnot(!anyDuplicated(sub("\\..*", "", defaults)))
     ## FIXME: Check column names of any Islands object
-    
     ## Instantiating
     data <- new.env(parent = emptyenv())
     for(nam in names(listOfObjects)) {
@@ -115,12 +114,19 @@ getAnnotation <- function(object, what = "everything", lociNames = NULL,
         seqOrder <- .seqnames.order.all
     }
     if(orderByLocation) {
-        sp <- split(out, out$chr)
-        sp <- sp[seqOrder[seqOrder %in% names(sp)]]
-        out <- do.call(rbind, lapply(sp, function(df) {
-            od <- order(df$pos)
-            df[od,]
-        }))
+        ## we have a data.frame with chr, pos.  We want to sort accoridng to chr nested with pos, but with a custom
+        ## ordering on chr.
+        ## we will make chr into an integer
+        chrInteger <- as.integer(factor(out$chr, levels = seqOrder))
+        od <- order(chrInteger, out$pos)
+        out <- out[od,]
+        ## ## FIXME: very memory intensive
+        ## sp <- split(out, out$chr)
+        ## sp <- sp[seqOrder[seqOrder %in% names(sp)]]
+        ## out <- do.call(rbind, lapply(sp, function(df) {
+        ##     od <- order(df$pos)
+        ##     df[od,]
+        ## }))
     }
     out
 }

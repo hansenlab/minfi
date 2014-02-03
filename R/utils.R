@@ -145,6 +145,8 @@ ilogit2 <- function(x) { 2^(x) / (1+2^(x)) }
                      class(object)))
 }
 
+
+
 .harmonizeSex <- function(vector) {
     ## FIXME: not done
     stop("function not done")
