@@ -16,6 +16,9 @@
     \item Fixed bug with mapToGenome(..., mergeManifest = TRUE) reported
     by Dale Watkins <dale.watkins@sahmri.com> and  Allegra A. Petti
     <apetti@genome.wustl.edu>.
+    \item Fixed bug with mapToGenome(rSet) with rSet being a RatioSet
+    with the CN set to NULL reported byAllegra A. Petti
+    <apetti@genome.wustl.edu>.
   }
 }
 

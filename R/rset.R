@@ -64,7 +64,8 @@ setMethod("getCN", signature(object = "RatioSet"),
               nms <- assayDataElementNames(object)
               if("CN" %in% nms)
                   return(assayDataElement(object, "CN"))
-              stop("object does not contain 'CN' amongst assay slots")
+              else
+                  return(NULL)
           })
 
 setMethod("preprocessMethod", signature(object = "RatioSet"),
