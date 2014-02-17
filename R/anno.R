@@ -143,8 +143,11 @@ getLocations <- function(object, mergeManifest = FALSE,
                   ranges = IRanges(start = locs$pos, width = 1))
     seqlevels(gr) <- .seqnames.order[.seqnames.order %in% seqlevels(gr)]
     names(gr) <- rownames(locs)
-    if(mergeManifest)
-        elementMetadata(gr) <- locs[, ! names(locs) %in% c("chr", "pos")]
+    if(mergeManifest) {
+        if("strand" %in% names(locs))
+            names(locs)[names(locs) == "strand"] <- "assayStrand"
+        elementMetadata(gr) <- locs[, ! names(locs) %in% c("chr", "pos", "strand")]
+    }
     genome(gr) <- unname(.getAnnotationObject(object)@annotation["genomeBuild"])
     gr
 }
