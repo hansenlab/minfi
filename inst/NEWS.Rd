@@ -13,6 +13,12 @@
     \item Moved reshape from Depends to Imports.
     \item Dramatic improvement in memory usage of preprocessRaw.
     \item Updated CITATION, the minif paper is in press.
+    \item Fixed bug with mapToGenome(..., mergeManifest = TRUE) reported
+    by Dale Watkins <dale.watkins@sahmri.com> and  Allegra A. Petti
+    <apetti@genome.wustl.edu>.
+    \item Fixed bug with mapToGenome(rSet) with rSet being a RatioSet
+    with the CN set to NULL reported byAllegra A. Petti
+    <apetti@genome.wustl.edu>.
   }
 }
 
