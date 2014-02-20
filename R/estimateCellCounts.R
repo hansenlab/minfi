@@ -10,14 +10,16 @@ estimateCellCounts <- function (rgSet, compositeCellType = "Blood",
                      compositeCellType, platform, referencePkg))
     data(list = referencePkg)
     referenceRGset <- get(referencePkg)
-    if(! "CellType" %in% names(pData(referenceRGset)))
-        stop(sprintf("the reference sorted dataset (in this case '%s') needs to have a phenoData column called 'CellType'"),
+    if(sum( c("Sample_Name", "CellType") %in% names(pData(referenceRGset))) < 2) 
+        stop(sprintf("the reference sorted dataset (in this case '%s') needs to have a phenoData column called 'CellType' and 'Sample_Name'"),
              names(referencePkg))
     if(!all(cellTypes %in% referenceRGset$CellType))
         stop(sprintf("all elements of argument 'cellTypes' needs to be part of the reference phenoData columns 'CellType' (containg the following elements: '%s')",
                      paste(unique(referenceRGset$cellType), collapse = "', '")))
 
     if(verbose) cat("[estimateCellCounts] Combining user data with reference (flow sorted) data.\n")
+	pData(referenceRGset) = pData(referenceRGset)[,c("Sample_Name", "CellType")]
+
     combinedRGset <- combine(rgSet, referenceRGset)
     newpd <- data.frame(sampleNames = c(sampleNames(rgSet), sampleNames(referenceRGset)),
                         studyIndex = rep(c("user", "reference"),
@@ -91,6 +93,7 @@ pickCompProbes <- function(mSet, cellTypes = NULL, numProbes = 50) {
     compTable <- cbind(ffComp, prof, r, abs(r[,1] - r[,2]))
     names(compTable)[1] <- "Fstat"
     names(compTable)[c(-2,-1,0) + ncol(compTable)] <- c("low", "high", "range") 
+
     tIndexes <- splitit(pd$CellType)
     tstatList <- lapply(tIndexes, function(i) {
         x <- rep(0,ncol(p))
@@ -106,7 +109,7 @@ pickCompProbes <- function(mSet, cellTypes = NULL, numProbes = 50) {
         c(rownames(yUp)[1:numProbes], rownames(yDown)[1:numProbes])
     })
     
-    trainingProbes <- unlist(probeList)
+    trainingProbes <- unique(unlist(probeList))
     p <- p[trainingProbes,]
     
     pMeans <- colMeans(p)
@@ -115,9 +118,14 @@ pickCompProbes <- function(mSet, cellTypes = NULL, numProbes = 50) {
     form <- as.formula(sprintf("y ~ %s - 1", paste(levels(pd$CellType), collapse="+")))
     phenoDF <- as.data.frame(model.matrix(~pd$CellType-1))
     colnames(phenoDF) <- sub("^pd\\$CellType", "", colnames(phenoDF))
-    tmp <- validationCellType(Y = p, pheno = phenoDF, modelFix = form)
-    coefEsts <- tmp$coefEsts
-    
+    if(length(unique(cellTypes)) == 2) { # two group solution
+		X <- as.matrix(phenoDF)
+		coefEsts <- t(solve(t(X) %*% X) %*% t(X) %*% t(p))
+	} else  {
+		tmp <- validationCellType(Y = p, pheno = phenoDF, modelFix = form)
+		coefEsts <- tmp$coefEsts
+    }
+	
     out <- list(coefEsts = coefEsts, compTable = compTable,
                 sampleMeans = pMeans)
     return(out)
@@ -130,34 +138,43 @@ projectCellType <- function(Y, coefCellType, contrastCellType=NULL, nonnegative=
         Xmat <- coefCellType %*% t(contrastCellType) 
 
     nCol <- dim(Xmat)[2]
-    nSubj <- dim(Y)[2]
+	
+	if(nCol == 2) {
+		Dmat = t(Xmat)%*%Xmat
+		mixCoef = t(apply(Y, 2, function(x)  solve(Dmat, t(Xmat) %*% x)))
+		colnames(mixCoef) <- colnames(Xmat)
+		return(mixCoef)
+	} else {
 
-    mixCoef <- matrix(0, nSubj, nCol)
-    rownames(mixCoef) <- colnames(Y)
-    colnames(mixCoef) <- colnames(Xmat)
-    
-    if(nonnegative){
-        require(quadprog)
-        if(lessThanOne){
-            Amat <- cbind(rep(-1,nCol), diag(nCol))
-            b0vec <- c(-1,rep(0,nCol))
-        } else {
-            Amat <- diag(nCol)
-            b0vec <- rep(0,nCol)
-        }
-        for(i in 1:nSubj) {
-            obs <- which(!is.na(Y[,i])) 
-            Dmat <- t(Xmat[obs,]) %*% Xmat[obs,]
-            mixCoef[i,] <- solve.QP(Dmat, t(Xmat[obs,]) %*% Y[obs,i], Amat, b0vec)$sol
-        }
-    } else {
-        for(i in 1:nSubj) {
-            obs <- which(!is.na(Y[,i])) 
-            Dmat <- t(Xmat[obs,]) %*% Xmat[obs,]
-            mixCoef[i,] <- solve(Dmat, t(Xmat[obs,]) %*% Y[obs,i])
-        }
-    }
-    return(mixCoef)
+		nSubj <- dim(Y)[2]
+
+		mixCoef <- matrix(0, nSubj, nCol)
+		rownames(mixCoef) <- colnames(Y)
+		colnames(mixCoef) <- colnames(Xmat)
+		
+		if(nonnegative){
+			require(quadprog)
+			if(lessThanOne){
+				Amat <- cbind(rep(-1,nCol), diag(nCol))
+				b0vec <- c(-1,rep(0,nCol))
+			} else {
+				Amat <- diag(nCol)
+				b0vec <- rep(0,nCol)
+			}
+			for(i in 1:nSubj) {
+				obs <- which(!is.na(Y[,i])) 
+				Dmat <- t(Xmat[obs,]) %*% Xmat[obs,]
+				mixCoef[i,] <- solve.QP(Dmat, t(Xmat[obs,]) %*% Y[obs,i], Amat, b0vec)$sol
+			}
+		} else {
+			for(i in 1:nSubj) {
+				obs <- which(!is.na(Y[,i])) 
+				Dmat <- t(Xmat[obs,]) %*% Xmat[obs,]
+				mixCoef[i,] <- solve(Dmat, t(Xmat[obs,]) %*% Y[obs,i])
+			}
+		}
+		return(mixCoef)
+	}
 }
 
 validationCellType <- function(Y, pheno, modelFix, modelBatch=NULL,
