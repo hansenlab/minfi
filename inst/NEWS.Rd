@@ -19,6 +19,7 @@
     \item Fixed bug with mapToGenome(rSet) with rSet being a RatioSet
     with the CN set to NULL reported byAllegra A. Petti
     <apetti@genome.wustl.edu>.
+    \item Added preprocessFunnorm, a new preprocessing method.
   }
 }
 
