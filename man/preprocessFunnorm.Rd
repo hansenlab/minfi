@@ -48,8 +48,9 @@ differences.
 \references{
   JP Fortin, A Labbe, M Lemire, BW Zanke, TJ Hudson, EJ Fertig, CMT
   Greenwood and K Hansen.  
-  \emph{Functional normalization of 450k methylation array data improves replication in large cancer
-    studies}.  Biorxiv (2014).
+  \emph{Functional normalization of 450k methylation array data improves
+    replication in large cancer studies}.
+  (2014) bioRxiv doi: 10.1101/002956.
 }
 
 \author{
