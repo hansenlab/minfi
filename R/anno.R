@@ -105,7 +105,7 @@ getAnnotation <- function(object, what = "everything", lociNames = NULL,
             lociNames <- fNames[fNames %in% lociNames]
     }
     if(!is.null(lociNames))
-        out <- out[lociNames,]
+        out <- out[match(lociNames, rownames(out)),]
     if(dropNonMapping) {
         seqOrder <- .seqnames.order
         wh <- which(out$chr %in% seqOrder)

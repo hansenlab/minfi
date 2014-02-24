@@ -20,6 +20,8 @@
     with the CN set to NULL reported byAllegra A. Petti
     <apetti@genome.wustl.edu>.
     \item Added preprocessFunnorm, a new preprocessing method.
+    \item Improvements to the speed of getAnnotation by Martin Morgan
+    <mtmorgan@fhcrc.org>.
   }
 }
 
