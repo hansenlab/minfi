@@ -1,0 +1,25 @@
+bibentry("article",
+         title = "{Minfi: A flexible and comprehensive Bioconductor package for the analysis of Infinium DNA Methylation microarrays}",
+         author = c(
+         person(c("Martin", "J"), "Aryee"),
+         person(c("Andrew", "E"), "Jaffe"),
+         person("Hector", "Corrada-Bravo"),
+         person("Christine", "Ladd-Acosta"),
+         person(c("Andrew", "P."), "Feinberg"),
+         person(c("Kasper", "D."), "Hansen"),
+         person(c("Rafael", "A."), "Irizarry")
+         ),
+         year = 2014,
+	 journal = "Bioinformatics",
+	 volume = "",
+	 number = "",
+	 pages = "",
+         notes = "In press",
+         doi = "10.1093/bioinformatics/btu049",
+         pubmed = {24478339},
+         textVersion = 
+         paste("MJ Aryee, AE Jaffe, H Corrada-Bravo, C Ladd-Acosta, AP Feinberg, KD Hansen, RA Irizarry.", 
+               "Minfi: A flexible and comprehensive Bioconductor package for the analysis of Infinium DNA Methylation microarrays.",
+               "Bioinformatics", "2014, In press.  doi: 10.1093/bioinformatics/btu049."),
+         mheader = "To cite minfi in publications use:"
+         )
