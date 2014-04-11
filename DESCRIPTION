@@ -1,5 +1,5 @@
 Package: minfi
-Version: 1.10.0
+Version: 1.11.0
 Title: Analyze Illumina's 450k methylation arrays
 Description: Tools for analyzing and visualizing Illumina's 450k array data
 Authors@R: c(person(c("Kasper", "Daniel"), "Hansen", role = c("cre", "aut"),
