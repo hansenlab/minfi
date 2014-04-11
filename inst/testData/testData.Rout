@@ -1,0 +1,175 @@
+
+R version 3.0.1 Patched (2013-08-18 r63615) -- "Good Sport"
+Copyright (C) 2013 The R Foundation for Statistical Computing
+Platform: x86_64-apple-darwin12.4.0 (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> library(minfiData)
+Loading required package: minfi
+Loading required package: BiocGenerics
+Loading required package: parallel
+
+Attaching package: ‘BiocGenerics’
+
+The following objects are masked from ‘package:parallel’:
+
+    clusterApply, clusterApplyLB, clusterCall, clusterEvalQ,
+    clusterExport, clusterMap, parApply, parCapply, parLapply,
+    parLapplyLB, parRapply, parSapply, parSapplyLB
+
+The following object is masked from ‘package:stats’:
+
+    xtabs
+
+The following objects are masked from ‘package:base’:
+
+    anyDuplicated, append, as.data.frame, as.vector, cbind, colnames,
+    duplicated, eval, Filter, Find, get, intersect, lapply, Map,
+    mapply, match, mget, order, paste, pmax, pmax.int, pmin, pmin.int,
+    Position, rank, rbind, Reduce, rep.int, rownames, sapply, setdiff,
+    sort, table, tapply, union, unique, unlist
+
+Loading required package: Biobase
+Welcome to Bioconductor
+
+    Vignettes contain introductory material; view with
+    'browseVignettes()'. To cite Bioconductor, see
+    'citation("Biobase")', and for packages 'citation("pkgname")'.
+
+Loading required package: lattice
+Loading required package: reshape
+Loading required package: plyr
+
+Attaching package: ‘reshape’
+
+The following objects are masked from ‘package:plyr’:
+
+    rename, round_any
+
+Loading required package: GenomicRanges
+Loading required package: IRanges
+
+Attaching package: ‘IRanges’
+
+The following objects are masked from ‘package:reshape’:
+
+    expand, rename
+
+The following objects are masked from ‘package:plyr’:
+
+    desc, rename
+
+Loading required package: XVector
+
+Attaching package: ‘XVector’
+
+The following object is masked from ‘package:plyr’:
+
+    compact
+
+Loading required package: Biostrings
+Loading required package: bumphunter
+Loading required package: foreach
+Loading required package: iterators
+Loading required package: locfit
+locfit 1.5-9.1 	 2013-03-22
+
+Attaching package: ‘locfit’
+
+The following objects are masked from ‘package:GenomicRanges’:
+
+    left, right
+
+Loading required package: IlluminaHumanMethylation450kmanifest
+Loading required package: IlluminaHumanMethylation450kannotation.ilmn.v1.2
+> library(digest)
+> Mset.raw <- preprocessRaw(RGsetEx)
+> Mset.illumina <- preprocessIllumina(RGsetEx)
+> set.seed(456)
+> Mset.swan <- preprocessSWAN(RGsetEx)
+> Mset.quantile <- preprocessQuantile(MsetEx)
+[preprocessQuantile] Mapping to genome.
+[preprocessQuantile] Fixing outliers.
+[preprocessQuantile] Quantile normalizing.
+> 
+> ## save(Mset.raw, file = "Mset.raw.rda")
+> ## save(Mset.illumina, file = "Mset.illumina.rda")
+> ## save(Mset.swan, file = "Mset.swan.rda")
+> save(Mset.quantile, file = "Mset.quantile.rda")
+> 
+> 
+> testDigests <- list(
++     preprocessRaw = list(Meth = minfi:::.digestMatrix(getMeth(Mset.raw)),
++       Unmeth = minfi:::.digestMatrix(getUnmeth(Mset.raw))),
++     preprocessIllumina = list(Meth = minfi:::.digestMatrix(getMeth(Mset.illumina)),
++       Unmeth = minfi:::.digestMatrix(getUnmeth(Mset.illumina))),
++     preprocessSWAN = list(Meth = minfi:::.digestMatrix(getMeth(Mset.swan)),
++       Unmeth = minfi:::.digestMatrix(getUnmeth(Mset.swan))),
++     preprocessQuantile = list(M = minfi:::.digestMatrix(getM(Mset.quantile)),
++       CN = minfi:::.digestMatrix(getCN(Mset.quantile)))
++     )
+> 
+> save(testDigests, file = "../unitTests/testDigests.rda")
+> 
+> gc()
+           used  (Mb) gc trigger   (Mb)  max used   (Mb)
+Ncells  4936580 263.7    7700734  411.3   7700734  411.3
+Vcells 91659489 699.4  175017273 1335.3 174985006 1335.1
+> sessionInfo()                         
+R version 3.0.1 Patched (2013-08-18 r63615)
+Platform: x86_64-apple-darwin12.4.0 (64-bit)
+
+locale:
+[1] en_US.utf-8/en_US.utf-8/en_US.utf-8/C/en_US.utf-8/en_US.utf-8
+
+attached base packages:
+[1] parallel  stats     graphics  grDevices utils     datasets  methods  
+[8] base     
+
+other attached packages:
+ [1] digest_0.6.3                                          
+ [2] minfiData_0.3.4                                       
+ [3] IlluminaHumanMethylation450kannotation.ilmn.v1.2_0.1.3
+ [4] IlluminaHumanMethylation450kmanifest_0.4.0            
+ [5] minfi_1.7.12                                          
+ [6] bumphunter_1.1.11                                     
+ [7] locfit_1.5-9.1                                        
+ [8] iterators_1.0.6                                       
+ [9] foreach_1.4.1                                         
+[10] Biostrings_2.29.15                                    
+[11] GenomicRanges_1.13.36                                 
+[12] XVector_0.1.0                                         
+[13] IRanges_1.19.24                                       
+[14] reshape_0.8.4                                         
+[15] plyr_1.8                                              
+[16] lattice_0.20-21                                       
+[17] Biobase_2.21.6                                        
+[18] BiocGenerics_0.7.4                                    
+
+loaded via a namespace (and not attached):
+ [1] base64_1.1            beanplot_1.1          codetools_0.2-8      
+ [4] doRNG_1.5.3           grid_3.0.1            illuminaio_0.3.5     
+ [7] itertools_0.1-1       limma_3.17.21         MASS_7.3-28          
+[10] matrixStats_0.8.5     mclust_4.2            multtest_2.17.0      
+[13] nor1mix_1.1-4         preprocessCore_1.23.0 R.methodsS3_1.4.4    
+[16] RColorBrewer_1.0-5    siggenes_1.35.0       splines_3.0.1        
+[19] stats4_3.0.1          survival_2.37-4      
+> 
+> rm(list = ls())
+> 
+> proc.time()
+   user  system elapsed 
+100.261   8.719 113.399 
