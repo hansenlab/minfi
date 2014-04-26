@@ -3,7 +3,7 @@ Version: 1.11.1
 Title: Analyze Illumina's 450k methylation arrays
 Description: Tools for analyzing and visualizing Illumina's 450k array data
 Authors@R: c(person(c("Kasper", "Daniel"), "Hansen", role = c("cre", "aut"),
-                    email = "khansen@jhsph.edu"),
+                    email = "kasperdanielhansen@gmail.com"),
              person("Martin", "Ayree", role = "aut"),
              person(c("Rafael", "A."), "Irizarry", role = "aut"),
 	     person(c("Andrew", "E."), "Jaffe", role = "ctb"),
