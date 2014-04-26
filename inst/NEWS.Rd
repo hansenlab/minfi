@@ -2,6 +2,21 @@
 \title{Minfi News}
 \encoding{UTF-8}
 
+\section{Version 1.11}{
+  \itemize{
+    \item Changes in 1.10 imported into 1.11.
+  }
+}
+
+\section{Version 1.10}{
+  \itemize{
+    \item Modified read.450k.sheet to ignore case when identifying the
+    data header "[DATA]".  This addresses an issue with sheets generated
+    by some Illumina instruments.  Reported and partial fix provided by
+    the github user nilsigem. 
+  }
+} 
+
 \section{Version 1.9}{
   \itemize{
     \item Importing the changes from 1.8 into 1.9.
