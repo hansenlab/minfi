@@ -55,7 +55,7 @@ read.450k <- function(basenames, extended = FALSE, verbose = FALSE) {
 read.450k.sheet <- function(base, pattern = "csv$", ignore.case = TRUE,
                             recursive = TRUE, verbose = TRUE) {
     readSheet <- function(file) {
-        dataheader <- grep("^\\[Data\\]", readLines(file))
+        dataheader <- grep("^\\[D[Aa][Tt][Aa]\\]", readLines(file))
         if(length(dataheader) == 0)
             dataheader <- 0
         df <- read.csv(file, stringsAsFactor = FALSE, skip = dataheader)
