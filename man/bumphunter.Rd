@@ -13,10 +13,10 @@
 }
 \usage{
 \S4method{bumphunter}{GenomicRatioSet}(object, design, cluster=NULL,
-          coef=2, cutoff=NULL, cutoffQ = 0.99,
-          maxGap=500, smooth=FALSE, smoothFunction=loessByCluster,
+          coef=2,  cutoff=NULL, pickCutoff=FALSE, pickCutoffQ=0.99, 
+          maxGap=500, smooth=FALSE, smoothFunction=locfitByCluster,
           useWeights=FALSE, B=1000, verbose=TRUE, 
-          type = c("M", "Beta"), \dots)
+          type = c("Beta","M"), \dots)
 }
 
 \arguments{
@@ -35,9 +35,11 @@
     used as candidate regions.  It is possible to give two separate
     values (upper and lower bounds).  If one value is given, the lower
     bound is minus the value.}
-  \item{cutoffQ}{The quantile used for picking the cutoff using the
+\item{pickCutoff}{Should bumphunter attempt to pick a cutoff using the
+    permutation distribution?}
+  \item{pickCutoffQ}{The quantile used for picking the cutoff using the
     permutation distribution.}
-  \item{maxGap}{ If cluster is not provided this maximum location gap
+   \item{maxGap}{ If cluster is not provided this maximum location gap
     will be used to define cluster via the  \code{\link{clusterMaker}}
   function.}
   \item{smooth}{
