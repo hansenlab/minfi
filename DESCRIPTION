@@ -24,7 +24,8 @@ Suggests: IlluminaHumanMethylation450kmanifest (>= 0.2.0),
 	  quadprog,
 	  FlowSorted.Blood.450k (>= 1.0.1),
 	  RUnit,
-	  digest
+	  digest,
+	  BiocStyle
 Imports:  IRanges,
 	  beanplot, 
 	  RColorBrewer, 
@@ -62,6 +63,7 @@ Collate:  generics.R
 	  read.manifest.R
 	  bumphunter.R
 	  estimateCellCounts.R
+VignetteBuilder: knitr
 License: Artistic-2.0
 LazyData: yes
 biocViews: DNAMethylation, Microarray, TwoChannel, DataImport, Preprocessing, QualityControl
