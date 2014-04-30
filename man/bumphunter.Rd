@@ -70,34 +70,8 @@
 }
 \details{
 
-This function performs the bumphunting approach described by Jaffe et
-al. International Journal of Epidemiology (2012). The main output is a
-table of candidate regions with permutation-based family-wide error
-rates (FWER) and p-values assigned.
-
-The general idea is that for each genomic location we have a value for
-several individuals. We also have covariates for each individual and
-perform regression. This gives us one estimate of the coefficient of
-interest (a common example is case versus control). These estimates are
-then (optionally) smoothed. The smoothing occurs in clusters of
-locations that are \sQuote{close enough}. This gives us an estimate of a
-genomic profile that is 0 when uninteresting. We then take values above
-(in absolute value) \code{cutoff} as candidate regions. Permutations are
-then performed to create null distributions for the candidate regions.
-
-Uncertainty is assessed via permutations. Each of the B permutations
-will produce an estimated \sQuote{null profile} from which we can define
-\sQuote{null candidate regions}. For each observed candidate region we
-determine how many null regions are \sQuote{more extreme} (longer and
-higher average value). The \sQuote{p.value} is the percent of candidate
-regions obtained from the permutations that as extreme as the observed
-region. These p-values should be interpreted with care as the
-theoretical proporties are not well understood.  The \sQuote{fwer} is
-the proportion of permutations that had at least on regio as extreme as
-the observed region. We compute p.values and FWER for the area of the
-regions (as opposed to length and value as a pair) as well.
-
-Parallelization is implemented through the foreach package.
+  See help file for \code{\link{bumphunter}} method in the
+  \code{bumphunter} package for for details. 
 }
 
 \value{
