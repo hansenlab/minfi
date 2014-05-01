@@ -15,7 +15,7 @@
 \S4method{bumphunter}{GenomicRatioSet}(object, design, cluster=NULL,
           coef=2,  cutoff=NULL, pickCutoff=FALSE, pickCutoffQ=0.99, 
           maxGap=500, smooth=FALSE, smoothFunction=locfitByCluster,
-          useWeights=FALSE, B=1000, verbose=TRUE, 
+          useWeights=FALSE,   B=ncol(permutations), permutations=NULL, verbose=TRUE, 
           type = c("Beta","M"), \dots)
 }
 
@@ -55,8 +55,12 @@
    in the loess smoother \code{loessByCluster}. If the 
    \code{runmedByCluster} smoother is used this argument is ignored.}
   \item{B}{An integer denoting the number of resamples to use when computing
-    null distributions: 1000 is recommended but can be quite slow if
-    this process is not parallelized.}
+    null distributions. This defaults to 0. If \code{permutations} is
+  supplied that defines the number of permutations and \code{B} is
+  ignored.}
+\item{permutations} is a matrix with columns providing indexes to be used to 
+  permute the data and create a null distribution. If this matrix is not supplied and \code{B}>0 then
+  these indexes created using the function \code{sample}. }
   \item{verbose}{
     logical value. If \code{TRUE}, it writes out some messages
     indicating progress. If \code{FALSE} nothing should be printed.
