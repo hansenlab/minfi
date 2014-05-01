@@ -23,5 +23,7 @@ setMethod("bumphunter", signature(object = "GenomicRatioSet"),
                                smooth = smooth,
                                smoothFunction = smoothFunction,
                                useWeights = useWeights,
-                               B = B, verbose = verbose, ...)
+                               B=B,
+                               permutations=permutations,
+                               verbose = verbose, ...)
           })
