@@ -14,6 +14,8 @@
 %% functions
 \alias{getGreen}
 \alias{getRed}
+\alias{getOOB}
+\alias{getSnpBeta}
 
 \title{Class \code{"RGChannelSet"}}
 
@@ -36,6 +38,10 @@ RGChannelSetExtended(Green = new("matrix"), Red = new("matrix"),
 getGreen(object)
 getRed(object)
 \S4method{getManifest}{RGChannelSet}(object)
+
+## Convenience functions
+getOOB(object)
+getSnpBeta(object)
 }
 
 \arguments{
@@ -53,8 +59,6 @@ getRed(object)
     particular a \code{phenoData} slot.}
 }
 
-\details{FIXME}
-
 \section{Constructors}{
   Instances are constructed using the
   \code{RGChannelSet} or \code{RGChannelSetExtended} functions with the
@@ -62,13 +66,25 @@ getRed(object)
 }
 
 \section{Accessors}{
-  In the following code, \code{object} is a \code{MethylSet}.
-
   \describe{
     \item{\code{getGreen}:}{Gets the Green channel as a matrix.}
     \item{\code{getRed}:}{Gets the Red channel as a matrix.}
     \item{\code{getManifest}:}{Gets the manifest object itself
       associated with the array type}
+  }
+}
+
+\section{Convenience functions}{
+  \describe{
+    \item{\code{getOOB}:}{Retrives the so-called \dQuote{out-of-band}
+      (OOB) probes.  These are the measurements of Type I probes in the
+      \dQuote{wrong} color channel.  Return value is a list with two
+      matrices, named \code{Red} and \code{Grn}.}
+    \item{\code{getSnpBeta}:}{Retrives the measurements of the 65 SNP
+      probes located on the array.  These SNP probes are intended to be used
+      for sample tracking and sample mixups.  The return value is a
+      matrix of beta values.  Each SNP probe ought to have values clustered
+      around 3 distinct values corresponding to homo-, and hetero-zygotes.}
   }
 }
 

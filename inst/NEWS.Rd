@@ -5,6 +5,10 @@
 \section{Version 1.11}{
   \itemize{
     \item Changes in 1.10 imported into 1.11.
+    \item Fixed an issue with bumphunter calling the bumphunter package
+    in a wrong way.
+    \item Added getOOB and getSnpBeta convenience functions for
+    accessing the OOB probes and the SNP probes.
   }
 }
 
