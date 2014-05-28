@@ -79,6 +79,8 @@ read.450k.sheet <- function(base, pattern = "csv$", ignore.case = TRUE,
         }
         if(! "Slide" %in% names(df))
             warning(sprintf("Could not infer slide name for file: %s", file))
+        else
+            df[, "Slide"] <- as.character(df[, "Slide"])
         if(length(nam <- grep("Plate[\\._]ID", names(df), ignore.case = TRUE, value = TRUE)) == 1) {
             df$Plate <- df[, nam]
             df[, nam] <- NULL

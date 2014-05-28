@@ -147,18 +147,11 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, verbose = TRUE) {
     greenControls <- lapply(ctrlsList, function(ctl) greenControls[ctl$Address,])
     
     ## Extraction of the undefined negative control probes
-    TypeI.Red   <- getProbeInfo(rgSet, type = "I-Red")
-    TypeI.Green <- getProbeInfo(rgSet, type = "I-Green")
-    
-    greenOOB <- rbind(getGreen(rgSet)[TypeI.Red$AddressA,], getGreen(rgSet)[TypeI.Red$AddressB,])
-    redOOB   <- rbind(getRed(rgSet)[TypeI.Green$AddressA,], getRed(rgSet)[TypeI.Green$AddressB,])
-
-    ## We don't need all these quantiles.
-    
+    oobRaw <- getOOB(rgSet)
     probs <- c(0.01, 0.50, 0.99)
-    greenOOB <- t(colQuantiles(greenOOB, na.rm = TRUE, probs = probs))
-    redOOB   <- t(colQuantiles(redOOB, na.rm=TRUE,  probs = probs))
-    oob      <- list(greenOOB = greenOOB,  redOOB = redOOB)                       
+    greenOOB <- t(colQuantiles(oobRaw$Grn, na.rm = TRUE, probs = probs))
+    redOOB   <- t(colQuantiles(oobRaw$Red, na.rm=TRUE,  probs = probs))
+    oob      <- list(greenOOB = greenOOB, redOOB = redOOB)                       
     
     return(list(
         greenControls = greenControls,
@@ -372,12 +365,12 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, verbose = TRUE) {
 ### Normalize a matrix of intensities  
 .normalizeMatrix <- function(intMatrix, newQuantiles) {
     ## normMatrix <- matrix(NA, nrow(intMatrix), ncol(intMatrix)) 
-    n <- 500
+    n <- nrow(newQuantiles)
     normMatrix <- sapply(1:ncol(intMatrix), function(i) {
         crtColumn <- intMatrix[ , i]
         crtColumn.reduced <- crtColumn[!is.na(crtColumn)]
         ## Generation of the corrected intensities:
-        target <- sapply(1:499, function(j) {
+        target <- sapply(1:(n-1), function(j) {
             start <- newQuantiles[j,i]
             end <- newQuantiles[j+1,i]
             sequence <- seq(start, end,( end-start)/n)[-n]

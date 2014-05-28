@@ -9,6 +9,7 @@
     in a wrong way.
     \item Added getOOB and getSnpBeta convenience functions for
     accessing the OOB probes and the SNP probes.
+    \item read.450k.sheet now forces a column named Slide to be character.
   }
 }
 
