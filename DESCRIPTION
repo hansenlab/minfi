@@ -9,7 +9,7 @@ Authors@R: c(person(c("Kasper", "Daniel"), "Hansen", role = c("cre", "aut"),
 	     person(c("Andrew", "E."), "Jaffe", role = "ctb"),
 	     person("Jovana", "Maksimovic", role = "ctb"),
              person(c("E.", "Andres"), "Houseman", role = "ctb"),
-             person("Jean-Phillipe", "Fortin", role = "ctb"))
+             person("Jean-Philippe", "Fortin", role = "ctb"))
 Depends:  methods,
 	  BiocGenerics (>= 0.3.2),
 	  Biobase (>= 2.17.8),
