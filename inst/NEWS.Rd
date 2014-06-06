@@ -4,6 +4,10 @@
 
 \section{Version 1.11}{
   \itemize{
+    \item Added dropLociWithSnps for easy exclusion of certain
+    methylation loci.
+    \item Add getAnnotationObject for easy printing of contents of the
+    annotation object.
     \item Changes in 1.10 imported into 1.11.
     \item Fixed an issue with bumphunter calling the bumphunter package
     in a wrong way.
