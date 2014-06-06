@@ -67,20 +67,6 @@ ilogit2 <- function(x) { 2^(x) / (1+2^(x)) }
     stop("unable to get the annotation string for this object")
 }
 
-.getAnnotationObject <- function(object) {
-    if(is(object, "MethylSet") || is(object, "RatioSet") ||
-       is(object, "GenomicMethylSet") || is(object, "GenomicRatioSet") ||
-       is(object, "RGChannelSet"))
-        object <- .getAnnotationString(object@annotation)
-    if(is.character(object)) {
-        if(!require(object, character.only = TRUE))
-            stop(sprintf("cannot load annotation package %s", object))
-        object <- get(object)
-    }
-    if(!is(object, "IlluminaMethylationAnnotation"))
-        stop("Could not locate annotation object for 'object' of class", class(object))
-    object
-}
 
 .betaFromMethUnmeth <- function(Meth, Unmeth, object, offset = 0,
                                 betaThreshold = 0, minZero = TRUE) {
