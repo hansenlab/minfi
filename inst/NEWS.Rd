@@ -4,6 +4,7 @@
 
 \section{Version 1.11}{
   \itemize{
+    \item Updated CITATION.
     \item Added dropLociWithSnps for easy exclusion of certain
     methylation loci.
     \item Add getAnnotationObject for easy printing of contents of the
