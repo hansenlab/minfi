@@ -1,5 +1,6 @@
 \name{getAnnotation}
 \alias{getAnnotation}
+\alias{getAnnotationObject}
 \alias{getLocations}
 \alias{getSnpInfo}
 \alias{addSnpInfo}
