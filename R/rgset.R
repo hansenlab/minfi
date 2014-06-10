@@ -111,8 +111,8 @@ getOOB <- function(object) {
     .isRG(object)
     IRed   <- getProbeInfo(object, type = "I-Red")
     IGrn <- getProbeInfo(object, type = "I-Green")
-    oob.green <- rbind(getGreen(object)[IRed$AddressA,], getRed(object)[IRed$AddressB,])
-    oob.red   <- rbind(getRed(object)[IGrn$AddressA,], getGreen(object)[IGrn$AddressB,])
+    oob.green <- rbind(getGreen(object)[IRed$AddressA,], getGreen(object)[IRed$AddressB,])
+    oob.red   <- rbind(getRed(object)[IGrn$AddressA,], getRed(object)[IGrn$AddressB,])
     return(list(Grn = oob.green, Red = oob.red))
 }
 
