@@ -9,6 +9,7 @@ importMethodsFrom(Biobase, channel,
                   phenoData, protocolData, sampleNames, storageMode)
 import(Biostrings)
 import(GenomicRanges)
+import(S4Vectors)
 import(IRanges)
 importFrom(Biobase, assayDataElementNames, assayDataElementReplace,
            assayDataElement, "assayDataElement<-", validMsg)
