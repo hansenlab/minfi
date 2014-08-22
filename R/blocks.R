@@ -3,7 +3,8 @@ blockFinder <- function(object, design, coef = 2, what = c("Beta", "M"),
                         pickCutoff = FALSE, pickCutoffQ = 0.99,
                         nullMethod = c("permutation","bootstrap"),
                         smooth = TRUE, smoothFunction = locfitByCluster,
-                        B = ncol(permutations), permutations = NULL, verbose = TRUE, bpSpan = 2.5*10^5, ...) {
+                        B = ncol(permutations), permutations = NULL,
+                        verbose = TRUE, bpSpan = 2.5*10^5, ...) {
     if (!is(object,"GenomicRatioSet")) stop("object must be 'GenomicRatioSet'")
 
     if(is.null(cluster)) cluster <- granges(object)$blockgroup
@@ -20,7 +21,7 @@ blockFinder <- function(object, design, coef = 2, what = c("Beta", "M"),
                             chr = as.character(seqnames(object))[idx],
                             pos = pos[idx], cluster = cluster[idx],
                             cutoff = cutoff,  pickCutoff = pickCutoff,
-                            pickCutoffQ = pickCutOffQ,                            
+                            pickCutoffQ = pickCutoffQ,                            
                             nullMethod=nullMethod,
                             smooth = smooth, smoothFunction = smoothFunction,
                             B = B,  permutations = permutations, verbose = verbose,
