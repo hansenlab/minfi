@@ -10,9 +10,12 @@
 
 \usage{
 blockFinder(object, design, coef = 2, what = c("Beta", "M"),
-            cluster = NULL, cutoff = NULL, pickCutoff = FALSE,
-            smooth = TRUE, smoothFunction = locfitByCluster,
-            B = 1000, verbose = TRUE, bpSpan = 2.5 * 10^5, \dots)
+                        cluster = NULL, cutoff = NULL,
+                        pickCutoff = FALSE, pickCutoffQ = 0.99,
+                        nullMethod = c("permutation","bootstrap"),
+                        smooth = TRUE, smoothFunction = locfitByCluster,
+                        B = ncol(permutations), permutations = NULL,
+                        verbose = TRUE, bpSpan = 2.5*10^5,\dots)
 }
 
 \arguments{
