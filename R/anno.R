@@ -57,8 +57,23 @@ setMethod("getManifest", signature(object = "IlluminaMethylationAnnotation"),
               get(maniString)
           })
 
+getAnnotationObject <- function(object) {
+    if(is(object, "MethylSet") || is(object, "RatioSet") ||
+       is(object, "GenomicMethylSet") || is(object, "GenomicRatioSet") ||
+       is(object, "RGChannelSet"))
+        object <- .getAnnotationString(object@annotation)
+    if(is.character(object)) {
+        if(!require(object, character.only = TRUE))
+            stop(sprintf("cannot load annotation package %s", object))
+        object <- get(object)
+    }
+    if(!is(object, "IlluminaMethylationAnnotation"))
+        stop("Could not locate annotation object for 'object' of class", class(object))
+    object
+}
+
 .availableAnnotation <- function(object) {
-    object <- .getAnnotationObject(object)
+    object <- getAnnotationObject(object)
     allAnnoNames <- ls(object@data)
     annoClasses <- sub("\\..*", "", allAnnoNames)
     annoClassesChoices <- sub(".*\\.", "", allAnnoNames)
@@ -74,7 +89,7 @@ setMethod("getManifest", signature(object = "IlluminaMethylationAnnotation"),
 getAnnotation <- function(object, what = "everything", lociNames = NULL,
                           orderByLocation = FALSE, dropNonMapping = FALSE) {
     ## processing of arguments and check
-    annoObject <- .getAnnotationObject(object)
+    annoObject <- getAnnotationObject(object)
     available <- .availableAnnotation(annoObject)
     if("everything" %in% what)
         what <- available$defaults
@@ -148,14 +163,14 @@ getLocations <- function(object, mergeManifest = FALSE,
             names(locs)[names(locs) == "strand"] <- "assayStrand"
         elementMetadata(gr) <- locs[, ! names(locs) %in% c("chr", "pos", "strand")]
     }
-    genome(gr) <- unname(.getAnnotationObject(object)@annotation["genomeBuild"])
+    genome(gr) <- unname(getAnnotationObject(object)@annotation["genomeBuild"])
     gr
 }
 
 .getIslandAnnotation <- function(object, islandAnno = NULL) {
     av <- .availableAnnotation(object)
     if(is.null(islandAnno)) {
-        islandAnno <- grep("^Islands\\.", .getAnnotationObject(object)@defaults, value = TRUE)
+        islandAnno <- grep("^Islands\\.", getAnnotationObject(object)@defaults, value = TRUE)
     } else {
         islandAnno <- sub("^Islands\\.", "", islandAnno)
         if(! islandAnno %in% av$annoClassesChoices) {
@@ -186,7 +201,7 @@ getProbeType <- function(object, withColor = FALSE) {
 getSnpInfo <- function(object, snpAnno = NULL) {
     av <- .availableAnnotation(object)
     if(is.null(snpAnno)) {
-        snpAnno <- grep("^SNPs\\.", .getAnnotationObject(object)@defaults, value = TRUE)
+        snpAnno <- grep("^SNPs\\.", getAnnotationObject(object)@defaults, value = TRUE)
     } else {
         snpAnno <- sub("^SNPs\\.", "", snpAnno)
         if(! snpAnno %in% av$annoClassesChoices) {
@@ -234,4 +249,26 @@ addSnpInfo <- function(object, snpAnno = NULL) {
     snpAnno$SBE_rs[queryHits(ooSbe)] <- names(grSnp)[subjectHits(ooSbe)]
     snpAnno$SBE_maf[queryHits(ooSbe)] <- grSnp$MAF[subjectHits(ooSbe)]
     snpAnno
+}
+
+dropLociWithSnps <- function(object, snps = c("CpG", "SBE"), maf = 0, snpAnno = NULL){
+    .isGenomic(object)
+    maf_cols <- paste0(snps, "_maf")
+    snpDF  <- getSnpInfo(object, snpAnno = snpAnno)
+    choices <- c("Probe_maf", "CpG_maf", "SBE_maf")
+    if(!all(choices %in% colnames(snpDF)))
+        stop("The specificed 'snpAnno' is not supported by this function")
+    if (sum(!(maf_cols %in% choices))>0){
+        stop("snps vector argument must be a combination of  \"Probe\", \"CpG\" and \"SBE\"")
+    }
+    if (!is.numeric(maf) || maf<0 || maf>1){
+        stop("maf argument must be a numeric value between 0 and 1")
+    }
+    wh <- Reduce(union, lapply(maf_cols, function(xx) {
+        which(snpDF[, xx] >= maf)
+    }))
+    wh <- sort(wh)
+    if(length(wh) == 0)
+        return(object)
+    object[-wh,]
 }

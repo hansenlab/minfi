@@ -5,9 +5,10 @@ setMethod("bumphunter", signature(object = "GenomicRatioSet"),
                    maxGap = 500, smooth = FALSE,
                    smoothFunction = locfitByCluster,
                    useWeights = FALSE,
-                   B = 100, verbose = TRUE,
+                   B=ncol(permutations), permutations=NULL,
+                   verbose = TRUE,
                    type = c("Beta","M"), ...){
-
+              
               type <- match.arg(type)
               bumphunterEngine(getMethSignal(object, type),
                                design = design,
@@ -22,5 +23,7 @@ setMethod("bumphunter", signature(object = "GenomicRatioSet"),
                                smooth = smooth,
                                smoothFunction = smoothFunction,
                                useWeights = useWeights,
-                               B = B, verbose = verbose, ...)
+                               B=B,
+                               permutations=permutations,
+                               verbose = verbose, ...)
           })

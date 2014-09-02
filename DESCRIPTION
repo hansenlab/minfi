@@ -1,5 +1,5 @@
 Package: minfi
-Version: 1.11.2
+Version: 1.11.11
 Title: Analyze Illumina's 450k methylation arrays
 Description: Tools for analyzing and visualizing Illumina's 450k array data
 Authors@R: c(person(c("Kasper", "Daniel"), "Hansen", role = c("cre", "aut"),
@@ -9,7 +9,7 @@ Authors@R: c(person(c("Kasper", "Daniel"), "Hansen", role = c("cre", "aut"),
 	     person(c("Andrew", "E."), "Jaffe", role = "ctb"),
 	     person("Jovana", "Maksimovic", role = "ctb"),
              person(c("E.", "Andres"), "Houseman", role = "ctb"),
-             person("Jean-Phillipe", "Fortin", role = "ctb"))
+             person("Jean-Philippe", "Fortin", role = "ctb"))
 Depends:  methods,
 	  BiocGenerics (>= 0.3.2),
 	  Biobase (>= 2.17.8),
@@ -26,7 +26,8 @@ Suggests: IlluminaHumanMethylation450kmanifest (>= 0.2.0),
 	  RUnit,
 	  digest,
 	  BiocStyle
-Imports:  IRanges,
+Imports:  S3Vectors,
+	  IRanges,
 	  beanplot, 
 	  RColorBrewer, 
 	  nor1mix, 

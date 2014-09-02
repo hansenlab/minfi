@@ -107,6 +107,36 @@ getGreen <- function(object) {
     assayDataElement(object, "Green")
 }
 
+getOOB <- function(object) {
+    .isRG(object)
+    IRed   <- getProbeInfo(object, type = "I-Red")
+    IGrn <- getProbeInfo(object, type = "I-Green")
+    oob.green <- rbind(getGreen(object)[IRed$AddressA,], getGreen(object)[IRed$AddressB,])
+    oob.red   <- rbind(getRed(object)[IGrn$AddressA,], getRed(object)[IGrn$AddressB,])
+    return(list(Grn = oob.green, Red = oob.red))
+}
+
+getSnpBeta <- function(object){
+    .isRG(object)
+    manifest <- getManifest(object)
+    snpProbesII <- getProbeInfo(manifest, type = "SnpII")$Name
+    M.II <- getGreen(object)[getProbeInfo(object, type = "SnpII")$AddressA,]
+    U.II <- getRed(object)[getProbeInfo(object, type = "SnpII")$AddressA,]
+    snpProbesI.Green <- getProbeInfo(manifest, type = "SnpI")[getProbeInfo(manifest, type = "SnpI")$Color=="Grn",]
+    snpProbesI.Red <- getProbeInfo(manifest, type = "SnpI")[getProbeInfo(manifest, type = "SnpI")$Color=="Red",]
+
+    M.I.Red <- getRed(object)[snpProbesI.Red $AddressB,]
+    U.I.Red <- getRed(object)[snpProbesI.Red $AddressA,]
+    M.I.Green <- getGreen(object)[snpProbesI.Green$AddressB,]
+    U.I.Green <- getGreen(object)[snpProbesI.Green$AddressA,]
+    
+    M <- rbind(M.II, M.I.Red, M.I.Green)
+    U <- rbind(U.II, U.I.Red, U.I.Green)
+    rownames(M) <- rownames(U) <- c(snpProbesII, snpProbesI.Red$Name, snpProbesI.Green$Name)
+    beta <- M/(U+M+100)
+    return(beta)                               
+}
+
 setMethod("getManifest", signature(object = "RGChannelSet"),
           function(object) {
               maniString <- .getManifestString(object@annotation)

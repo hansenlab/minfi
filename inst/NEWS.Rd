@@ -4,7 +4,17 @@
 
 \section{Version 1.11}{
   \itemize{
+    \item Updated CITATION.
+    \item Added dropLociWithSnps for easy exclusion of certain
+    methylation loci.
+    \item Add getAnnotationObject for easy printing of contents of the
+    annotation object.
     \item Changes in 1.10 imported into 1.11.
+    \item Fixed an issue with bumphunter calling the bumphunter package
+    in a wrong way.
+    \item Added getOOB and getSnpBeta convenience functions for
+    accessing the OOB probes and the SNP probes.
+    \item read.450k.sheet now forces a column named Slide to be character.
   }
 }
 

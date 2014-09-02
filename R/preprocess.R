@@ -107,13 +107,13 @@ detectionP <- function(rgSet, type = "m+u") {
     TypeI.Red <- getProbeInfo(rgSet, type = "I-Red")
     TypeI.Green <- getProbeInfo(rgSet, type = "I-Green")
     for (i in 1:ncol(rgSet)) {   
-        # Type I Red
+        ## Type I Red
         intensity <- r[TypeI.Red$AddressA, i] + r[TypeI.Red$AddressB, i]
         detP[TypeI.Red$Name, i] <- 1-pnorm(intensity, mean=rMu[i]*2, sd=rSd[i]*2)
-        # Type I Green
+        ## Type I Green
         intensity <- g[TypeI.Green$AddressA, i] + g[TypeI.Green$AddressB, i]
         detP[TypeI.Green$Name, i] <- 1-pnorm(intensity, mean=gMu[i]*2, sd=gSd[i]*2)
-        # Type II
+        ## Type II
         intensity <- r[TypeII$AddressA, i] + g[TypeII$AddressA, i]
         detP[TypeII$Name, i] <- 1-pnorm(intensity, mean=rMu[i]+gMu[i], sd=rSd[i]+gSd[i])
     }
