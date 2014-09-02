@@ -1,7 +1,10 @@
 blockFinder <- function(object, design, coef = 2, what = c("Beta", "M"),
-                        cluster = NULL, cutoff = NULL, pickCutoff = FALSE,
+                        cluster = NULL, cutoff = NULL,
+                        pickCutoff = FALSE, pickCutoffQ = 0.99,
+                        nullMethod = c("permutation","bootstrap"),
                         smooth = TRUE, smoothFunction = locfitByCluster,
-                        B = 1000, verbose = TRUE, bpSpan = 2.5*10^5, ...) {
+                        B = ncol(permutations), permutations = NULL,
+                        verbose = TRUE, bpSpan = 2.5*10^5, ...) {
     if (!is(object,"GenomicRatioSet")) stop("object must be 'GenomicRatioSet'")
 
     if(is.null(cluster)) cluster <- granges(object)$blockgroup
@@ -9,15 +12,20 @@ blockFinder <- function(object, design, coef = 2, what = c("Beta", "M"),
         stop("need 'cluster'")
 
     what <- match.arg(what)
+    nullMethod <- match.arg(nullMethod)
     idx <- which(granges(object)$type == "OpenSea")
     if(length(idx) == 0) stop("need OpenSea types in granges(object)")
     pos <- start(granges(object)) /2 + end(granges(object))/2
-    res <- bumphunterEngine(getMethSignal(object, what)[idx,], design = design,
+    res <- bumphunterEngine(getMethSignal(object, what)[idx,], design= design,
+                            coef=coef,
                             chr = as.character(seqnames(object))[idx],
                             pos = pos[idx], cluster = cluster[idx],
-                            cutoff = cutoff, coef = coef, pickCutoff = pickCutoff,
+                            cutoff = cutoff,  pickCutoff = pickCutoff,
+                            pickCutoffQ = pickCutoffQ,                            
+                            nullMethod=nullMethod,
                             smooth = smooth, smoothFunction = smoothFunction,
-                            B = B, bpSpan = bpSpan, verbose = verbose)
+                            B = B,  permutations = permutations, verbose = verbose,
+                            bpSpan = bpSpan,...)
 
     ## FIXME: reindex like below
     res$coef <- bumphunter:::.getEstimate(getMethSignal(object, what), design, coef = coef)

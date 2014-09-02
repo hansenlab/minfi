@@ -10,9 +10,12 @@
 
 \usage{
 blockFinder(object, design, coef = 2, what = c("Beta", "M"),
-            cluster = NULL, cutoff = NULL, pickCutoff = FALSE,
-            smooth = TRUE, smoothFunction = locfitByCluster,
-            B = 1000, verbose = TRUE, bpSpan = 2.5 * 10^5, \dots)
+                        cluster = NULL, cutoff = NULL,
+                        pickCutoff = FALSE, pickCutoffQ = 0.99,
+                        nullMethod = c("permutation","bootstrap"),
+                        smooth = TRUE, smoothFunction = locfitByCluster,
+                        B = ncol(permutations), permutations = NULL,
+                        verbose = TRUE, bpSpan = 2.5*10^5,\dots)
 }
 
 \arguments{
@@ -34,6 +37,14 @@ blockFinder(object, design, coef = 2, what = c("Beta", "M"),
     values (upper and lower bounds).  If one value is given, the lower
     bound is minus the value.}
   \item{pickCutoff}{Should a cutoff be picked automatically?}
+  \item{pickCutoffQ}{The quantile used for picking the cutoff using the
+    permutation distribution.}
+  \item{nullMethod}{
+    Method used to generate null candidate regions, must be one of \sQuote{bootstrap} or
+    \sQuote{permutation} (defaults to \sQuote{permutation}). However, if covariates in addition to the 
+    outcome of interest are included in the design matrix
+    (ncol(design)>2), the \sQuote{permutation} approach is not
+    recommended. See vignette and original paper for more information.}
   \item{smooth}{
     A logical value. If TRUE the estimated profile will be smoothed with the
     smoother defined by \code{smoothFunction}}
@@ -41,12 +52,17 @@ blockFinder(object, design, coef = 2, what = c("Beta", "M"),
     A function to be used for smoothing the estimate of the genomic
     profile. Two functions are provided by the package: \code{loessByCluster}
     and \code{runmedByCluster}.}
-  \item{B}{An integer denoting the number of resamples to use when computing
-    null distributions: 1000 is recommended but can be quite slow if
-    this process is not parallelized.}
+   \item{B}{An integer denoting the number of resamples to use when computing
+   null distributions. This defaults to 0. If \code{permutations} is
+  supplied that defines the number of permutations/bootstraps and \code{B} is
+  ignored.}
+\item{permutations}{ is a matrix with columns providing indexes to be used to
+  scramble the data and create a null distribution. If this matrix is not supplied and \code{B}>0 then
+  these indexes created using the function \code{sample}. }
   \item{verbose}{Should the function be verbose?}
-  \item{bpSpan}{Smoothing span}
-  \item{\dots}{Currently unused}
+  \item{bpSpan}{Smoothing span. Note that this defaults to a large value
+  becuase we are searching for large scale changes.}
+  \item{\dots}{further arguments sent to \code{bumphunterEngine}.}
 }
 
 \details{
