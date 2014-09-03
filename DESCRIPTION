@@ -1,5 +1,5 @@
 Package: minfi
-Version: 1.11.13
+Version: 1.11.14
 Title: Analyze Illumina's 450k methylation arrays
 Description: Tools for analyzing and visualizing Illumina's 450k array data
 Authors@R: c(person(c("Kasper", "Daniel"), "Hansen", role = c("cre", "aut"),
@@ -9,7 +9,8 @@ Authors@R: c(person(c("Kasper", "Daniel"), "Hansen", role = c("cre", "aut"),
 	     person(c("Andrew", "E."), "Jaffe", role = "ctb"),
 	     person("Jovana", "Maksimovic", role = "ctb"),
              person(c("E.", "Andres"), "Houseman", role = "ctb"),
-             person("Jean-Philippe", "Fortin", role = "ctb"))
+             person("Jean-Philippe", "Fortin", role = "ctb"),
+             person("Tim", "Triche", role = "ctb"))
 Depends:  methods,
 	  BiocGenerics (>= 0.3.2),
 	  Biobase (>= 2.17.8),
@@ -21,7 +22,6 @@ Depends:  methods,
 Suggests: IlluminaHumanMethylation450kmanifest (>= 0.2.0),
 	  IlluminaHumanMethylation450kanno.ilmn12.hg19,
 	  minfiData (>= 0.4.1),
-	  quadprog,
 	  FlowSorted.Blood.450k (>= 1.0.1),
 	  RUnit,
 	  digest
@@ -38,7 +38,9 @@ Imports:  S4Vectors,
 	  mclust,
 	  genefilter,
 	  nlme,
-	  reshape
+	  reshape,
+	  MASS,
+	  quadprog
 Collate:  generics.R
 	  mset.R
 	  rset.R
@@ -57,6 +59,7 @@ Collate:  generics.R
 	  preprocess.R
 	  preprocessSwan.R
 	  preprocessQuantile.R
+	  preprocessNoob.R
 	  preprocessFunnorm.R   
 	  qc.R
 	  read.450k.R
