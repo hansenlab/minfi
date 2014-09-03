@@ -1,7 +1,6 @@
 estimateCellCounts <- function (rgSet, compositeCellType = "Blood",
                                 cellTypes = c("CD8T","CD4T", "NK","Bcell","Mono","Gran"),
                                 returnAll = FALSE, meanPlot = FALSE, verbose=TRUE, ...) {
-    require(quadprog)
     platform <- "450k" # FIXME: get platform for rgSet
     referencePkg <- sprintf("FlowSorted.%s.%s", compositeCellType, platform)
     subverbose <- max(as.integer(verbose) - 1L, 0L)
@@ -137,7 +136,6 @@ projectCellType <- function(Y, coefCellType, contrastCellType=NULL, nonnegative=
     colnames(mixCoef) <- colnames(Xmat)
     
     if(nonnegative){
-        require(quadprog)
         if(lessThanOne){
             Amat <- cbind(rep(-1,nCol), diag(nCol))
             b0vec <- c(-1,rep(0,nCol))

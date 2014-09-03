@@ -20,7 +20,7 @@ importFrom(RColorBrewer, brewer.pal)
 importFrom(beanplot, beanplot)
 importFrom(nor1mix, norMix, pnorMix, qnorMix)
 importFrom(siggenes, pi0.est, qvalue.cal)
-importFrom(limma, squeezeVar, lmFit, eBayes, contrasts.fit)
+importFrom(limma, squeezeVar, lmFit, eBayes, contrasts.fit, normexp.signal)
 importFrom(preprocessCore, normalize.quantiles)
 importFrom(illuminaio, readIDAT)
 importFrom(genefilter, rowFtests, rowttests)
@@ -29,6 +29,8 @@ importFrom(bumphunter, bumphunter, clusterMaker, boundedClusterMaker)
 importMethodsFrom(bumphunter, bumphunter)
 importFrom(lattice, panel.abline, panel.stripplot, xyplot)
 importFrom(nlme, lme, getVarCov)
+importFrom(MASS, huber)
+importFrom(quadprog, solve.QP)
 
 export(getManifest, getProbeInfo, getManifestInfo,
        IlluminaMethylationManifest, IlluminaMethylationAnnotation,
@@ -41,7 +43,7 @@ export(getManifest, getProbeInfo, getManifestInfo,
        normalize.illumina.control, bgcorrect.illumina,
        preprocessRaw, preprocessIllumina,
        preprocessSWAN, preprocessQuantile,
-       preprocessFunnorm,
+       preprocessFunnorm, preprocessNoob,
        RGChannelSet, RGChannelSetExtended,
        MethylSet, RatioSet,
        GenomicMethylSet, GenomicRatioSet,
