@@ -14,7 +14,8 @@
 \usage{
 \S4method{bumphunter}{GenomicRatioSet}(object, design, cluster=NULL,
           coef=2,  cutoff=NULL, pickCutoff=FALSE, pickCutoffQ=0.99, 
-          maxGap=500, smooth=FALSE, smoothFunction=locfitByCluster,
+          maxGap=500,  nullMethod=c("permutation","bootstrap"),
+          smooth=FALSE, smoothFunction=locfitByCluster,
           useWeights=FALSE,   B=ncol(permutations), permutations=NULL,
           verbose=TRUE, type = c("Beta","M"), \dots)
 }
@@ -35,13 +36,21 @@
     used as candidate regions.  It is possible to give two separate
     values (upper and lower bounds).  If one value is given, the lower
     bound is minus the value.}
-\item{pickCutoff}{Should bumphunter attempt to pick a cutoff using the
+  \item{pickCutoff}{Should bumphunter attempt to pick a cutoff using the
     permutation distribution?}
   \item{pickCutoffQ}{The quantile used for picking the cutoff using the
     permutation distribution.}
-   \item{maxGap}{ If cluster is not provided this maximum location gap
+  \item{maxGap}{ If cluster is not provided this maximum location gap
     will be used to define cluster via the  \code{\link{clusterMaker}}
-  function.}
+    function.}
+  \item{nullMethod}{
+    Method used to generate null candidate regions, must be one of \sQuote{boots
+      trap} or
+    \sQuote{permutation} (defaults to \sQuote{permutation}).
+    However, if covariates in addition to the 
+    outcome of interest are included in the design matrix
+    (ncol(design)>2), the \sQuote{permutation} approach is not
+    recommended. See vignette and original paper for more information.}
   \item{smooth}{
     A logical value. If TRUE the estimated profile will be smoothed with the
     smoother defined by \code{smoothFunction}}
@@ -54,14 +63,16 @@
    point-wise estimates of the profile function will be used as weights
    in the loess smoother \code{loessByCluster}. If the 
    \code{runmedByCluster} smoother is used this argument is ignored.}
-  \item{B}{An integer denoting the number of resamples to use when computing
-    null distributions. This defaults to 0. If \code{permutations} is
-  supplied that defines the number of permutations and \code{B} is
+\item{B}{An integer denoting the number of resamples to use when computing
+   null distributions. This defaults to 0. If \code{permutations} is
+  supplied that defines the number of permutations/bootstraps and \code{B} is
   ignored.}
-\item{permutations}{ is a matrix with columns providing indexes to be used to 
-  permute the data and create a null distribution. If this matrix is not supplied and \code{B}>0 then
-  these indexes created using the function \code{sample}. }
-  \item{verbose}{
+\item{permutations}{ is a matrix with columns providing indexes to be used to
+  scramble the data and create a null distribution when
+  \code{nullMethod} is set to  permutations. If the bootstrap approach is used this argument is
+  ignored. If this matrix is not supplied and \code{B}>0 then
+  these indexes are created using the function \code{sample}. }
+\item{verbose}{
     logical value. If \code{TRUE}, it writes out some messages
     indicating progress. If \code{FALSE} nothing should be printed.
   }
