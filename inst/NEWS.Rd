@@ -18,6 +18,13 @@
     character.
     \item The NOOB background correction method is now available throguh
     preprocessNoob.
+    \item One can now supply the permutations to be used in permutation
+  analysis. This is useful for cases in which the total number of
+  possilbe permutations is small and one wants to use them all or in
+  cases in which one wants to assure balance, for example, between cases
+  and controls. 
+    \item The bumphunter method now has the option to create null
+  distributions using a bootstrap approach.
   }
 }
 
