@@ -8,7 +8,7 @@
   the Illumina Infinium HumanMethylation450 platform.
 }
 \usage{
-preprocessNoob(rgSet, offset = 15, dye.corr = TRUE, verbose = TRUE)
+preprocessNoob(rgSet, offset = 15, dyeCorr = TRUE, verbose = TRUE)
 }
 \arguments{
   \item{rgSet}{An object of class \code{RGChannelSet}.}
