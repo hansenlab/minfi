@@ -24,7 +24,9 @@
   cases in which one wants to assure balance, for example, between cases
   and controls. 
     \item The bumphunter method now has the option to create null
-  distributions using a bootstrap approach.
+    distributions using a bootstrap approach.
+    \item Fixed a man page issue.
+    \item Added GitHub URL to DESCRIPTION.
   }
 }
 
