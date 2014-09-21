@@ -1,5 +1,5 @@
 Package: minfi
-Version: 1.11.14
+Version: 1.11.15
 Title: Analyze Illumina's 450k methylation arrays
 Description: Tools for analyzing and visualizing Illumina's 450k array data
 Authors@R: c(person(c("Kasper", "Daniel"), "Hansen", role = c("cre", "aut"),
@@ -67,5 +67,6 @@ Collate:  generics.R
 	  bumphunter.R
 	  estimateCellCounts.R
 License: Artistic-2.0
+URL: https://github.com/kasperdanielhansen/minfi
 LazyData: yes
 biocViews: DNAMethylation, Microarray, TwoChannel, DataImport, Preprocessing, QualityControl
