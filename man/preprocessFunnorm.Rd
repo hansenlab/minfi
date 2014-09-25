@@ -10,12 +10,18 @@
   the control probes present on the array. 
 }
 \usage{
-preprocessFunnorm(rgSet, nPCs=2, sex = NULL, verbose = TRUE)
+preprocessFunnorm(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE,
+                  dyeCorr = TRUE, verbose = TRUE)
 }
 \arguments{
   \item{rgSet}{An object of class \code{RGChannelSet}.}
   \item{nPCs}{Number of principal components from the control probes PCA}
-  \item{sex}{An optional numeric vector containing the sex of the samples.}
+  \item{sex}{An optional numeric vector containing the sex of the
+    samples.}
+  \item{bgCorr}{Should the NOOB background correction be done, prior to
+    functional normalization (see \code{preprocessNoob})}
+  \item{dyeCorr}{Should dye normalization be done as part of the NOOB
+    background correction (see \code{preprocessNoob})?}
   \item{verbose}{Should the function be verbose?}
 }
 \details{
@@ -61,7 +67,9 @@ differences.
   \code{\linkS4class{RGChannelSet}}
   as well as \code{\linkS4class{IlluminaMethylationManifest}} for the
   basic classes involved in these functions.
-  \code{\link{preprocessRaw}} and \code{\link{preprocessQuantile}} are other preprocessing functions.
+  \code{\link{preprocessRaw}} and \code{\link{preprocessQuantile}} are
+  other preprocessing functions. Background correction may be done using
+  \code{\link{preprocessNoob}}.
 }
 \examples{
 if (require(minfiData)) {
