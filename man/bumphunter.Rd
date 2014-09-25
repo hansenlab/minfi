@@ -84,8 +84,7 @@
 }
 }
 \details{
-
-  See help file for \code{\link{bumphunter}} method in the
+  See help file for \code{\link[bumphunter]{bumphunter}} method in the
   \code{bumphunter} package for for details. 
 }
 
@@ -106,6 +105,8 @@ RA (2012) Bump hunting to identify differentially methylated regions in
 epigenetic epidemiology studies. International Journal of Epidemiology
 41(1):200-9.
 }
+
+\seealso{\code{\link[bumphunter]{bumphunter}}}
 
 \author{
   Rafael A. Irizarry, Martin J. Aryee and Kasper D. Hansen

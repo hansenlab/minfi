@@ -12,8 +12,7 @@ ilogit2 <- function(x) { 2^(x) / (1+2^(x)) }
     cat("assayData:", paste(dim(object)[[1]], "features,", dim(object)[[2]], "samples"), "\n")
     cat("  element names:",
         paste(assayDataElementNames(object), collapse=", "), "\n")
-    Biobase:::.showAnnotatedDataFrame(phenoData(object),
-                                      labels=list(object="phenoData"))
+    show(phenoData(object))
 }
     
 .show.annotation <- function(annotation, indent = "  ") {
