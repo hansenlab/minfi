@@ -7,22 +7,36 @@
 ## Return a normalized beta matrix
 ##
 ## need stuff from gmodels.  Where?
-preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, verbose = TRUE) {
+preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr = TRUE, verbose = TRUE) {
     .isRG(rgSet)
     rgSet <- updateObject(rgSet) ## FIXM: might not KDH: technically, this should not be needed, but might be nice
-    if(verbose) cat("[preprocessFunnorm] Mapping to genome\n")
-    gmSet <- mapToGenome(rgSet)
+
+    # Background correction and dye bias normalization:
+    if (bgCorr){
+        if(verbose && dyeCorr) {
+            cat("[preprocessFunnorm] Background and dye bias correction with noob \n") 
+        } else {
+            cat("[preprocessFunnorm] Background correction with noob \n") 
+        }
+        gmSet <- preprocessNoob(rgSet, dyeCorr = dyeCorr)
+        if(verbose) cat("[preprocessFunnorm] Mapping to genome\n")
+        gmSet <- mapToGenome(gmSet)
+    } else {
+        if(verbose) cat("[preprocessFunnorm] Mapping to genome\n")
+        gmSet <- mapToGenome(rgSet)
+    }
+  
     subverbose <- max(as.integer(verbose) - 1L, 0)
     
     if(verbose) cat("[preprocessFunnorm] Quantile extraction\n")
     extractedData <- .extractFromRGSet450k(rgSet)
-    
+    rm(rgSet)
+
     if (is.null(sex)) {
         gmSet <- addSex(gmSet, getSex(gmSet, cutoff = -3))
         sex <- rep(1L, length(gmSet$predictedSex))
         sex[gmSet$predictedSex == "F"] <- 2L
     }
-    rm(rgSet)
     if(verbose) cat("[preprocessFunnorm] Normalization\n")
     CN <- getCN(gmSet)
     gmSet <- .normalizeFunnorm450k(object = gmSet, extractedData = extractedData,
