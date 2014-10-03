@@ -1,6 +1,11 @@
-# minfi
+# R package: minfi
+This is the developer version of Bioconductor package [minfi](http://bioconductor.org/packages/devel/bioc/html/minfi.html).  Install in R as:
 
-The devel repository for minfi is at
+```r
+source('http://bioconductor.org/biocLite.R')
+biocLite(minfi')
+```
 
-https://github.com/kasperdanielhansen/minfi
+## R CMD check results
+Bioconductor: [Multiple platform build/check report](http://master.bioconductor.org/checkResults/devel/bioc-LATEST/minfi/)
 
