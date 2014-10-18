@@ -2,6 +2,15 @@
 \title{Minfi News}
 \encoding{UTF-8}
 
+\section{Version 1.13}{
+  \itemize{
+    \item read.450k.exp has support for argument base when targets is
+    supplied.  Thanks to Brent Pedersen <bpederse@gmail.com> for noticing
+    this and providing an initial fix.
+  }
+}
+
+
 \section{Version 1.11}{
   \itemize{
     \item Updated CITATION.
