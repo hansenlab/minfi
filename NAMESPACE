@@ -6,8 +6,11 @@ importClassesFrom(Biobase, AnnotatedDataFrame, AssayData, eSet, MIAxE,
 importMethodsFrom(Biobase, channel,
                   classVersion, experimentData, featureData,
                   featureNames, "featureNames<-", isCurrent, pData, "pData<-",
-                  phenoData, protocolData, sampleNames, storageMode)
+                  phenoData, protocolData, sampleNames, storageMode,
+                  varMetadata, "varMetadata<-", featuredata, "featureData<-",
+                  AnnotatedDataFrame)
 import(Biostrings)
+importMethodsFrom(GenomeInfoDb, seqlevels, "seqlevels<-", genome, "genome<-")
 import(GenomicRanges)
 import(S4Vectors)
 import(IRanges)
@@ -25,7 +28,8 @@ importFrom(preprocessCore, normalize.quantiles)
 importFrom(illuminaio, readIDAT)
 importFrom(genefilter, rowFtests, rowttests)
 importFrom(utils, packageVersion, read.csv, read.table)
-importFrom(bumphunter, bumphunter, clusterMaker, boundedClusterMaker)
+importFrom(bumphunter, bumphunter, bumphunterEngine, locfitByCluster,
+           clusterMaker, boundedClusterMaker)
 importMethodsFrom(bumphunter, bumphunter)
 importFrom(lattice, panel.abline, panel.stripplot, xyplot)
 importFrom(nlme, lme, getVarCov)

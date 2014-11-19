@@ -120,12 +120,16 @@ read.450k.sheet <- function(base, pattern = "csv$", ignore.case = TRUE,
 }
     
 
-read.450k.exp <- function(base, targets = NULL, extended = FALSE, 
+read.450k.exp <- function(base = NULL, targets = NULL, extended = FALSE, 
                           recursive = FALSE, verbose = FALSE) {
     if(!is.null(targets)) {
         if(! "Basename" %in% names(targets))
             stop("Need 'Basename' amongst the column names of 'targets'")
-        files <- file.path(base, targets$Basename)
+        if(!is.null(base)) {
+            files <- file.path(base, targets$Basename)
+        } else {
+            files <- targets$Basename
+        }
         rgSet <- read.450k(files, extended = extended, verbose = verbose)
         pD <- targets
         pD$filenames <- files

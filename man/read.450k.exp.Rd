@@ -8,7 +8,7 @@
   a target like data.frame.
 }
 \usage{
-read.450k.exp(base, targets = NULL, extended = FALSE,
+read.450k.exp(base = NULL, targets = NULL, extended = FALSE,
     recursive = FALSE, verbose = FALSE)
 }
 \arguments{
