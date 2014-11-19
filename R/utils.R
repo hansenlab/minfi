@@ -96,7 +96,7 @@ ilogit2 <- function(x) { 2^(x) / (1+2^(x)) }
     content <- sprintf("%.6f", mat)
     ## Handling signed zero as per IEEE specs
     content[content == "-0.000000"] <- "0.000000"
-    digest(c(content, rownames(mat), colnames(mat)))
+    digest::digest(c(content, rownames(mat), colnames(mat)))
 }
 
 .isGenomic <- function(object) {
