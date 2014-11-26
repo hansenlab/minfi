@@ -7,7 +7,7 @@ importMethodsFrom(Biobase, channel,
                   classVersion, experimentData, featureData,
                   featureNames, "featureNames<-", isCurrent, pData, "pData<-",
                   phenoData, protocolData, sampleNames, storageMode,
-                  varMetadata, "varMetadata<-", featuredata, "featureData<-",
+                  varMetadata, "varMetadata<-", "featureData<-",
                   AnnotatedDataFrame)
 import(Biostrings)
 importMethodsFrom(GenomeInfoDb, seqlevels, "seqlevels<-", genome, "genome<-")
