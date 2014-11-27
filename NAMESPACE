@@ -35,6 +35,7 @@ importFrom(lattice, panel.abline, panel.stripplot, xyplot)
 importFrom(nlme, lme, getVarCov)
 importFrom(MASS, huber)
 importFrom(quadprog, solve.QP)
+importFrom(GEOquery,getGEO)
 
 export(getManifest, getProbeInfo, getManifestInfo,
        IlluminaMethylationManifest, IlluminaMethylationAnnotation,
