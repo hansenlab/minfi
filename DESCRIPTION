@@ -65,7 +65,6 @@ Collate:  generics.R
 	  preprocessFunnorm.R   
 	  qc.R
 	  read.450k.R
-	  read.450k.GEO.R
 	  read.manifest.R
 	  bumphunter.R
 	  estimateCellCounts.R
