@@ -1,5 +1,5 @@
 Package: minfi
-Version: 1.13.3
+Version: 1.13.4
 Title: Analyze Illumina's 450k methylation arrays
 Description: Tools for analyzing and visualizing Illumina's 450k array data
 Authors@R: c(person(c("Kasper", "Daniel"), "Hansen", role = c("cre", "aut"),
@@ -41,7 +41,8 @@ Imports:  S4Vectors,
 	  nlme,
 	  reshape,
 	  MASS,
-	  quadprog
+	  quadprog,
+	  GEOquery
 Collate:  generics.R
 	  mset.R
 	  rset.R
@@ -64,6 +65,7 @@ Collate:  generics.R
 	  preprocessFunnorm.R   
 	  qc.R
 	  read.450k.R
+	  read.450k.GEO.R
 	  read.manifest.R
 	  bumphunter.R
 	  estimateCellCounts.R

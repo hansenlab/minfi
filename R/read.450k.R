@@ -183,3 +183,73 @@ read.GenomeStudio <- function(filename) {
     rownames(SignalB) <- mat$TargetID
     list(beta = beta, SignalA = SignalA, SignalB = SignalB)
 }
+
+
+read.450k.GEO <- function(GSE=NULL,path=NULL,
+                          array = "IlluminaHumanMethylation450k",
+                          annotation=  .default.450k.annotation,
+                          what=c("Beta","M"),
+                          mergeManifest=FALSE,
+                          pickone=1) { 
+    
+    what <- match.arg(what)
+    
+    if(is.null(GSE) && is.null(path))
+        stop("Either GSE or path must be supplied.")
+
+    ##Reading the GEO Main Files Information
+    if(!is.null(GSE)) gset <- GEOquery::getGEO(GSE) else  gset <- GEOquery::getGEO(filename = file.path(path, list.files(pattern = ".soft")))
+
+    if(length(gset)==0) stop("Empty list retrieved from GEO.")
+    if(length(gset)>1){
+        warning("More than one ExpressionSet found:\n",names(gset),"\nUsing entry ",pickone)
+        gset <- gset[[pickone]]
+    } else gset <- gset[[1]]
+    platform <- annotation(gset)
+
+    if(platform!="GPL13534")
+        warning(platform," is not the platform ID associated with IlluminaHumanMethylation450k. Should be GPL13534")
+    if(what=="Beta" & (min(exprs(gset)[,1],na.rm=TRUE)<0 | max(exprs(gset)[,1],na.rm=TRUE)>1 ))
+        warning("Values outside [0,1] detected. 'what' argument should not be Beta.")
+
+    ##GEO data read, now ready to create a minfi object
+    ann <- .getAnnotationString(c(array=array,annotation=annotation))
+    if(!require(ann, character.only = TRUE))
+        stop(sprintf("cannot load annotation package %s", ann))
+    object <- get(ann)
+
+    gr <- getLocations(object, mergeManifest = mergeManifest,
+                                 orderByLocation = TRUE)
+
+    locusNames <- names(gr)
+     
+    sampleNames(gset) <- gset$title
+        
+    ##this might return NAs but it's ok
+    ind <- match(locusNames,fData(gset)$Name)
+    if(any(is.na(ind))) warning("No data found for",sum(is.na(ind)),"feature")
+    if(all(is.na(ind))) stop("No data found. This might not be IlluminaHumanMethylation450k array data.")
+    
+    preprocessing <- c(rg.norm=paste0('See GEO ',GSE,' for details'),
+                       minfi=NA, manifest=paste0('GEO ', platform))
+    
+    if(what=="Beta"){
+        out <- GenomicRatioSet(gr=gr,
+                               Beta=exprs(gset)[ind,],
+                               M =NULL,
+                               CN=NULL,
+                               pData=pData(gset),
+                               annotation=annotation,
+                               preprocessMethod=preprocessing)
+    } else {
+        out <- GenomicRatioSet(gr=gr,
+                               Beta=NULL,
+                               M=exprs(gset)[ind,],
+                               CN=NULL,
+                               pData=pData(gset),
+                               annotation=annotation,
+                               preprocessMethod=preprocessing)
+
+    }
+    return(out)
+}
