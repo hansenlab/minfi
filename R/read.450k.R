@@ -198,7 +198,7 @@ read.450k.GEO <- function(GSE=NULL,path=NULL,
         stop("Either GSE or path must be supplied.")
 
     ##Reading the GEO Main Files Information
-    if(!is.null(GSE)) gset <- GEOquery::getGEO(GSE) else  gset <- GEOquery::getGEO(filename = file.path(path, list.files(pattern = ".soft")))
+    if(!is.null(GSE)) gset <- GEOquery::getGEO(GSE) else  gset <- GEOquery::getGEO(filename = file.path(path, list.files(path, pattern = ".soft")))
 
     if(length(gset)==0) stop("Empty list retrieved from GEO.")
     if(length(gset)>1){
