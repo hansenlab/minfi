@@ -52,8 +52,8 @@ bgcorrect.illumina <- function(rgSet) {
     Green <- getGreen(rgSet)
     Red <- getRed(rgSet)
     NegControls <- getControlAddress(rgSet, controlType = "NEGATIVE")
-    Green.bg <- apply(Green[NegControls, ], 2, function(xx) sort(xx)[31])
-    Red.bg <- apply(Red[NegControls, ], 2, function(xx) sort(xx)[31])
+    Green.bg <- apply(Green[NegControls, , drop = FALSE], 2, function(xx) sort(xx)[31])
+    Red.bg <- apply(Red[NegControls, , drop = FALSE], 2, function(xx) sort(xx)[31])
     Green <- pmax(sweep(Green, 2, Green.bg), 0)
     Red <- pmax(sweep(Red, 2, Red.bg), 0)
     assayDataElement(rgSet, "Green") <- Green
