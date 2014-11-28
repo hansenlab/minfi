@@ -239,7 +239,7 @@ read.450k.GEO <- function(GSE=NULL,path=NULL,
                                M =NULL,
                                CN=NULL,
                                pData=pData(gset),
-                               annotation=annotation,
+                               annotation=c(array=array,annotation=annotation),
                                preprocessMethod=preprocessing)
     } else {
         out <- GenomicRatioSet(gr=gr,
@@ -247,9 +247,10 @@ read.450k.GEO <- function(GSE=NULL,path=NULL,
                                M=exprs(gset)[ind,],
                                CN=NULL,
                                pData=pData(gset),
-                               annotation=annotation,
+                               annotation=c(array=array,annotation=annotation),
                                preprocessMethod=preprocessing)
 
     }
+
     return(out)
 }
