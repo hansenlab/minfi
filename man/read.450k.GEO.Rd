@@ -42,13 +42,16 @@ This function downloads data from GEO using
 returns a \linkS4class{GenomicRatioSet} object.
 }
 \value{
-\linkS4class{GenomicRatioSet} object.
+A \linkS4class{GenomicRatioSet} object.
 }
 \author{
   Tim Triche Jr. and 
   Rafael A. Irizarry\email{rafa@jimmy.harvard.edu}.
 }
-
+\seealso{
+  If the data is already in memor you can use 
+  \code{\link{makeGenomicRatioSetFromMatrix}}
+}
 \examples{
 \dontrun{
 mset=read.450k.GEO("GSE42752")
