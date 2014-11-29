@@ -184,7 +184,77 @@ read.GenomeStudio <- function(filename) {
     list(beta = beta, SignalA = SignalA, SignalB = SignalB)
 }
 
+makeGenomicRatioSetFromMatrix <- function(mat,rownames=NULL,
+                                          pData=NULL,
+                                          array = "IlluminaHumanMethylation450k",
+                                          annotation=.default.450k.annotation,
+                                          mergeManifest = FALSE,
+                                          what=c("Beta","M")){
 
+    what <- match.arg(what)
+
+    if(!is.matrix(mat)) stop(sprintf("'mat' must be a matrix. It is a %s.",class(mat)))
+
+    if(is.null(rownames)) rownmaes <- rownames(mat) else{
+        if(length(rownames)!=nrow(mat))
+            stop("Number of rows of mat and length of rownames must match.")
+        rownames(mat) <- rownames
+    }
+
+    if(is.data.frame(pData)) pData <- as(pData,"DataFrame")
+
+    if(is.null(colnames(mat))) colnames(mat) <- 1:ncol(mat)
+
+    if(is.null(pData))  pData <- DataFrame( X1=1:ncol(mat), row.names=colnames(mat))
+
+    if(class(pData)!="DataFrame")
+        stop(sprintf("'pData' must be DataFrame or data.frame. It is a %s.",class(pData)))
+    
+    
+    ##Create granges
+    ann <- .getAnnotationString(c(array=array,annotation=annotation))
+    if(!require(ann, character.only = TRUE))
+        stop(sprintf("cannot load annotation package %s", ann))
+    object <- get(ann)
+
+    gr <- getLocations(object, mergeManifest = mergeManifest,
+                                 orderByLocation = TRUE)
+
+    locusNames <- names(gr)
+     
+    ##this might return NAs but it's ok
+    ###fix this. return only what is sent
+    ind <- match(locusNames,rownames(mat))
+    nas <- is.na(ind)
+    if(all(nas))
+        stop("No rowname matches. 'rownames' need to match IlluminaHumanMethylation450k probe names.")
+    if(any(nas))
+        warning(sprintf("No matches found for %d rows.",sum(is.na(ind))))
+    
+    preprocessing <- c(rg.norm='Matrix converted with makeGenomicRatioSetFromMatrix')
+    
+    if(what=="Beta"){
+        out <- GenomicRatioSet(gr=gr,
+                               Beta=mat[ind,,drop=FALSE],
+                               M =NULL,
+                               CN=NULL,
+                               pData=pData,
+                               annotation=c(array=array,annotation=annotation),
+                               preprocessMethod=preprocessing)
+    } else {
+        out <- GenomicRatioSet(gr=gr,
+                               Beta=NULL,
+                               M=mat[ind,,drop=FALSE],
+                               CN=NULL,
+                               pData=pData,
+                               annotation=c(array=array,annotation=annotation),
+                               preprocessMethod=preprocessing)
+    }
+    return(out)
+}
+
+    
+    
 read.450k.GEO <- function(GSE=NULL,path=NULL,
                           array = "IlluminaHumanMethylation450k",
                           annotation=  .default.450k.annotation,
@@ -208,7 +278,7 @@ read.450k.GEO <- function(GSE=NULL,path=NULL,
     platform <- annotation(gset)
 
     if(platform!="GPL13534")
-        warning(platform," is not the platform ID associated with IlluminaHumanMethylation450k. Should be GPL13534")
+        warning(sprintf("%s is not the platform ID associated with IlluminaHumanMethylation450k. Should be GPL13534.",platform))
     if(what=="Beta" & (min(exprs(gset)[,1],na.rm=TRUE)<0 | max(exprs(gset)[,1],na.rm=TRUE)>1 ))
         warning("Values outside [0,1] detected. 'what' argument should not be Beta.")
 
@@ -220,18 +290,18 @@ read.450k.GEO <- function(GSE=NULL,path=NULL,
 
     gr <- getLocations(object, mergeManifest = mergeManifest,
                                  orderByLocation = TRUE)
-
+    
     locusNames <- names(gr)
      
     sampleNames(gset) <- gset$title
         
     ##this might return NAs but it's ok
     ind <- match(locusNames,fData(gset)$Name)
-    if(any(is.na(ind))) warning("No data found for",sum(is.na(ind)),"feature")
+    if(any(is.na(ind)))
+        warning("No data found for ",sum(is.na(ind))," feature(s)")
     if(all(is.na(ind))) stop("No data found. This might not be IlluminaHumanMethylation450k array data.")
     
-    preprocessing <- c(rg.norm=paste0('See GEO ',GSE,' for details'),
-                       minfi=NA, manifest=paste0('GEO ', platform))
+    preprocessing <- c(rg.norm=paste0('See GEO ',GSE,' for details'))
     
     if(what=="Beta"){
         out <- GenomicRatioSet(gr=gr,
@@ -254,3 +324,11 @@ read.450k.GEO <- function(GSE=NULL,path=NULL,
 
     return(out)
 }
+
+
+
+
+
+
+
+    
