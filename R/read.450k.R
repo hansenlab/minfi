@@ -210,7 +210,6 @@ makeGenomicRatioSetFromMatrix <- function(mat,rownames=NULL,
     if(class(pData)!="DataFrame")
         stop(sprintf("'pData' must be DataFrame or data.frame. It is a %s.",class(pData)))
     
-    
     ##Create granges
     ann <- .getAnnotationString(c(array=array,annotation=annotation))
     if(!require(ann, character.only = TRUE))
@@ -224,27 +223,28 @@ makeGenomicRatioSetFromMatrix <- function(mat,rownames=NULL,
      
     ##this might return NAs but it's ok
     ###fix this. return only what is sent
-    ind <- match(locusNames,rownames(mat))
-    nas <- is.na(ind)
-    if(all(nas))
+    common <- intersect(locusNames,rownames(mat))
+    if(length(common)==0)
         stop("No rowname matches. 'rownames' need to match IlluminaHumanMethylation450k probe names.")
-    if(any(nas))
-        warning(sprintf("No matches found for %d rows.",sum(is.na(ind))))
-    
+    ##Note we give no warning if some of the rownmaes have no match.
+
+    ind1 <- match(common,rownames(mat))
+    ind2 <- match(common,locusNames)
+
     preprocessing <- c(rg.norm='Matrix converted with makeGenomicRatioSetFromMatrix')
     
     if(what=="Beta"){
-        out <- GenomicRatioSet(gr=gr,
-                               Beta=mat[ind,,drop=FALSE],
+        out <- GenomicRatioSet(gr=gr[ind2,],
+                               Beta=mat[ind1,,drop=FALSE],
                                M =NULL,
                                CN=NULL,
                                pData=pData,
                                annotation=c(array=array,annotation=annotation),
                                preprocessMethod=preprocessing)
     } else {
-        out <- GenomicRatioSet(gr=gr,
+        out <- GenomicRatioSet(gr=gr[ind2,],
                                Beta=NULL,
-                               M=mat[ind,,drop=FALSE],
+                               M=mat[ind1,,drop=FALSE],
                                CN=NULL,
                                pData=pData,
                                annotation=c(array=array,annotation=annotation),
@@ -254,13 +254,12 @@ makeGenomicRatioSetFromMatrix <- function(mat,rownames=NULL,
 }
 
     
-    
-read.450k.GEO <- function(GSE=NULL,path=NULL,
-                          array = "IlluminaHumanMethylation450k",
-                          annotation=  .default.450k.annotation,
-                          what=c("Beta","M"),
-                          mergeManifest=FALSE,
-                          pickone=1) { 
+getGenomicRatioSetFromGEO <- function(GSE=NULL,path=NULL,
+                                      array = "IlluminaHumanMethylation450k",
+                                      annotation=  .default.450k.annotation,
+                                      what=c("Beta","M"),
+                                      mergeManifest=FALSE,
+                                      i=1) { 
     
     what <- match.arg(what)
     
@@ -268,12 +267,12 @@ read.450k.GEO <- function(GSE=NULL,path=NULL,
         stop("Either GSE or path must be supplied.")
 
     ##Reading the GEO Main Files Information
-    if(!is.null(GSE)) gset <- GEOquery::getGEO(GSE) else  gset <- GEOquery::getGEO(filename = file.path(path, list.files(pattern = ".soft")))
+    if(!is.null(GSE)) gset <- GEOquery::getGEO(GSE) else gset <- GEOquery::getGEO(filename = file.path(path, list.files(pattern = ".soft")))
 
     if(length(gset)==0) stop("Empty list retrieved from GEO.")
     if(length(gset)>1){
-        warning("More than one ExpressionSet found:\n",names(gset),"\nUsing entry ",pickone)
-        gset <- gset[[pickone]]
+        warning("More than one ExpressionSet found:\n",names(gset),"\nUsing entry ",i)
+        gset <- gset[[i]]
     } else gset <- gset[[1]]
     platform <- annotation(gset)
 
@@ -295,26 +294,30 @@ read.450k.GEO <- function(GSE=NULL,path=NULL,
      
     sampleNames(gset) <- gset$title
         
-    ##this might return NAs but it's ok
-    ind <- match(locusNames,fData(gset)$Name)
-    if(any(is.na(ind)))
-        warning("No data found for ",sum(is.na(ind))," feature(s)")
-    if(all(is.na(ind))) stop("No data found. This might not be IlluminaHumanMethylation450k array data.")
+    ##we could call makeGenomicRatioSetFromMatrix but rewrite to
+    ##avoide  a copy of exprs(gset)
+    common <- intersect(locusNames,fData(gset)$Name)
+    if(length(common)==0)
+        stop("No rowname matches. 'rownames' need to match IlluminaHumanMethylation450k probe names.")
+    ##Note we give no warning if some rownames have no match
     
+    ind1 <- match(common,fData(gset)$Name)
+    ind2 <- match(common,locusNames)
+
     preprocessing <- c(rg.norm=paste0('See GEO ',GSE,' for details'))
     
     if(what=="Beta"){
-        out <- GenomicRatioSet(gr=gr,
-                               Beta=exprs(gset)[ind,],
+        out <- GenomicRatioSet(gr=gr[ind2,],
+                               Beta=exprs(gset)[ind1,,drop=FALSE],
                                M =NULL,
                                CN=NULL,
                                pData=pData(gset),
                                annotation=c(array=array,annotation=annotation),
                                preprocessMethod=preprocessing)
     } else {
-        out <- GenomicRatioSet(gr=gr,
+        out <- GenomicRatioSet(gr=gr[ind2,],
                                Beta=NULL,
-                               M=exprs(gset)[ind,],
+                               M=exprs(gset)[ind1,,drop=FALSE],
                                CN=NULL,
                                pData=pData(gset),
                                annotation=c(array=array,annotation=annotation),
@@ -326,9 +329,80 @@ read.450k.GEO <- function(GSE=NULL,path=NULL,
 }
 
 
+##ADD HELP FILE ONCE YOU KNOW THE NAME
+read.GEORawFile <- function(filename,sep=",",
+                            Uname="Unmethylated signal",
+                            Mname="Methylated signal",
+                            row.names=1,
+                            pData=NULL,
+                            array = "IlluminaHumanMethylation450k",
+                            annotation=.default.450k.annotation,
+                            mergeManifest = FALSE){
 
+    colnames <- strsplit(readLines(filename, n = 1), sep)[[1]]
+    colClasses <- rep("numeric", length(colnames))
+    ##we assume this is the only column with characaters
+    colClasses[row.names] <- "character"
+    mat <- read.table(filename, header = TRUE, sep = sep,
+                      comment.char = "", colClasses = colClasses,
+                      row.names=row.names,check.names=FALSE)
 
+    uindex <- grep(Uname,colnames(mat))
+    mindex <- grep(Mname,colnames(mat))
+    mat <- mat[,c(uindex,mindex)]
+    uindex <- grep(Uname,colnames(mat))
+    mindex <- grep(Mname,colnames(mat))
+    
+    UsampleNames <- sub(paste0("[\\.|_]",Uname), "", colnames(mat)[uindex])
+    MsampleNames <- sub(paste0("[\\.|_]",Mname), "", colnames(mat)[mindex])
 
+    index <- match(UsampleNames,MsampleNames)
+    MsampleNames <- MsampleNames[index]
+    mindex <- mindex[index]
+    
+    if(!identical(UsampleNames,MsampleNames))
+        stop("Sample names do not match for Meth and Unmeth channels.")
+    
+    if(is.data.frame(pData)) pData <- as(pData,"DataFrame")
+
+##    if(is.null(colnames(mat))) colnames(mat) <- 1:ncol(mat)
+
+    if(is.null(pData))  pData <- DataFrame(
+        X1=seq_along(UsampleNames),
+        row.names=UsampleNames)
+
+    ann <- .getAnnotationString(c(array=array,annotation=annotation))
+    if(!require(ann, character.only = TRUE))
+        stop(sprintf("cannot load annotation package %s", ann))
+    object <- get(ann)
+
+    gr <- getLocations(object, mergeManifest = mergeManifest,
+                                 orderByLocation = TRUE)
+
+    locusNames <- names(gr)
+     
+    ##this might return NAs but it's ok
+    ###fix this. return only what is sent
+    common <- intersect(locusNames,rownames(mat))
+    if(length(common)==0)
+        stop("No rowname matches. 'rownames' need to match IlluminaHumanMethylation450k probe names.")
+    ##Note we give no warning if some of the rownmaes have no match.
+
+    ind1 <- match(common,rownames(mat))
+    ind2 <- match(common,locusNames)
+
+    preprocessing <- c(rg.norm=paste0("Data read from file ",filename,"."))
+    
+    return(GenomicMethylSet(gr =  gr[ind2,],
+                            Meth = mat[ind1,mindex],
+                            Unmeth = mat[ind1,uindex],
+                            pData = pData,
+                            preprocessMethod = preprocessing,
+                            annotation = c(array=array,annotation=annotation)))
+}
 
 
     
+
+
+
