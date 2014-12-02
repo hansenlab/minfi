@@ -328,28 +328,63 @@ getGenomicRatioSetFromGEO <- function(GSE=NULL,path=NULL,
     return(out)
 }
 
+readTCGA <- function(filename,sep="\t",
+                      keyName="Composite Element REF",
+                      Betaname="Beta_value",
+                      pData=NULL,
+                      array = "IlluminaHumanMethylation450k",
+                      annotation=.default.450k.annotation,
+                      mergeManifest = FALSE,
+                      showProgress=TRUE){
 
-##ADD HELP FILE ONCE YOU KNOW THE NAME
-read.GEORawFile <- function(filename,sep=",",
+    if (!require(data.table)) stop("You need to install the data.table package from CRAN.")
+
+    ##we assume first column are sample names
+    ## and second column are the value identifiers
+    colnames <- strsplit(readLines(filename, n = 2), sep)
+    
+
+    select <- sort(c(grep(keyName,colnames[[2]]),grep(Betaname,colnames[[2]])))
+    
+    mat <- fread(filename, header = FALSE, sep = sep, select=select,
+                 showProgress=showProgress,skip=2)
+
+    
+    rowNames <- as.matrix(mat[,1,with=FALSE])
+    mat <- as.matrix(mat[,-1,with=FALSE])
+    rownames(mat) <- rowNames
+    colnames(mat)<-colnames[[1]][select][-1]
+    rm(rowNames,colnames)
+
+    return(makeGenomicRatioSetFromMatrix(mat,pData=pData,array=array,annotation=annotation,mergeManifest=mergeManifest,what="Beta"))
+
+}
+
+
+readGEORawFile <- function(filename,sep=",",
                             Uname="Unmethylated signal",
                             Mname="Methylated signal",
                             row.names=1,
                             pData=NULL,
                             array = "IlluminaHumanMethylation450k",
                             annotation=.default.450k.annotation,
-                            mergeManifest = FALSE){
+                            mergeManifest = FALSE,
+                            showProgress=TRUE){
+
+    if (!require(data.table)) stop("You need to install the  data.table package from CRAN.")
 
     colnames <- strsplit(readLines(filename, n = 1), sep)[[1]]
-    colClasses <- rep("numeric", length(colnames))
-    ##we assume this is the only column with characaters
-    colClasses[row.names] <- "character"
-    mat <- read.table(filename, header = TRUE, sep = sep,
-                      comment.char = "", colClasses = colClasses,
-                      row.names=row.names,check.names=FALSE)
 
-    uindex <- grep(Uname,colnames(mat))
-    mindex <- grep(Mname,colnames(mat))
-    mat <- mat[,c(uindex,mindex)]
+    select <- sort(c(row.names, grep(Uname,colnames),grep(Mname,colnames)))
+    
+    mat <- fread(filename, header = TRUE, sep = sep, select=select,
+                 showProgress=showProgress)
+
+    rowNames <- as.matrix(mat[,1,with=FALSE])
+    mat <- as.matrix(mat[,-1,with=FALSE])
+    rownames(mat) <- rowNames
+    rm(rowNames)
+    
     uindex <- grep(Uname,colnames(mat))
     mindex <- grep(Mname,colnames(mat))
     
@@ -364,8 +399,6 @@ read.GEORawFile <- function(filename,sep=",",
         stop("Sample names do not match for Meth and Unmeth channels.")
     
     if(is.data.frame(pData)) pData <- as(pData,"DataFrame")
-
-##    if(is.null(colnames(mat))) colnames(mat) <- 1:ncol(mat)
 
     if(is.null(pData))  pData <- DataFrame(
         X1=seq_along(UsampleNames),
@@ -401,8 +434,6 @@ read.GEORawFile <- function(filename,sep=",",
                             annotation = c(array=array,annotation=annotation)))
 }
 
-
-    
 
 
 
