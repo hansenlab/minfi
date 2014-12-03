@@ -375,8 +375,14 @@ readGEORawFile <- function(filename,sep=",",
 
     colnames <- strsplit(readLines(filename, n = 1), sep)[[1]]
 
+    if(all(!grepl(Uname,colnames)))
+        stop("No columns contain Uname. Use readLines or look at file header to see column names.")
+
+    if(all(!grepl(Mname,colnames)))
+        stop("No columns contain Mname. Use readLines or look at file header to see column names.")   
+
     select <- sort(c(row.names, grep(Uname,colnames),grep(Mname,colnames)))
-    
+
     mat <- fread(filename, header = TRUE, sep = sep, select=select,
                  showProgress=showProgress)
 
@@ -387,9 +393,17 @@ readGEORawFile <- function(filename,sep=",",
     
     uindex <- grep(Uname,colnames(mat))
     mindex <- grep(Mname,colnames(mat))
+
+  
+    trim <- function (x){
+        x<-gsub("^\\s+|\\s+$", "", x)
+        x<-gsub("^\\.+|\\.+$", "", x)
+        x<-gsub("^\\_+|\\_$", "", x)
+        return(x)
+    }
     
-    UsampleNames <- sub(paste0("[\\.|_]",Uname), "", colnames(mat)[uindex])
-    MsampleNames <- sub(paste0("[\\.|_]",Mname), "", colnames(mat)[mindex])
+    UsampleNames <- trim(sub(Uname, "", colnames(mat)[uindex]))
+    MsampleNames <- trim(sub(Mname, "", colnames(mat)[mindex]))
 
     index <- match(UsampleNames,MsampleNames)
     MsampleNames <- MsampleNames[index]
