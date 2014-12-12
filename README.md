@@ -3,7 +3,7 @@ This is the developer version of Bioconductor package [minfi](http://bioconducto
 
 ```r
 source('http://bioconductor.org/biocLite.R')
-biocLite(minfi')
+biocLite('minfi')
 ```
 
 ## R CMD check results

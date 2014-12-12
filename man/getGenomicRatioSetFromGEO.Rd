@@ -1,5 +1,5 @@
-\name{read.450k.GEO}
-\alias{read.450k.GEO}
+\name{getGenomicRatioSetFromGEO}
+\alias{getGenomicRatioSetFromGEO}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 Reading Illumina methylation array data from GEO.
@@ -8,7 +8,7 @@ Reading Illumina methylation array data from GEO.
 Reading Illumina methylation array data from GEO.
 }
 \usage{
-read.450k.GEO(GSE = NULL, path = NULL, array = "IlluminaHumanMethylation450k", annotation = .default.450k.annotation, what = c("Beta", "M"), mergeManifest = FALSE, pickone = 1)
+getGenomicRatioSetFromGEO(GSE = NULL, path = NULL, array = "IlluminaHumanMethylation450k", annotation = .default.450k.annotation, what = c("Beta", "M"), mergeManifest = FALSE, i = 1)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -32,26 +32,30 @@ Are \code{Beta} or \code{M} values being downloaded.
 \item{mergeManifest}{
 Should the Manifest be merged to the final object.
 }
-  \item{pickone}{
-If the GEO downloads results in more than one dataset, it pickes entry \code{pickone}.
+  \item{i}{
+If the GEO download results in more than one dataset, it pickes entry \code{i}.
 }
 }
 \details{
 This function downloads data from GEO using
 \code{\link[GEOquery]{getGEO}} from the \pkg{GEOquery} package. It then
-returns a \linkS4class{GenomicRatioSet} object.
+returns a \linkS4class{GenomicRatioSet} object. Note that the rs probes
+(used for genotyping) are dropped.
 }
 \value{
-\linkS4class{GenomicRatioSet} object.
+A \linkS4class{GenomicRatioSet} object.
 }
 \author{
   Tim Triche Jr. and 
   Rafael A. Irizarry\email{rafa@jimmy.harvard.edu}.
 }
-
+\seealso{
+  If the data is already in memor you can use 
+  \code{\link{makeGenomicRatioSetFromMatrix}}
+}
 \examples{
 \dontrun{
-mset=read.450k.GEO("GSE42752")
+mset=getGenomicRatioSetFromGEO("GSE42752")
 }
 }
 

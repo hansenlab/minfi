@@ -2,6 +2,26 @@
 \title{Minfi News}
 \encoding{UTF-8}
 
+\section{Version 1.14}{
+  \itemize{
+    \item getGenomicRatioSetFromGEO
+    added to read directly from GEO and create a
+  GenomicsRatioSet. Thanks Tim Triche for writing the original function.
+  \item makeGenomicRatioSetFromMatrix added. This function turns a
+  matrix into a GenomicRatioSet. The 450K feature IDs need to
+  be supplied or in the rownames of the matrix.
+  \item makeGenomicRatioSetFromMatrix added to convert matrices to
+  GenomicRatioSets. This can be useful for reading in files with beta
+  values and turning into object that can be directly passed to
+  bumphunter and blockFinder.
+  \item readGEORawFile added to read raw intensity files provided as
+  Supplementary Material on GEO. The files include the unmethylated and
+  methylated signals. The new function returns a GenomicMethylSet which
+  permits you to seamlessly apply minfi preprocessing functions.
+  \item readTCGA is wrapper for makeGenomicRatioSetFromMatrix that reads
+  in files in the TCGA format. The function is very specific to this format.
+}
+
 \section{Version 1.13}{
   \itemize{
     \item read.450k.exp has support for argument base when targets is
