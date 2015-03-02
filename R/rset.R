@@ -39,6 +39,13 @@ setMethod("show", "RatioSet", function(object) {
     .show.preprocessMethod(preprocessMethod(object))
 })
 
+setReplaceMethod("pData", signature(object = "RatioSet", value = "DataFrame"),
+                 function(object, value) {
+                     df <- as.data.frame(value)
+                     pData(object) <- df
+                     object
+                 })
+
 setMethod("getBeta", signature(object = "RatioSet"),
           function (object) {
               nms <- assayDataElementNames(object)

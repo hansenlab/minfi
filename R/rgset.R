@@ -25,6 +25,13 @@ setMethod("show", "RGChannelSet", function(object) {
     .show.annotation(annotation(object))
 })
 
+setReplaceMethod("pData", signature(object = "RGChannelSet", value = "DataFrame"),
+                 function(object, value) {
+                     df <- as.data.frame(value)
+                     pData(object) <- df
+                     object
+                 })
+
 setClass("RGChannelSetExtended",
          contains = "RGChannelSet")
 
