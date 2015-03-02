@@ -56,7 +56,7 @@ readGEORawFile(filename, sep = ",", Uname = "Unmethylated signal", Mname = "Meth
  flexibility to read these files. Note that you will likely need to
  change the \code{sep}, \code{Uname}, and \code{Mname} arguments and
  make sure the first column includes the feature (CpG) IDs. You can use the
- \code{\link{read Lines}} function to decipher how to set these
+ \code{\link{readLines}} function to decipher how to set these
  arguments.
  
  Note that the function uses the \code{\link[data.table]{fread}}
