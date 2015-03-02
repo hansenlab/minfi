@@ -33,6 +33,13 @@ setMethod("show", "MethylSet", function(object) {
     .show.preprocessMethod(preprocessMethod(object))
 })
 
+setReplaceMethod("pData", signature(object = "MethylSet", value = "DataFrame"),
+                 function(object, value) {
+                     df <- as.data.frame(value)
+                     pData(object) <- df
+                     object
+                 })
+
 setMethod("getMeth", signature(object = "MethylSet"),
           function(object) {
               assayDataElement(object, "Meth")
