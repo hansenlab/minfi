@@ -2,8 +2,18 @@
 \title{Minfi News}
 \encoding{UTF-8}
 
-\section{Version 1.14}{
+  }
+}
+
+\section{Version 1.13}{
   \itemize{
+    \item read.450k.exp has support for argument base when targets is
+    supplied.  Thanks to Brent Pedersen <bpederse@gmail.com> for noticing
+    this and providing an initial fix.
+    \item changed the default behaviour of read.450k.exp.  If called
+    using a targets argument created by read.450k.sheet, you should not
+    also give it a base argument (which was always superfluous).
+    \item Some NAMESPACE imports fixes.
     \item getGenomicRatioSetFromGEO
     added to read directly from GEO and create a
     GenomicsRatioSet. Thanks Tim Triche for writing the original function.
@@ -19,19 +29,10 @@
     methylated signals. The new function returns a GenomicMethylSet which
     permits you to seamlessly apply minfi preprocessing functions.
     \item readTCGA is wrapper for makeGenomicRatioSetFromMatrix that reads
-    in files in the TCGA format. The function is very specific to this format.
-  }
-}
-
-\section{Version 1.13}{
-  \itemize{
-    \item read.450k.exp has support for argument base when targets is
-    supplied.  Thanks to Brent Pedersen <bpederse@gmail.com> for noticing
-    this and providing an initial fix.
-    \item changed the default behaviour of read.450k.exp.  If called
-    using a targets argument created by read.450k.sheet, you should not
-    also give it a base argument (which was always superfluous).
-    \item Some NAMESPACE imports fixes.
+    in files in the TCGA format. The function is very specific to this
+    format.
+    \item Minor coding fixes including some NAMESPACE issues, missing
+    pData<- methods, replace require() with requireNamespace().   
   }
 }
 
