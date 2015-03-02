@@ -337,27 +337,26 @@ readTCGA <- function(filename,sep="\t",
                       mergeManifest = FALSE,
                       showProgress=TRUE){
 
-    if (!require(data.table)) stop("You need to install the data.table package from CRAN.")
+    if (!requireNamespace("data.table", quietly = TRUE))
+        stop("You need to install the data.table package from CRAN.")
 
     ##we assume first column are sample names
     ## and second column are the value identifiers
     colnames <- strsplit(readLines(filename, n = 2), sep)
     
-
-    select <- sort(c(grep(keyName,colnames[[2]]),grep(Betaname,colnames[[2]])))
+    select <- sort(c(grep(keyName, colnames[[2]]), grep(Betaname,colnames[[2]])))
     
-    mat <- fread(filename, header = FALSE, sep = sep, select=select,
-                 showProgress=showProgress,skip=2)
-
-    
-    rowNames <- as.matrix(mat[,1,with=FALSE])
-    mat <- as.matrix(mat[,-1,with=FALSE])
+    mat <- data.table::fread(filename, header = FALSE, sep = sep, select=select,
+                             showProgress=showProgress,skip=2)
+    rowNames <- as.matrix(mat[, 1, with=FALSE])
+    mat <- as.matrix(mat[, -1, with=FALSE])
     rownames(mat) <- rowNames
     colnames(mat)<-colnames[[1]][select][-1]
     rm(rowNames,colnames)
 
-    return(makeGenomicRatioSetFromMatrix(mat,pData=pData,array=array,annotation=annotation,mergeManifest=mergeManifest,what="Beta"))
-
+    return(makeGenomicRatioSetFromMatrix(mat, pData=pData, array=array,
+                                         annotation=annotation,
+                                         mergeManifest=mergeManifest,what="Beta"))
 }
 
 
@@ -371,7 +370,8 @@ readGEORawFile <- function(filename,sep=",",
                             mergeManifest = FALSE,
                             showProgress=TRUE){
 
-    if (!require(data.table)) stop("You need to install the  data.table package from CRAN.")
+    if (!requireNamespace("data.table", quietly = TRUE))
+        stop("You need to install the data.table package from CRAN.")
 
     colnames <- strsplit(readLines(filename, n = 1), sep)[[1]]
 
@@ -383,8 +383,8 @@ readGEORawFile <- function(filename,sep=",",
 
     select <- sort(c(row.names, grep(Uname,colnames),grep(Mname,colnames)))
 
-    mat <- fread(filename, header = TRUE, sep = sep, select=select,
-                 showProgress=showProgress)
+    mat <- data.table::fread(filename, header = TRUE, sep = sep, select=select,
+                             showProgress=showProgress)
 
     rowNames <- as.matrix(mat[,1,with=FALSE])
     mat <- as.matrix(mat[,-1,with=FALSE])
@@ -393,7 +393,6 @@ readGEORawFile <- function(filename,sep=",",
     
     uindex <- grep(Uname,colnames(mat))
     mindex <- grep(Mname,colnames(mat))
-
   
     trim <- function (x){
         x<-gsub("^\\s+|\\s+$", "", x)
