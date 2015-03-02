@@ -6,7 +6,8 @@ importClassesFrom(Biobase, AnnotatedDataFrame, AssayData, eSet, MIAxE,
 importMethodsFrom(Biobase, channel,
                   classVersion, experimentData, featureData,
                   featureNames, "featureNames<-", isCurrent, pData, "pData<-",
-                  phenoData, protocolData, sampleNames, storageMode,
+                  phenoData, protocolData, sampleNames, "sampleNames<-",
+                  storageMode, exprs, fData,
                   varMetadata, "varMetadata<-", "featureData<-",
                   AnnotatedDataFrame)
 import(Biostrings)
