@@ -33,8 +33,8 @@ normalize.illumina.control <- function(rgSet, reference=1) {
     Red <- getRed(rgSet)    
     AT.controls <- getControlAddress(rgSet, controlType = c("NORM_A", "NORM_T"))
     CG.controls <- getControlAddress(rgSet, controlType = c("NORM_C", "NORM_G"))
-    Green.avg <- colMeans(Green[CG.controls, ])
-    Red.avg <- colMeans(Red[AT.controls, ])
+    Green.avg <- colMeans(Green[CG.controls, , drop = FALSE])
+    Red.avg <- colMeans(Red[AT.controls, , drop = FALSE])
     ref <- (Green.avg + Red.avg)[reference]/2
     if(is.na(ref))
         stop("perhaps 'reference' refer to an array that is not present.")
@@ -52,8 +52,8 @@ bgcorrect.illumina <- function(rgSet) {
     Green <- getGreen(rgSet)
     Red <- getRed(rgSet)
     NegControls <- getControlAddress(rgSet, controlType = "NEGATIVE")
-    Green.bg <- apply(Green[NegControls, ], 2, function(xx) sort(xx)[31])
-    Red.bg <- apply(Red[NegControls, ], 2, function(xx) sort(xx)[31])
+    Green.bg <- apply(Green[NegControls, , drop = FALSE], 2, function(xx) sort(xx)[31])
+    Red.bg <- apply(Red[NegControls, , drop = FALSE], 2, function(xx) sort(xx)[31])
     Green <- pmax(sweep(Green, 2, Green.bg), 0)
     Red <- pmax(sweep(Red, 2, Red.bg), 0)
     assayDataElement(rgSet, "Green") <- Green
