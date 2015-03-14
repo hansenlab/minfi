@@ -44,9 +44,13 @@ c(bibentry(bibtype = "Article",
                     person(given = c("Celia", "M.T."), family = "Greenwood"),
            person(given = c("Kasper", "D."), family = "Hansen")),
            title = "Functional normalization of 450k methylation array data improves replication in large cancer studies",
+           journal = "Genome Biology",
            year = "2014",
-           doi = "10.1101/002956",
-           journal = "bioRxiv",
+           volume = "15",
+           number = "12",
+           pages = "503",
+           doi = "10.1186/s13059-014-0503-2",
+           pubmed = "25517394",
            header = "Funnorm normalization is described in:")
   )
 
