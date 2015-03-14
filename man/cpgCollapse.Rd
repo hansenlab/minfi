@@ -22,7 +22,7 @@ cpgCollapse(object, what = c("Beta", "M"), maxGap = 500,
 }
 
 \arguments{
-  \item{object}{An object of class \code{[Genomic]MethylSet}.}
+  \item{object}{An object of class \code{[Genomic]MethylSet} or \code{[Genomic]RatioSet}.}
   \item{what}{Should operation be performed on the M-scale or
   Beta-scale?}
   \item{maxGap}{Maximum gap between CpGs in a cluster}
