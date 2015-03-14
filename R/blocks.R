@@ -72,21 +72,26 @@ cpgCollapse <- function(object, what = c("Beta", "M"), maxGap = 500,
     a <- getCN(object,...)
     
     if(verbose) cat("[cpgCollapse] Collapsing data")
-    
     Indexes <- split(seq(along = anno$pns), anno$pns)
     yy  <- matrix(0, length(Indexes), ncol(y))
-    aa  <- matrix(0,length(Indexes), ncol(y))
     Ns <- sapply(Indexes, length)
     ones <- (Ns == 1)
     ind <- which(ones)
     yy[ind,] <- y[unlist(Indexes[ind]),]
-    aa[ind,] <- a[unlist(Indexes[ind]),]
+    if (class(object)=="GenomicMethylSet") {
+      aa  <- matrix(0,length(Indexes), ncol(y))
+      aa[ind,] <- a[unlist(Indexes[ind]),]
+    } else {
+      aa <- NULL
+    }
 
     ind <- which(!ones)
     for(i in ind) {
         if(verbose) if(runif(1) < 0.0001) cat(".")
         yy[i,] <- dataSummary(y[Indexes[[i]],, drop=FALSE], na.rm = na.rm)
-        aa[i,] <- dataSummary(a[Indexes[[i]],, drop=FALSE], na.rm = na.rm)
+        if (class(object)=="GenomicMethylSet") {
+          aa[i,] <- dataSummary(a[Indexes[[i]],, drop=FALSE], na.rm = na.rm)
+        }
     }
     if(verbose) cat("\n")
     

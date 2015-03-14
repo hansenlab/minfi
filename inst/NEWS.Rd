@@ -32,7 +32,9 @@
     in files in the TCGA format. The function is very specific to this
     format.
     \item Minor coding fixes including some NAMESPACE issues, missing
-    pData<- methods, replace require() with requireNamespace().   
+    pData<- methods, replace require() with requireNamespace().
+    \item cpgCollapse now works for GenomicRatioSets since it no longer attempts 
+    to summarize CN data when passed a GenomicRatioSet.
   }
 }
 
