@@ -196,7 +196,7 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
     ## Bisulfite conversion extraction for probe type I:
     index <- match("BISULFITE CONVERSION I", controlNames)
     addr <- getCtrlsAddr(exType = sprintf("BS Conversion I%sC%s", c(" ", "-", "-"), 1:3), index = index)
-    greenControls.current <- redControls[[ index ]][addr,]
+    greenControls.current <- greenControls[[ index ]][addr,]
     addr <- getCtrlsAddr(exType = sprintf("BS Conversion I-C%s", 4:6), index = index)
     redControls.current <- redControls[[ index ]][addr,]
     bisulfite1 <- colMeans(redControls.current + greenControls.current, na.rm = TRUE)
