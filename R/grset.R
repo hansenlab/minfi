@@ -11,8 +11,8 @@ setValidity("GenomicRatioSet", function(object) {
     if(!is.null(msgBeta) && !is.null(msgM))
         msg <- validMsg(msg, sprintf("objects of class '%s needs to have assays slots either 'Beta' or 'M' or both",
                                      class(object)))
-    if(!is(rowData(object), "GRanges"))
-        msg <- validMsg(msg, sprintf("object of class '%s' needs to have a 'GRanges' in slot 'rowData'", class(object)))
+    if(!is(rowRanges(object), "GRanges"))
+        msg <- validMsg(msg, sprintf("object of class '%s' needs to have a 'GRanges' in slot 'rowRanges'", class(object)))
     if (is.null(msg)) TRUE else msg
 })
 
@@ -27,9 +27,9 @@ GenomicRatioSet <- function(gr = GRanges(), Beta = NULL, M = NULL, CN = NULL,
     assays <- SimpleList(Beta = Beta, M = M, CN = CN)
     assays <- GenomicRanges:::.ShallowSimpleListAssays(data = assays[!sapply(assays, is.null)])
     colData <- as(pData, "DataFrame")
-    rowData <- as(gr, "GRanges")
+    rowRanges <- as(gr, "GRanges")
     new("GenomicRatioSet", assays = assays, colData = colData,
-        rowData = rowData, annotation = annotation, preprocessMethod = preprocessMethod)
+        rowRanges = rowRanges, annotation = annotation, preprocessMethod = preprocessMethod)
 }
 
 setMethod("show", signature(object = "GenomicRatioSet"),

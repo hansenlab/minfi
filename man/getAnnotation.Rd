@@ -77,7 +77,7 @@ getIslandStatus(object, islandAnno = NULL)
 
   \code{getSnpInfo} is a conevnience function which gets a SNP DataFrame
   containing information on which probes contains SNPs
-  where. \code{addSnpInfo} adds this information to the \code{rowData}
+  where. \code{addSnpInfo} adds this information to the \code{rowRanges}
   or \code{granges} of the object.  \code{dropLociWithSnps} is a
   convenience function for removing loci with SNPs based on their MAF.
   
