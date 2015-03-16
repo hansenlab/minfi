@@ -4,8 +4,8 @@ setClass("GenomicMethylSet",
 
 setValidity("GenomicMethylSet", function(object) {
     msg <- validMsg(NULL, .checkAssayNames(object, c("Meth", "Unmeth")))
-    if(class(rowData(object)) != "GRanges")
-        msg <- validMsg(msg, sprintf("object of class '%s' needs to have a 'GRanges' in slot 'rowData'", class(object)))
+    if(class(rowRanges(object)) != "GRanges")
+        msg <- validMsg(msg, sprintf("object of class '%s' needs to have a 'GRanges' in slot 'rowRanges'", class(object)))
     if (is.null(msg)) TRUE else msg
 })
 
@@ -14,9 +14,9 @@ GenomicMethylSet <- function(gr = GRanges(), Meth = new("matrix"), Unmeth = new(
     assays <- SimpleList(Meth = Meth, Unmeth = Unmeth)
     assays <- GenomicRanges:::.ShallowSimpleListAssays(data = assays)
     colData <- as(pData, "DataFrame")
-    rowData <- as(gr, "GRanges")
+    rowRanges <- as(gr, "GRanges")
     new("GenomicMethylSet", assays = assays, colData = colData,
-        rowData = rowData, annotation = annotation, preprocessMethod = preprocessMethod)
+        rowRanges = rowRanges, annotation = annotation, preprocessMethod = preprocessMethod)
 }
 
 setMethod("show", signature(object = "GenomicMethylSet"),
