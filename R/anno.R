@@ -220,7 +220,7 @@ addSnpInfo <- function(object, snpAnno = NULL) {
     elmNames <- names(elementMetadata(granges(object)))
     if(any(elmNames %in% names(snps)))
         cat("Replacing existing snp information\n")
-    elementMetadata(object@rowData) <- cbind(elementMetadata(granges(object)), snps)
+    elementMetadata(object@rowRanges) <- cbind(elementMetadata(granges(object)), snps)
     object
 }
 
