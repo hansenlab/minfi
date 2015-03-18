@@ -17,7 +17,7 @@ estimateCellCounts <- function (rgSet, compositeCellType = "Blood",
     if(!all(cellTypes %in% referenceRGset$CellType))
         stop(sprintf("all elements of argument 'cellTypes' needs to be part of the reference phenoData columns 'CellType' (containg the following elements: '%s')",
                      paste(unique(referenceRGset$cellType), collapse = "', '")))
-	if(length(unique(cellTypes < 2))) 
+	if(length(unique(cellTypes)) < 2)
         stop("At least 2 cell types must be provided.")
 
     if(verbose) cat("[estimateCellCounts] Combining user data with reference (flow sorted) data.\n")
