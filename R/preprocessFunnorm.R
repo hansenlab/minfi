@@ -64,7 +64,7 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
      normalizeQuantiles <- function(matrix, indices, sex = NULL) {
          matrix <- matrix[indices,,drop=FALSE]
          ## uses probs, model.matrix, nPCS, through scoping)
-         oldQuantiles <- t(colQuantiles(matrix, probs = probs))
+         oldQuantiles <- t(matrixStats::colQuantiles(matrix, probs = probs))
          if(is.null(sex)) {
              newQuantiles <- .returnFit(controlMatrix = model.matrix, quantiles = oldQuantiles, nPCs = nPCs)
          } else {
@@ -163,8 +163,8 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
     ## Extraction of the undefined negative control probes
     oobRaw <- getOOB(rgSet)
     probs <- c(0.01, 0.50, 0.99)
-    greenOOB <- t(colQuantiles(oobRaw$Grn, na.rm = TRUE, probs = probs))
-    redOOB   <- t(colQuantiles(oobRaw$Red, na.rm=TRUE,  probs = probs))
+    greenOOB <- t(matrixStats::colQuantiles(oobRaw$Grn, na.rm = TRUE, probs = probs))
+    redOOB   <- t(matrixStats::colQuantiles(oobRaw$Red, na.rm=TRUE,  probs = probs))
     oob      <- list(greenOOB = greenOOB, redOOB = redOOB)                       
     
     return(list(

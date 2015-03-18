@@ -2,9 +2,6 @@
 \title{Minfi News}
 \encoding{UTF-8}
 
-  }
-}
-
 \section{Version 1.13}{
   \itemize{
     \item read.450k.exp has support for argument base when targets is
@@ -35,6 +32,8 @@
     pData<- methods, replace require() with requireNamespace().
     \item cpgCollapse now works for GenomicRatioSets since it no longer attempts 
     to summarize CN data when passed a GenomicRatioSet.
+    \item estimateCellCounts now works on only 2 cell types.
+    \item Various NAMESPACE fixes.
   }
 }
 

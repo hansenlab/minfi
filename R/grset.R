@@ -27,9 +27,9 @@ GenomicRatioSet <- function(gr = GRanges(), Beta = NULL, M = NULL, CN = NULL,
     assays <- SimpleList(Beta = Beta, M = M, CN = CN)
     assays <- GenomicRanges:::.ShallowSimpleListAssays(data = assays[!sapply(assays, is.null)])
     colData <- as(pData, "DataFrame")
-    rowRanges <- as(gr, "GRanges")
+    rowData <- as(gr, "GRanges")
     new("GenomicRatioSet", assays = assays, colData = colData,
-        rowRanges = rowRanges, annotation = annotation, preprocessMethod = preprocessMethod)
+        rowData = rowData, annotation = annotation, preprocessMethod = preprocessMethod)
 }
 
 setMethod("show", signature(object = "GenomicRatioSet"),

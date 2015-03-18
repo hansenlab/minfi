@@ -90,7 +90,7 @@ pickCompProbes <- function(mSet, cellTypes = NULL, numProbes = 50) {
                                         # get fstats
     ffComp <- rowFtests(p, pd$CellType)
     prof <- sapply(splitit(pd$CellType), function(i) rowMeans(p[,i]))
-    r <- rowRanges(p)
+    r <- matrixStats::rowRanges(p)
     compTable <- cbind(ffComp, prof, r, abs(r[,1] - r[,2]))
     names(compTable)[1] <- "Fstat"
     names(compTable)[c(-2,-1,0) + ncol(compTable)] <- c("low", "high", "range") 
@@ -135,50 +135,44 @@ projectCellType <- function(Y, coefCellType, contrastCellType=NULL, nonnegative=
     if(is.null(contrastCellType))
         Xmat <- coefCellType
     else
-        Xmat <- coefCellType %*% t(contrastCellType) 
-
-     nCol <- dim(Xmat)[2]
-	
-	if(nCol == 2) {
-		Dmat = t(Xmat)%*%Xmat
-		mixCoef = t(apply(Y, 2, function(x)  solve(Dmat, t(Xmat) %*% x)))
-		colnames(mixCoef) <- colnames(Xmat)
-		return(mixCoef)
-		
-	} else {
-
-		nSubj <- dim(Y)[2]
-
-		mixCoef <- matrix(0, nSubj, nCol)
-		rownames(mixCoef) <- colnames(Y)
-		colnames(mixCoef) <- colnames(Xmat)
-		
-		if(nonnegative){
-			require(quadprog)
-			if(lessThanOne){
-				Amat <- cbind(rep(-1,nCol), diag(nCol))
-				b0vec <- c(-1,rep(0,nCol))
-			} else {
-				Amat <- diag(nCol)
-				b0vec <- rep(0,nCol)
-			}
-			for(i in 1:nSubj) {
-				obs <- which(!is.na(Y[,i])) 
-				Dmat <- t(Xmat[obs,]) %*% Xmat[obs,]
-				mixCoef[i,] <- solve.QP(Dmat, t(Xmat[obs,]) %*% Y[obs,i], Amat, b0vec)$sol
-			}
-		} else {
-			for(i in 1:nSubj) {
-				obs <- which(!is.na(Y[,i])) 
-				Dmat <- t(Xmat[obs,]) %*% Xmat[obs,]
-				mixCoef[i,] <- solve(Dmat, t(Xmat[obs,]) %*% Y[obs,i])
-			}
-		}
-		return(mixCoef)
-	}
+        Xmat <- tcrossprod(coefCellType, contrastCellType) 
+    
+    nCol <- dim(Xmat)[2]
+    if(nCol == 2) {
+        Dmat <- crossprod(Xmat)
+        mixCoef <- t(apply(Y, 2, function(x) { solve(Dmat, crossprod(Xmat, x)) }))
+        colnames(mixCoef) <- colnames(Xmat)
+        return(mixCoef)
+    } else {
+        nSubj <- dim(Y)[2]
+        
+        mixCoef <- matrix(0, nSubj, nCol)
+        rownames(mixCoef) <- colnames(Y)
+        colnames(mixCoef) <- colnames(Xmat)
+        
+        if(nonnegative){
+            if(lessThanOne) {
+                Amat <- cbind(rep(-1, nCol), diag(nCol))
+                b0vec <- c(-1, rep(0, nCol))
+            } else {
+                Amat <- diag(nCol)
+                b0vec <- rep(0, nCol)
+            }
+            for(i in 1:nSubj) {
+                obs <- which(!is.na(Y[,i])) 
+                Dmat <- crossprod(Xmat[obs,])
+                mixCoef[i,] <- solve.QP(Dmat, crossprod(Xmat[obs,], Y[obs,i]), Amat, b0vec)$sol
+            }
+        } else {
+            for(i in 1:nSubj) {
+                obs <- which(!is.na(Y[,i])) 
+                Dmat <- crossprod(Xmat[obs,])
+                mixCoef[i,] <- solve(Dmat, t(Xmat[obs,]) %*% Y[obs,i])
+            }
+        }
+        return(mixCoef)
+    }
 }
-
-
 
 validationCellType <- function(Y, pheno, modelFix, modelBatch=NULL,
                                L.forFstat = NULL, verbose = FALSE){

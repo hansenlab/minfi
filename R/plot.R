@@ -8,7 +8,7 @@ mdsPlot <- function(dat, numPositions=1000, sampNames=NULL, sampGroups=NULL, xli
     } else {
         stop("dat must be an 'MethylSet' or 'matrix'.")
     }
-    o <- order(-rowVars(b))[1:numPositions]
+    o <- order(-matrixStats::rowVars(b))[1:numPositions]
     d <- dist(t(b[o,]))
     fit <- cmdscale(d)
     if (missing(xlim)) xlim <- range(fit[,1]) * 1.2

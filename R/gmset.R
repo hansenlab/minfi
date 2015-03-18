@@ -14,9 +14,9 @@ GenomicMethylSet <- function(gr = GRanges(), Meth = new("matrix"), Unmeth = new(
     assays <- SimpleList(Meth = Meth, Unmeth = Unmeth)
     assays <- GenomicRanges:::.ShallowSimpleListAssays(data = assays)
     colData <- as(pData, "DataFrame")
-    rowRanges <- as(gr, "GRanges")
+    rowData <- as(gr, "GRanges")
     new("GenomicMethylSet", assays = assays, colData = colData,
-        rowRanges = rowRanges, annotation = annotation, preprocessMethod = preprocessMethod)
+        rowData = rowData, annotation = annotation, preprocessMethod = preprocessMethod)
 }
 
 setMethod("show", signature(object = "GenomicMethylSet"),

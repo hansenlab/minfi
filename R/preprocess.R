@@ -95,13 +95,13 @@ detectionP <- function(rgSet, type = "m+u") {
     controlIdx <- getControlAddress(rgSet, controlType = "NEGATIVE")   
     r <- getRed(rgSet)
     rBg <- r[controlIdx,]
-    rMu <- colMedians(rBg)
-    rSd <- colMads(rBg)
+    rMu <- matrixStats::colMedians(rBg)
+    rSd <- matrixStats::colMads(rBg)
 
     g <- getGreen(rgSet)
     gBg <- g[controlIdx,]
-    gMu <- colMedians(gBg)
-    gSd <- colMads(gBg)
+    gMu <- matrixStats::colMedians(gBg)
+    gSd <- matrixStats::colMads(gBg)
 
     TypeII <- getProbeInfo(rgSet, type = "II")
     TypeI.Red <- getProbeInfo(rgSet, type = "I-Red")
