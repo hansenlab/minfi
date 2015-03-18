@@ -1,4 +1,3 @@
-
 gaphunter<-function(object,Beta=NULL,threshold=0.05,keepoutliers=FALSE,outcutoff=0.01,verbose=TRUE){
 if (is.null(Beta)&is.null(object))
 	stop("[gaphunter] At least one of 'object' or 'Beta' must be supplied.")
@@ -99,4 +98,3 @@ algorithm<-list("threshold"=threshold,"outcutoff"=outcutoff,"keepoutliers"=keepo
 
 return(list("proberesults"=gapanno,"sampleresults"=groupanno,"algorithm"=algorithm))
 }
-

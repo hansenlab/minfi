@@ -65,7 +65,7 @@ export(getManifest, getProbeInfo, getManifestInfo,
        getQC, plotQC, addQC, minfiQC, fixMethOutliers,
        getSex, plotSex, addSex, bumphunter,
        blockFinder, cpgCollapse,
-       estimateCellCounts)
+       estimateCellCounts,gaphunter)
 
 exportClasses(RGChannelSet, RGChannelSetExtended,
               MethylSet, RatioSet,
