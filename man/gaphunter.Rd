@@ -36,6 +36,8 @@ gaphunter(object,Beta=NULL,threshold=0.05,keepoutliers=FALSE,outcutoff=0.01,verb
   The function will idenfity probes with a gap in a beta signal greater than
   or equal to the defined \code{threshold}. This method provides an data-driven alternative
   to reference annotations in terms of accounting for polymorphism-affected probes.
+  
+  Parallelization is implemented through the foreach package. 
 }
 \value{
   A list with three values,
@@ -46,13 +48,16 @@ gaphunter(object,Beta=NULL,threshold=0.05,keepoutliers=FALSE,outcutoff=0.01,verb
 	indicate lower mean methylation values for the group. For example, individuals coded as
 	\sQuote{1} will have a lower mean methylation value than those individuals coded as 
 	\sQuote{2}.}
+  \item{algorithm}{A list detailing the arguments supplied to the function.}
 }
 \author{
 Shan Andrews \email{sandre17@jhu.edu}.
 }
 \examples{
-if(require(minfiData)) {
-  gmSet <- preprocessQuantile(MsetEx)
-  gapres <- gaphunter(gmSet)
-}
+require(minfiData)
+#Enable parallelization (recommended)
+require(doParallel)
+registerDoParallel(cores=4)
+gmSet <- preprocessQuantile(MsetEx)
+gapres <- gaphunter(gmSet) 
 }
