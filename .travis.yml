@@ -1,0 +1,3 @@
+language: r
+bioc_required: true
+bioc_packages: BiocGenerics
