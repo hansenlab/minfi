@@ -18,7 +18,6 @@ Depends:  methods,
 	  GenomicRanges,
 	  Biostrings,
 	  utils,
-	  foreach,
 	  bumphunter (>= 1.1.9)
 Suggests: IlluminaHumanMethylation450kmanifest (>= 0.2.0),
 	  IlluminaHumanMethylation450kanno.ilmn12.hg19,
@@ -26,7 +25,6 @@ Suggests: IlluminaHumanMethylation450kmanifest (>= 0.2.0),
 	  FlowSorted.Blood.450k (>= 1.0.1),
 	  RUnit,
 	  digest,
-	  doParallel,
 	  data.table
 Imports:  S4Vectors,
 	  GenomeInfoDb,
@@ -45,7 +43,6 @@ Imports:  S4Vectors,
 	  reshape,
 	  MASS,
 	  quadprog,
-	  doRNG,
 	  GEOquery
 Collate:  generics.R
 	  mset.R

@@ -38,8 +38,6 @@ gaphunter(object,Beta=NULL,threshold=0.05,keepoutliers=FALSE,outcutoff=0.01,verb
   The function will idenfity probes with a gap in a beta signal greater than
   or equal to the defined \code{threshold}. This method provides an data-driven alternative
   to reference annotations in terms of accounting for polymorphism-affected probes.
-  
-  Parallelization is implemented through the foreach package.
 }
 \value{
   A list with three values,
@@ -57,9 +55,6 @@ Shan Andrews \email{sandre17@jhu.edu}.
 }
 \examples{
 require(minfiData)
-#Enable parallelization (recommended)
-require(doParallel)
-registerDoParallel(cores=4)
 gmSet <- preprocessQuantile(MsetEx)
 gapres <- gaphunter(gmSet)
 }

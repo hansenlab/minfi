@@ -37,9 +37,7 @@ importFrom(nlme, lme, getVarCov)
 importFrom(MASS, huber)
 importFrom(quadprog, solve.QP)
 importFrom(GEOquery,getGEO)
-importFrom(doRNG, "%dorng%")
-importFrom(foreach, "%dopar%", foreach, getDoParName, getDoParRegistered,
-getDoParWorkers, registerDoSEQ, getDoParVersion)
+importFrom(matrixStats,rowDiffs)
 
 export(getManifest, getProbeInfo, getManifestInfo,
        IlluminaMethylationManifest, IlluminaMethylationAnnotation,
