@@ -1,15 +1,18 @@
-gaphunter<-function(object,Beta=NULL,threshold=0.05,keepoutliers=FALSE,outcutoff=0.01,verbose=TRUE){
-if (is.null(Beta)&is.null(object))
-	stop("[gaphunter] At least one of 'object' or 'Beta' must be supplied.")
+gaphunter<-function(object,threshold=0.05,keepoutliers=FALSE,outcutoff=0.01,verbose=TRUE){
 if ((threshold <= 0)|(threshold >= 1))
 	stop("[gaphunter] 'threshold' must be between 0 and 1.") 
 if ((outcutoff <= 0)|(outcutoff >= 0.5))
 	stop("[gaphunter] 'outcutoff' must be between 0 and 0.5.") 
-if (is.null(Beta)){
+if (is(object,"GenomicRatioSet")|is(object,"GenomicMethylSet")){
 	if(verbose)
-		message("[gaphunter] Calculating beta matrix.")
-		Beta<-getBeta(object)
-	}
+	message("[gaphunter] Calculating beta matrix.")
+	Beta<-getBeta(object)} else{
+		if(is(object,"matrix")){
+			test<-rowRanges(object)
+			if(sum(test[,1]<=0)==0 & sum(test[,2]>=1)==0){
+				Beta<-object} else{stop("[gaphunter] Matrix must be of Beta values with range from 0 to 1")}
+		} else{stop("[gaphunter] Object must be one of GenomicRatioSet, GenomicMethylSet, or matrix")}}
+		
 if (verbose){
 	message("[gaphunter] Using ",prettyNum(nrow(Beta),big.mark=",",scientific=FALSE)," probes and ",prettyNum(ncol(Beta),big.mark=",",scientific=FALSE)," samples.")
 	message("[gaphunter] Searching for gap signals.")

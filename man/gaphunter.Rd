@@ -10,13 +10,13 @@
   in each group.
 }
 \usage{
-gaphunter(object,Beta=NULL,threshold=0.05,keepoutliers=FALSE,outcutoff=0.01,verbose=TRUE)
+gaphunter(object,threshold=0.05,keepoutliers=FALSE,outcutoff=0.01,verbose=TRUE)
 }
 
 \arguments{
-  \item{object}{An object of class GenomicRatioSet.}
-  \item{Beta}{Matrix of beta values. If NULL, a beta value is
-    calculated using code{\link{getBeta}}}
+  \item{object}{An object of class GenomicRatioSet, GenomicMethylSet, or matrix.
+	If one of the first two, code{\link{getBeta}} is used to calculate beta values. If a 
+	matrix, must be one of beta values.}
   \item{threshold}{The difference in consecutive, ordered beta values
     that defines the presence of a gap signal. Defaults to 5 percent.}
   \item{keepoutliers}{Should outlier-driven gap signals be kept in the
@@ -31,13 +31,15 @@ gaphunter(object,Beta=NULL,threshold=0.05,keepoutliers=FALSE,outcutoff=0.01,verb
 }
 \details{
   
-  There are two main ways to run the function. Either the \code{object} should
-  be supplied and the \code{Beta} matrix is calculated, or the \code{Beta}
-  can be supplied directly.
+  The function can calculate a beta matrix or utilize a user-supplied matrix of
+  beta values. 
 
   The function will idenfity probes with a gap in a beta signal greater than
   or equal to the defined \code{threshold}. This method provides an data-driven alternative
   to reference annotations in terms of accounting for polymorphism-affected probes.
+  
+  Outlier-driven gap signals are defined as those in which the sum of the smaller group(s) does
+  not exceed a certain percentage of the sample size, defined by the argument outcutoff. 
 }
 \value{
   A list with three values,
@@ -56,5 +58,5 @@ Shan Andrews \email{sandre17@jhu.edu}.
 \examples{
 require(minfiData)
 gmSet <- preprocessQuantile(MsetEx)
-gapres <- gaphunter(gmSet)
+gapres <- gaphunter(gmSet,threshold=0.1,keepoutliers=TRUE)
 }
