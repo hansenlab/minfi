@@ -34,6 +34,8 @@
     to summarize CN data when passed a GenomicRatioSet.
     \item estimateCellCounts now works on only 2 cell types.
     \item Various NAMESPACE fixes.
+    \item the gaphunter function by Shan Andrews has been added. We
+    welcome Shan as a contributing author.
   }
 }
 

@@ -10,13 +10,14 @@
   in each group.
 }
 \usage{
-gaphunter(object,threshold=0.05,keepOutliers=FALSE,outCutoff=0.01,verbose=TRUE)
+  gaphunter(object, threshold=0.05, keepOutliers=FALSE,
+            outCutoff=0.01, verbose=TRUE)
 }
 
 \arguments{
   \item{object}{An object of class (Genomic)RatioSet, (Genomic)MethylSet, or matrix.
-	If one of the first two, code{\link{getBeta}} is used to calculate beta values. If a 
-	matrix, must be one of beta values.}
+    If one of the first two, code{\link{getBeta}} is used to calculate beta values. If a 
+    matrix, must be one of beta values.}
   \item{threshold}{The difference in consecutive, ordered beta values
     that defines the presence of a gap signal. Defaults to 5 percent.}
   \item{keepOutliers}{Should outlier-driven gap signals be kept in the
@@ -25,9 +26,9 @@ gaphunter(object,threshold=0.05,keepOutliers=FALSE,outCutoff=0.01,verbose=TRUE)
     Defined as the percentage of the total sample size; the sum of
     samples in all groups except the largest must exceed this number of
     samples in order for the probe to still be considered a gap signal.
-	Defaults to 1 percent.}
+    Defaults to 1 percent.}
  \item{verbose}{logical value. If \code{TRUE}, it writes some messages
-    indicating progress. If \code{FALSE} nothing should be printed.}
+   indicating progress. If \code{FALSE} nothing should be printed.}
 }
 \details{
   
@@ -44,19 +45,20 @@ gaphunter(object,threshold=0.05,keepOutliers=FALSE,outCutoff=0.01,verbose=TRUE)
 \value{
   A list with three values,
   \item{proberesults}{A data frame listing, for each identified gap signal, the number
-	of groups and the size of each group.}
+    of groups and the size of each group.}
   \item{sampleresults}{a matrix of dimemsions probes (rows) by samples (columns). Individuals
-	are assigned numbers based onthe groups into which they cluster. Lower number groups
-	indicate lower mean methylation values for the group. For example, individuals coded as
-	\sQuote{1} will have a lower mean methylation value than those individuals coded as
-	\sQuote{2}.}
+    are assigned numbers based onthe groups into which they cluster. Lower number groups
+    indicate lower mean methylation values for the group. For example, individuals coded as
+    \sQuote{1} will have a lower mean methylation value than those individuals coded as
+    \sQuote{2}.}
   \item{algorithm}{A list detailing the arguments supplied to the function.}
 }
 \author{
-Shan Andrews \email{sandre17@jhu.edu}.
+  Shan Andrews \email{sandre17@jhu.edu}.
 }
 \examples{
-require(minfiData)
-gmSet <- preprocessQuantile(MsetEx)
-gapres <- gaphunter(gmSet,threshold=0.1,keepOutliers=TRUE)
+if(require(minfiData)) {
+  gmSet <- preprocessQuantile(MsetEx)
+  gapres <- gaphunter(gmSet, threshold=0.1, keepOutliers=TRUE)
+}
 }
