@@ -69,6 +69,7 @@ Collate:  generics.R
 	  read.manifest.R
 	  bumphunter.R
 	  estimateCellCounts.R
+	  gaphunter.R
 License: Artistic-2.0
 URL: https://github.com/kasperdanielhansen/minfi
 LazyData: yes
