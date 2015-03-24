@@ -10,18 +10,18 @@
   in each group.
 }
 \usage{
-gaphunter(object,threshold=0.05,keepoutliers=FALSE,outcutoff=0.01,verbose=TRUE)
+gaphunter(object,threshold=0.05,keepOutliers=FALSE,outCutoff=0.01,verbose=TRUE)
 }
 
 \arguments{
-  \item{object}{An object of class GenomicRatioSet, GenomicMethylSet, or matrix.
+  \item{object}{An object of class (Genomic)RatioSet, (Genomic)MethylSet, or matrix.
 	If one of the first two, code{\link{getBeta}} is used to calculate beta values. If a 
 	matrix, must be one of beta values.}
   \item{threshold}{The difference in consecutive, ordered beta values
     that defines the presence of a gap signal. Defaults to 5 percent.}
-  \item{keepoutliers}{Should outlier-driven gap signals be kept in the
+  \item{keepOutliers}{Should outlier-driven gap signals be kept in the
     results? Defaults to \code{FALSE}}
-  \item{outcutoff}{Value used to identify gap signals driven by outliers.
+  \item{outCutoff}{Value used to identify gap signals driven by outliers.
     Defined as the percentage of the total sample size; the sum of
     samples in all groups except the largest must exceed this number of
     samples in order for the probe to still be considered a gap signal.
@@ -38,8 +38,8 @@ gaphunter(object,threshold=0.05,keepoutliers=FALSE,outcutoff=0.01,verbose=TRUE)
   or equal to the defined \code{threshold}. This method provides an data-driven alternative
   to reference annotations in terms of accounting for polymorphism-affected probes.
   
-  Outlier-driven gap signals are defined as those in which the sum of the smaller group(s) does
-  not exceed a certain percentage of the sample size, defined by the argument outcutoff. 
+  Outlier-driven gap signals are those in which the sum of the smaller group(s) does
+  not exceed a certain percentage of the sample size, defined by the argument outCutoff. 
 }
 \value{
   A list with three values,
@@ -58,5 +58,5 @@ Shan Andrews \email{sandre17@jhu.edu}.
 \examples{
 require(minfiData)
 gmSet <- preprocessQuantile(MsetEx)
-gapres <- gaphunter(gmSet,threshold=0.1,keepoutliers=TRUE)
+gapres <- gaphunter(gmSet,threshold=0.1,keepOutliers=TRUE)
 }

@@ -1,18 +1,25 @@
-gaphunter<-function(object,threshold=0.05,keepoutliers=FALSE,outcutoff=0.01,verbose=TRUE){
-if ((threshold <= 0)|(threshold >= 1))
+gaphunter<-function(object,threshold=0.05,keepOutliers=FALSE,outCutoff=0.01,verbose=TRUE){
+if ((threshold <= 0)||(threshold >= 1))
 	stop("[gaphunter] 'threshold' must be between 0 and 1.") 
-if ((outcutoff <= 0)|(outcutoff >= 0.5))
-	stop("[gaphunter] 'outcutoff' must be between 0 and 0.5.") 
-if (is(object,"GenomicRatioSet")|is(object,"GenomicMethylSet")){
+if ((outCutoff <= 0)||(outCutoff >= 0.5))
+	stop("[gaphunter] 'outCutoff' must be between 0 and 0.5.") 
+if (is(object,"GenomicRatioSet")||is(object,"GenomicMethylSet")||is(object,"MethylSet")||is(object,"RatioSet")){
 	if(verbose)
 	message("[gaphunter] Calculating beta matrix.")
 	Beta<-getBeta(object)} else{
 		if(is(object,"matrix")){
 			test<-rowRanges(object)
-			if(sum(test[,1]<=0)==0 & sum(test[,2]>=1)==0){
+			if(sum(test[,1]<0,na.rm=TRUE)==0 && sum(test[,2]>1,na.rm=TRUE)==0){
 				Beta<-object} else{stop("[gaphunter] Matrix must be of Beta values with range from 0 to 1")}
-		} else{stop("[gaphunter] Object must be one of GenomicRatioSet, GenomicMethylSet, or matrix")}}
-		
+		} else{stop("[gaphunter] Object must be one of (Genomic)RatioSet, (Genomic)MethylSet, or matrix")}}
+
+nacheck<-rowSums(is.na(Beta))
+if (sum(nacheck>0)>0){
+	if(verbose)
+	message("[gaphunter] Removing probes containing missing beta values.")
+	Beta<-Beta[which(nacheck==0),]
+}
+
 if (verbose){
 	message("[gaphunter] Using ",prettyNum(nrow(Beta),big.mark=",",scientific=FALSE)," probes and ",prettyNum(ncol(Beta),big.mark=",",scientific=FALSE)," samples.")
 	message("[gaphunter] Searching for gap signals.")
@@ -54,7 +61,7 @@ rownames(groupanno)<-rownames(sortedbeta)
 if(verbose)
 message("[gaphunter] Found ",prettyNum(nrow(gapanno),big.mark=",",scientific=FALSE)," gap signals.")
 
-if (keepoutliers==FALSE){
+if (keepOutliers==FALSE){
 	if (verbose)
 	message("[gaphunter] Filtering out gap signals driven by outliers.")
 		markme<-unlist(lapply(1:nrow(gapanno),function(blah){
@@ -62,7 +69,7 @@ if (keepoutliers==FALSE){
 		analyze<-gapanno[blah,(2:(1+numgroup))]
 		maxgroup<-which(analyze==max(analyze))
 		if (length(maxgroup)==1){	
-			if(sum(analyze[-maxgroup])<outcutoff*ncol(Beta))			
+			if(sum(analyze[-maxgroup])<outCutoff*ncol(Beta))			
 			{return(blah)}
 		}}))
 	if (length(markme)>0){
@@ -80,7 +87,7 @@ for (i in 1:(ncol(gapanno)-1)){
 }
 colnames(gapanno)<-c("Groups",labs)
 
-algorithm<-list("threshold"=threshold,"outcutoff"=outcutoff,"keepoutliers"=keepoutliers)
+algorithm<-list("threshold"=threshold,"outCutoff"=outCutoff,"keepOutliers"=keepOutliers)
 
 return(list("proberesults"=gapanno,"sampleresults"=groupanno,"algorithm"=algorithm))
 }
