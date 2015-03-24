@@ -37,6 +37,7 @@ importFrom(nlme, lme, getVarCov)
 importFrom(MASS, huber)
 importFrom(quadprog, solve.QP)
 importFrom(GEOquery,getGEO)
+importFrom(matrixStats,rowDiffs)
 
 export(getManifest, getProbeInfo, getManifestInfo,
        IlluminaMethylationManifest, IlluminaMethylationAnnotation,
@@ -64,7 +65,7 @@ export(getManifest, getProbeInfo, getManifestInfo,
        getQC, plotQC, addQC, minfiQC, fixMethOutliers,
        getSex, plotSex, addSex, bumphunter,
        blockFinder, cpgCollapse,
-       estimateCellCounts)
+       estimateCellCounts,gaphunter)
 
 exportClasses(RGChannelSet, RGChannelSetExtended,
               MethylSet, RatioSet,
