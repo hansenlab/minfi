@@ -92,10 +92,9 @@ gaphunter <- function(object, threshold = 0.05, keepOutliers = FALSE,
     }	
     gapanno <- data.frame(gapanno)
     
-    labs <- c()
-    for (i in 1:(ncol(gapanno)-1)) {
-	temp <- paste("Group",i,sep = "")
-	labs <- c(labs,temp)
+    labs <- rep(0,(ncol(gapanno)-1))
+	for (i in 1:(ncol(gapanno)-1)){
+	labs[i] <- paste("Group",i,sep = "")
     }
     colnames(gapanno) <- c("Groups", labs)
 
