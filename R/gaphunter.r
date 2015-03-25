@@ -92,11 +92,7 @@ gaphunter <- function(object, threshold = 0.05, keepOutliers = FALSE,
     }	
     gapanno <- data.frame(gapanno)
     
-    labs <- rep(0,(ncol(gapanno)-1))
-	for (i in 1:(ncol(gapanno)-1)){
-	labs[i] <- paste("Group",i,sep = "")
-    }
-    colnames(gapanno) <- c("Groups", labs)
+	colnames(gapanno) <- c("Groups", paste0("Group",1:(ncol(gapanno)-1)))
 
     algorithm <- list("threshold" = threshold, "outCutoff" = outCutoff, "keepOutliers" = keepOutliers)
     
