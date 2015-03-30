@@ -73,11 +73,10 @@ gaphunter <- function(object, threshold = 0.05, keepOutliers = FALSE,
 	if (verbose)
             message("[gaphunter] Filtering out gap signals driven by outliers.")
         markme <- unlist(lapply(1:nrow(gapanno), function(blah) {
-            numgroup <- gapanno[blah, 1]
-            analyze <- gapanno[blah, (2:(1+numgroup))]
-            maxgroup <- which(analyze == max(analyze))
+            analyze <- gapanno[blah, -1]
+            maxgroup <- which(analyze == max(analyze,na.rm=TRUE))
             if (length(maxgroup) == 1) {	
-                if(sum(analyze[-maxgroup]) < outCutoff*ncol(Beta)) {
+                if(sum(analyze[-maxgroup],na.rm=TRUE) < outCutoff*ncol(Beta)) {
                     return(blah)
                 }
             }
