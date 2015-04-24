@@ -326,7 +326,7 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
     meanFunction <- rowMeans(quantiles)
     res <- quantiles - meanFunction
     controlPCs <- prcomp(controlMatrix)$x[,1:nPCs,drop=FALSE]
-    design <- model.matrix(~controlPCs - 1)
+    design <- model.matrix(~controlPCs)
     fits <- lm.fit(x = design, y = t(res))
     newQuantiles <- meanFunction + t(fits$residuals)
     return(newQuantiles)
