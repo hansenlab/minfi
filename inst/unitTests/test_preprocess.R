@@ -36,9 +36,32 @@ test_preprocessQuantile <- function() {
     stopifnot(require(minfiData))
     stopifnot(require(digest))
     load(file.path(path.package("minfi"), "unitTests", "digest_preprocessQuantile.rda"))
-    GMset <- preprocessQuantile(MsetEx)
+    GRset <- preprocessQuantile(MsetEx)
     checkEquals(digest_preprocessQuantile$M,
-                minfi:::.digestMatrix(getM(GMset)))
+                minfi:::.digestMatrix(getM(GRset)))
     checkEquals(digest_preprocessQuantile$CN,
-                minfi:::.digestMatrix(getCN(GMset)))
+                minfi:::.digestMatrix(getCN(GRset)))
 }
+
+test_preprocessNoob <- function() {
+    stopifnot(require(minfiData))
+    stopifnot(require(digest))
+    load(file.path(path.package("minfi"), "unitTests", "digest_preprocessNoob.rda"))
+    Mset <- preprocessNoob(RGsetEx)
+    checkEquals(digest_preprocessNoob$Meth,
+                minfi:::.digestMatrix(getMeth(Mset)))
+    checkEquals(digest_preprocessNoob$Unmeth,
+                minfi:::.digestMatrix(getUnmeth(Mset)))
+}
+
+test_preprocessFunnorm <- function() {
+    stopifnot(require(minfiData))
+    stopifnot(require(digest))
+    load(file.path(path.package("minfi"), "unitTests", "digest_preprocessFunnorm.rda"))
+    GRset <- preprocessFunnorm(MsetEx)
+    checkEquals(digest_preprocessFunnorm$M,
+                minfi:::.digestMatrix(getM(GRset)))
+    checkEquals(digest_preprocessFunnorm$CN,
+                minfi:::.digestMatrix(getCN(GRset)))
+}
+
