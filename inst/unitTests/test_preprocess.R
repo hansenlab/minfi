@@ -58,7 +58,7 @@ test_preprocessFunnorm <- function() {
     stopifnot(require(minfiData))
     stopifnot(require(digest))
     load(file.path(path.package("minfi"), "unitTests", "digest_preprocessFunnorm.rda"))
-    GRset <- preprocessFunnorm(MsetEx)
+    GRset <- preprocessFunnorm(RGsetEx)
     checkEquals(digest_preprocessFunnorm$M,
                 minfi:::.digestMatrix(getM(GRset)))
     checkEquals(digest_preprocessFunnorm$CN,
