@@ -93,7 +93,7 @@ other attached packages:
  [2] minfiData_0.10.0                                  
  [3] IlluminaHumanMethylation450kanno.ilmn12.hg19_0.2.1
  [4] IlluminaHumanMethylation450kmanifest_0.4.0        
- [5] minfi_1.14.0                                      
+ [5] minfi_1.15.2                                      
  [6] bumphunter_1.8.0                                  
  [7] locfit_1.5-9.1                                    
  [8] iterators_1.0.7                                   
@@ -109,25 +109,28 @@ other attached packages:
 [18] BiocGenerics_0.14.0                               
 
 loaded via a namespace (and not attached):
- [1] genefilter_1.50.0       splines_3.2.0           beanplot_1.2           
- [4] rtracklayer_1.28.2      GenomicFeatures_1.20.1  XML_3.98-1.1           
- [7] survival_2.38-1         DBI_0.3.1               BiocParallel_1.2.1     
-[10] RColorBrewer_1.1-2      registry_0.2            rngtools_1.2.4         
-[13] lambda.r_1.1.7          doRNG_1.6               matrixStats_0.14.0     
-[16] plyr_1.8.2              pkgmaker_0.22           stringr_1.0.0          
-[19] zlibbioc_1.14.0         futile.logger_1.4.1     codetools_0.2-11       
-[22] biomaRt_2.24.0          AnnotationDbi_1.30.1    illuminaio_0.10.0      
-[25] preprocessCore_1.30.0   Rcpp_0.11.6             xtable_1.7-4           
-[28] limma_3.24.3            base64_1.1              annotate_1.46.0        
-[31] Rsamtools_1.20.1        stringi_0.4-1           nor1mix_1.2-0          
-[34] grid_3.2.0              quadprog_1.5-5          GEOquery_2.34.0        
-[37] tools_3.2.0             bitops_1.0-6            magrittr_1.5           
-[40] siggenes_1.42.0         RCurl_1.95-4.6          RSQLite_1.0.0          
-[43] futile.options_1.0.0    MASS_7.3-40             reshape_0.8.5          
-[46] mclust_5.0.1            GenomicAlignments_1.4.1 multtest_2.24.0        
-[49] nlme_3.1-120           
+ [1] mclust_5.0.1            rgl_0.95.1247           base64_1.1             
+ [4] Rcpp_0.11.6             Rsamtools_1.20.1        plyr_1.8.2             
+ [7] futile.options_1.0.0    RSQLite_1.0.0           zlibbioc_1.14.0        
+[10] GenomicFeatures_1.20.1  annotate_1.46.0         preprocessCore_1.30.0  
+[13] splines_3.2.0           BiocParallel_1.2.1      stringr_1.0.0          
+[16] igraph_0.7.1            pheatmap_1.0.2          RCurl_1.95-4.6         
+[19] biomaRt_2.24.0          munsell_0.4.2           RGCCA_2.0              
+[22] rtracklayer_1.28.2      multtest_2.24.0         pkgmaker_0.22          
+[25] GEOquery_2.34.0         quadprog_1.5-5          codetools_0.2-11       
+[28] matrixStats_0.14.0      XML_3.98-1.1            reshape_0.8.5          
+[31] GenomicAlignments_1.4.1 MASS_7.3-40             bitops_1.0-6           
+[34] grid_3.2.0              nlme_3.1-120            xtable_1.7-4           
+[37] gtable_0.1.2            registry_0.2            DBI_0.3.1              
+[40] magrittr_1.5            scales_0.2.4            stringi_0.4-1          
+[43] genefilter_1.50.0       doRNG_1.6               limma_3.24.3           
+[46] futile.logger_1.4.1     nor1mix_1.2-0           lambda.r_1.1.7         
+[49] RColorBrewer_1.1-2      mixOmics_5.0-4          siggenes_1.42.0        
+[52] tools_3.2.0             illuminaio_0.10.0       rngtools_1.2.4         
+[55] survival_2.38-1         colorspace_1.2-6        AnnotationDbi_1.30.1   
+[58] beanplot_1.2           
 > rm(list = ls())
 > 
 > proc.time()
    user  system elapsed 
- 34.202   2.680  38.587 
+ 32.604   2.288  35.294 
