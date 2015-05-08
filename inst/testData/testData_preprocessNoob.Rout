@@ -1,0 +1,134 @@
+
+R version 3.2.0 Patched (2015-04-29 r68279) -- "Full of Ingredients"
+Copyright (C) 2015 The R Foundation for Statistical Computing
+Platform: x86_64-apple-darwin14.3.0 (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> library(minfiData)
+Loading required package: minfi
+Loading required package: BiocGenerics
+Loading required package: parallel
+
+Attaching package: ‘BiocGenerics’
+
+The following objects are masked from ‘package:parallel’:
+
+    clusterApply, clusterApplyLB, clusterCall, clusterEvalQ,
+    clusterExport, clusterMap, parApply, parCapply, parLapply,
+    parLapplyLB, parRapply, parSapply, parSapplyLB
+
+The following object is masked from ‘package:stats’:
+
+    xtabs
+
+The following objects are masked from ‘package:base’:
+
+    anyDuplicated, append, as.data.frame, as.vector, cbind, colnames,
+    do.call, duplicated, eval, evalq, Filter, Find, get, intersect,
+    is.unsorted, lapply, Map, mapply, match, mget, order, paste, pmax,
+    pmax.int, pmin, pmin.int, Position, rank, rbind, Reduce, rep.int,
+    rownames, sapply, setdiff, sort, table, tapply, union, unique,
+    unlist, unsplit
+
+Loading required package: Biobase
+Welcome to Bioconductor
+
+    Vignettes contain introductory material; view with
+    'browseVignettes()'. To cite Bioconductor, see
+    'citation("Biobase")', and for packages 'citation("pkgname")'.
+
+Loading required package: lattice
+Loading required package: GenomicRanges
+Loading required package: S4Vectors
+Loading required package: stats4
+Loading required package: IRanges
+Loading required package: GenomeInfoDb
+Loading required package: Biostrings
+Loading required package: XVector
+Loading required package: bumphunter
+Loading required package: foreach
+Loading required package: iterators
+Loading required package: locfit
+locfit 1.5-9.1 	 2013-03-22
+Setting options('download.file.method.GEOquery'='auto')
+Loading required package: IlluminaHumanMethylation450kmanifest
+Loading required package: IlluminaHumanMethylation450kanno.ilmn12.hg19
+> library(digest)
+> 
+> Mset.noob <- preprocessNoob(RGsetEx)
+[preprocessNoob] Using sample number 2 as reference level...
+> digest_preprocessNoob <- list(Meth = minfi:::.digestMatrix(getMeth(Mset.noob)),
++                               Unmeth = minfi:::.digestMatrix(getUnmeth(Mset.noob)))
+> save(digest_preprocessNoob, file = "../unitTests/digest_preprocessNoob.rda")
+> 
+> sessionInfo()                         
+R version 3.2.0 Patched (2015-04-29 r68279)
+Platform: x86_64-apple-darwin14.3.0 (64-bit)
+Running under: OS X 10.10.3 (Yosemite)
+
+locale:
+[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+
+attached base packages:
+[1] stats4    parallel  stats     graphics  grDevices utils     datasets 
+[8] methods   base     
+
+other attached packages:
+ [1] digest_0.6.8                                      
+ [2] minfiData_0.10.0                                  
+ [3] IlluminaHumanMethylation450kanno.ilmn12.hg19_0.2.1
+ [4] IlluminaHumanMethylation450kmanifest_0.4.0        
+ [5] minfi_1.15.2                                      
+ [6] bumphunter_1.8.0                                  
+ [7] locfit_1.5-9.1                                    
+ [8] iterators_1.0.7                                   
+ [9] foreach_1.4.2                                     
+[10] Biostrings_2.36.1                                 
+[11] XVector_0.8.0                                     
+[12] GenomicRanges_1.20.3                              
+[13] GenomeInfoDb_1.4.0                                
+[14] IRanges_2.2.1                                     
+[15] S4Vectors_0.6.0                                   
+[16] lattice_0.20-31                                   
+[17] Biobase_2.28.0                                    
+[18] BiocGenerics_0.14.0                               
+
+loaded via a namespace (and not attached):
+ [1] mclust_5.0.1            rgl_0.95.1247           base64_1.1             
+ [4] Rcpp_0.11.6             Rsamtools_1.20.1        plyr_1.8.2             
+ [7] futile.options_1.0.0    RSQLite_1.0.0           zlibbioc_1.14.0        
+[10] GenomicFeatures_1.20.1  annotate_1.46.0         preprocessCore_1.30.0  
+[13] splines_3.2.0           BiocParallel_1.2.1      stringr_1.0.0          
+[16] igraph_0.7.1            pheatmap_1.0.2          RCurl_1.95-4.6         
+[19] biomaRt_2.24.0          munsell_0.4.2           RGCCA_2.0              
+[22] rtracklayer_1.28.2      multtest_2.24.0         pkgmaker_0.22          
+[25] GEOquery_2.34.0         quadprog_1.5-5          codetools_0.2-11       
+[28] matrixStats_0.14.0      XML_3.98-1.1            reshape_0.8.5          
+[31] GenomicAlignments_1.4.1 MASS_7.3-40             bitops_1.0-6           
+[34] grid_3.2.0              nlme_3.1-120            xtable_1.7-4           
+[37] gtable_0.1.2            registry_0.2            DBI_0.3.1              
+[40] magrittr_1.5            scales_0.2.4            stringi_0.4-1          
+[43] genefilter_1.50.0       doRNG_1.6               limma_3.24.3           
+[46] futile.logger_1.4.1     nor1mix_1.2-0           lambda.r_1.1.7         
+[49] RColorBrewer_1.1-2      mixOmics_5.0-4          siggenes_1.42.0        
+[52] tools_3.2.0             illuminaio_0.10.0       rngtools_1.2.4         
+[55] survival_2.38-1         colorspace_1.2-6        AnnotationDbi_1.30.1   
+[58] beanplot_1.2           
+> rm(list = ls())
+> 
+> proc.time()
+   user  system elapsed 
+ 38.323   2.849  41.538 

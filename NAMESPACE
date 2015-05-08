@@ -38,6 +38,7 @@ importFrom(MASS, huber)
 importFrom(quadprog, solve.QP)
 importFrom(GEOquery,getGEO)
 importFrom(matrixStats,rowDiffs)
+importFrom(mixOmics, nipals)
 
 export(getManifest, getProbeInfo, getManifestInfo,
        IlluminaMethylationManifest, IlluminaMethylationAnnotation,
