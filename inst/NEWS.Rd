@@ -2,6 +2,14 @@
 \title{Minfi News}
 \encoding{UTF-8}
 
+\section{Version 1.15}{
+  \itemize{
+    \item Adding testing for preprocessNoob, preprocessFunnorm.
+    \item Fxing some verbose output of preprocessNoob.
+    \item Adding non-exported function .digestVector for testing.
+  }
+}
+
 \section{Version 1.13}{
   \itemize{
     \item read.450k.exp has support for argument base when targets is
