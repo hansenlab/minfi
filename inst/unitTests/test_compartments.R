@@ -7,6 +7,6 @@ test_compartments <- function() {
                 minfi:::.digestMatrix(gr.cor$cor.matrix))
     gr.ab <- minfi:::extractAB(gr.cor)
     checkEquals(digest_compartments$pc,
-                minfi:::.digestMatrix(gr.ab$pc))
+                minfi:::.digestVector(gr.ab$pc))
 }
 
