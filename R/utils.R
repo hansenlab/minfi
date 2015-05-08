@@ -98,6 +98,13 @@ ilogit2 <- function(x) { 2^(x) / (1+2^(x)) }
     digest::digest(c(content, rownames(mat), colnames(mat)))
 }
 
+.digestVector <- function(vec) {
+    content <- sprintf("%.6f", vec)
+    ## Handling signed zero as per IEEE specs
+    content[content == "-0.000000"] <- "0.000000"
+    digest::digest(vec)
+}
+ 
 .isGenomic <- function(object) {
     if(!is(object, "GenomicMethylSet") && !is(object, "GenomicRatioSet"))
         stop(sprintf("object is of class '%s', but needs to be of class 'GenomicMethylSet' or 'GenomicRatioSet'",
