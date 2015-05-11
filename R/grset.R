@@ -1,7 +1,7 @@
 setClass("GenomicRatioSet",
          representation(preprocessMethod = "character",
                         annotation = "character"),
-         contains = "SummarizedExperiment")
+         contains = "RangedSummarizedExperiment")
 
 setValidity("GenomicRatioSet", function(object) {
     msg <- validMsg(NULL, NULL)
@@ -27,9 +27,9 @@ GenomicRatioSet <- function(gr = GRanges(), Beta = NULL, M = NULL, CN = NULL,
     assays <- SimpleList(Beta = Beta, M = M, CN = CN)
     assays <- GenomicRanges:::.ShallowSimpleListAssays(data = assays[!sapply(assays, is.null)])
     colData <- as(pData, "DataFrame")
-    rowData <- as(gr, "GRanges")
+    rowRanges <- as(gr, "GRanges")
     new("GenomicRatioSet", assays = assays, colData = colData,
-        rowData = rowData, annotation = annotation, preprocessMethod = preprocessMethod)
+        rowRanges = rowRanges, annotation = annotation, preprocessMethod = preprocessMethod)
 }
 
 setMethod("show", signature(object = "GenomicRatioSet"),
@@ -75,7 +75,7 @@ setMethod("pData", signature("GenomicRatioSet"),
 
 setReplaceMethod("pData", c("GenomicRatioSet", "DataFrame"), function(object, value) {
     object <- GenomicRanges:::clone(object, colData=value)
-    msg <- GenomicRanges:::.valid.SummarizedExperiment.colData_dims(object)
+    msg <- SummarizedExperiment:::.valid.SummarizedExperiment.colData_dims(object)
     if (!is.null(msg))
         stop(msg)
     object
