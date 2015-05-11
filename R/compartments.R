@@ -15,7 +15,6 @@
 
 
 
-# 2 main functions:
 createCorMatrix <- function(object, resolution = 100*1000, what = "OpenSea",
                              chr = "chr22", method = c("pearson", "spearman")) {
     require(IlluminaHumanMethylation450kanno.ilmn12.hg19)
@@ -153,7 +152,7 @@ createCorMatrix <- function(object, resolution = 100*1000, what = "OpenSea",
 extractAB <- function(gr){
     require(mixOmics)
     if (! (is(gr, "GRanges") && "cor.matrix" %in% names(mcols(gr)))) {
-        stop("'gr' must be an object created by createCorrMatrix")
+        stop("'gr' must be an object created by createCorMatrix")
     }
     
     pc <- .getFirstPC(gr$cor.matrix)
