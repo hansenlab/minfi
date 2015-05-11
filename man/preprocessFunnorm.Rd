@@ -56,7 +56,7 @@ differences.
   Greenwood and K Hansen.  
   \emph{Functional normalization of 450k methylation array data improves
     replication in large cancer studies}.
-  (2014) Genome Biology doi: 10.1186/s13059-014-0503-2.
+  (2014) Genome Biology, 15(12):503. doi: 10.1186/s13059-014-0503-2.
 }
 
 \author{
