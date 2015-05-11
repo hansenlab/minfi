@@ -79,7 +79,7 @@ arguments outlined above.
 
 \section{Accessors}{
   A number of useful accessors are inherited from
-  \code{SummarizedExperiment}.
+  \code{RangedSummarizedExperiment}.
   
   In the following code, \code{object} is a \code{GenomicMethylSet}.
   
@@ -112,7 +112,8 @@ arguments outlined above.
 \author{Kasper Daniel Hansen \email{khansen@jhsph.edu}}
 
 \seealso{
-  \code{\link{SummarizedExperiment}} for the basic class structure.
+  \code{\link[SummarizedExperiment]{RangedSummarizedExperiment}} in the
+  \pkg{SummarizedExperiment} package for the basic class structure.
   Objects of this class are typically created by using the function
   \code{\link{mapToGenome}} on a \code{\link{MethylSet}}.}
 
