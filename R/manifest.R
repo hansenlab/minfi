@@ -140,7 +140,7 @@ getControlTypes <- function(object) {
 getProbePositionsDetailed <- function(map) {
     ## map is GR with metadata columns strand and type
     stopifnot(is(map, "GRanges"))
-    stopifnot(c("Strand", "Type") %in% names(elementMetadata(map)))
+    stopifnot(c("Strand", "Type") %in% names(mcols(map)))
 
     probeStart <- rep(NA, length(map))
     wh.II.F <- which(map$Type=="II" & map$Strand=="+")

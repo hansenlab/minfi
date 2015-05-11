@@ -13,6 +13,7 @@ importMethodsFrom(Biobase, channel,
 import(Biostrings)
 importMethodsFrom(GenomeInfoDb, seqlevels, "seqlevels<-", genome, "genome<-")
 import(GenomicRanges)
+import(SummarizedExperiment)
 import(S4Vectors)
 import(IRanges)
 importFrom(Biobase, assayDataElementNames, assayDataElementReplace,

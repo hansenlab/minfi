@@ -100,7 +100,7 @@ getIslandStatus(object, islandAnno = NULL)
   
   For \code{getSnpInfo}, a \code{DataFrame} with the requested
   information.  For \code{addSnpInfo}, an object of the same class as
-  \code{object} but with the SNP information added to the elementMetadata
+  \code{object} but with the SNP information added to the metadata columns
   of the granges of the object.
 
   For \code{dropLociWithSnps} an object of the same kind as the input,

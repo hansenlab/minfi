@@ -161,7 +161,7 @@ getLocations <- function(object, mergeManifest = FALSE,
     if(mergeManifest) {
         if("strand" %in% names(locs))
             names(locs)[names(locs) == "strand"] <- "assayStrand"
-        elementMetadata(gr) <- locs[, ! names(locs) %in% c("chr", "pos", "strand")]
+        mcols(gr) <- locs[, ! names(locs) %in% c("chr", "pos", "strand")]
     }
     genome(gr) <- unname(getAnnotationObject(object)@annotation["genomeBuild"])
     gr
@@ -217,17 +217,17 @@ getSnpInfo <- function(object, snpAnno = NULL) {
 addSnpInfo <- function(object, snpAnno = NULL) {
     .isGenomic(object)
     snps <- getSnpInfo(object = object, snpAnno = snpAnno)
-    elmNames <- names(elementMetadata(granges(object)))
-    if(any(elmNames %in% names(snps)))
+    mcolsNames <- names(mcols(granges(object)))
+    if(any(mcolsNames %in% names(snps)))
         cat("Replacing existing snp information\n")
-    elementMetadata(object@rowData) <- cbind(elementMetadata(granges(object)), snps)
+    mcols(object@rowRanges) <- cbind(mcols(granges(object)), snps)
     object
 }
 
 .doSnpOverlap <- function(map, grSnp) {
     stopifnot(is(map, "GRanges"))
     stopifnot(is(grSnp, "GRanges"))
-    stopifnot(all(c("SBE", "probeStart", "probeEnd") %in% names(elementMetadata(map))))
+    stopifnot(all(c("SBE", "probeStart", "probeEnd") %in% names(mcols(map))))
     cat("removing Snps with width != 1\n")
     grSnp <- grSnp[width(grSnp) == 1]
     cpgGR <- GRanges(seqnames(map), IRanges(start(map), width=2))
