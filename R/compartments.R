@@ -19,7 +19,7 @@
 createCorMatrix <- function(object, resolution = 100*1000, what = "OpenSea",
                              chr = "chr22", method = c("pearson", "spearman")) {
     require(IlluminaHumanMethylation450kanno.ilmn12.hg19)
-    minfi:::.isMethyl(object)
+    minfi:::.isMethylOrRatio(object)
     method <- match.arg(method)
 
     matrix <- getM(object)
