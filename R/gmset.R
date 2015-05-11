@@ -1,6 +1,6 @@
 setClass("GenomicMethylSet",
          representation(preprocessMethod = "character", annotation = "character"),
-         contains = "SummarizedExperiment")
+         contains = "RangedSummarizedExperiment")
 
 setValidity("GenomicMethylSet", function(object) {
     msg <- validMsg(NULL, .checkAssayNames(object, c("Meth", "Unmeth")))
@@ -14,9 +14,9 @@ GenomicMethylSet <- function(gr = GRanges(), Meth = new("matrix"), Unmeth = new(
     assays <- SimpleList(Meth = Meth, Unmeth = Unmeth)
     assays <- GenomicRanges:::.ShallowSimpleListAssays(data = assays)
     colData <- as(pData, "DataFrame")
-    rowData <- as(gr, "GRanges")
+    rowRanges <- as(gr, "GRanges")
     new("GenomicMethylSet", assays = assays, colData = colData,
-        rowData = rowData, annotation = annotation, preprocessMethod = preprocessMethod)
+        rowRanges = rowRanges, annotation = annotation, preprocessMethod = preprocessMethod)
 }
 
 setMethod("show", signature(object = "GenomicMethylSet"),
@@ -82,7 +82,7 @@ setMethod("pData", signature("GenomicMethylSet"),
 setReplaceMethod("pData", signature(object = "GenomicMethylSet", value = "DataFrame"),
                  function(object, value) {
                      object <- GenomicRanges:::clone(object, colData=value)
-                     msg <- GenomicRanges:::.valid.SummarizedExperiment.colData_dims(object)
+                     msg <- SummarizedExperiment:::.valid.SummarizedExperiment.colData_dims(object)
                      if (!is.null(msg))
                          stop(msg)
                      object
