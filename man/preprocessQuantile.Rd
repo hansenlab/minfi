@@ -88,7 +88,9 @@ normalization for accurate DNA methylation estimation. Epigenomics 4,
   }
 
 \examples{
+\dontrun{
 if(require(minfiData)) {
   GMset <- preprocessQuantile(RGsetEx)
+}
 }
 }

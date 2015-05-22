@@ -35,7 +35,9 @@ preprocessNoob(rgSet, offset = 15, dyeCorr = TRUE, verbose = TRUE)
   \code{\link{preprocessRaw}} and \code{\link{preprocessQuantile}} are other preprocessing functions.
 }
 \examples{
+\dontrun{
 if (require(minfiData)) {
   GRset.noob <- preprocessNoob(RGsetEx)
+}
 }
 }
