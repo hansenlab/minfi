@@ -72,7 +72,9 @@ differences.
   \code{\link{preprocessNoob}}.
 }
 \examples{
+\dontrun{
 if (require(minfiData)) {
   GRset.funnorm <- preprocessFunnorm(RGsetEx)
+}
 }
 }
