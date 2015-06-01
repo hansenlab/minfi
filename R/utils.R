@@ -91,17 +91,19 @@ ilogit2 <- function(x) { 2^(x) / (1+2^(x)) }
         NULL
 }
 
-.digestMatrix <- function(mat) {
-    content <- sprintf("%.6f", mat)
+.digestMatrix <- function(mat, digits = 6) {
+    content <- sprintf(paste0("%.", digits, "f"), mat)
     ## Handling signed zero as per IEEE specs
-    content[content == "-0.000000"] <- "0.000000"
+    zero <- paste(c("0.", rep("0", digits)), collapse = "")
+    content[content == paste0("-", zero)] <- zero
     digest::digest(c(content, rownames(mat), colnames(mat)))
 }
 
-.digestVector <- function(vec) {
-    content <- sprintf("%.6f", vec)
+.digestVector <- function(vec, digits = 6) {
+    content <- sprintf(paste0("%.", digits, "f"), vec)
     ## Handling signed zero as per IEEE specs
-    content[content == "-0.000000"] <- "0.000000"
+    zero <- paste(c("0.", rep("0", digits)), collapse = "")
+    content[content == paste0("-", zero)] <- zero
     digest::digest(vec)
 }
  
