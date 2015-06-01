@@ -56,6 +56,7 @@ Loading required package: S4Vectors
 Loading required package: stats4
 Loading required package: IRanges
 Loading required package: GenomeInfoDb
+Loading required package: SummarizedExperiment
 Loading required package: Biostrings
 Loading required package: XVector
 Loading required package: bumphunter
@@ -70,11 +71,9 @@ Loading required package: IlluminaHumanMethylation450kanno.ilmn12.hg19
 > 
 > gr.cor <- minfi:::createCorMatrix(MsetEx, res=500*1000)
 > gr.ab <- minfi:::extractAB(gr.cor)
-Loading required package: mixOmics
-Loading required package: MASS
 > 
 > digest_compartments <- list(cor.matrix = minfi:::.digestMatrix(gr.cor$cor.matrix),
-+                            pc = minfi:::.digestVector(gr.ab$pc))
++                            pc = minfi:::.digestVector(gr.ab$pc, digits = 3))
 > save(digest_compartments, file = "../unitTests/digest_compartments.rda")
 > 
 > sessionInfo()                         
@@ -90,49 +89,49 @@ attached base packages:
 [8] methods   base     
 
 other attached packages:
- [1] mixOmics_5.0-4                                    
- [2] MASS_7.3-40                                       
- [3] digest_0.6.8                                      
- [4] minfiData_0.10.0                                  
- [5] IlluminaHumanMethylation450kanno.ilmn12.hg19_0.2.1
- [6] IlluminaHumanMethylation450kmanifest_0.4.0        
- [7] minfi_1.15.2                                      
- [8] bumphunter_1.8.0                                  
- [9] locfit_1.5-9.1                                    
-[10] iterators_1.0.7                                   
-[11] foreach_1.4.2                                     
-[12] Biostrings_2.36.1                                 
-[13] XVector_0.8.0                                     
-[14] GenomicRanges_1.20.3                              
-[15] GenomeInfoDb_1.4.0                                
-[16] IRanges_2.2.1                                     
-[17] S4Vectors_0.6.0                                   
-[18] lattice_0.20-31                                   
-[19] Biobase_2.28.0                                    
-[20] BiocGenerics_0.14.0                               
+ [1] digest_0.6.8                                      
+ [2] minfiData_0.11.0                                  
+ [3] IlluminaHumanMethylation450kanno.ilmn12.hg19_0.2.1
+ [4] IlluminaHumanMethylation450kmanifest_0.4.0        
+ [5] minfi_1.15.4                                      
+ [6] bumphunter_1.9.1                                  
+ [7] locfit_1.5-9.1                                    
+ [8] iterators_1.0.7                                   
+ [9] foreach_1.4.2                                     
+[10] Biostrings_2.37.2                                 
+[11] XVector_0.9.1                                     
+[12] SummarizedExperiment_0.1.5                        
+[13] GenomicRanges_1.21.12                             
+[14] GenomeInfoDb_1.5.6                                
+[15] IRanges_2.3.8                                     
+[16] S4Vectors_0.7.3                                   
+[17] lattice_0.20-31                                   
+[18] Biobase_2.29.1                                    
+[19] BiocGenerics_0.15.1                               
 
 loaded via a namespace (and not attached):
  [1] mclust_5.0.1            rgl_0.95.1247           base64_1.1             
- [4] Rcpp_0.11.6             Rsamtools_1.20.1        plyr_1.8.2             
- [7] futile.options_1.0.0    RSQLite_1.0.0           zlibbioc_1.14.0        
-[10] GenomicFeatures_1.20.1  annotate_1.46.0         preprocessCore_1.30.0  
-[13] splines_3.2.0           BiocParallel_1.2.1      stringr_1.0.0          
-[16] igraph_0.7.1            pheatmap_1.0.2          RCurl_1.95-4.6         
-[19] biomaRt_2.24.0          munsell_0.4.2           RGCCA_2.0              
-[22] rtracklayer_1.28.2      multtest_2.24.0         pkgmaker_0.22          
-[25] GEOquery_2.34.0         quadprog_1.5-5          codetools_0.2-11       
+ [4] Rcpp_0.11.6             Rsamtools_1.21.5        plyr_1.8.2             
+ [7] futile.options_1.0.0    RSQLite_1.0.0           zlibbioc_1.15.0        
+[10] GenomicFeatures_1.21.7  annotate_1.47.0         preprocessCore_1.31.0  
+[13] splines_3.2.0           BiocParallel_1.3.14     stringr_1.0.0          
+[16] munsell_0.4.2           igraph_0.7.1            pheatmap_1.0.2         
+[19] RCurl_1.95-4.6          biomaRt_2.25.1          RGCCA_2.0              
+[22] rtracklayer_1.29.6      multtest_2.25.1         pkgmaker_0.22          
+[25] GEOquery_2.35.4         quadprog_1.5-5          codetools_0.2-11       
 [28] matrixStats_0.14.0      XML_3.98-1.1            reshape_0.8.5          
-[31] GenomicAlignments_1.4.1 bitops_1.0-6            grid_3.2.0             
-[34] nlme_3.1-120            xtable_1.7-4            gtable_0.1.2           
-[37] registry_0.2            DBI_0.3.1               magrittr_1.5           
-[40] scales_0.2.4            stringi_0.4-1           genefilter_1.50.0      
-[43] doRNG_1.6               limma_3.24.3            futile.logger_1.4.1    
-[46] nor1mix_1.2-0           lambda.r_1.1.7          RColorBrewer_1.1-2     
-[49] siggenes_1.42.0         tools_3.2.0             illuminaio_0.10.0      
-[52] rngtools_1.2.4          survival_2.38-1         colorspace_1.2-6       
-[55] AnnotationDbi_1.30.1    beanplot_1.2           
+[31] GenomicAlignments_1.5.9 MASS_7.3-40             bitops_1.0-6           
+[34] grid_3.2.0              nlme_3.1-120            xtable_1.7-4           
+[37] gtable_0.1.2            registry_0.2            DBI_0.3.1              
+[40] magrittr_1.5            scales_0.2.4            stringi_0.4-1          
+[43] genefilter_1.51.0       doRNG_1.6               limma_3.25.5           
+[46] futile.logger_1.4.1     nor1mix_1.2-0           lambda.r_1.1.7         
+[49] RColorBrewer_1.1-2      mixOmics_5.0-4          siggenes_1.43.0        
+[52] tools_3.2.0             illuminaio_0.11.0       rngtools_1.2.4         
+[55] survival_2.38-1         colorspace_1.2-6        AnnotationDbi_1.31.9   
+[58] beanplot_1.2           
 > rm(list = ls())
 > 
 > proc.time()
    user  system elapsed 
- 24.315   2.338  28.395 
+ 26.489   2.630  31.588 
