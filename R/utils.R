@@ -104,7 +104,7 @@ ilogit2 <- function(x) { 2^(x) / (1+2^(x)) }
     ## Handling signed zero as per IEEE specs
     zero <- paste(c("0.", rep("0", digits)), collapse = "")
     content[content == paste0("-", zero)] <- zero
-    digest::digest(vec)
+    digest::digest(content)
 }
  
 .isGenomic <- function(object) {
