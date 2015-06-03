@@ -34,22 +34,17 @@ createCorMatrix <- function(object, resolution = 100*1000, what = "OpenSea",
     .isGenomic(object)
     method <- match.arg(method)
 
-    ## According to our documentation, this happens on the entire data matrix.
-    matrix <- getM(object)
-    matrix <- .imputeMatrix(matrix)
-    matrix <- .removeSnps(matrix)
-
-    ## Subsetting chromosome:
-    gr <- granges(object)
-    gr <- gr[getIslandStatus(object) %in% what]
-    seqlevels(gr, force = TRUE) <- chr
-    keep <- names(gr)[names(gr) %in% rownames(matrix)]
-    matrix <- matrix[keep,]
-    gr <- gr[keep]
-
-    ann <- data.frame(chr=seqnames(gr), pos=start(gr))
-    rownames(ann) <- names(gr)
+    if(is(object, "GenomicMethylSet"))
+        object <- ratioConvert(object, what = "M", keepCN = FALSE)
+    assay(object, "M") <- .imputeMatrix(getM(object))
+    ## Next we subset to a chromosome, keep OpenSea probes and remove SNPs
+    seqlevels(object, force = TRUE) <- chr
+    object <- object[getIslandStatus(object) %in% what,]
+    object <- dropLociWithSnps(object, snps = c("CpG", "SBE"), maf = 0.01)
     
+    matrix <- getM(object)
+    ann <- data.frame(chr=seqnames(object), pos=start(object))
+    rownames(ann) <- rownames(matrix)
     unbinnedCor <- cor(t(matrix), method = method)
     gr.cor <- .returnBinnedMatrix(matrix=unbinnedCor, ann=ann, res=resolution)
     gr.cor <- .removeBadBins(gr.cor)
@@ -135,12 +130,12 @@ createCorMatrix <- function(object, resolution = 100*1000, what = "OpenSea",
     gr
 }
 
-.getIslandStatus <- function(probes) {
-    ## FIXME: hardcoding annotation; also this function more or less exisit in minfi
-    ann <- getAnnotation(IlluminaHumanMethylation450kanno.ilmn12.hg19)
-    ann <- ann[match(probes, rownames(ann)), ]
-    ann$Relation_to_Island
-}
+## .getIslandStatus <- function(probes) {
+##     ## FIXME: hardcoding annotation; also this function more or less exisit in minfi
+##     ann <- getAnnotation(IlluminaHumanMethylation450kanno.ilmn12.hg19)
+##     ann <- ann[match(probes, rownames(ann)), ]
+##     ann$Relation_to_Island
+## }
 
 
 .removeBadBins <- function(gr){
