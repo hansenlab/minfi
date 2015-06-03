@@ -1,58 +1,62 @@
-# Written by Jean-Philippe Fortin
+# AUthor: Jean-Philippe Fortin
 # May 6th 2015
 
 # Example
 
-## library(minfi)
 ## library(minfiData)
 ## library(lineprof)
+## GMset <- mapToGenome(MsetEx)
 ## prof1 <- lineprof({
-## con <- createCorMatrix(MsetEx, res=500*1000)
+## con <- createCorMatrix(GMset, res=500*1000)
 ## })
 ## prof2 <- lineprof({
 ## ab <- extractAB(con)
 ## })
+## prof3 <- lineprof({
+## a <- compartments(GMset, resolution=500*1000)
+## })
 
 
+
+compartments <- function(object, resolution = 100*1000, what="OpenSea",
+                         chr = "chr22", method = c("pearson", "spearman"),
+                         keep = TRUE){
+    method <- match.arg(method)
+    gr <- createCorMatrix(object = object, resolution = resolution,
+                           what = what, chr = chr, method = method)
+    gr <- extractAB(gr, keep = keep)
+    gr$compartment <- .extractOpenClosed(gr)
+    gr
+}
 
 createCorMatrix <- function(object, resolution = 100*1000, what = "OpenSea",
                              chr = "chr22", method = c("pearson", "spearman")) {
-    require(IlluminaHumanMethylation450kanno.ilmn12.hg19)
-    .isMethylOrRatio(object)
+    .isGenomic(object)
     method <- match.arg(method)
 
+    ## According to our documentation, this happens on the entire data matrix.
     matrix <- getM(object)
     matrix <- .imputeMatrix(matrix)
     matrix <- .removeSnps(matrix)
 
     ## Subsetting chromosome:
-    locations <- getLocations(object)
-    locations <- locations[seqnames(locations)==chr]
-    loci      <- intersect(names(locations), rownames(matrix))
-    matrix    <- matrix[loci,]
-    locations <- locations[loci]
+    gr <- granges(object)
+    gr <- gr[getIslandStatus(object) %in% what]
+    seqlevels(gr, force = TRUE) <- chr
+    keep <- names(gr)[names(gr) %in% rownames(matrix)]
+    matrix <- matrix[keep,]
+    gr <- gr[keep]
 
-    ann <- data.frame(chr=chr, pos=start(locations))
-    rownames(ann) <- names(locations)
+    ann <- data.frame(chr=seqnames(gr), pos=start(gr))
+    rownames(ann) <- names(gr)
     
-    ## Only keeping OpenSea probes:
-    if (!is.null(what)){
-        loci <- rownames(matrix)
-        island.status <- .getIslandStatus(loci)
-        island.status <- gsub("N_|S_","", island.status)
-        indices <- island.status %in% what
-        ann    <- ann[indices,]
-        matrix <- matrix[indices,]
-    }
-    corr <- cor(t(matrix), method = method)
-    bin.corr <- .returnBinnedMatrix(matrix=corr, ann=ann, res=resolution)
-    bin.corr <- .removeBadBins(bin.corr)
-    bin.corr
+    unbinnedCor <- cor(t(matrix), method = method)
+    gr.cor <- .returnBinnedMatrix(matrix=unbinnedCor, ann=ann, res=resolution)
+    gr.cor <- .removeBadBins(gr.cor)
+    gr.cor
 }
 
 .imputeMatrix <- function(matrix){
-    ## FIXME: JPF: do we use this function for 450k?
-    ## To take care of the infinite values:
     matrix[is.infinite(matrix) & matrix >0] <- max(matrix[is.finite(matrix)])
     matrix[is.infinite(matrix) & matrix <0] <- min(matrix[is.finite(matrix)])
     
@@ -149,7 +153,7 @@ createCorMatrix <- function(object, resolution = 100*1000, what = "OpenSea",
     return(gr)
 }
 
-extractAB <- function(gr){
+extractAB <- function(gr, keep = TRUE){
     if (! (is(gr, "GRanges") && "cor.matrix" %in% names(mcols(gr)))) {
         stop("'gr' must be an object created by createCorMatrix")
     }
@@ -162,9 +166,15 @@ extractAB <- function(gr){
         pc <- -pc
     }
     gr$pc <- pc
-    ## FIXME: should we keep it?
-    gr$cor.matrix <- NULL
+    if (!keep) {
+        gr$cor.matrix <- NULL
+    }
     return(gr)
+}
+
+.extractOpenClosed <- function(gr){
+    pc <- gr$pc
+    ifelse(pc < 0, "open", "closed")
 }
 
 .getFirstPC <- function(matrix, ncomp=1){
