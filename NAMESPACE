@@ -11,7 +11,8 @@ importMethodsFrom(Biobase, channel,
                   varMetadata, "varMetadata<-", "featureData<-",
                   AnnotatedDataFrame)
 import(Biostrings)
-importMethodsFrom(GenomeInfoDb, seqlevels, "seqlevels<-", genome, "genome<-")
+importMethodsFrom(GenomeInfoDb, seqlevels, "seqlevels<-", genome, "genome<-", seqlengths, "seqlengths<-")
+importClassesFrom(GenomeInfoDb, Seqinfo)
 import(GenomicRanges)
 import(SummarizedExperiment)
 import(S4Vectors)
@@ -67,7 +68,8 @@ export(getManifest, getProbeInfo, getManifestInfo,
        getQC, plotQC, addQC, minfiQC, fixMethOutliers,
        getSex, plotSex, addSex, bumphunter,
        blockFinder, cpgCollapse,
-       estimateCellCounts,gaphunter)
+       estimateCellCounts, gaphunter,
+       compartments, createCorMatrix, extractAB)
 
 exportClasses(RGChannelSet, RGChannelSetExtended,
               MethylSet, RatioSet,

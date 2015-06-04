@@ -139,7 +139,7 @@ extractAB <- function(gr, keep = TRUE){
     ifelse(pc < cutoff, "open", "closed")
 }
 
-.getFirstPC <- function(matrix){
+.getFirstPC <- function(matrix, ncomp = 1){
     ## Centering the matrix
     center <- rowMeans(matrix, na.rm = TRUE)
     matrix <- sweep(matrix, 1L, center, check.margin = FALSE)

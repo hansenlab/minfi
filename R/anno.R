@@ -1,7 +1,9 @@
 setClass("IlluminaMethylationAnnotation",
          representation(data = "environment",
                         annotation = "character",
-                        defaults = "character"))
+                        defaults = "character"
+                        seqinfo = "Seqinfo"
+                        ))
 
 setValidity("IlluminaMethylationAnnotation", function(object) {
     msg <- NULL
@@ -17,11 +19,16 @@ setMethod("show", "IlluminaMethylationAnnotation", function(object) {
     .show.availableAnnotation(object)
 })
 
-IlluminaMethylationAnnotation <- function(listOfObjects, annotation = "",
+setMethod("seqinfo", "IlluminaMethylationAnnotation", function(x) {
+    x@seqinfo
+})
+
+IlluminaMethylationAnnotation <- function(listOfObjects, annotation = "", seqinfo = NULL,
                                           defaults = "") {
     stopifnot(annotation != "")
     stopifnot(all(c("array", "annotation", "genomeBuild") %in% names(annotation)))
     stopifnot(all(c("Manifest", "Locations") %in% names(listOfObjects)))
+    stopifnot(!is.null(seqinfo))
     Manifest <- listOfObjects[["Manifest"]]
     stopifnot(setequal(names(Manifest),
                        c("Name", "AddressA", "AddressB", "ProbeSeqA",
@@ -45,7 +52,8 @@ IlluminaMethylationAnnotation <- function(listOfObjects, annotation = "",
     }
     lockEnvironment(data, bindings = TRUE)
     anno <- new("IlluminaMethylationAnnotation",
-                annotation = annotation, data = data, defaults = defaults)
+                annotation = annotation, data = data, defaults = defaults,
+                seqinfo = seqinfo)
     anno
 }
 
