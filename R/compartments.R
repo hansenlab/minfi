@@ -1,4 +1,4 @@
-# AUthor: Jean-Philippe Fortin
+# Author: Jean-Philippe Fortin
 # May 6th 2015
 
 # Example
@@ -41,12 +41,10 @@ createCorMatrix <- function(object, resolution = 100*1000, what = "OpenSea",
     seqlevels(object, force = TRUE) <- chr
     object <- object[getIslandStatus(object) %in% what,]
     object <- dropLociWithSnps(object, snps = c("CpG", "SBE"), maf = 0.01)
-    
-    matrix <- getM(object)
-    ann <- data.frame(chr=seqnames(object), pos=start(object))
-    rownames(ann) <- rownames(matrix)
-    unbinnedCor <- cor(t(matrix), method = method)
-    gr.cor <- .returnBinnedMatrix(matrix=unbinnedCor, ann=ann, res=resolution)
+
+    gr.unbinnedCor <- granges(object)
+    gr.unbinnedCor$cor.matrix <- cor(t(getM(object)), method = method)
+    gr.cor <- .returnBinnedMatrix(gr.unbinnedCor, resolution = resolution)
     gr.cor <- .removeBadBins(gr.cor)
     gr.cor
 }
@@ -66,24 +64,25 @@ createCorMatrix <- function(object, resolution = 100*1000, what = "OpenSea",
     matrix
 }
 
-.removeSnps <- function(matrix){
-    ## Hardcoding annotation ... also do we have existing functions for this?
-    ann <- getAnnotation(IlluminaHumanMethylation450kanno.ilmn12.hg19)
-    ann <- ann[match(rownames(matrix), rownames(ann)),]
-    snp.info <- ann[, c("CpG_maf","SBE_maf" )]
-    indices1 <- which(snp.info[,"CpG_maf"] >0.01)
-    indices2 <- which(snp.info[,"SBE_maf"] >0.01)
-    indices3 <- which(grepl("rs", rownames(matrix)))
-    snps <- union(indices1, indices2)
-    if (length(snps)>0){
-        matrix <- matrix[-snps,]
+.returnBinnedMatrix <- function(gr.unbinnedCor, resolution){
+    
+    bin2D <- function(matrix, ids, n){
+        unique.ids <- sort(unique(ids))
+        bin.matrix <- matrix(0,n,n)
+        m <- length(unique.ids)
+        for (i in 1:n){
+            for (j in 1:n){
+                ## We should be able to speed this one up a lot
+                indices1 <- which(ids==unique.ids[i])
+                indices2 <- which(ids==unique.ids[j])
+                bin.matrix[unique.ids[i],unique.ids[j]] <- median(matrix[indices1,indices2],na.rm=TRUE)
+            }
+        }
+        bin.matrix[is.na(bin.matrix)] <- 1 # Should not be necessary... 
+        return(bin.matrix)
     }
-    matrix
-}
 
-.returnBinnedMatrix <- function(matrix, ann, res){
-    ## for convenience.. (UCSC hg19)
-    ## FIMXE: this is ugly; can we do this other way?
+    ## FIXME
     chr.lengths <- structure(c(249250621L, 243199373L, 198022430L, 191154276L, 180915260L, 
                                171115067L, 159138663L, 146364022L, 141213431L, 135534747L, 135006516L, 
                                133851895L, 115169878L, 107349540L, 102531392L, 90354753L, 81195210L, 
@@ -93,54 +92,21 @@ createCorMatrix <- function(object, resolution = 100*1000, what = "OpenSea",
                              "chr6", "chr7", "chr8", "chr9", "chr10", "chr11", "chr12", "chr13", 
                              "chr14", "chr15", "chr16", "chr17", "chr18", "chr19", "chr20", 
                              "chr21", "chr22", "chrX", "chrY"))
-    
-    bin2D <- function(matrix,ids,n){
-        unique.ids <- sort(unique(ids))
-        new.matrix <- matrix(0,n,n)
-        m <- length(unique.ids)
-        for (i in 1:n){
-            for (j in 1:n){
-                ## We should be able to speed this one up a lot
-                indices1 <- which(ids==unique.ids[i])
-                indices2 <- which(ids==unique.ids[j])
-                new.matrix[unique.ids[i],unique.ids[j]] <- median(matrix[indices1,indices2],na.rm=TRUE)
-            }
-        }
-        new.matrix[is.na(new.matrix)] <- 1 # Should not be necessary... 
-        return(new.matrix)
-    }
-    
-    loci <- rownames(matrix)
-    ann <- ann[match(loci, rownames(ann)),] # Should be necessary
-    chr <- as.character(ann$chr[1])
-    chr.max <- chr.lengths[chr]
-    chr.min <- 0
-    start <- seq(chr.min,chr.max,res)
-    end <- c(start[-1],chr.max) -1L
-    
-    bin.granges <- GRanges(seqnames = ann$chr[1],
-                           ranges = IRanges(start = start, end = end))
-    chr.granges <- GRanges(seqnames = ann$chr[1],
-                           ranges = IRanges(start=ann$pos, end=ann$pos))
-    ids <- subjectHits(findOverlaps(chr.granges, bin.granges))
-    binned.matrix <- bin2D(matrix, ids, n=length(bin.granges))
+    seqlengths(gr.unbinnedCor) <- chr.lengths[seqlevels(gr.unbinnedCor)]
 
-    gr <- bin.granges
-    gr$cor.matrix <- binned.matrix
-    gr
+    stopifnot(length(seqlevels(gr.unbinnedCor)) == 1 && !is.na(seqlengths(gr.unbinnedCor)))
+    stopifnot("cor.matrix" %in% names(mcols(gr.unbinnedCor)))
+
+    gr.binnedCor <- tileGenome(seqlengths = seqlengths(gr.unbinnedCor),
+                              tilewidth = resolution, cut.last.tile.in.chrom = TRUE)
+    ids <- subjectHits(findOverlaps(gr.unbinnedCor, gr.binnedCor))
+    gr.binnedCor$cor.matrix <- bin2D(gr.unbinnedCor$cor.matrix, ids, n = length(gr.binnedCor))
+    gr.binnedCor
 }
-
-## .getIslandStatus <- function(probes) {
-##     ## FIXME: hardcoding annotation; also this function more or less exisit in minfi
-##     ann <- getAnnotation(IlluminaHumanMethylation450kanno.ilmn12.hg19)
-##     ann <- ann[match(probes, rownames(ann)), ]
-##     ann$Relation_to_Island
-## }
-
 
 .removeBadBins <- function(gr){
     n <- nrow(gr$cor.matrix)
-    good.bins  <- which(colSums(gr$cor.matrix==0)!=n)
+    good.bins  <- which(colSums(gr$cor.matrix==0) != n)
     if(length(good.bins) < n) {
         gr <- gr[good.bins]
         gr$cor.matrix <- gr$cor.matrix[, good.bins]
@@ -167,9 +133,9 @@ extractAB <- function(gr, keep = TRUE){
     return(gr)
 }
 
-.extractOpenClosed <- function(gr){
+.extractOpenClosed <- function(gr, cutoff = 0){
     pc <- gr$pc
-    ifelse(pc < 0, "open", "closed")
+    ifelse(pc < cutoff, "open", "closed")
 }
 
 .getFirstPC <- function(matrix, ncomp=1){
@@ -228,15 +194,4 @@ extractAB <- function(gr, keep = TRUE){
     }
     return(x)
 }
-
-
-
-
-
-
-
-
-
-
-
 
