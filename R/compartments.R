@@ -16,11 +16,11 @@
 ## a <- compartments(GMset, resolution=500*1000)
 ## })
 
-
-
 compartments <- function(object, resolution = 100*1000, what="OpenSea",
                          chr = "chr22", method = c("pearson", "spearman"),
                          keep = TRUE){
+    .isGenomic(object)
+    stopifnot(length(chr) == 1 && chr %in% seqlevels(object))
     method <- match.arg(method)
     gr <- createCorMatrix(object = object, resolution = resolution,
                            what = what, chr = chr, method = method)
@@ -32,6 +32,7 @@ compartments <- function(object, resolution = 100*1000, what="OpenSea",
 createCorMatrix <- function(object, resolution = 100*1000, what = "OpenSea",
                              chr = "chr22", method = c("pearson", "spearman")) {
     .isGenomic(object)
+    stopifnot(length(chr) == 1 && chr %in% seqlevels(object))
     method <- match.arg(method)
 
     if(is(object, "GenomicMethylSet"))
