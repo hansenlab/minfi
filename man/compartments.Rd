@@ -19,7 +19,7 @@ compartments(object, resolution=100*1000, what = "OpenSea", chr="chr22",
   \item{what}{Which subset of probes should be used?}
   \item{chr}{The chromosome to be analyzed}
   \item{method}{Method of correlation ("pearson" or "spearman")}
-  \item{keep}{Should the correlation matrix be stored or not}
+  \item{keep}{Should the correlation matrix be stored or not?}
 }
 \details{
   
@@ -39,6 +39,7 @@ This function extracts A/B compartments from Illumina methylation microarrays. A
 }
 \examples{
 if (require(minfiData)) {
-  comps <- compartments(MsetEx)
+  GMset <- mapToGenome(MsetEx)
+  comps <- compartments(GMset)
 }
 }
