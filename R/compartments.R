@@ -139,16 +139,11 @@ extractAB <- function(gr, keep = TRUE){
     ifelse(pc < cutoff, "open", "closed")
 }
 
-.getFirstPC <- function(matrix, ncomp=1){
+.getFirstPC <- function(matrix){
     ## Centering the matrix
     center <- rowMeans(matrix, na.rm = TRUE)
     matrix <- sweep(matrix, 1L, center, check.margin = FALSE)
-    if (ncomp > 1){
-        ## FIXME: shouldn't $p be subsetted with ncomp? So it just extracts a single pc
-        return(mixOmics::nipals(matrix, ncomp = ncomp)$p)
-    } else {
-        return(mixOmics::nipals(matrix, ncomp = ncomp)$p[,1])
-  }
+    return(mixOmics::nipals(matrix, ncomp = ncomp)$p[,1])
 }
 
 
