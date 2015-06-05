@@ -1,5 +1,5 @@
 Package: minfi
-Version: 1.15.6
+Version: 1.15.7
 Title: Analyze Illumina's 450k methylation arrays
 Description: Tools for analyzing and visualizing Illumina's 450k array data.
 Authors@R: c(person(c("Kasper", "Daniel"), "Hansen", role = c("cre", "aut"),
@@ -22,7 +22,7 @@ Depends:  methods,
 	  utils,
 	  bumphunter (>= 1.1.9)
 Suggests: IlluminaHumanMethylation450kmanifest (>= 0.2.0),
-	  IlluminaHumanMethylation450kanno.ilmn12.hg19 (>= 0.2.2),
+	  IlluminaHumanMethylation450kanno.ilmn12.hg19 (>= 0.2.1),
 	  minfiData (>= 0.4.1),
 	  FlowSorted.Blood.450k (>= 1.0.1),
 	  RUnit,
