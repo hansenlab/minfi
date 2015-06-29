@@ -127,7 +127,9 @@ extractAB <- function(gr, keep = TRUE){
     if (cor(colSums(gr$cor.matrix), pc) <0 ){
         pc <- -pc
     }
+    pc <- pc*sqrt(length(pc))
     gr$pc <- pc
+    
     if (!keep) {
         gr$cor.matrix <- NULL
     }
