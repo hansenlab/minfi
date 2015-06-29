@@ -79,7 +79,7 @@ setMethod("pData", signature("GenomicRatioSet"),
           })
 
 setReplaceMethod("pData", c("GenomicRatioSet", "DataFrame"), function(object, value) {
-    object <- GenomicRanges:::clone(object, colData=value)
+    object <- BiocGenerics:::updateS4(object, colData=value)
     msg <- SummarizedExperiment:::.valid.SummarizedExperiment0.assays_ncol(object)
     if (!is.null(msg))
         stop(msg)
