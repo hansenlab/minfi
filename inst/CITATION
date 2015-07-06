@@ -51,6 +51,17 @@ c(bibentry(bibtype = "Article",
            pages = "503",
            doi = "10.1186/s13059-014-0503-2",
            pubmed = "25517394",
-           header = "Funnorm normalization is described in:")
-  )
+           header = "Funnorm normalization is described in:"),
+           
+  bibentry(bibtype = "Article",
+           key = "compartments",
+           author = c(person(given = "Jean-Philippe", family = "Fortin"),
+           person(given = c("Kasper", "D."), family = "Hansen")),
+           title = "Reconstructing A/B compartments as revealed by Hi-C using long-range correlations in epigenetic data",
+           journal = "bioRxiv",
+           year = "2015",
+           doi = "http://dx.doi.org/10.1101/019000",
+           header = "Reconstruction of A/B compartments is described in:")
+
+)
 
