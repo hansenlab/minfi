@@ -78,21 +78,25 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
     probs <- seq(from = 0, to = 1, length.out = 500)
     Meth <- getMeth(object)
     Unmeth <- getUnmeth(object)
-    for (type in c("IGrn", "IRed", "II")) {
-        indices <- indicesList[[type]]
-        if(length(indices) > 0) {
-            if(verbose) cat(sprintf("[normalizeFunnorm450k] Normalization of the %s probes\n", type))
-            Unmeth[indices,] <- normalizeQuantiles(Unmeth, indices = indices, sex = NULL)
-            Meth[indices,] <- normalizeQuantiles(Meth, indices = indices, sex = NULL)
+    if (nPCs > 0){
+        for (type in c("IGrn", "IRed", "II")) {
+            indices <- indicesList[[type]]
+            if(length(indices) > 0) {
+                if(verbose) cat(sprintf("[normalizeFunnorm450k] Normalization of the %s probes\n", type))
+                Unmeth[indices,] <- normalizeQuantiles(Unmeth, indices = indices, sex = NULL)
+                Meth[indices,] <- normalizeQuantiles(Meth, indices = indices, sex = NULL)
+            }
         }
+    
+        indices <- indicesList[["X"]]
+        if(length(indices) > 0) {
+            if(verbose) cat("[normalizeFunnorm450k] Normalization of the X-chromosome")
+            Unmeth[indices,] <- normalizeQuantiles(Unmeth, indices = indices, sex = sex)
+            Meth[indices,] <- normalizeQuantiles(Meth, indices = indices, sex = sex)
+        }    
     }
 
-    indices <- indicesList[["X"]]
-    if(length(indices) > 0) {
-        if(verbose) cat("[normalizeFunnorm450k] Normalization of the X-chromosome")
-        Unmeth[indices,] <- normalizeQuantiles(Unmeth, indices = indices, sex = sex)
-        Meth[indices,] <- normalizeQuantiles(Meth, indices = indices, sex = sex)
-    }
+
 
     indices <- indicesList[["Y"]]
     if(length(indices) > 0) {
