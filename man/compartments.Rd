@@ -29,9 +29,10 @@ This function extracts A/B compartments from Illumina methylation microarrays. A
 \value{an object of class \code{GRanges} containing the correlation matrix, the compartment eigenvector and the compartment labels (A or B) as metadata.}
 
 \references{
-  JP Fortin and K Hansen.  
+  JP Fortin and KD Hansen.  
   \emph{Reconstructing A/B compartments as revealed by Hi-C using long-range correlations in epigenetic data}.
-  (2015) bioRxiv doi: http://dx.doi.org/10.1101/019000.
+  bioRxiv (2015).
+  doi:\href{http://dx.doi.org/10.1101/019000}{10.1101/019000}.
 }
 
 \author{

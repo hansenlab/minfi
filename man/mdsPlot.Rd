@@ -41,10 +41,10 @@ mdsPlot(dat, numPositions = 1000, sampNames = NULL, sampGroups = NULL, xlim, yli
 No return value. Plots are produced as a side-effect.
 }
 \references{
-
-  Borg, I., Groenen, P. (2005). Modern Multidimensional Scaling: theory
-and applications (2nd ed.). New York: Springer-Verlag. pp. 207-212. ISBN
-0387948457.
+  I Borg, P Groenen.
+  \emph{Modern Multidimensional Scaling: theory and applications (2nd
+    ed.)}
+  New York: Springer-Verlag (2005) pp. 207-212. ISBN 0387948457.
 
   \url{http://en.wikipedia.org/wiki/Multidimensional_scaling}
 }

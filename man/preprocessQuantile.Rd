@@ -70,10 +70,11 @@ supported version.
 
 \references{
   
-Touleimat, N. and Tost, J. Complete pipeline for Infinium Human
-Methylation 450K BeadChip data processing using subset quantile
-normalization for accurate DNA methylation estimation. Epigenomics 4,
-325-341 (2012).
+  N Touleimat and J Tost.
+  \emph{Complete pipeline for Infinium Human
+    Methylation 450K BeadChip data processing using subset quantile
+    normalization for accurate DNA methylation estimation.}
+  Epigenomics (2012) 4:325-341.
 
 }
 
