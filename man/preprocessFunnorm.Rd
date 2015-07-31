@@ -53,10 +53,11 @@ differences.
 
 \references{
   JP Fortin, A Labbe, M Lemire, BW Zanke, TJ Hudson, EJ Fertig, CMT
-  Greenwood and K Hansen.  
+  Greenwood and KD Hansen. 
   \emph{Functional normalization of 450k methylation array data improves
     replication in large cancer studies}.
-  (2014) Genome Biology, 15(12):503. doi: 10.1186/s13059-014-0503-2.
+  (2014) Genome Biology (2014) 15:503.
+  doi:\href{http://www.dx.doi.org/10.1186/s13059-014-0503-2}{10.1186/s13059-014-0503-2}.
 }
 
 \author{

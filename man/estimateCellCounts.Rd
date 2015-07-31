@@ -56,13 +56,16 @@ batch effects.
 }
 
 \references{
-Houseman, Eugene A., et al. "DNA methylation arrays as surrogate
-measures of cell mixture distribution." BMC bioinformatics 13.1 (2012):
-86. 
-	
-Andrew E. Jaffe and Rafael A. Irizarry. Accounting for cellular
-heterogeneity is critical in epigenome-wide association studies. Under
-Review.
+  EA Houseman, WP Accomando, DC Koestler, BC Christensen, CJ Marsit, HH
+  Nelson, JK Wiencke and KT Kelsey.
+  \emph{DNA methylation arrays as surrogate measures of cell mixture distribution.}
+  BMC bioinformatics (2012) 13:86.
+  doi:\href{http://www.dx.doi.org10.1186/1471-2105-13-86}{10.1186/1471-2105-13-86}.
+  
+  AE Jaffe and RA Irizarry. \emph{Accounting for cellular
+    heterogeneity is critical in epigenome-wide association studies.}
+  Genome Biology (2014) 15:R31.
+  doi:\href{http://www.dx.doi.org/10.1186/gb-2014-15-2-r31}{10.1186/gb-2014-15-2-r31}.
 }
 
 \author{
