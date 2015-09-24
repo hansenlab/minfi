@@ -76,5 +76,6 @@ Collate:  generics.R
 	  compartments.R
 License: Artistic-2.0
 URL: https://github.com/kasperdanielhansen/minfi
+BugReports: https://github.com/kasperdanielhansen/minfi/issues
 LazyData: yes
 biocViews: DNAMethylation, Microarray, TwoChannel, DataImport, Preprocessing, QualityControl
