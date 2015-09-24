@@ -391,7 +391,7 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
         target <- sapply(1:(n-1), function(j) {
             start <- newQuantiles[j,i]
             end <- newQuantiles[j+1,i]
-            sequence <- seq(start, end,( end-start)/n)[-n]
+            sequence <- seq(start, end,( end-start)/n)[-(n+1)]
             return(sequence)
         })
         target <- as.vector(target)
