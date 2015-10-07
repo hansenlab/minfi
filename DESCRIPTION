@@ -6,12 +6,12 @@ Authors@R: c(person(c("Kasper", "Daniel"), "Hansen", role = c("cre", "aut"),
                     email = "kasperdanielhansen@gmail.com"),
              person("Martin", "Aryee", role = "aut"),
              person(c("Rafael", "A."), "Irizarry", role = "aut"),
-	     person(c("Andrew", "E."), "Jaffe", role = "ctb"),
-	     person("Jovana", "Maksimovic", role = "ctb"),
+             person(c("Andrew", "E."), "Jaffe", role = "ctb"),
+             person("Jovana", "Maksimovic", role = "ctb"),
              person(c("E.", "Andres"), "Houseman", role = "ctb"),
              person("Jean-Philippe", "Fortin", role = "ctb"),
              person("Tim", "Triche", role = "ctb"),
-	     person("Shan", "Andrews", role = "ctb"))
+             person("Shan", "Andrews", role = "ctb"))
 Depends:  methods,
 	  BiocGenerics (>= 0.15.3),
 	  Biobase (>= 2.17.8),
@@ -31,14 +31,14 @@ Suggests: IlluminaHumanMethylation450kmanifest (>= 0.2.0),
 Imports:  S4Vectors,
 	  GenomeInfoDb,
 	  IRanges,
-	  beanplot, 
-	  RColorBrewer, 
-	  nor1mix, 
-	  siggenes, 
-	  limma, 
-	  preprocessCore, 
-	  illuminaio, 
-	  matrixStats, 
+	  beanplot,
+	  RColorBrewer,
+	  nor1mix,
+	  siggenes,
+	  limma,
+	  preprocessCore,
+	  illuminaio,
+	  matrixStats,
 	  mclust,
 	  genefilter,
 	  nlme,
@@ -53,20 +53,20 @@ Collate:  generics.R
 	  rgset.R
 	  gmset.R
 	  grset.R
-	  utils.R 
+	  utils.R
 	  manifest.R
 	  anno.R
 	  minfiQC.R
 	  getSex.R
-          dmr.R
-          blocks.R
+	  dmr.R
+	  blocks.R
 	  plot.R
 	  plotBetasByType.R
 	  preprocess.R
 	  preprocessSwan.R
 	  preprocessQuantile.R
 	  preprocessNoob.R
-	  preprocessFunnorm.R   
+	  preprocessFunnorm.R
 	  qc.R
 	  read.450k.R
 	  read.manifest.R
