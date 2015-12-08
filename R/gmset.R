@@ -86,7 +86,7 @@ setMethod("pData", signature("GenomicMethylSet"),
 setReplaceMethod("pData", signature(object = "GenomicMethylSet", value = "DataFrame"),
                  function(object, value) {
                      object <- BiocGenerics:::replaceSlots(object, colData=value)
-                     msg <- SummarizedExperiment:::.valid.SummarizedExperiment0.assays_ncol(object)
+                     msg <- SummarizedExperiment:::.valid.SummarizedExperiment.assays_ncol(object)
                      if (!is.null(msg))
                          stop(msg)
                      object
