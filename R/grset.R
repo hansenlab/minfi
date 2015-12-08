@@ -80,7 +80,7 @@ setMethod("pData", signature("GenomicRatioSet"),
 
 setReplaceMethod("pData", c("GenomicRatioSet", "DataFrame"), function(object, value) {
     object <- BiocGenerics:::replaceSlots(object, colData=value)
-    msg <- SummarizedExperiment:::.valid.SummarizedExperiment0.assays_ncol(object)
+    msg <- SummarizedExperiment:::.valid.SummarizedExperiment.assays_ncol(object)
     if (!is.null(msg))
         stop(msg)
     object
