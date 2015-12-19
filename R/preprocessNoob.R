@@ -80,8 +80,8 @@ preprocessNoob <- function(rgSet, offset=15, dyeCorr=TRUE, verbose = TRUE) {
         ## Correction of the Illumina control probes with the background correction:
         ctrls <- getProbeInfo(rgSet, type = "Control")
         ctrls <- ctrls[ctrls$Address %in% featureNames(rgSet),]
-        redControls <- getRed(rgSet)[ctrls$Address,]
-        greenControls <- getGreen(rgSet)[ctrls$Address,]
+        redControls <- getRed(rgSet)[ctrls$Address,,drop=FALSE]
+        greenControls <- getGreen(rgSet)[ctrls$Address,,drop=FALSE]
         rownames(redControls) <- rownames(greenControls) <- ctrls$Type
         internal.controls <- list(Cy3 = greenControls, Cy5 = redControls)
         xcs <- lapply(names(internal.controls), function(nch) {
@@ -96,8 +96,8 @@ preprocessNoob <- function(rgSet, offset=15, dyeCorr=TRUE, verbose = TRUE) {
         AT.controls <- rownames(internal.controls[[1]]) %in% c("NORM_A", "NORM_T")
 
         ## Dye bias normalizastion with the corrected Illumina control probes:
-        Green.avg <- colMeans(internal.controls[["Cy3"]][CG.controls,])
-        Red.avg <- colMeans(internal.controls[["Cy5"]][AT.controls,])
+        Green.avg <- colMeans(internal.controls[["Cy3"]][CG.controls,,drop=FALSE])
+        Red.avg <- colMeans(internal.controls[["Cy5"]][AT.controls,,drop=FALSE])
         R.G.ratio <- Red.avg/Green.avg
 
         reference <- which.min(abs(R.G.ratio-1) )
