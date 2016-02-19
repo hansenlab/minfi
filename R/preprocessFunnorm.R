@@ -155,14 +155,14 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
     ## New code
     ctrls <- getProbeInfo(rgSet, type = "Control")
     ## FIXME: should be fixed in the manifest object
-    ctrls <- ctrls[ctrls$Address %in% featureNames(rgSet),]
+    ctrls <- ctrls[ctrls$Address %in% featureNames(rgSet),,drop=FALSE]
     ctrlsList <- split(ctrls, ctrls$Type)[controlType]
     ## End new code
     
-    redControls <- getRed(rgSet)[ctrls$Address,]
-    redControls <- lapply(ctrlsList, function(ctl) redControls[ctl$Address,])
-    greenControls <- getGreen(rgSet)[ctrls$Address,]
-    greenControls <- lapply(ctrlsList, function(ctl) greenControls[ctl$Address,])
+    redControls <- getRed(rgSet)[ctrls$Address,,drop=FALSE]
+    redControls <- lapply(ctrlsList, function(ctl) redControls[ctl$Address,,drop=FALSE])
+    greenControls <- getGreen(rgSet)[ctrls$Address,,drop=FALSE]
+    greenControls <- lapply(ctrlsList, function(ctl) greenControls[ctl$Address,,drop=FALSE])
     
     ## Extraction of the undefined negative control probes
     oobRaw <- getOOB(rgSet)
