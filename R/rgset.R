@@ -118,8 +118,8 @@ getOOB <- function(object) {
     .isRG(object)
     IRed   <- getProbeInfo(object, type = "I-Red")
     IGrn <- getProbeInfo(object, type = "I-Green")
-    oob.green <- rbind(getGreen(object)[IRed$AddressA,], getGreen(object)[IRed$AddressB,])
-    oob.red   <- rbind(getRed(object)[IGrn$AddressA,], getRed(object)[IGrn$AddressB,])
+    oob.green <- rbind(getGreen(object)[IRed$AddressA,,drop=FALSE], getGreen(object)[IRed$AddressB,,drop=FALSE])
+    oob.red   <- rbind(getRed(object)[IGrn$AddressA,,drop=FALSE], getRed(object)[IGrn$AddressB,,drop=FALSE])
     return(list(Grn = oob.green, Red = oob.red))
 }
 
@@ -127,15 +127,15 @@ getSnpBeta <- function(object){
     .isRG(object)
     manifest <- getManifest(object)
     snpProbesII <- getProbeInfo(manifest, type = "SnpII")$Name
-    M.II <- getGreen(object)[getProbeInfo(object, type = "SnpII")$AddressA,]
-    U.II <- getRed(object)[getProbeInfo(object, type = "SnpII")$AddressA,]
+    M.II <- getGreen(object)[getProbeInfo(object, type = "SnpII")$AddressA,,drop=FALSE]
+    U.II <- getRed(object)[getProbeInfo(object, type = "SnpII")$AddressA,,drop=FALSE]
     snpProbesI.Green <- getProbeInfo(manifest, type = "SnpI")[getProbeInfo(manifest, type = "SnpI")$Color=="Grn",]
     snpProbesI.Red <- getProbeInfo(manifest, type = "SnpI")[getProbeInfo(manifest, type = "SnpI")$Color=="Red",]
 
-    M.I.Red <- getRed(object)[snpProbesI.Red $AddressB,]
-    U.I.Red <- getRed(object)[snpProbesI.Red $AddressA,]
-    M.I.Green <- getGreen(object)[snpProbesI.Green$AddressB,]
-    U.I.Green <- getGreen(object)[snpProbesI.Green$AddressA,]
+    M.I.Red <- getRed(object)[snpProbesI.Red $AddressB,,drop=FALSE]
+    U.I.Red <- getRed(object)[snpProbesI.Red $AddressA,,drop=FALSE]
+    M.I.Green <- getGreen(object)[snpProbesI.Green$AddressB,,drop=FALSE]
+    U.I.Green <- getGreen(object)[snpProbesI.Green$AddressA,,drop=FALSE]
     
     M <- rbind(M.II, M.I.Red, M.I.Green)
     U <- rbind(U.II, U.I.Red, U.I.Green)
