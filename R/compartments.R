@@ -115,12 +115,12 @@ createCorMatrix <- function(object, resolution = 100*1000, what = "OpenSea",
     return(gr)
 }
 
-extractAB <- function(gr, keep = TRUE){
+extractAB <- function(gr, keep = TRUE, method = "svd"){
     if (! (is(gr, "GRanges") && "cor.matrix" %in% names(mcols(gr)))) {
         stop("'gr' must be an object created by createCorMatrix")
     }
     
-    pc <- .getFirstPC(gr$cor.matrix)
+    pc <- .getFirstPC(gr$cor.matrix, method = method)
     pc <- .meanSmoother(pc)
     pc <- .unitarize(pc)
     ## Fixing sign of eigenvector
@@ -141,11 +141,13 @@ extractAB <- function(gr, keep = TRUE){
     ifelse(pc < cutoff, "open", "closed")
 }
 
-.getFirstPC <- function(matrix){
+.getFirstPC <- function(matrix, method){
     ## Centering the matrix
     center <- rowMeans(matrix, na.rm = TRUE)
     matrix <- sweep(matrix, 1L, center, check.margin = FALSE)
-    pc <- mixOmics::nipals(matrix, ncomp = 1)$p[,1]
+    ## if(method == "nipals")
+    ##     pc <- mixOmics::nipals(matrix, ncomp = 1)$p[,1]
+    pc <- .fsvd(matrix, k = 1, method = method)$u
     return(pc)
 }
 
@@ -195,7 +197,7 @@ extractAB <- function(gr, keep = TRUE){
 }
 
 .fsvd <- function(A, k, i = 1, p = 2, method = c("svd", "qr", "exact")){
-    method <- match.args(method)
+    method <- match.arg(method)
     l <- k + p 
     n <- ncol(A)
     m <- nrow(A)
