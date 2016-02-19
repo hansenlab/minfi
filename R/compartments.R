@@ -141,11 +141,12 @@ extractAB <- function(gr, keep = TRUE){
     ifelse(pc < cutoff, "open", "closed")
 }
 
-.getFirstPC <- function(matrix, ncomp = 1){
+.getFirstPC <- function(matrix){
     ## Centering the matrix
     center <- rowMeans(matrix, na.rm = TRUE)
     matrix <- sweep(matrix, 1L, center, check.margin = FALSE)
-    return(mixOmics::nipals(matrix, ncomp = ncomp)$p[,1])
+    pc <- mixOmics::nipals(matrix, ncomp = 1)$p[,1]
+    return(pc)
 }
 
 
