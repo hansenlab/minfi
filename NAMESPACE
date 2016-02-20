@@ -1,5 +1,5 @@
 import(methods)
-importFrom(matrixStats, rowVars, colMedians, colMads, colQuantiles)
+importFrom(matrixStats, rowVars, colMedians, colMads, colQuantiles, rowDiffs)
 import(BiocGenerics)
 importClassesFrom(Biobase, AnnotatedDataFrame, AssayData, eSet, MIAxE,
                   Versions)
@@ -30,7 +30,7 @@ importFrom(limma, squeezeVar, lmFit, eBayes, contrasts.fit, normexp.signal)
 importFrom(preprocessCore, normalize.quantiles)
 importFrom(illuminaio, readIDAT)
 importFrom(genefilter, rowFtests, rowttests)
-importFrom(utils, packageVersion, read.csv, read.table)
+importFrom(utils, packageVersion, read.csv, read.table, data)
 importFrom(bumphunter, bumphunter, bumphunterEngine, locfitByCluster,
            clusterMaker, boundedClusterMaker)
 importMethodsFrom(bumphunter, bumphunter)
@@ -39,7 +39,14 @@ importFrom(nlme, lme, getVarCov)
 importFrom(MASS, huber)
 importFrom(quadprog, solve.QP)
 importFrom(GEOquery,getGEO)
-importFrom(matrixStats,rowDiffs)
+
+importFrom("grDevices", "dev.off")
+importFrom("graphics", "abline", "axis", "legend", "lines", "par",
+           "plot", "plot.new", "stripchart", "text")
+importFrom("stats", "approx", "as.formula", "cmdscale", "contrasts",
+           "dist", "fitted", "kmeans", "lm", "lm.fit", "model.matrix",
+           "pchisq", "pf", "pnorm", "prcomp", "pt", "rnorm", "runif",
+           "vcov")
 
 export(getManifest, getProbeInfo, getManifestInfo,
        IlluminaMethylationManifest, IlluminaMethylationAnnotation,
