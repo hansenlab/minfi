@@ -106,7 +106,7 @@ ilogit2 <- function(x) { 2^(x) / (1+2^(x)) }
     content[content == paste0("-", zero)] <- zero
     digest::digest(content)
 }
- 
+
 .isGenomic <- function(object) {
     if(!is(object, "GenomicMethylSet") && !is(object, "GenomicRatioSet"))
         stop(sprintf("object is of class '%s', but needs to be of class 'GenomicMethylSet' or 'GenomicRatioSet'",
