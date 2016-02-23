@@ -1,5 +1,4 @@
-
-R Under development (unstable) (2016-02-15 r70177) -- "Unsuffered Consequences"
+R Under development (unstable) (2016-02-19 r70190) -- "Unsuffered Consequences"
 Copyright (C) 2016 The R Foundation for Statistical Computing
 Platform: x86_64-apple-darwin15.3.0 (64-bit)
 
@@ -80,14 +79,15 @@ Loading required package: IlluminaHumanMethylation450kanno.ilmn12.hg19
 > 
 > GMsetEx <- mapToGenome(MsetEx)
 > gr.cor <- createCorMatrix(GMsetEx, res=500*1000)
+> set.seed(456)
 > gr.ab <- extractAB(gr.cor)
 > 
 > digest_compartments <- list(cor.matrix = minfi:::.digestMatrix(gr.cor$cor.matrix),
-+                            pc = minfi:::.digestVector(gr.ab$pc))
++                            pc = minfi:::.digestVector(gr.ab$pc, digits = 2))
 > save(digest_compartments, file = "../unitTests/digest_compartments.rda")
 > 
 > sessionInfo()                         
-R Under development (unstable) (2016-02-15 r70177)
+R Under development (unstable) (2016-02-19 r70190)
 Platform: x86_64-apple-darwin15.3.0 (64-bit)
 Running under: OS X 10.11.3 (El Capitan)
 
@@ -103,44 +103,41 @@ other attached packages:
  [2] minfiData_0.13.0                                  
  [3] IlluminaHumanMethylation450kanno.ilmn12.hg19_0.2.1
  [4] IlluminaHumanMethylation450kmanifest_0.4.0        
- [5] minfi_1.17.1                                      
+ [5] minfi_1.17.2                                      
  [6] bumphunter_1.11.2                                 
  [7] locfit_1.5-9.1                                    
  [8] iterators_1.0.8                                   
  [9] foreach_1.4.3                                     
-[10] Biostrings_2.39.9                                 
+[10] Biostrings_2.39.11                                
 [11] XVector_0.11.7                                    
 [12] SummarizedExperiment_1.1.19                       
-[13] GenomicRanges_1.23.18                             
+[13] GenomicRanges_1.23.19                             
 [14] GenomeInfoDb_1.7.6                                
-[15] IRanges_2.5.30                                    
+[15] IRanges_2.5.31                                    
 [16] S4Vectors_0.9.34                                  
 [17] lattice_0.20-33                                   
 [18] Biobase_2.31.3                                    
 [19] BiocGenerics_0.17.3                               
 
 loaded via a namespace (and not attached):
- [1] mclust_5.1               rgl_0.95.1441            base64_1.1              
- [4] Rcpp_0.12.3              corpcor_1.6.8            Rsamtools_1.23.3        
- [7] plyr_1.8.3               RSQLite_1.0.0            ellipse_0.3-8           
-[10] ggplot2_2.0.0            zlibbioc_1.17.0          GenomicFeatures_1.23.23 
-[13] annotate_1.49.1          preprocessCore_1.33.0    splines_3.3.0           
-[16] BiocParallel_1.5.17      stringr_1.0.0            igraph_1.0.1            
-[19] RCurl_1.95-4.7           biomaRt_2.27.2           munsell_0.4.3           
-[22] rtracklayer_1.31.7       multtest_2.27.0          pkgmaker_0.22           
-[25] GEOquery_2.37.0          quadprog_1.5-5           codetools_0.2-14        
-[28] matrixStats_0.50.1       XML_3.98-1.3             reshape_0.8.5           
-[31] GenomicAlignments_1.7.16 MASS_7.3-45              bitops_1.0-6            
-[34] grid_3.3.0               nlme_3.1-124             xtable_1.8-2            
-[37] gtable_0.1.2             registry_0.3             DBI_0.3.1               
-[40] magrittr_1.5             scales_0.3.0             stringi_1.0-1           
-[43] genefilter_1.53.1        doRNG_1.6                limma_3.27.12           
-[46] nor1mix_1.2-1            RColorBrewer_1.1-2       mixOmics_5.2.0          
-[49] siggenes_1.45.0          tools_3.3.0              illuminaio_0.13.1       
-[52] rngtools_1.2.4           survival_2.38-3          AnnotationDbi_1.33.7    
-[55] colorspace_1.2-6         beanplot_1.2            
+ [1] genefilter_1.53.1        splines_3.3.0            beanplot_1.2            
+ [4] rtracklayer_1.31.7       GenomicFeatures_1.23.23  XML_3.98-1.3            
+ [7] survival_2.38-3          DBI_0.3.1                BiocParallel_1.5.17     
+[10] RColorBrewer_1.1-2       registry_0.3             rngtools_1.2.4          
+[13] doRNG_1.6                matrixStats_0.50.1       plyr_1.8.3              
+[16] pkgmaker_0.22            stringr_1.0.0            zlibbioc_1.17.0         
+[19] codetools_0.2-14         biomaRt_2.27.2           AnnotationDbi_1.33.7    
+[22] illuminaio_0.13.1        preprocessCore_1.33.0    Rcpp_0.12.3             
+[25] xtable_1.8-2             limma_3.27.12            base64_1.1              
+[28] annotate_1.49.1          Rsamtools_1.23.3         stringi_1.0-1           
+[31] nor1mix_1.2-1            grid_3.3.0               quadprog_1.5-5          
+[34] GEOquery_2.37.0          tools_3.3.0              bitops_1.0-6            
+[37] magrittr_1.5             siggenes_1.45.0          RCurl_1.95-4.7          
+[40] RSQLite_1.0.0            MASS_7.3-45              reshape_0.8.5           
+[43] mclust_5.1               GenomicAlignments_1.7.17 multtest_2.27.0         
+[46] nlme_3.1-124            
 > rm(list = ls())
 > 
 > proc.time()
    user  system elapsed 
- 24.698   1.898  27.686 
+ 23.744   1.634  26.354 
