@@ -115,12 +115,11 @@ createCorMatrix <- function(object, resolution = 100*1000, what = "OpenSea",
     return(gr)
 }
 
-extractAB <- function(gr, keep = TRUE, method = "svd"){
+extractAB <- function(gr, keep = TRUE, svdMethod = "qr"){
     if (! (is(gr, "GRanges") && "cor.matrix" %in% names(mcols(gr)))) {
         stop("'gr' must be an object created by createCorMatrix")
     }
-    
-    pc <- .getFirstPC(gr$cor.matrix, method = method)
+    pc <- .getFirstPC(gr$cor.matrix, method = svdMethod)
     pc <- .meanSmoother(pc)
     pc <- .unitarize(pc)
     ## Fixing sign of eigenvector
@@ -196,7 +195,7 @@ extractAB <- function(gr, keep = TRUE, method = "svd"){
     return(x)
 }
 
-.fsvd <- function(A, k, i = 1, p = 2, method = c("svd", "qr", "exact")){
+.fsvd <- function(A, k, i = 1, p = 2, method = c("qr", "svd", "exact")){
     method <- match.arg(method)
     l <- k + p 
     n <- ncol(A)
