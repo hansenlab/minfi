@@ -19,7 +19,6 @@ Depends:  methods,
 	  GenomicRanges,
 	  SummarizedExperiment (>= 1.1.6),
 	  Biostrings,
-	  utils,
 	  bumphunter (>= 1.1.9)
 Suggests: IlluminaHumanMethylation450kmanifest (>= 0.2.0),
 	  IlluminaHumanMethylation450kanno.ilmn12.hg19 (>= 0.2.1),
@@ -46,6 +45,10 @@ Imports:  S4Vectors,
 	  MASS,
 	  quadprog,
 	  GEOquery,
+          stats,
+          grDevices,
+          graphics,
+          utils
 Collate:  generics.R
 	  mset.R
 	  rset.R
