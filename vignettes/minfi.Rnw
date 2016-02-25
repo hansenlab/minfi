@@ -63,7 +63,7 @@ genomic locus.  The previous generation 27k methlation array uses only the Type 
 
 In this package we refer to differentially methylated positions (DMPs) by which we mean a single
 genomic position that has a different methylation level in two different groups of samples (or
-conditions).  This is different from differentially methylated regions (DMRs) which imply more that
+conditions).  This is different from differentially methylated regions (DMRs) which imply
 more than one methylation positions are different between conditions.
 
 Physically, each sample is measured on a single ``array''.  There are 12 arrays on a single physical
@@ -161,7 +161,7 @@ sub(baseDir, "", targets$Basename)
 With this \Rcode{data.frame}, it is easy to read in the data
 
 <<paths>>= 
-RGset <- read.450k.exp(base = baseDir, targets = targets)
+RGset <- read.450k.exp(targets = targets)
 @ 
 
 Let us look at the associated pheno data, which is really just the information contained in the
