@@ -18,7 +18,7 @@ import(SummarizedExperiment)
 import(S4Vectors)
 import(IRanges)
 importFrom(Biobase, assayDataElementNames, assayDataElementReplace,
-           assayDataElement, "assayDataElement<-", validMsg)
+           assayDataElement, "assayDataElement<-", validMsg, assayDataValidMembers)
 ## The following should not be necessary, but Hadley does not use S3export in reshape
 importFrom(reshape, melt, melt.array, melt.data.frame, melt.list, melt.matrix, melt.table)
 importFrom(mclust, Mclust)
@@ -65,6 +65,7 @@ export(getManifest, getProbeInfo, getManifestInfo,
        MethylSet, RatioSet,
        GenomicMethylSet, GenomicRatioSet,
        read.450k, read.450k.sheet, read.450k.exp,
+       read.metharray, read.metharray.sheet, read.metharray.exp,
        getGenomicRatioSetFromGEO, makeGenomicRatioSetFromMatrix,
        readGEORawFile, readTCGA,
        logit2, ilogit2,

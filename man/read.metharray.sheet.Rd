@@ -1,5 +1,5 @@
-\name{read.450k.sheet}
-\alias{read.450k.sheet}
+\name{read.metharray.sheet}
+\alias{read.metharray.sheet}
 \title{
   Reading an Illumina methylation sample sheet
 }
@@ -8,7 +8,7 @@
   information for the samples in an experiment.
 }
 \usage{
-read.450k.sheet(base, pattern = "csv$", ignore.case = TRUE,
+read.metharray.sheet(base, pattern = "csv$", ignore.case = TRUE,
     recursive = TRUE, verbose = TRUE)
 }
 \arguments{
@@ -20,7 +20,7 @@ read.450k.sheet(base, pattern = "csv$", ignore.case = TRUE,
   \item{verbose}{Should the function be verbose?}
 }
 \details{
-    This function search the directory \code{base} (possibly including
+  This function search the directory \code{base} (possibly including
   subdirectories depending on the argument \code{recursive} for
   \dQuote{sample sheet} files (see below).  These files are identified
   solely on the base of their filename given by the arguments
@@ -42,9 +42,9 @@ read.450k.sheet(base, pattern = "csv$", ignore.case = TRUE,
   An attempt at guessing the file path to the IDAT files represented in
   the sheet is made.  This should be doublechecked and might need to
   manually changed.
-}
-\note{
-  This function is deprecated.  Use \code{read.metharray.sheet} instead.
+
+  The type of methylation array is guess by looking at the number of
+  probes in the IDAT files.
 }
 \value{
   A \code{data.frame} containing the columns of all the sample sheets.
@@ -57,17 +57,15 @@ read.450k.sheet(base, pattern = "csv$", ignore.case = TRUE,
   Kasper Daniel Hansen\email{khansen@jhsph.edu}.
 }
 \seealso{
-  \code{\link{read.450k.exp}} and \code{\link{read.450k}} for functions
+  \code{\link{read.metharray.exp}} and \code{\link{read.metharray}} for functions
   reading IDAT files.  \code{\link[base]{list.files}} for help on the
   arguments \code{recursive} and \code{ignore.case}.
 }
 \examples{
-\dontrun{
 if(require(minfiData)) {
 
 baseDir <- system.file("extdata", package = "minfiData")
-sheet <- read.450k.sheet(baseDir)
+sheet <- read.metharray.sheet(baseDir)
 
-}
 }
 }
