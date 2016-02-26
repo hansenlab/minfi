@@ -1,4 +1,4 @@
-read.450k <- function(basenames = basenames, extended = extended, verbose = verbose)
+read.450k <- function(basenames = basenames, extended = extended, verbose = verbose) {
     .Deprecated("read.metharray")
     basenames <- sub("_Grn\\.idat$", "", basenames)
     basenames <- sub("_Red\\.idat$", "", basenames)
