@@ -1,4 +1,5 @@
-read.450k <- function(basenames, extended = FALSE, verbose = FALSE) {
+read.450k <- function(basenames = basenames, extended = extended, verbose = verbose)
+    .Deprecated("read.metharray")
     basenames <- sub("_Grn\\.idat$", "", basenames)
     basenames <- sub("_Red\\.idat$", "", basenames)
     G.files <- paste(basenames, "_Grn.idat", sep = "")
@@ -54,6 +55,7 @@ read.450k <- function(basenames, extended = FALSE, verbose = FALSE) {
 
 read.450k.sheet <- function(base, pattern = "csv$", ignore.case = TRUE,
                             recursive = TRUE, verbose = TRUE) {
+    .Deprecated("read.metharray.sheet")
     readSheet <- function(file) {
         dataheader <- grep("^\\[DATA\\]", readLines(file), ignore.case = TRUE)
         if(length(dataheader) == 0)
@@ -122,6 +124,7 @@ read.450k.sheet <- function(base, pattern = "csv$", ignore.case = TRUE,
 
 read.450k.exp <- function(base = NULL, targets = NULL, extended = FALSE, 
                           recursive = FALSE, verbose = FALSE) {
+    .Deprecated("read.metharray.exp")
     if(!is.null(targets)) {
         if(! "Basename" %in% names(targets))
             stop("Need 'Basename' amongst the column names of 'targets'")
