@@ -45,7 +45,13 @@ read.metharray <- function(basenames, extended = FALSE, verbose = FALSE) {
         out <- new("RGChannelSet", Red = RedMean, Green = GreenMean)
     }
     featureNames(out) <- rownames(G.idats[[1]]$Quants)
-    annotation(out) <- c(array = "IlluminaHumanMethylation450k", annotation = .default.450k.annotation)
+    if(nrow(ReadMean) >= 622000 && nrow(ReadMean) <= 623000) {
+        annotation(out) <- c(array = "IlluminaHumanMethylation450k", annotation = .default.450k.annotation)
+    } else if(nrow(ReadMean) >= 1052000 && nrow(ReadMean) <= 1053000) {
+        annotation(out) <- c(array = "IlluminaHumanMethylationEPIC", annotation = .default.epic.annotation)
+    } else {
+        annotation(out) <- c(array = "Unknown", annotation = "XX")
+    }
     ptime2 <- proc.time()
     stime <- (ptime2 - ptime1)[3]
     if(verbose) cat("done in", stime, "seconds\n")
@@ -53,7 +59,7 @@ read.metharray <- function(basenames, extended = FALSE, verbose = FALSE) {
 }
 
 read.metharray.sheet <- function(base, pattern = "csv$", ignore.case = TRUE,
-                            recursive = TRUE, verbose = TRUE) {
+                                 recursive = TRUE, verbose = TRUE) {
     readSheet <- function(file) {
         dataheader <- grep("^\\[DATA\\]", readLines(file), ignore.case = TRUE)
         if(length(dataheader) == 0)
@@ -121,7 +127,7 @@ read.metharray.sheet <- function(base, pattern = "csv$", ignore.case = TRUE,
     
 
 read.metharray.exp <- function(base = NULL, targets = NULL, extended = FALSE, 
-                          recursive = FALSE, verbose = FALSE) {
+                               recursive = FALSE, verbose = FALSE) {
     if(!is.null(targets)) {
         if(! "Basename" %in% names(targets))
             stop("Need 'Basename' amongst the column names of 'targets'")
@@ -158,4 +164,3 @@ read.metharray.exp <- function(base = NULL, targets = NULL, extended = FALSE,
     rgSet <- read.metharray(basenames = commonFiles, extended = extended, verbose = verbose)
     rgSet
 }
-
