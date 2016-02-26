@@ -32,7 +32,7 @@ IlluminaMethylationAnnotation <- function(listOfObjects, annotation = "", defaul
         all(rownames(obj) == rownames(Manifest))
     })))
     stopifnot(all(c("chr", "pos") %in% names(listOfObjects[["Locations"]])))
-    stopifnot(all(listOfObjects[["Locations"]]$chr %in% minfi:::.seqnames.order.all))
+    stopifnot(all(listOfObjects[["Locations"]]$chr %in% .seqnames.order.all))
     ##available <- .availableAnnotation(listOfObjects)
     stopifnot(all(defaults %in% names(listOfObjects)))
     stopifnot(!anyDuplicated(sub("\\..*", "", defaults)))

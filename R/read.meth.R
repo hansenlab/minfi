@@ -1,5 +1,4 @@
-read.450k <- function(basenames, extended = FALSE, verbose = FALSE) {
-    .Deprecated("read.metharray")
+read.metharray <- function(basenames, extended = FALSE, verbose = FALSE) {
     basenames <- sub("_Grn\\.idat$", "", basenames)
     basenames <- sub("_Red\\.idat$", "", basenames)
     G.files <- paste(basenames, "_Grn.idat", sep = "")
@@ -16,16 +15,16 @@ read.450k <- function(basenames, extended = FALSE, verbose = FALSE) {
     }
     stime <- system.time({
         G.idats <- lapply(G.files, function(xx) {
-            if(verbose) cat("[read.450k] Reading", basename(xx), "\n")
+            if(verbose) message("[read.metharray] Reading", basename(xx), "\n")
             readIDAT(xx)
         })
         R.idats <- lapply(R.files, function(xx) {
-            if(verbose) cat("[read.450k] Reading", basename(xx), "\n")
+            if(verbose) message("[read.metharray] Reading", basename(xx), "\n")
             readIDAT(xx)
         })
     })[3]
-    if(verbose) cat("[read.450k] Read idat files in ", stime, "seconds\n")
-    if(verbose) cat("[read.450k] Creating data matrices ... ")
+    if(verbose) message("[read.metharray] Read idat files in ", stime, "seconds\n")
+    if(verbose) message("[read.metharray] Creating data matrices ... ")
     ptime1 <- proc.time()
     GreenMean <- do.call(cbind, lapply(G.idats, function(xx) xx$Quants[, "Mean"]))
     RedMean <- do.call(cbind, lapply(R.idats, function(xx) xx$Quants[, "Mean"]))
@@ -36,8 +35,8 @@ read.450k <- function(basenames, extended = FALSE, verbose = FALSE) {
     }
     ptime2 <- proc.time()
     stime <- (ptime2 - ptime1)[3]
-    if(verbose) cat("done in", stime, "seconds\n")
-    if(verbose) cat("[read.450k] Instantiating final object ... ")
+    if(verbose) message("done in", stime, "seconds\n")
+    if(verbose) message("[read.metharray] Instantiating final object ... ")
     ptime1 <- proc.time()
     if(extended) {
         out <- new("RGChannelSetExtended", Red = RedMean, Green = GreenMean,
@@ -46,16 +45,21 @@ read.450k <- function(basenames, extended = FALSE, verbose = FALSE) {
         out <- new("RGChannelSet", Red = RedMean, Green = GreenMean)
     }
     featureNames(out) <- rownames(G.idats[[1]]$Quants)
-    annotation(out) <- c(array = "IlluminaHumanMethylation450k", annotation = .default.450k.annotation)
+    if(nrow(RedMean) >= 622000 && nrow(RedMean) <= 623000) {
+        annotation(out) <- c(array = "IlluminaHumanMethylation450k", annotation = .default.450k.annotation)
+    } else if(nrow(RedMean) >= 1052000 && nrow(RedMean) <= 1053000) {
+        annotation(out) <- c(array = "IlluminaHumanMethylationEPIC", annotation = .default.epic.annotation)
+    } else {
+        annotation(out) <- c(array = "Unknown", annotation = "XX")
+    }
     ptime2 <- proc.time()
     stime <- (ptime2 - ptime1)[3]
-    if(verbose) cat("done in", stime, "seconds\n")
+    if(verbose) message("done in", stime, "seconds\n")
     out
 }
 
-read.450k.sheet <- function(base, pattern = "csv$", ignore.case = TRUE,
-                            recursive = TRUE, verbose = TRUE) {
-    .Deprecated("read.metharray.sheet")
+read.metharray.sheet <- function(base, pattern = "csv$", ignore.case = TRUE,
+                                 recursive = TRUE, verbose = TRUE) {
     readSheet <- function(file) {
         dataheader <- grep("^\\[DATA\\]", readLines(file), ignore.case = TRUE)
         if(length(dataheader) == 0)
@@ -106,7 +110,7 @@ read.450k.sheet <- function(base, pattern = "csv$", ignore.case = TRUE,
         csvfiles <- list.files(base, recursive = recursive, pattern = pattern,
                                ignore.case = ignore.case, full.names = TRUE)
         if(verbose) {
-            cat("[read.450k.sheet] Found the following CSV files:\n")
+            message("[read.metharray.sheet] Found the following CSV files:\n")
             print(csvfiles)
         }
     } else
@@ -122,9 +126,8 @@ read.450k.sheet <- function(base, pattern = "csv$", ignore.case = TRUE,
 }
     
 
-read.450k.exp <- function(base = NULL, targets = NULL, extended = FALSE, 
-                          recursive = FALSE, verbose = FALSE) {
-    .Deprecated("read.metharray.exp")
+read.metharray.exp <- function(base = NULL, targets = NULL, extended = FALSE, 
+                               recursive = FALSE, verbose = FALSE) {
     if(!is.null(targets)) {
         if(! "Basename" %in% names(targets))
             stop("Need 'Basename' amongst the column names of 'targets'")
@@ -133,7 +136,7 @@ read.450k.exp <- function(base = NULL, targets = NULL, extended = FALSE,
         } else {
             files <- targets$Basename
         }
-        rgSet <- read.450k(files, extended = extended, verbose = verbose)
+        rgSet <- read.metharray(files, extended = extended, verbose = verbose)
         pD <- targets
         pD$filenames <- files
         rownames(pD) <- sampleNames(rgSet)
@@ -158,7 +161,6 @@ read.450k.exp <- function(base = NULL, targets = NULL, extended = FALSE,
     if(!setequal(commonFiles.Red, Red.files))
         warning(sprintf("the following files only exists for the red channel: %s",
                         paste(setdiff(Red.files, commonFiles.Red), collapse = ", ")))
-    rgSet <- read.450k(basenames = commonFiles, extended = extended, verbose = verbose)
+    rgSet <- read.metharray(basenames = commonFiles, extended = extended, verbose = verbose)
     rgSet
 }
-
