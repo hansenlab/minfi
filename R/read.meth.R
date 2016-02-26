@@ -15,16 +15,16 @@ read.metharray <- function(basenames, extended = FALSE, verbose = FALSE) {
     }
     stime <- system.time({
         G.idats <- lapply(G.files, function(xx) {
-            if(verbose) cat("[read.metharray] Reading", basename(xx), "\n")
+            if(verbose) message("[read.metharray] Reading", basename(xx), "\n")
             readIDAT(xx)
         })
         R.idats <- lapply(R.files, function(xx) {
-            if(verbose) cat("[read.metharray] Reading", basename(xx), "\n")
+            if(verbose) message("[read.metharray] Reading", basename(xx), "\n")
             readIDAT(xx)
         })
     })[3]
-    if(verbose) cat("[read.metharray] Read idat files in ", stime, "seconds\n")
-    if(verbose) cat("[read.metharray] Creating data matrices ... ")
+    if(verbose) message("[read.metharray] Read idat files in ", stime, "seconds\n")
+    if(verbose) message("[read.metharray] Creating data matrices ... ")
     ptime1 <- proc.time()
     GreenMean <- do.call(cbind, lapply(G.idats, function(xx) xx$Quants[, "Mean"]))
     RedMean <- do.call(cbind, lapply(R.idats, function(xx) xx$Quants[, "Mean"]))
@@ -35,8 +35,8 @@ read.metharray <- function(basenames, extended = FALSE, verbose = FALSE) {
     }
     ptime2 <- proc.time()
     stime <- (ptime2 - ptime1)[3]
-    if(verbose) cat("done in", stime, "seconds\n")
-    if(verbose) cat("[read.metharray] Instantiating final object ... ")
+    if(verbose) message("done in", stime, "seconds\n")
+    if(verbose) message("[read.metharray] Instantiating final object ... ")
     ptime1 <- proc.time()
     if(extended) {
         out <- new("RGChannelSetExtended", Red = RedMean, Green = GreenMean,
@@ -45,16 +45,16 @@ read.metharray <- function(basenames, extended = FALSE, verbose = FALSE) {
         out <- new("RGChannelSet", Red = RedMean, Green = GreenMean)
     }
     featureNames(out) <- rownames(G.idats[[1]]$Quants)
-    if(nrow(ReadMean) >= 622000 && nrow(ReadMean) <= 623000) {
+    if(nrow(RedMean) >= 622000 && nrow(RedMean) <= 623000) {
         annotation(out) <- c(array = "IlluminaHumanMethylation450k", annotation = .default.450k.annotation)
-    } else if(nrow(ReadMean) >= 1052000 && nrow(ReadMean) <= 1053000) {
+    } else if(nrow(RedMean) >= 1052000 && nrow(RedMean) <= 1053000) {
         annotation(out) <- c(array = "IlluminaHumanMethylationEPIC", annotation = .default.epic.annotation)
     } else {
         annotation(out) <- c(array = "Unknown", annotation = "XX")
     }
     ptime2 <- proc.time()
     stime <- (ptime2 - ptime1)[3]
-    if(verbose) cat("done in", stime, "seconds\n")
+    if(verbose) message("done in", stime, "seconds\n")
     out
 }
 
@@ -110,7 +110,7 @@ read.metharray.sheet <- function(base, pattern = "csv$", ignore.case = TRUE,
         csvfiles <- list.files(base, recursive = recursive, pattern = pattern,
                                ignore.case = ignore.case, full.names = TRUE)
         if(verbose) {
-            cat("[read.metharray.sheet] Found the following CSV files:\n")
+            message("[read.metharray.sheet] Found the following CSV files:\n")
             print(csvfiles)
         }
     } else
