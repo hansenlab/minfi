@@ -126,7 +126,7 @@ read.450k.exp <- function(base = NULL, targets = NULL, extended = FALSE,
         if(! "Basename" %in% names(targets))
             stop("Need 'Basename' amongst the column names of 'targets'")
         if(!is.null(base)) {
-            files <- file.path(base, targets$Basename)
+            files <- file.path(base, basename(targets$Basename))
         } else {
             files <- targets$Basename
         }
