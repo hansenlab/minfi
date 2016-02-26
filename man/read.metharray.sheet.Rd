@@ -20,7 +20,7 @@ read.metharray.sheet(base, pattern = "csv$", ignore.case = TRUE,
   \item{verbose}{Should the function be verbose?}
 }
 \details{
-    This function search the directory \code{base} (possibly including
+  This function search the directory \code{base} (possibly including
   subdirectories depending on the argument \code{recursive} for
   \dQuote{sample sheet} files (see below).  These files are identified
   solely on the base of their filename given by the arguments
@@ -42,6 +42,9 @@ read.metharray.sheet(base, pattern = "csv$", ignore.case = TRUE,
   An attempt at guessing the file path to the IDAT files represented in
   the sheet is made.  This should be doublechecked and might need to
   manually changed.
+
+  The type of methylation array is guess by looking at the number of
+  probes in the IDAT files.
 }
 \value{
   A \code{data.frame} containing the columns of all the sample sheets.

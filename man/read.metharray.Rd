@@ -19,6 +19,10 @@ read.metharray(basenames, extended = FALSE, verbose = FALSE)
     \code{RGChannelSetExtended} be returned. }
   \item{verbose}{Should the function be verbose?}
 }
+\details{
+  The type of methylation array is guess by looking at the number of
+  probes in the IDAT files.
+}
 \value{
   An object of class \code{RGChannelSet} or
   \code{RGChannelSetExtended}. 
