@@ -1,5 +1,5 @@
-\name{read.450k}
-\alias{read.450k}
+\name{read.metharray}
+\alias{read.metharray}
 \title{
   Parsing IDAT files from Illumina methylation arrays.
 }
@@ -7,7 +7,7 @@
   Parsing IDAT files from Illumina methylation arrays.
 }
 \usage{
-read.450k(basenames, extended = FALSE, verbose = FALSE)
+read.metharray(basenames, extended = FALSE, verbose = FALSE)
 }
 \arguments{
   \item{basenames}{The basenames or filenames of the IDAT files.  By
@@ -23,15 +23,12 @@ read.450k(basenames, extended = FALSE, verbose = FALSE)
   An object of class \code{RGChannelSet} or
   \code{RGChannelSetExtended}. 
 }
-\note{
-  This function is deprecated.  Use \code{read.metharray} instead.
-}
 \author{
   Kasper Daniel Hansen\email{khansen@jhsph.edu}.
 }
 \seealso{
-  \code{\link{read.450k.exp}} for a convenience function for
-  reading an experiment, \code{\link{read.450k.sheet}} for
+  \code{\link{read.metharray.exp}} for a convenience function for
+  reading an experiment, \code{\link{read.metharray.sheet}} for
   reading a sample sheet and \code{\linkS4class{RGChannelSet}} for the
   output class. 
 }
@@ -39,7 +36,7 @@ read.450k(basenames, extended = FALSE, verbose = FALSE)
 if(require(minfiData)) {
 
 baseDir <- system.file("extdata", package = "minfiData")
-RGSet <- read.450k(file.path(baseDir, "5723646052",
+RGSet <- read.metharray(file.path(baseDir, "5723646052",
     c("5723646052_R02C02", "5723646052_R04C01")))
 
 }

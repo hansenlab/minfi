@@ -1,5 +1,5 @@
-\name{read.450k.sheet}
-\alias{read.450k.sheet}
+\name{read.metharray.sheet}
+\alias{read.metharray.sheet}
 \title{
   Reading an Illumina methylation sample sheet
 }
@@ -8,7 +8,7 @@
   information for the samples in an experiment.
 }
 \usage{
-read.450k.sheet(base, pattern = "csv$", ignore.case = TRUE,
+read.metharray.sheet(base, pattern = "csv$", ignore.case = TRUE,
     recursive = TRUE, verbose = TRUE)
 }
 \arguments{
@@ -43,9 +43,6 @@ read.450k.sheet(base, pattern = "csv$", ignore.case = TRUE,
   the sheet is made.  This should be doublechecked and might need to
   manually changed.
 }
-\note{
-  This function is deprecated.  Use \code{read.metharray.sheet} instead.
-}
 \value{
   A \code{data.frame} containing the columns of all the sample sheets.
   As described in details, a column named \code{Sentrix_Position} is
@@ -57,7 +54,7 @@ read.450k.sheet(base, pattern = "csv$", ignore.case = TRUE,
   Kasper Daniel Hansen\email{khansen@jhsph.edu}.
 }
 \seealso{
-  \code{\link{read.450k.exp}} and \code{\link{read.450k}} for functions
+  \code{\link{read.metharray.exp}} and \code{\link{read.metharray}} for functions
   reading IDAT files.  \code{\link[base]{list.files}} for help on the
   arguments \code{recursive} and \code{ignore.case}.
 }
@@ -65,7 +62,7 @@ read.450k.sheet(base, pattern = "csv$", ignore.case = TRUE,
 if(require(minfiData)) {
 
 baseDir <- system.file("extdata", package = "minfiData")
-sheet <- read.450k.sheet(baseDir)
+sheet <- read.metharray.sheet(baseDir)
 
 }
 }

@@ -1,14 +1,14 @@
-\name{read.450k.exp}
-\alias{read.450k.exp}
+\name{read.metharray.exp}
+\alias{read.metharray.exp}
 \title{
-  Reads an entire 450k experiment using a sample sheet
+  Reads an entire metharray experiment using a sample sheet
 }
 \description{
-  Reads an entire 450k experiment using a sample sheet or (optionally)
+  Reads an entire metharray experiment using a sample sheet or (optionally)
   a target like data.frame.
 }
 \usage{
-read.450k.exp(base = NULL, targets = NULL, extended = FALSE,
+read.metharray.exp(base = NULL, targets = NULL, extended = FALSE,
     recursive = FALSE, verbose = FALSE)
 }
 \arguments{
@@ -33,9 +33,6 @@ read.450k.exp(base = NULL, targets = NULL, extended = FALSE,
   into a real IDAT file by appending either \code{_Red.idat} or
   \code{_Grn.idat}.
 }
-\note{
-  This function is deprecated.  Use \code{read.metharray.sheet} instead.
-}
 \value{
   An object of class \code{"RGChannelSet"} or
   \code{"RGChannelSetExtended"}.
@@ -44,15 +41,15 @@ read.450k.exp(base = NULL, targets = NULL, extended = FALSE,
   Kasper Daniel Hansen \email{khansen@jhsph.edu}.
 }
 \seealso{
-  \code{\link{read.450k}} for the workhorse function,
-  \code{\link{read.450k.sheet}} for reading a sample sheet and
+  \code{\link{read.metharray}} for the workhorse function,
+  \code{\link{read.metharray.sheet}} for reading a sample sheet and
   \code{\linkS4class{RGChannelSet}} for the output class.
 }
 \examples{
 if(require(minfiData)) {
 
 baseDir <- system.file("extdata", package = "minfiData")
-RGset <- read.450k.exp(file.path(baseDir, "5723646052"))
+RGset <- read.metharray.exp(file.path(baseDir, "5723646052"))
 
 }
 }
