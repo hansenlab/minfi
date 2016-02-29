@@ -133,8 +133,7 @@ getControlAddress <- function(object, controlType = c("NORM_A", "NORM_C", "NORM_
 }
 
 getControlTypes <- function(object) {
-    ctrls <- getProbeInfo(object, type = "Control")
-    table(ctrls[, ""])
+    unique(getProbeInfo(manifest, type="Control")$Type)
 }
 
 getProbePositionsDetailed <- function(map) {
