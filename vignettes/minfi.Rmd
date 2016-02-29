@@ -1,0 +1,55 @@
+---
+title: "The minfi User's Guide"
+author: "Kasper D. Hansen, Jean-Phillipe Fortin"
+date: "`r doc_date()`"
+package: "`r pkg_ver('minfi')`"
+bibliography: minfi.bib
+abstract: >
+  A comprehensive guide to using the minfi package for analyzing
+  DNA methylation microarrays from Illumina.vignettes.
+vignette: >
+  %\VignetteIndexEntry{minfi User's Guide}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+output: 
+  BiocStyle::pdf_document:
+    keep_tex: true
+    number_sections: false
+---
+
+# Introduction
+
+The `r Biocpkg("minfi")` package provides tools for analyzing Illumina's Methylation arrays, with a
+special focus on the new 450k array for humans.  At the moment Illumina's 27k methylation arrays are
+partially supported; some of the functionality may not work (or may not make sense) for the older
+27k array, other functionality works fine.
+
+The tasks addressed in this package include preprocessing, QC assessments, identification of
+interesting methylation loci and plotting functionality.  Analyzing these types of arrays is ongoing
+research in ours and others groups.  In general, the analysis of 450k data is not straightforward
+and we anticipate many advances in this area in the near future.
+
+The input data to this package are IDAT files, representing two different color channels prior to
+normalization.  It is possible to use Genome Studio files together with the data structures
+contained in this package, but in general Genome Studio files are already normalized and we do not
+recommend this.
+
+## Citing the minfi package
+
+If you are using minfi in a publication, please cite [@minfi].
+
+The SWAN normalization method
+is described in [@Maksimovic:2012].  The functional normalization method is described in [@funnorm].  The code for parsing Illumina IDAT files is from the `r Biocpkg("illuminaio")` package
+described in [@illuminaio].
+
+FIXME: A/B compartments, Noob
+
+# Sessioninfo
+
+```{r sessionInfo, results='asis', echo=FALSE}
+toLatex(sessionInfo())
+```
+
+# References
+
+

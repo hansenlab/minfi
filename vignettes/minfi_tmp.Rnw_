@@ -1,0 +1,290 @@
+% \VignetteIndexEntry{minfi User's Guide}
+% \VignettePackage{minfi}
+% \VignetteDepends{BiocStyle}
+% \VignetteEngine{knitr::knitr}
+
+\documentclass{article}
+
+<<style, eval=TRUE, echo=FALSE, results="asis">>=
+BiocStyle::latex()
+@ 
+
+\title{The minfi user's guide}
+\author{Kasper D.\ Hansen \and Jean-Phillipe Fortin}
+\date{Modified: October 20, 2013.  Compiled: \today}
+
+\newcommand{\minfi}{\Biocpkg{minfi}}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\section{Introduction}
+
+The \minfi\ package provides tools for analyzing Illumina's Methylation arrays, with a
+special focus on the new 450k array for humans.  At the moment Illumina's 27k methylation arrays are
+partially supported; some of the functionality may not work (or may not make sense) for the older
+27k array, other functionality works fine.
+
+The tasks addressed in this package include preprocessing, QC assessments, identification of
+interesting methylation loci and plotting functionality.  Analyzing these types of arrays is ongoing
+research in ours and others groups.  In general, the analysis of 450k data is not straightforward
+and we anticipate many advances in this area in the near future.
+
+The input data to this package are IDAT files, representing two different color channels prior to
+normalization.  It is possible to use Genome Studio files together with the data structures
+contained in this package, but in general Genome Studio files are already normalized and we do not
+recommend this.
+
+If you are using \minfi\ in a publication, please cite \cite{minfi}.  The SWAN normalization method
+is described in \cite{Maksimovic:2012}.  The functional normalization method is described in
+\cite{funnorm}.  The code for parsing Illumina IDAT files is from the \Biocpkg{illuminaio} package
+described in \cite{illuminaio}.
+
+
+
+\subsubsection*{Chip design and terminology}
+
+The 450k array has a complicated design.  What follows is a quick overview.
+
+Each sample is measured on a single array, in two different color channels (red and green).  Each
+array measures roughly 450,000 CpG positions.  Each CpG is associated with two measurements: a
+methylated measurement and an ``un''-methylated measurement.  These two values can be measured in
+one of two ways: using a ``Type I'' design or a ``Type II design''.  CpGs measured using a Type I
+design are measured using a single color, with two different probes in the same color channel
+providing the methylated and the unmethylated measurements.  CpGs measured using a Type II design
+are measured using a single probe, and two different colors provide the methylated and the
+unmethylated measurements.  Practically, this implies that on this array there is \emph{not} a
+one-to-one correspondence between probes and CpG positions.  We have therefore tried to be precise
+about this and we refer to a ``methylation position'' (or ``CpG'') when we refer to a single-base
+genomic locus.  The previous generation 27k methlation array uses only the Type I design.
+
+In this package we refer to differentially methylated positions (DMPs) by which we mean a single
+genomic position that has a different methylation level in two different groups of samples (or
+conditions).  This is different from differentially methylated regions (DMRs) which imply more that
+more than one methylation positions are different between conditions.
+
+Physically, each sample is measured on a single ``array''.  There are 12 arrays on a single physical
+``slide'' (organized in a 6 by 2 grid).  Slides are organized into ``plates'' containing at most 8
+slides (96 arrays).
+
+
+\subsubsection*{Workflow and R data classes}
+
+A set of 450k data files will initially be read into an \Rclass{RGChannelSet}, representing the raw
+intensities as two matrices: one being the green channel and one being the red channel.  This is a
+class which is very similar to an \Rclass{ExpressionSet} or an \Rclass{NChannelSet}.
+
+The \Rclass{RGChannelSet} is, together with a \Rclass{IlluminaMethylationManifest} object,
+preprocessed into a \Rclass{MethylSet}.  The \Rclass{IlluminaMethylationManifest} object contains the
+array design, and describes how probes and color channels are paired together to measure the
+methylation level at a specific CpG.  The object also contains information about control probes
+(also known as QC probes).  The \Rclass{MethylSet} contains normalized data and essentially consists
+of two matrices containing the methylated and the unmethylated evidence for each CpG.  Only the
+\Rclass{RGChannelSet} contains information about the control probes.
+
+The process described in the previous paragraph is very similar to the paradigm for analyzing
+Affymetrix expression arrays using the \Biocpkg{affy} package (an \Rclass{AffyBatch} is preprocessed
+into an \Rclass{ExpressionSet} using array design information stored in a CDF environment
+(package)).
+
+A \Rclass{MethylSet} is the starting point for any post-normalization analysis, such as searching for
+DMPs or DMRs.
+
+
+\subsubsection*{Getting Started}
+
+<<load,results="hide",warning=FALSE,message=FALSE>>=
+require(minfi)
+require(minfiData)
+@ 
+
+
+\section{Reading data}
+
+This package supports analysis of IDAT files, containing the summarized bead information.
+
+In our experience, most labs use a ``Sample Sheet'' CSV file to describe the layout of the
+experiment.  This is based on a sample sheet file provided by Illumina.  Our pipeline assumes the
+existence of such a file(s), but it is relatively easy to create such a file using for example Excel,
+if it is not available.
+
+Examples we have seen, either store all samples in a single directory, or has each slide in a
+separate directory.
+
+We use an example dataset with 6 samples, spread across two slides.  First we obtain the system path
+to the IDAT files; this requires a bit since the data comes from an installed package
+
+<<baseDir>>=
+baseDir <- system.file("extdata", package = "minfiData")
+list.files(baseDir)
+@ 
+
+This shows the typical layout of 450k data: each ``slide'' (containing 12 arrays) is stored in a
+separate directory, with a numeric name.  The top level directory contains the sample sheet file.
+Inside the slide directories we find the IDAT files (and possible a number of JPG images or other
+files):
+
+<<baseDir2>>=
+list.files(file.path(baseDir, "5723646052"))
+@ 
+
+The files for each array has another numeric number and consists of a Red and a Grn (Green) IDAT
+file.  Note that for this example data, each slide contains only 3 arrays and not 12.  This was done
+because of file size limitations and because we only need 6 arrays to illustrate the package's
+functionality. 
+
+First we read the sample sheet.  We provide a convenience function for reading in this file
+\Rfunction{read.metharray.sheet}.  This function has a couple of attractive bells and whistles.  Let us look
+at the output
+
+<<sampleSheet>>=
+targets <- read.metharray.sheet(baseDir)
+targets
+@ 
+
+First the output: this is just a \Rclass{data.frame}.  It contains a column \Rcode{Basename} that
+describes the location of the IDAT file corresponding to the sample, as well as two columns
+\Rcode{Array} and \Rcode{Slide}.  In the sample sheet provided by Illumina, these two columns are
+named \Rcode{Sentrix\_Position} and \Rcode{Sentrix\_ID}, but we rename them.  We provide more detail
+on the use of this function below.  The \Rcode{Basename} column tend to be too large for display,
+here it is simplified relative to \Rcode{baseDir}:
+
+<<BasenameColumn>>=
+sub(baseDir, "", targets$Basename)
+@ 
+ 
+(This is just for display purposes). 
+
+With this \Rcode{data.frame}, it is easy to read in the data
+
+<<paths>>= 
+RGset <- read.metharray.exp(base = baseDir, targets = targets)
+@ 
+
+Let us look at the associated pheno data, which is really just the information contained in the
+targets object above.
+
+<<pData>>=
+RGset
+pd <- pData(RGset)
+pd[,1:4]
+@ 
+
+The \Rcode{read.metharray.exp} also makes it possible to read in an entire directory or directory tree
+(with \Rcode{recursive} set to \Rcode{TRUE}) by using the function just with the argument
+\Rcode{base} and \Rcode{targets=NULL}, like
+
+<<read2>>=
+RGset2 = read.metharray.exp(file.path(baseDir, "5723646052"))
+RGset3 = read.metharray.exp(baseDir, recursive = TRUE)
+@ 
+
+\subsubsection*{Advanced notes on Reading Data}
+
+The only important column in sheet \Rcode{data.frame} used in the \Rcode{targets} argument for the
+\Rfunction{read.metharray.exp} function is a column named \Rcode{Basename}.  Typically, such an object would
+also have columns named \Rcode{Array}, \Rcode{Slide}, and (optionally) \Rcode{Plate}.
+
+We used sheet data files build on top of the Sample Sheet data file provided by Illumina.  This is a
+CSV file, with a header.  In this case we assume that the phenotype data starts after a line
+beginning with \Rcode{[Data]} (or that there is no header present).
+
+It is also easy to read a sample sheet ``manually'', using the function \Rfunction{read.csv}.  Here, we
+know that we want to skip the first 7 lines of the file.
+
+<<sampleSheet2>>=
+targets2 <- read.csv(file.path(baseDir, "SampleSheet.csv"), 
+                     stringsAsFactors = FALSE, skip = 7)
+targets2
+@ 
+
+We now need to populate a \Rcode{Basename} column.  On possible approach is the following
+
+<<Basename>>=
+targets2$Basename <- file.path(baseDir, targets2$Sentrix_ID, 
+                               paste0(targets2$Sentrix_ID, 
+                                      targets2$Sentrix_Position))
+@ 
+
+Finally, \minfi\ contains a file-based parser: \Rcode{read.metharray}.  The return object represents the
+red and the green channel measurements of the samples.  A useful function that we get from the
+package \Biocpkg{Biobase} is \Rcode{combine} that combines (``adds'') two sets of samples.  This
+allows the user to manually build up an \Rclass{RGChannelSet}.
+
+\section{Data classes in minfi}
+
+\minfi\ contains several classes for representing 450k data, which can be confusing at first.  The
+objective of the different classes is to allow flexibility for developers in how to represent and
+transform the data.  All of the data classes consists of a data part (possibly large) as well as
+additional phenotype information and book keep variables (small).
+
+The basic input data class is \Rclass{RGChannelSet} which represents the Red and the Green color
+channel measurements of the entire array.  The data measurements are (unsurprisingly) stored in two
+matrices \Robject{Red} and \Robject{Green} with dimensions equal to the number of probes on the
+array times the number of samples.
+
+The other four data classes are \Rclass{MethylSet}, \Rclass{RatioSet}, \Rclass{GenomicMethylSet} and
+\Rclass{GenomicRatioSet}.  The classes are very similar, at a superficual level.  Transformations
+between the four classes are not guranteed to be invertible (two-way), for reasons explained below.
+
+The natural end-point of a normalization strategy is, in our opinion, a \Rclass{GenomicRatioSet}
+where a user will have obtained normalized methylation percentages (beta values or M-values) and
+where the loci have been mapped to genomic coordinates.  The reason for the existence of four data
+classes is to allow flexible normalization strategies.
+
+The two classes with ``Genomic'' in front represents data which has been associated with genomic
+coordinates (typically using the function \Rfunction{mapToGenome}).  This association is potentially
+a non-invertible mapping since it drops loci which cannot be mapped.  Whether or not a loci is
+mappable depends on the genome build that is being used.
+
+The ``MethylSet'' classes contain the data as a \Robject{Meth} and \Robject{Unmeth} matrices,
+representing the two methylation channels.  The ``RatioSet'' classes contains the data as either a
+\Robject{Beta} or a \Robject{M} matrix (or both) with optionally a \Robject{CN} matrix of copy
+number estimates.  We allow the presence of either or both of \Robject{Beta} and \Robject{M} in case
+the two matrices are normalized separately.  
+
+\begin{figure}
+  \centering
+  \includegraphics[width=.5\textwidth]{minfiClasses.pdf}
+  \caption{The relationship between the various data classes in minfi.}
+  \label{minfiClasses}
+\end{figure}
+
+\section{Quality control}
+
+Short, but with pointers to shiny methyl of course.
+
+\section{Dealing with SNPs}
+
+Short, but important.
+
+\section{Normalization}
+
+Overview of normalization.
+
+\section{Bump hunting}
+
+How to do a bump hunting analysis.
+
+\section{Using annotation}
+
+\section{Other stuff}
+
+
+
+
+\section*{Session info}
+
+Here is the output of \Rfunction{sessionInfo} on the system on which
+this document was compiled:
+<<sessionInfo, results="asis", echo=FALSE, eval=TRUE>>=
+toLatex(sessionInfo())
+@
+
+\nocite{*}
+\bibliography{minfi}
+
+\end{document}
