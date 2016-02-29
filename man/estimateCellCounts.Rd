@@ -15,17 +15,17 @@ estimateCellCounts(rgSet, compositeCellType = "Blood",
 }
 \arguments{
   \item{rgSet}{The input \code{RGChannelSet} for the procedure.}
+  \item{compositeCellType}{Which composite cell type is being deconvoluted. Should
+	be one of "Blood", "CordBlood", or "DLPFC". See details. }
+  \item{cellTypes}{Which cell types, from the reference object, should be
+    we use for the deconvolution? See details. }
+  \item{returnAll}{Should the composition table and the normalized user
+    supplied data be return?}
+  \item{verbose}{Should the function be verbose?}
   \item{meanPlot}{
 	Whether to plots the average DNA methylation across the cell-type discrimating probes within
 		the mixed and sorted samples. 
   }
-  \item{compositeCellType}{Which composite cell type is being deconvoluted, see
-    details.}
-  \item{cellTypes}{Which celltypes, from the reference object, should be
-    we use for the deconvolution?}
-  \item{returnAll}{Should the composition table and the normalized user
-    supplied data be return?}
-  \item{verbose}{Should the function be verbose?}
   \item{\dots}{Passed to \code{preprocessQuantile}.}
 }
 \details{
@@ -35,6 +35,17 @@ to the Illumina 450k microarray for deconvoluting heterogeneous tissue sources l
 For example, this function will take an \code{RGChannelSet} from a DNA methylation (DNAm)
 study of blood, and return the relative proportions of CD4+ and CD8+ T-cells, natural
 killer cells, monocytes,  granulocytes, and b-cells in each sample.
+
+The function currently supports cell composition estimation for blood, cord blood, and 
+the frontal cortex, through \code{compositeCellType} values of "Blood", "CordBlood", and 
+"DLPFC", respectively. Packages containing the appropriate reference data should be installed 
+before running the function for the first time ("FlowSorted.Blood.450k", "FlowSorted.DLPFC.450k",
+"FlowSorted.CordBlood.450k"). Each tissue supports the estimation of different cell types, delimited 
+via the \code{cellTypes} argument. For blood, these are "Bcell", "CD4T", "CD8T", "Eos", "Gran",
+"Mono", "Neu", and "NK" (though the default value for \code{cellTypes} is often sufficient).
+For cord blood, these are "Bcell", "CD4T", "CD8T", "Gran", "Mono", "Neu", and "nRBC". For frontal 
+cortex, these are "NeuN_neg" and "NeuN_pos". See documentation of individual reference packages for
+more details. 
 
 The \code{meanPlot} should be used to check for large batch effects in the data,
 reducing the confidence placed in the composition estimates. This plot
@@ -66,15 +77,15 @@ batch effects.
     heterogeneity is critical in epigenome-wide association studies.}
   Genome Biology (2014) 15:R31.
   doi:\href{http://www.dx.doi.org/10.1186/gb-2014-15-2-r31}{10.1186/gb-2014-15-2-r31}.
+  
+  KM Bakulski, JI Feinberg, SV Andrews, J Yang, S Brown, S McKenney, 
+  F Witter, J Walston, AP Feinberg, and MD Fallin. 
+  \emph{DNA methylation of cord blood cell types: Applications for mixed cell birth studies.}
+  Manuscript in review.
 }
 
 \author{
-Andrew E. Jaffe, E. Andres Houseman
-}
-
-\note{
-  At the time of writing, only data from deconvolution of whole blood
-  cells are available.
+Andrew E. Jaffe, Shan V. Andrews, E. Andres Houseman
 }
 
 \seealso{\code{\link{preprocessQuantile}}}
