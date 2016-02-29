@@ -32,7 +32,7 @@ c(bibentry(bibtype = "Article",
            pages = "R44",
            doi = "10.1186/gb-2012-13-6-r44",
            pubmed = "22703947",
-           header = "SWAN normalization is described in:"),
+           header = "SWAN normalization (preprocessSWAN) is described in:"),
 
   bibentry(bibtype = "Article",
            key = "funnorm",
@@ -52,7 +52,24 @@ c(bibentry(bibtype = "Article",
            pages = "503",
            doi = "10.1186/s13059-014-0503-2",
            pubmed = "25517394",
-           header = "Funnorm normalization is described in:"),
+           header = "Funnorm normalization (preprocesFunnorm) is described in:"),
+
+    bibentry(bibtype = "Article",
+           key = "noob",
+           author = c(person(given = c("Timothy",  "J."), family = "Triche"),
+                      person(given = c("Daniel", "J."), family = "Weisenberger"),
+                      person(given = c("David") , family = "Van Den Berg"),
+                      person(given = c("Peter", "W.") family = "Laird"),
+                      person(given = c("Kimberly", "D."), family = "Siegmund")),
+           title = "Low-level processing of {Illumina} {Infinium} {DNA} {Methylation} {BeadArrays}",
+           journal = "Nucleic Acids Research",
+           year = "2013",
+           volume = "41",
+           number = "7",
+           pages = "e90",
+           doi = "10.1093/nar/gkt090",
+           pubmed = "23476028",
+           header = "noob background correction (preprocessNoob) is described in:"),
            
   bibentry(bibtype = "Article",
            key = "compartments",
@@ -65,7 +82,7 @@ c(bibentry(bibtype = "Article",
            pages = "180",
            doi = "10.1186/s13059-015-0741-y",
            pubmed = "26316348",
-           header = "Reconstruction of A/B compartments is described in:")
+           header = "Reconstruction of A/B compartments (compartments, extractAB) is described in:")
 
 )
 
