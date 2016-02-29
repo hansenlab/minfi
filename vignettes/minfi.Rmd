@@ -19,30 +19,51 @@ output:
 
 # Introduction
 
-The `r Biocpkg("minfi")` package provides tools for analyzing Illumina's Methylation arrays, with a
-special focus on the new 450k array for humans.  At the moment Illumina's 27k methylation arrays are
-partially supported; some of the functionality may not work (or may not make sense) for the older
-27k array, other functionality works fine.
+The `r Biocpkg("minfi")` package provides tools for analyzing Illumina's Methylation arrays, specifically the 450k and EPIC (also known as the 850k) arrays.  We have partial support for the older 27k array.
 
-The tasks addressed in this package include preprocessing, QC assessments, identification of
-interesting methylation loci and plotting functionality.  Analyzing these types of arrays is ongoing
-research in ours and others groups.  In general, the analysis of 450k data is not straightforward
-and we anticipate many advances in this area in the near future.
+The tasks addressed in this package include preprocessing, QC assessments, identification of interesting methylation loci and plotting functionality.  Analyzing these types of arrays is ongoing research in ours and other groups.
 
-The input data to this package are IDAT files, representing two different color channels prior to
-normalization.  It is possible to use Genome Studio files together with the data structures
-contained in this package, but in general Genome Studio files are already normalized and we do not
-recommend this.
+The input data to this package are IDAT files, representing two different color channels prior to normalization.  This is the most complete data type, because IDAT files includes measurements on control probes.  It is possible to use Genome Studio files together with the data structures contained in this package, but only some functionality is available because Genome Studio output does not contain control probe information.  In addition, usually Genome Studio output is normalized using the methods implemented in Genome Studio and these are generally considered inferior.
 
 ## Citing the minfi package
 
-If you are using minfi in a publication, please cite [@minfi].
+The MINFI package contains methods which are described across multiple manuscripts, by different non-overlapping authors.  This makes citing the package a bit difficult, so here is a guide.
 
-The SWAN normalization method
-is described in [@Maksimovic:2012].  The functional normalization method is described in [@funnorm].  The code for parsing Illumina IDAT files is from the `r Biocpkg("illuminaio")` package
-described in [@illuminaio].
+- If you are using MINFI in a publication, please cite [@minfi].  This publication includes details on sex estimation using `getSex()`, quality control using `getQC()`, quantile normalization using `preprocessQuantile()`, bump hunting using `bumphunter()` and block finding using `blockFinder()`.
+- If you are using `preprocessQuantile()`, it would be considerate to also cite [@Touleimat:2012], since this publication describes a method essentially identical to `preprocessQuantile()`.
+- If you are using `bumphunter()`, you should also cite the original bump hunter publication [@bumphunter].
+- If you are using SWAN normalization as implemented in `preprocessSWAN()` please cite [@Maksimovic:2012].
+- If you are using noob background correction as implemented in `preprocessNoob()`, please cite [@noob].
+- If you are using functional normalization as implemented in `preprocessFunnorm()`, please cite [@funnorm]. The default in `preprocessFunnorm()` is to do noob background correction. If this is used, please also cite [@noob].
+- If you are estimating A/B compartments as implemented in `compartments()` and `extractAB()`, please cite [@compartments].
 
-FIXME: A/B compartments, Noob
+# minfi classes
+
+# Preprocessing
+
+## preprocessRaw
+
+## preprocessIllumina
+
+## preprocessSWAN
+
+## preprocessQuantile
+
+## preprocessNoob
+
+## preprocessFunnorm
+
+
+# Identifying differentially methylated regions
+
+## Bump hunting
+
+## Block finding
+
+# Correcting for cell type heterogenity
+
+
+
 
 # Sessioninfo
 
