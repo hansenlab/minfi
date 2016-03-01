@@ -49,7 +49,7 @@ importFrom("stats", "approx", "as.formula", "cmdscale", "contrasts",
 
 export(getManifest, getProbeInfo, getManifestInfo,
        IlluminaMethylationManifest, IlluminaMethylationAnnotation,
-       getControlAddress, getControlTypes,
+       getControlAddress, 
        getRed, getGreen, getMeth, getUnmeth,
        getBeta, getM, getCN, getMethSignal,
        getOOB, getSnpBeta,
