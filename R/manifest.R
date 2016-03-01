@@ -132,11 +132,6 @@ getControlAddress <- function(object, controlType = c("NORM_A", "NORM_C", "NORM_
     out
 }
 
-getControlTypes <- function(object) {
-    ctrls <- getProbeInfo(object, type = "Control")
-    table(ctrls[, ""])
-}
-
 getProbePositionsDetailed <- function(map) {
     ## map is GR with metadata columns strand and type
     stopifnot(is(map, "GRanges"))
