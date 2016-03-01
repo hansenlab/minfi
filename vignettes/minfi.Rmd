@@ -39,30 +39,53 @@ The MINFI package contains methods which are described across multiple manuscrip
 
 # minfi classes
 
+# Reading data
+
+# Manifest / annotation
+
+
+
+# Quality control
+
+- use shinyMethyl
+- minfiQC
+- getSex checks
+- mds plots
+- plot conversion probes
+
 # Preprocessing
 
-## preprocessRaw
+- preprocessRaw
+- preprocessIllumina
+- preprocessSWAN
+- preprocessQuantile
+- preprocessNoob
+- preprocessFunnorm
 
-## preprocessIllumina
+# SNPs and other issues
 
-## preprocessSWAN
-
-## preprocessQuantile
-
-## preprocessNoob
-
-## preprocessFunnorm
-
+- SNPs
+- cross reactive probes
+- remove bad probes
+- detection P
+- Gap Hunting
 
 # Identifying differentially methylated regions
 
-## Bump hunting
-
-## Block finding
+- DMP finding
+- Bump hunting
+- Block finding
+- plot DMRs with annotation. 
 
 # Correcting for cell type heterogenity
 
+- estimateCellTypes
+- reference packages
 
+# Other stuff
+
+- Horvath age estimation
+- other packages
 
 
 # Sessioninfo
