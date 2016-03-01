@@ -184,7 +184,7 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
         ctrls <- ctrlsList[[index]]
         addr <- ctrls$Address
         names(addr) <- ctrls$ExtendedType
-        addr[exType]
+        na.omit(addr[exType])
     }
     
     greenControls <- extractedData$greenControls
