@@ -1,9 +1,9 @@
-estimateCellCounts <- function (rgSet, compositeCellType = "Blood",
+estimateCellCounts <- function (rgSet, compositeCellType = "Blood", 
+								processMethod = "auto", probeSelect = "auto",
                                 cellTypes = c("CD8T","CD4T", "NK","Bcell","Mono","Gran"),
                                 returnAll = FALSE, meanPlot = FALSE, verbose=TRUE, ...) {
     platform <- annotation(rgSet)[which(names(annotation(rgSet))=="array")]
 	platform <- if(platform == "IlluminaHumanMethylation450k") {platform <- "450k"}
-	compositeCellType <- match.arg(compositeCellType,c("Blood","CordBlood","DLPFC"))
 	if((compositeCellType == "CordBlood") && (!"nRBC" %in% cellTypes))
 		cat("[estimateCellCounts] Consider including 'nRBC' in argument 'cellTypes' for cord blood estimation.\n")   
 	referencePkg <- sprintf("FlowSorted.%s.%s", compositeCellType, platform)
@@ -23,6 +23,15 @@ estimateCellCounts <- function (rgSet, compositeCellType = "Blood",
                      paste(unique(referenceRGset$cellType), collapse = "', '")))
 	if(length(unique(cellTypes)) < 2)
         stop("At least 2 cell types must be provided.")
+	if ((processMethod == "auto") && (compositeCellType == "CordBlood")){
+		processMethod <- "Noob"} 
+	if ((processMethod == "auto") && (compositeCellType != "CordBlood")){
+		processMethod <- "Quantile"}
+	processMethod <- get(list(sprintf("preprocess%s",processMethod))[[1]])
+	if ((probeSelect == "auto") && (compositeCellType == "CordBlood")){
+		probeSelect <- "any"} 
+	if ((probeSelect == "auto") && (compositeCellType != "CordBlood")){
+		probeSelect <- "both"} 	
 
     if(verbose) cat("[estimateCellCounts] Combining user data with reference (flow sorted) data.\n")
     newpd <- data.frame(sampleNames = c(sampleNames(rgSet), sampleNames(referenceRGset)),
@@ -33,17 +42,16 @@ estimateCellCounts <- function (rgSet, compositeCellType = "Blood",
 	pData(referenceRGset) <- data.frame() #To avoid errors in the combine call
 	combinedRGset <- combine(rgSet, referenceRGset)
     pData(combinedRGset) <- newpd
+	sampleNames(combinedRGset) <- newpd$sampleNames #Avoid errors in .isRG call in Funnorm
     rm(referenceRGset)
     
-	if (compositeCellType=="CordBlood"){
-    if(verbose) cat("[estimateCellCounts] Processing user and reference data together.\n")
-    combinedMset <- preprocessNoob(combinedRGset)
+	if(verbose) cat("[estimateCellCounts] Processing user and reference data together.\n")
+	if (compositeCellType=="CordBlood"){  
+    combinedMset <- processMethod(combinedRGset,verbose=subverbose)
 	compTable <- get(paste(referencePkg,".compTable",sep="")) 
 	combinedMset <- combinedMset[which(rownames(combinedMset)%in%rownames(compTable)),]
     rm(combinedRGset)} else {
-	if(verbose) cat("[estimateCellCounts] Normalizing user and reference data together.\n")
-    combinedMset <- preprocessQuantile(combinedRGset, removeBadSamples = FALSE,
-                                       verbose = subverbose, ...) 
+    combinedMset <- processMethod(combinedRGset) 
     rm(combinedRGset)}
  
     ## Extracts normalized reference data 
@@ -54,7 +62,7 @@ estimateCellCounts <- function (rgSet, compositeCellType = "Blood",
     rm(combinedMset)
     
     if(verbose) cat("[estimateCellCounts] Picking probes for composition estimation.\n")
-    compData <- pickCompProbes(referenceMset, cellTypes = cellTypes, compositeCellType = compositeCellType)
+    compData <- pickCompProbes(referenceMset, cellTypes = cellTypes, compositeCellType = compositeCellType, probeSelect = probeSelect)
     coefs <- compData$coefEsts
     rm(referenceMset)
     
@@ -80,7 +88,7 @@ estimateCellCounts <- function (rgSet, compositeCellType = "Blood",
     }
 }
 
-pickCompProbes <- function(mSet, cellTypes = NULL, numProbes = 50, compositeCellType = compositeCellType) {
+pickCompProbes <- function(mSet, cellTypes = NULL, numProbes = 50, compositeCellType = compositeCellType, probeSelect = probeSelect) {
     splitit <- function(x) {
         split(seq(along=x), x)
     }
@@ -112,8 +120,7 @@ pickCompProbes <- function(mSet, cellTypes = NULL, numProbes = 50, compositeCell
         return(rowttests(p, factor(x)))
     })
     
-    ## take numProbes up and numProbes for blood down or highest abs value difference for cord blood
-	if (compositeCellType == "CordBlood"){
+	if (probeSelect == "any"){
 		probeList <- lapply(tstatList, function(x) {
 			y <- x[x[,"p.value"] < 1e-8,]
 			yAny <- y[order(abs(y[,"dm"]), decreasing=TRUE),]      
@@ -121,10 +128,10 @@ pickCompProbes <- function(mSet, cellTypes = NULL, numProbes = 50, compositeCell
 		})
 	} else {
 	probeList <- lapply(tstatList, function(x) {
-			y <- x[x[,"p.value"] < 1e-8,]
-			yUp <- y[order(y[,"dm"], decreasing=TRUE),]
-			yDown <- y[order(y[,"dm"], decreasing=FALSE),]
-			c(rownames(yUp)[1:numProbes], rownames(yDown)[1:numProbes])
+		y <- x[x[,"p.value"] < 1e-8,]
+		yUp <- y[order(y[,"dm"], decreasing=TRUE),]
+		yDown <- y[order(y[,"dm"], decreasing=FALSE),]
+		c(rownames(yUp)[1:numProbes], rownames(yDown)[1:numProbes])
 		})
 	}
     

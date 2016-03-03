@@ -10,6 +10,7 @@ Estimates the relative proportion of pure cell types within a sample. For exampl
 }
 \usage{
 estimateCellCounts(rgSet, compositeCellType = "Blood",
+                   processMethod = "auto", probeSelect = "auto",
                    cellTypes = c("CD8T","CD4T", "NK","Bcell","Mono","Gran"),
                    returnAll = FALSE, meanPlot = FALSE, verbose = TRUE, \dots)
 }
@@ -17,6 +18,18 @@ estimateCellCounts(rgSet, compositeCellType = "Blood",
   \item{rgSet}{The input \code{RGChannelSet} for the procedure.}
   \item{compositeCellType}{Which composite cell type is being deconvoluted. Should
 	be one of "Blood", "CordBlood", or "DLPFC". See details. }
+  \item{processMethod}{How should the user and reference data be processed together?
+	Default input "auto" will use \code{preprocessNoob} for cord blood and \code{preprocessQuantile}
+	otherwise, in line with previous versions of this function and/or our recommendations. The
+	user can also input one of "Funnorm","Illumina","Noob","Quantile", or "SWAN" to manually select
+	the processing function.}
+  \item{probeSelect}{How should probes be selected to distinguish cell types? Options include 
+	"both", which selects an equal number (50) of probes (with F-stat p-value < 1E-8) with the 
+	greatest magnitude of effect from the hyper- and hypo-methylated sides, and "any", which 
+	selects the 100 probes (with F-stat p-value < 1E-8) with the greatest magnitude of difference 
+	regardless of direction of effect. Default input "auto" will use "any" for cord blood and 
+	"both" otherwise, in line with previous versions of this function and/or our recommendations. 
+	Please see the references for more details.}
   \item{cellTypes}{Which cell types, from the reference object, should be
     we use for the deconvolution? See details. }
   \item{returnAll}{Should the composition table and the normalized user
