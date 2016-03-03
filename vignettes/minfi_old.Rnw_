@@ -1,4 +1,4 @@
-%\VignetteIndexEntry{Minfi Guide}
+%\VignetteIndexEntry{Old Minfi Guide}
 %\VignetteDepends{minfi}
 %\VignetteDepends{minfiData}
 %\VignettePackage{minfi}
@@ -23,13 +23,16 @@ options(width=70)
 \newcommand{\R}{\software{R}}
 
 \title{The minfi User's Guide\\
-  Analyzing Illumina 450k Methylation Arrays}
+  Analyzing Illumina 450k Methylation Arrays\\
+OLD -- New version is being created}
 \author{Kasper D.\ Hansen \and Martin J. Aryee}
 \date{Modified: October 9, 2011.  Compiled: \today}
 
 \begin{document}
 \maketitle
 \setcounter{secnumdepth}{1} 
+
+This vignette is being modified and re-written.
 
 \section{Introduction}
 

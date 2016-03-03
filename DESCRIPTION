@@ -1,5 +1,5 @@
 Package: minfi
-Version: 1.17.5
+Version: 1.17.6
 Title: Analyze Illumina's methylation arrays
 Description: Tools for analyzing and visualizing Illumina's methylation array data.
 Authors@R: c(person(c("Kasper", "Daniel"), "Hansen", role = c("cre", "aut"),
@@ -37,7 +37,7 @@ Imports:  S4Vectors,
 	  limma,
 	  preprocessCore,
 	  illuminaio,
-	  matrixStats,
+	  matrixStats (>= 0.50.0),
 	  mclust,
 	  genefilter,
 	  nlme,
@@ -48,7 +48,10 @@ Imports:  S4Vectors,
           stats,
           grDevices,
           graphics,
-          utils
+          utils,
+	  BiocStyle,
+	  knitr,
+	  rmarkdown
 Collate:  generics.R
 	  mset.R
 	  rset.R
@@ -78,6 +81,7 @@ Collate:  generics.R
 	  estimateCellCounts.R
 	  gaphunter.R
 	  compartments.R
+VignetteBuilder: knitr
 License: Artistic-2.0
 URL: https://github.com/kasperdanielhansen/minfi
 BugReports: https://github.com/kasperdanielhansen/minfi/issues
