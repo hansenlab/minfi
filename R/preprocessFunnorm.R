@@ -333,6 +333,7 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
     design <- model.matrix(~controlPCs)
     fits <- lm.fit(x = design, y = t(res))
     newQuantiles <- meanFunction + t(fits$residuals)
+    newQuantiles <- apply(newQuantiles, 2, .regularizeQuantiles)
     return(newQuantiles)
 }
 
@@ -401,3 +402,9 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
     return(normMatrix)
 }
 
+# To ensure a monotonically increasing and non-negative quantile function
+# Necessary for pathological cases
+.regularizeQuantiles <- function(x){
+    x[x<0] <- 0
+    colCummaxs(x)
+}
