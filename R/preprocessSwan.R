@@ -7,8 +7,8 @@ getSubset <- function(counts, subset){
 }
 
 bgIntensitySwan <- function(rgSet){
-    grnMed <- matrixStats::colMedians(getGreen(rgSet), rows = getControlAddress(rgSet, controlType = "NEGATIVE"))
-    redMed <- matrixStats::colMedians(getRed(rgSet), rows = getControlAddress(rgSet, controlType = "NEGATIVE"))
+    grnMed <- colMedians(getGreen(rgSet)[getControlAddress(rgSet, controlType = "NEGATIVE"),])
+    redMed <- colMedians(getRed(rgSet)[getControlAddress(rgSet, controlType = "NEGATIVE"),])
     return(rowMeans(cbind(grnMed, redMed)))
 }
 

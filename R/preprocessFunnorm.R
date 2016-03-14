@@ -333,7 +333,7 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
     design <- model.matrix(~controlPCs)
     fits <- lm.fit(x = design, y = t(res))
     newQuantiles <- meanFunction + t(fits$residuals)
-    newQuantiles <- apply(newQuantiles, 2, .regularizeQuantiles)
+    newQuantiles <- .regularizeQuantiles(newQuantiles)
     return(newQuantiles)
 }
 

@@ -39,6 +39,7 @@ importFrom(nlme, lme, getVarCov)
 importFrom(MASS, huber)
 importFrom(quadprog, solve.QP)
 importFrom(GEOquery,getGEO)
+importFrom(data.table, fread)
 
 importFrom("grDevices", "dev.off")
 importFrom("graphics", "abline", "axis", "legend", "lines", "par",
