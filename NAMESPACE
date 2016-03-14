@@ -1,5 +1,5 @@
 import(methods)
-importFrom(matrixStats, rowVars, colMedians, colMads, colQuantiles, rowDiffs)
+importFrom(matrixStats, rowVars, colMedians, colMads, colQuantiles, rowDiffs, colCummaxs)
 import(BiocGenerics)
 importClassesFrom(Biobase, AnnotatedDataFrame, AssayData, eSet, MIAxE,
                   Versions)
