@@ -21,6 +21,6 @@ getMethSignal(object, what = c("Beta", "M"), \dots)
 }
 \examples{
 if(require(minfiData)) {
-  getMethSignal(MsetEx, what = "Beta")
+  head(getMethSignal(MsetEx, what = "Beta"))
 }
 }
