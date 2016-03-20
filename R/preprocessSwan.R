@@ -53,7 +53,7 @@ preprocessSWAN <- function(rgSet, mSet = NULL, verbose = FALSE){
     normSet@preprocessMethod <- c(rg.norm = sprintf("SWAN (based on a MethylSet preprocesses as '%s'",
                                           preprocessMethod(mSet)[1]),
                                   minfi = as.character(packageVersion("minfi")),
-                                  manifest = as.character(packageVersion("IlluminaHumanMethylation450kmanifest")))
+                                  manifest = as.character(packageVersion(.getManifestString(rgSet@annotation))))
     normSet
 }
 
