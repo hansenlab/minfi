@@ -20,7 +20,7 @@ preprocessRaw <- function(rgSet) {
     ## packageVersion expects a string
     out@preprocessMethod <- c(rg.norm = "Raw (no normalization or bg correction)",
                               minfi = as.character(packageVersion("minfi")),
-                              manifest = as.character(packageVersion("IlluminaHumanMethylation450kmanifest")))
+                              manifest = as.character(packageVersion(.getManifestString(rgSet@annotation))))
                               #packageVersion(getManifest(rgSet)))
     out
 }
@@ -81,7 +81,7 @@ preprocessIllumina <- function(rgSet, bg.correct = TRUE, normalize = c("controls
     ## packageVersion expects a string
     out@preprocessMethod <- c(rg.norm = preprocess,
                               minfi = as.character(packageVersion("minfi")),
-                              manifest = as.character(packageVersion("IlluminaHumanMethylation450kmanifest")))
+                              manifest = as.character(packageVersion(.getManifestString(rgSet@annotation))))
                               #packageVersion(getManifest(rgSet)))
     out
 }

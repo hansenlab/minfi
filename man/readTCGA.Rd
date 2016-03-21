@@ -7,7 +7,10 @@ Read in tab deliminited file in the TCGA format
 Read in tab deliminited file in the TCGA format
 }
 \usage{
-readTCGA(filename, sep = "\t", keyName = "Composite Element REF", Betaname = "Beta_value", pData = NULL, array = "IlluminaHumanMethylation450k", annotation = .default.450k.annotation, mergeManifest = FALSE, showProgress = TRUE)
+readTCGA(filename, sep = "\t", keyName = "Composite Element REF", Betaname = "Beta_value",
+         pData = NULL, array = "IlluminaHumanMethylation450k",
+         annotation = .default.450k.annotation, mergeManifest = FALSE,
+         showProgress = TRUE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{

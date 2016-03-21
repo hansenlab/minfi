@@ -175,18 +175,14 @@ readTCGA <- function(filename,sep="\t",
                       annotation=.default.450k.annotation,
                       mergeManifest = FALSE,
                       showProgress=TRUE){
-
-    if (!requireNamespace("data.table", quietly = TRUE))
-        stop("You need to install the data.table package from CRAN.")
-
     ##we assume first column are sample names
     ## and second column are the value identifiers
     colnames <- strsplit(readLines(filename, n = 2), sep)
     
     select <- sort(c(grep(keyName, colnames[[2]]), grep(Betaname,colnames[[2]])))
     
-    mat <- data.table::fread(filename, header = FALSE, sep = sep, select=select,
-                             showProgress=showProgress,skip=2)
+    mat <- fread(filename, header = FALSE, sep = sep, select=select,
+                 showProgress=showProgress,skip=2)
     rowNames <- as.matrix(mat[, 1, with=FALSE])
     mat <- as.matrix(mat[, -1, with=FALSE])
     rownames(mat) <- rowNames
@@ -208,10 +204,6 @@ readGEORawFile <- function(filename,sep=",",
                             annotation=.default.450k.annotation,
                             mergeManifest = FALSE,
                             showProgress=TRUE){
-
-    if (!requireNamespace("data.table", quietly = TRUE))
-        stop("You need to install the data.table package from CRAN.")
-
     colnames <- strsplit(readLines(filename, n = 1), sep)[[1]]
 
     if(all(!grepl(Uname,colnames)))
@@ -222,8 +214,8 @@ readGEORawFile <- function(filename,sep=",",
 
     select <- sort(c(row.names, grep(Uname,colnames),grep(Mname,colnames)))
 
-    mat <- data.table::fread(filename, header = TRUE, sep = sep, select=select,
-                             showProgress=showProgress)
+    mat <- fread(filename, header = TRUE, sep = sep, select=select,
+                 showProgress=showProgress)
 
     rowNames <- as.matrix(mat[,1,with=FALSE])
     mat <- as.matrix(mat[,-1,with=FALSE])

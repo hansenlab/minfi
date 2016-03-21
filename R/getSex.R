@@ -40,8 +40,8 @@ plotSex <- function(object, id = NULL) {
         stop("must provide CN, xIndex, and yIndex")
     ## FIXME: does not handle only females or only males
     ## this ought to be handled by the 'centers' (see below) being too close together
-    xMed <- matrixStats::colMedians(CN[xIndex,], na.rm=TRUE)
-    yMed <- matrixStats::colMedians(CN[yIndex,], na.rm=TRUE)
+    xMed <- matrixStats::colMedians(CN, rows = xIndex, na.rm=TRUE)
+    yMed <- matrixStats::colMedians(CN, rows = yIndex, na.rm=TRUE)
     dd <- yMed - xMed
     k <- kmeans(dd, centers = c(min(dd), max(dd)))
 
