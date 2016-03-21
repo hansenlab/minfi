@@ -7,8 +7,8 @@ getSubset <- function(counts, subset){
 }
 
 bgIntensitySwan <- function(rgSet){
-    grnMed <- matrixStats::colMedians(getGreen(rgSet)[getControlAddress(rgSet, controlType = "NEGATIVE"), ])
-    redMed <- matrixStats::colMedians(getRed(rgSet)[getControlAddress(rgSet, controlType = "NEGATIVE"), ])
+    grnMed <- colMedians(getGreen(rgSet)[getControlAddress(rgSet, controlType = "NEGATIVE"),])
+    redMed <- colMedians(getRed(rgSet)[getControlAddress(rgSet, controlType = "NEGATIVE"),])
     return(rowMeans(cbind(grnMed, redMed)))
 }
 
@@ -53,7 +53,7 @@ preprocessSWAN <- function(rgSet, mSet = NULL, verbose = FALSE){
     normSet@preprocessMethod <- c(rg.norm = sprintf("SWAN (based on a MethylSet preprocesses as '%s'",
                                           preprocessMethod(mSet)[1]),
                                   minfi = as.character(packageVersion("minfi")),
-                                  manifest = as.character(packageVersion("IlluminaHumanMethylation450kmanifest")))
+                                  manifest = as.character(packageVersion(.getManifestString(rgSet@annotation))))
     normSet
 }
 

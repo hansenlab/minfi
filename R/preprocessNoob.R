@@ -129,8 +129,7 @@ preprocessNoob <- function(rgSet, offset=15, dyeCorr=TRUE, verbose = TRUE) {
 
     assayDataElement(mset, "Meth") <- meth
     assayDataElement(mset, "Unmeth") <- unmeth
-
-    mset@preprocessMethod <- c( mu.norm = sprintf("Noob, dyeCorr=%s", dyeCorr))
+    mset@preprocessMethod <- c(preprocessMethod(mset), mu.norm = sprintf("Noob, dyeCorr=%s", dyeCorr))
     return(mset)
 }
 
