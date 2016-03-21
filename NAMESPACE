@@ -1,5 +1,5 @@
 import(methods)
-importFrom(matrixStats, rowVars, colMedians, colMads, colQuantiles, rowDiffs)
+importFrom(matrixStats, rowVars, colMedians, colMads, colQuantiles, rowDiffs, colCummaxs)
 import(BiocGenerics)
 importClassesFrom(Biobase, AnnotatedDataFrame, AssayData, eSet, MIAxE,
                   Versions)
@@ -39,6 +39,7 @@ importFrom(nlme, lme, getVarCov)
 importFrom(MASS, huber)
 importFrom(quadprog, solve.QP)
 importFrom(GEOquery,getGEO)
+importFrom(data.table, fread)
 importFrom("grDevices", "dev.off")
 importFrom("graphics", "abline", "axis", "legend", "lines", "par",
            "plot", "plot.new", "stripchart", "text")

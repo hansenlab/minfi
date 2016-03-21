@@ -7,7 +7,10 @@ Make a GenomicRatioSet from a matrix
 Make a GenomicRatioSet from a matrix.
 }
 \usage{
-makeGenomicRatioSetFromMatrix(mat, rownames = NULL, pData = NULL, array = "IlluminaHumanMethylation450k", annotation = .default.450k.annotation, mergeManifest = FALSE, what = c("Beta", "M"))
+makeGenomicRatioSetFromMatrix(mat, rownames = NULL, pData = NULL,
+                              array = "IlluminaHumanMethylation450k",
+                              annotation = .default.450k.annotation,
+                              mergeManifest = FALSE, what = c("Beta", "M"))
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
