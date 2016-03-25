@@ -23,7 +23,7 @@ estimateCellCounts(rgSet, compositeCellType = "Blood",
 	Blood and DLPFC and \code{preprocessNoob} otherwise, in line
 	with the existing literature.  Set it to the name of a
 	preprocessing function as a character if you want to override
-	it, like \code{"preprocessFunnorm"}.
+	it, like \code{"preprocessFunnorm"}.}
   \item{probeSelect}{How should probes be selected to distinguish cell types? Options include 
 	"both", which selects an equal number (50) of probes (with F-stat p-value < 1E-8) with the 
 	greatest magnitude of effect from the hyper- and hypo-methylated sides, and "any", which 
