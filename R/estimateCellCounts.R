@@ -1,5 +1,4 @@
-estimateCellCounts <- function (rgSet, compositeCellType = "Blood", 
-								processMethod = "auto", probeSelect = "auto",
+estimateCellCounts <- function (rgSet, compositeCellType = "Blood", processMethod = "auto", probeSelect = "auto",
                                 cellTypes = c("CD8T","CD4T", "NK","Bcell","Mono","Gran"),
                                 returnAll = FALSE, meanPlot = FALSE, verbose=TRUE, ...) {
     platform <- sub("IlluminaHumanMethylation" annotation(rgSet)[which(names(annotation(rgSet))=="array")])
@@ -22,11 +21,11 @@ estimateCellCounts <- function (rgSet, compositeCellType = "Blood",
                      paste(unique(referenceRGset$cellType), collapse = "', '")))
 	if(length(unique(cellTypes)) < 2)
             stop("At least 2 cell types must be provided.")
-    if ((processMethod == "auto") && (compositeCellType == "CordBlood")){
-        processMethod <- "Noob"} 
-    if ((processMethod == "auto") && (compositeCellType != "CordBlood")){
-        processMethod <- "Quantile"}
-    processMethod <- get(paste0("preprocess%s", processMethod))
+    if ((processMethod == "auto") && (compositeCellType %in% c("Blood", "DLPFC")))
+        processMethod <- "preprocessQuantile"
+    if ((processMethod == "auto") && (!compositeCellType %in% c("Blood", "DLPFC")))
+        processMethod <- "preprocessNoob"
+    processMethod <- get(processMethod)
     if ((probeSelect == "auto") && (compositeCellType == "CordBlood")){
         probeSelect <- "any"} 
     if ((probeSelect == "auto") && (compositeCellType != "CordBlood")){
@@ -36,7 +35,7 @@ estimateCellCounts <- function (rgSet, compositeCellType = "Blood",
     newpd <- data.frame(sampleNames = c(sampleNames(rgSet), sampleNames(referenceRGset)),
                         studyIndex = rep(c("user", "reference"),
                                          times = c(ncol(rgSet), ncol(referenceRGset))),
-                        stringsAsFactors=FALSE)
+                        stringsAsFactors = FALSE)
     referencePd <- pData(referenceRGset)
     pData(referenceRGset) <- data.frame() #To avoid errors in the combine call
     combinedRGset <- combine(rgSet, referenceRGset)

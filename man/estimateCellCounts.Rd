@@ -19,10 +19,11 @@ estimateCellCounts(rgSet, compositeCellType = "Blood",
   \item{compositeCellType}{Which composite cell type is being deconvoluted. Should
 	be one of "Blood", "CordBlood", or "DLPFC". See details. }
   \item{processMethod}{How should the user and reference data be processed together?
-	Default input "auto" will use \code{preprocessNoob} for cord blood and \code{preprocessQuantile}
-	otherwise, in line with previous versions of this function and/or our recommendations. The
-	user can also input one of "Funnorm","Illumina","Noob","Quantile", or "SWAN" to manually select
-	the processing function.}
+	Default input "auto" will use \code{preprocessQuantile} for
+	Blood and DLPFC and \code{preprocessNoob} otherwise, in line
+	with the existing literature.  Set it to the name of a
+	preprocessing function as a character if you want to override
+	it, like \code{"preprocessFunnorm"}.
   \item{probeSelect}{How should probes be selected to distinguish cell types? Options include 
 	"both", which selects an equal number (50) of probes (with F-stat p-value < 1E-8) with the 
 	greatest magnitude of effect from the hyper- and hypo-methylated sides, and "any", which 
