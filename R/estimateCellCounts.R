@@ -1,7 +1,7 @@
 estimateCellCounts <- function (rgSet, compositeCellType = "Blood", processMethod = "auto", probeSelect = "auto",
                                 cellTypes = c("CD8T","CD4T", "NK","Bcell","Mono","Gran"),
                                 returnAll = FALSE, meanPlot = FALSE, verbose=TRUE, ...) {
-    platform <- sub("IlluminaHumanMethylation" annotation(rgSet)[which(names(annotation(rgSet))=="array")])
+    platform <- sub("IlluminaHumanMethylation", "", annotation(rgSet)[which(names(annotation(rgSet))=="array")])
     if((compositeCellType == "CordBlood") && (!"nRBC" %in% cellTypes))
         cat("[estimateCellCounts] Consider including 'nRBC' in argument 'cellTypes' for cord blood estimation.\n")   
     referencePkg <- sprintf("FlowSorted.%s.%s", compositeCellType, platform)
@@ -97,7 +97,7 @@ pickCompProbes <- function(mSet, cellTypes = NULL, numProbes = 50, compositeCell
     
     p <- getBeta(mSet)
     pd <- as.data.frame(pData(mSet))
-    if(!is.null(cellTypes) {
+    if(!is.null(cellTypes)) {
         if(!all(cellTypes %in% pd$CellType))
             stop("elements of argument 'cellTypes' is not part of 'mSet$CellType'")
         keep <- which(pd$CellType %in% cellTypes)
