@@ -1,5 +1,5 @@
 Package: minfi
-Version: 1.19.1
+Version: 1.19.2
 Title: Analyze Illumina's methylation arrays
 Description: Tools for analyzing and visualizing Illumina's methylation array data.
 Authors@R: c(person(c("Kasper", "Daniel"), "Hansen", role = c("cre", "aut"),
