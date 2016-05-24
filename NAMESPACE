@@ -76,7 +76,8 @@ export(getManifest, getProbeInfo, getManifestInfo,
        getSex, plotSex, addSex, bumphunter,
        blockFinder, cpgCollapse,
        estimateCellCounts, gaphunter,
-       compartments, createCorMatrix, extractAB)
+       compartments, createCorMatrix, extractAB, 
+       subsetByCpG, getCpGNamesFromRGSet)
 
 exportClasses(RGChannelSet, RGChannelSetExtended,
               MethylSet, RatioSet,

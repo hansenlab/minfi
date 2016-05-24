@@ -114,12 +114,17 @@ getGreen <- function(object) {
     assayDataElement(object, "Green")
 }
 
-getOOB <- function(object) {
-    .isRG(object)
-    IRed   <- getProbeInfo(object, type = "I-Red")
+getOOB <- function (object) {
+    minfi:::.isRG(object)
+    locusNames <- getCpGNamesFromRGSet(rgSet)
+    IRed <- getProbeInfo(object, type = "I-Red")
+    IRed <- IRed[IRed$Name %in% locusNames,]
     IGrn <- getProbeInfo(object, type = "I-Green")
-    oob.green <- rbind(getGreen(object)[IRed$AddressA,,drop=FALSE], getGreen(object)[IRed$AddressB,,drop=FALSE])
-    oob.red   <- rbind(getRed(object)[IGrn$AddressA,,drop=FALSE], getRed(object)[IGrn$AddressB,,drop=FALSE])
+    IGrn <- IGrn[IGrn$Name %in% locusNames,]
+    oob.green <- rbind(getGreen(object)[IRed$AddressA, ], getGreen(object)[IRed$AddressB, 
+        ])
+    oob.red <- rbind(getRed(object)[IGrn$AddressA, ], getRed(object)[IGrn$AddressB, 
+        ])
     return(list(Grn = oob.green, Red = oob.red))
 }
 
