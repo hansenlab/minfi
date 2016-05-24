@@ -1,18 +1,42 @@
 preprocessRaw <- function(rgSet) {
     .isRG(rgSet)
-    locusNames <- getManifestInfo(rgSet, "locusNames")
-    M <- matrix(NA_real_, ncol = ncol(rgSet), nrow = length(locusNames),
-                dimnames = list(locusNames, sampleNames(rgSet)))
+    locusNames <- getCpGNamesFromRGSet(rgSet)
+
+    M <- matrix(NA_real_, ncol = ncol(rgSet), nrow = length(locusNames), 
+        dimnames = list(locusNames, sampleNames(rgSet)))
     U <- M
+
     TypeII.Name <- getProbeInfo(rgSet, type = "II")$Name
-    M[TypeII.Name,] <- getGreen(rgSet)[getProbeInfo(rgSet, type = "II")$AddressA,]
-    U[TypeII.Name,] <- getRed(rgSet)[getProbeInfo(rgSet, type = "II")$AddressA,]
-    TypeI.Red <- getProbeInfo(rgSet, type = "I-Red")
-    TypeI.Green <- getProbeInfo(rgSet, type = "I-Green")
-    M[TypeI.Red$Name,] <- getRed(rgSet)[TypeI.Red$AddressB,]
-    M[TypeI.Green$Name,] <- getGreen(rgSet)[TypeI.Green$AddressB,]
-    U[TypeI.Red$Name,] <- getRed(rgSet)[TypeI.Red$AddressA,]
-    U[TypeI.Green$Name,] <- getGreen(rgSet)[TypeI.Green$AddressA,]
+    TypeII.Name <- intersect(TypeII.Name, locusNames)
+
+    if (length(TypeII.Name)>0){
+        temp <- getProbeInfo(rgSet, type="II")
+        add <- temp[match(TypeII.Name, temp$Name),]$AddressA
+        M[TypeII.Name, ] <- getGreen(rgSet)[add, ]
+        U[TypeII.Name, ] <- getRed(rgSet)[add, ]
+    }
+ 
+    TypeI.Red.Name <- getProbeInfo(rgSet, type = "I-Red")$Name
+    TypeI.Red.Name <- intersect(TypeI.Red.Name, locusNames)
+
+    if (length(TypeI.Red.Name)>0){
+        temp <- getProbeInfo(rgSet, type="I-Red")
+        add.A <- temp[match(TypeI.Red.Name, temp$Name),]$AddressA
+        add.B <- temp[match(TypeI.Red.Name, temp$Name),]$AddressB
+        M[TypeI.Red.Name, ] <- getRed(rgSet)[add.B, ]
+        U[TypeI.Red.Name, ] <- getRed(rgSet)[add.A, ]
+    }
+
+    TypeI.Green.Name <- getProbeInfo(rgSet, type = "I-Green")$Name
+    TypeI.Green.Name <- intersect(TypeI.Green.Name, locusNames)
+
+    if (length(TypeI.Green.Name)>0){
+        temp <- getProbeInfo(rgSet, type="I-Green")
+        add.A <- temp[match(TypeI.Green.Name, temp$Name),]$AddressA
+        add.B <- temp[match(TypeI.Green.Name, temp$Name),]$AddressB
+        M[TypeI.Green.Name, ] <- getGreen(rgSet)[add.B, ]
+        U[TypeI.Green.Name, ] <- getGreen(rgSet)[add.A, ]
+    }
     out <- MethylSet(Meth = M, Unmeth = U, phenoData = phenoData(rgSet),
                      annotation = annotation(rgSet))
     ## TODO:
@@ -20,7 +44,7 @@ preprocessRaw <- function(rgSet) {
     ## packageVersion expects a string
     out@preprocessMethod <- c(rg.norm = "Raw (no normalization or bg correction)",
                               minfi = as.character(packageVersion("minfi")),
-                              manifest = as.character(packageVersion(.getManifestString(rgSet@annotation))))
+                              manifest = as.character(packageVersion("IlluminaHumanMethylation450kmanifest")))
                               #packageVersion(getManifest(rgSet)))
     out
 }
