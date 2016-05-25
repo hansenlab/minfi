@@ -88,9 +88,12 @@ getControlTypes(object)
 
   \describe{
     \item{\code{getManifest(object)}}{Get the manifest object.}
-    \item{\code{getProbeInfo(object)}}{Returns a \code{data.frame}
+    \item{\code{getProbeInfo(object)}}{Returns a \code{DataFrame}
     giving the type I, type II or control probes.  It is also possible
-    to get the type I probes measured in the Green or Red channel.}
+    to get the type I probes measured in the Green or Red channel.  This
+    function ensures that the return object only contains probes which
+    are part of the input object.  In case of a \code{RGChannelSet} and
+    type I probes, both addresses needs to be in the object.}
    \item{\code{getManifestInfo(object)}}{Get some information about the
     manifest object (the chip design).}
    \item{\code{getControlAddress(object)}}{Get the control addresses for

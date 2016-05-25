@@ -133,6 +133,12 @@ ilogit2 <- function(x) { 2^(x) / (1+2^(x)) }
                      class(object)))
 }
 
+.isMethylOrRatio <- function(object) {
+    (is(object, "MethylSet") || is(object, "GenomicMethylSet") ||
+        is(object, "RatioSet") || is(object, "GenomicRatioSet"))
+}
+
+
 .isRGOrStop <- function(object) {
     if(!is(object, "RGChannelSet"))
         stop(sprintf("object is of class '%s', but needs to be of class 'RGChannelSet' or 'RGChannelSetExtended'",

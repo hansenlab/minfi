@@ -108,10 +108,18 @@ getProbeInfo <- function(object, type = c("I", "II", "Control", "I-Green", "I-Re
         out <- getManifest(object)@data[["TypeI"]]
         out <- out[out$Color == "Red",]
     }
-    if(is(object, RGChannelSet)) {
-        ## subset out
+    if(is(object, "RGChannelSet")) {
+        if("Address" %in% names(out))
+            out <- out[out$Address %in% rownames(object),]
+        if("AddressA" %in% names(out))
+            out <- out[out$AddressA %in% rownames(object),]
+        if("AddressB" %in% names(out))
+            out <- out[out$AddressB %in% rownames(object),]
     }
-    if(is(object, "MethylSet") || is
+    if(.isMethylOrRatio(object)) {
+        out <- out[out$Name %in% rownames(object),]
+    }
+    out
 }
 
 getManifestInfo <- function(object, type = c("nLoci", "locusNames")) {
