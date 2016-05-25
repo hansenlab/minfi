@@ -215,7 +215,7 @@ getSnpInfo <- function(object, snpAnno = NULL) {
 }
 
 addSnpInfo <- function(object, snpAnno = NULL) {
-    .isGenomic(object)
+    .isGenomicOrStop(object)
     snps <- getSnpInfo(object = object, snpAnno = snpAnno)
     mcolsNames <- names(mcols(granges(object)))
     if(any(mcolsNames %in% names(snps)))
@@ -252,7 +252,7 @@ addSnpInfo <- function(object, snpAnno = NULL) {
 }
 
 dropLociWithSnps <- function(object, snps = c("CpG", "SBE"), maf = 0, snpAnno = NULL){
-    .isGenomic(object)
+    .isGenomicOrStop(object)
     maf_cols <- paste0(snps, "_maf")
     snpDF  <- getSnpInfo(object, snpAnno = snpAnno)
     choices <- c("Probe_maf", "CpG_maf", "SBE_maf")

@@ -1,5 +1,5 @@
 getSex <- function(object = NULL, cutoff = -2){
-    .isGenomic(object)
+    .isGenomicOrStop(object)
     if(is(object, "GenomicMethylSet"))
         CN <- getCN(object)
     if(is(object, "GenomicRatioSet"))

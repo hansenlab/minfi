@@ -108,38 +108,36 @@ ilogit2 <- function(x) { 2^(x) / (1+2^(x)) }
     digest::digest(content)
 }
 
-.isGenomic <- function(object) {
+.isGenomicOrStop <- function(object) {
     if(!is(object, "GenomicMethylSet") && !is(object, "GenomicRatioSet"))
         stop(sprintf("object is of class '%s', but needs to be of class 'GenomicMethylSet' or 'GenomicRatioSet'",
                      class(object)))
 }
 
-.isMethyl <- function(object) {
+.isMethylOrStop <- function(object) {
     if(!is(object, "MethylSet") && !is(object, "GenomicMethylSet"))
         stop(sprintf("object is of class '%s', but needs to be of class 'MethylSet' or 'GenomicMethylSet'",
                      class(object)))
 }
 
-.isGenomicMethyl <- function(object) {
+.isGenomicMethylOrStop <- function(object) {
     if(!is(object, "GenomicMethylSet"))
         stop(sprintf("object is of class '%s', but needs to be of class 'GenomicMethylSet'",
                      class(object)))
 }
 
-.isMethylOrRatio <- function(object) {
+.isMethylOrRatioOrStop <- function(object) {
     if(!is(object, "MethylSet") && !is(object, "GenomicMethylSet") &&
        !is(object, "RatioSet") && !is(object, "GenomicRatioSet"))
         stop(sprintf("object is of class '%s', but needs to be of class '[Genomic]MethylSet' or '[Genomic]RatioSet",
                      class(object)))
 }
 
-.isRG <- function(object) {
+.isRGOrStop <- function(object) {
     if(!is(object, "RGChannelSet"))
         stop(sprintf("object is of class '%s', but needs to be of class 'RGChannelSet' or 'RGChannelSetExtended'",
                      class(object)))
 }
-
-
 
 .harmonizeSex <- function(vector) {
     ## FIXME: not done

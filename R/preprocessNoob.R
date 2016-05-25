@@ -1,5 +1,5 @@
 preprocessNoob <- function(rgSet, offset=15, dyeCorr=TRUE, verbose = TRUE) { 
-    .isRG(rgSet)
+    .isRGOrStop(rgSet)
     subverbose <- max(as.integer(verbose) - 1L, 0)
 
     ## Extraction of the out-of-band controls

@@ -8,7 +8,7 @@
 ##
 ## need stuff from gmodels.  Where?
 preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr = TRUE, verbose = TRUE) {
-    .isRG(rgSet)
+    .isRGOrStop(rgSet)
     rgSet <- updateObject(rgSet) ## FIXM: might not KDH: technically, this should not be needed, but might be nice
 
     # Background correction and dye bias normalization:
@@ -49,7 +49,7 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
  }	
 
  .getFunnormIndices <- function(object) {
-     .isGenomic(object)
+     .isGenomicOrStop(object)
      probeType <- getProbeType(object, withColor = TRUE)
      autosomal <- (seqnames(object) %in% paste0("chr", 1:22))
      indices <- list(IGrn = which(probeType == "IGrn" & autosomal),
