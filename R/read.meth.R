@@ -50,7 +50,7 @@ read.metharray <- function(basenames, extended = FALSE, verbose = FALSE) {
     } else if(nrow(RedMean) >= 1052000 && nrow(RedMean) <= 1053000) {
         annotation(out) <- c(array = "IlluminaHumanMethylationEPIC", annotation = .default.epic.annotation)
     } else if(nrow(RedMean) >= 54000 && nrow(RedMean) <= 56000) {
-        annotation(out) <- c(array = "IlluminaHumanMethylation27k", annotation = .default.epic.annotation)
+        annotation(out) <- c(array = "IlluminaHumanMethylation27k", annotation = .default.27k.annotation)
     } else {
         annotation(out) <- c(array = "Unknown", annotation = "XX")
     }
