@@ -15,6 +15,11 @@ preprocessQuantile <- function(object, fixOutliers=TRUE,
     if(verbose) cat("[preprocessQuantile] Mapping to genome.\n")
     object <- mapToGenome(object, mergeManifest = mergeManifest)
     
+    if (annotation(object)[["array"]]=="IlluminaHumanMethylation27k" & stratified){
+        stratified=FALSE
+        warning("The stratification option is not available for 27k arrays.")        
+    }
+    
     if(fixOutliers){
         if(verbose) cat("[preprocessQuantile] Fixing outliers.\n")
         object <- fixMethOutliers(object)
