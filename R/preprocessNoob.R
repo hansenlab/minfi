@@ -94,8 +94,14 @@ preprocessNoob <- function(rgSet, offset=15, dyeCorr=TRUE, verbose = TRUE) {
         internal.controls[['Cy3']] <- xcs[["Cy3"]]
         internal.controls[['Cy5']] <- xcs[["Cy5"]]
 
-        CG.controls <- rownames(internal.controls[[1]]) %in% c("NORM_C", "NORM_G")
-        AT.controls <- rownames(internal.controls[[1]]) %in% c("NORM_A", "NORM_T")
+        if (rgSet@annotation[["array"]]=="IlluminaHumanMethylation450k" | 
+                rgSet@annotation[["array"]]=="IlluminaHumanMethylationEPIC"){
+            CG.controls <- rownames(internal.controls[[1]]) %in% c("NORM_C", "NORM_G")
+            AT.controls <- rownames(internal.controls[[1]]) %in% c("NORM_A", "NORM_T")
+        } else {
+            CG.controls <- rownames(internal.controls[[1]]) %in% c("Normalization-Green")
+            AT.controls <- rownames(internal.controls[[1]]) %in% c("Normalization-Red")
+        }
 
         ## Dye bias normalizastion with the corrected Illumina control probes:
         Green.avg <- colMeans(internal.controls[["Cy3"]][CG.controls,,drop=FALSE])
