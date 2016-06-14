@@ -146,11 +146,10 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
                      "STAINING")
 
     controlAddr <- getControlAddress(rgSet, controlType = controlType, asList = TRUE)
-
-    ## New code
     ctrls <- getProbeInfo(rgSet, type = "Control")
+    if(!all(controlType %in% ctrls$Type))
+        stop("The `rgSet` does not contain all necessary control probes")
     ctrlsList <- split(ctrls, ctrls$Type)[controlType]
-    ## End new code
     
     redControls <- getRed(rgSet)[ctrls$Address,,drop=FALSE]
     redControls <- lapply(ctrlsList, function(ctl) redControls[ctl$Address,,drop=FALSE])
