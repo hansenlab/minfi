@@ -94,7 +94,7 @@ preprocessNoob <- function(rgSet, offset=15, dyeCorr=TRUE, verbose = TRUE) {
         internal.controls[['Cy3']] <- xcs[["Cy3"]]
         internal.controls[['Cy5']] <- xcs[["Cy5"]]
 
-        if (rgSet@annotation[["array"]]=="IlluminaHumanMethylation450k" | 
+        if (rgSet@annotation[["array"]]=="IlluminaHumanMethylation450k" || 
                 rgSet@annotation[["array"]]=="IlluminaHumanMethylationEPIC"){
             CG.controls <- rownames(internal.controls[[1]]) %in% c("NORM_C", "NORM_G")
             AT.controls <- rownames(internal.controls[[1]]) %in% c("NORM_A", "NORM_T")
@@ -110,7 +110,7 @@ preprocessNoob <- function(rgSet, offset=15, dyeCorr=TRUE, verbose = TRUE) {
 
         reference <- which.min(abs(R.G.ratio-1) )
         if(verbose)
-            cat('[preprocessNoob] Using sample number', reference, 'as reference level...\n')
+            message('[preprocessNoob] Using sample number', reference, 'as reference level...\n')
         ref <- (Green.avg + Red.avg)[reference]/2
         if(is.na(ref))
             stop("'reference' refers to an array that is not present")
@@ -143,7 +143,7 @@ preprocessNoob <- function(rgSet, offset=15, dyeCorr=TRUE, verbose = TRUE) {
 
 normexp.get.xs <- function(xf, controls, offset=50, verbose = FALSE){
     if(verbose)
-        cat("[normexp.get.xs] Background mean & SD estimated from", nrow(controls), "probes\n")
+        message("[normexp.get.xs] Background mean & SD estimated from", nrow(controls), "probes\n")
     mu <- sigma <- alpha <- rep(NA, ncol(xf))
     for( i in 1:ncol(xf) ) {
         ests <- huber(controls[, i]) # from MASS

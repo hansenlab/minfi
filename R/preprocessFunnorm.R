@@ -14,21 +14,21 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
     # Background correction and dye bias normalization:
     if (bgCorr){
         if(verbose && dyeCorr) {
-            cat("[preprocessFunnorm] Background and dye bias correction with noob \n") 
+            message("[preprocessFunnorm] Background and dye bias correction with noob \n") 
         } else {
-            cat("[preprocessFunnorm] Background correction with noob \n") 
+            message("[preprocessFunnorm] Background correction with noob \n") 
         }
         gmSet <- preprocessNoob(rgSet, dyeCorr = dyeCorr)
-        if(verbose) cat("[preprocessFunnorm] Mapping to genome\n")
+        if(verbose) message("[preprocessFunnorm] Mapping to genome\n")
         gmSet <- mapToGenome(gmSet)
     } else {
-        if(verbose) cat("[preprocessFunnorm] Mapping to genome\n")
+        if(verbose) message("[preprocessFunnorm] Mapping to genome\n")
         gmSet <- mapToGenome(rgSet)
     }
   
     subverbose <- max(as.integer(verbose) - 1L, 0)
     
-    if(verbose) cat("[preprocessFunnorm] Quantile extraction\n")
+    if(verbose) message("[preprocessFunnorm] Quantile extraction\n")
     extractedData <- .extractFromRGSet450k(rgSet)
     rm(rgSet)
 
@@ -37,7 +37,7 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
         sex <- rep(1L, length(gmSet$predictedSex))
         sex[gmSet$predictedSex == "F"] <- 2L
     }
-    if(verbose) cat("[preprocessFunnorm] Normalization\n")
+    if(verbose) message("[preprocessFunnorm] Normalization\n")
     CN <- getCN(gmSet)
     gmSet <- .normalizeFunnorm450k(object = gmSet, extractedData = extractedData,
                                    sex = sex, nPCs = nPCs, verbose = subverbose)
@@ -82,7 +82,7 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
         for (type in c("IGrn", "IRed", "II")) {
             indices <- indicesList[[type]]
             if(length(indices) > 0) {
-                if(verbose) cat(sprintf("[normalizeFunnorm450k] Normalization of the %s probes\n", type))
+                if(verbose) message(sprintf("[normalizeFunnorm450k] Normalization of the %s probes\n", type))
                 Unmeth[indices,] <- normalizeQuantiles(Unmeth, indices = indices, sex = NULL)
                 Meth[indices,] <- normalizeQuantiles(Meth, indices = indices, sex = NULL)
             }
@@ -90,17 +90,15 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
     
         indices <- indicesList[["X"]]
         if(length(indices) > 0) {
-            if(verbose) cat("[normalizeFunnorm450k] Normalization of the X-chromosome")
+            if(verbose) message("[normalizeFunnorm450k] Normalization of the X-chromosome")
             Unmeth[indices,] <- normalizeQuantiles(Unmeth, indices = indices, sex = sex)
             Meth[indices,] <- normalizeQuantiles(Meth, indices = indices, sex = sex)
         }    
     }
 
-
-
     indices <- indicesList[["Y"]]
     if(length(indices) > 0) {
-        if(verbose) cat("[normalizeFunnorm450k] Normalization of the Y-chromosome")
+        if(verbose) message("[normalizeFunnorm450k] Normalization of the Y-chromosome")
         sex <- as.character(sex)
         levels <- unique(sex)
         nSexes <- length(levels)
@@ -148,14 +146,9 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
                      "STAINING")
 
     controlAddr <- getControlAddress(rgSet, controlType = controlType, asList = TRUE)
-    controlAddr <- lapply(controlAddr, function(addr) {
-        addr[addr %in% featureNames(rgSet)]
-    })
 
     ## New code
     ctrls <- getProbeInfo(rgSet, type = "Control")
-    ## FIXME: should be fixed in the manifest object
-    ctrls <- ctrls[ctrls$Address %in% featureNames(rgSet),,drop=FALSE]
     ctrlsList <- split(ctrls, ctrls$Type)[controlType]
     ## End new code
     
