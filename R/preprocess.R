@@ -32,11 +32,11 @@ normalize.illumina.control <- function(rgSet, reference=1) {
     Green <- getGreen(rgSet)
     Red <- getRed(rgSet)    
     
-    if (rgSet@annotation[["array"]]=="IlluminaHumanMethylation450k" | 
-            rgSet@annotation[["array"]]=="IlluminaHumanMethylationEPIC"){
+    if (.450k(rgSet) || .isEPIC(rgSet)) {
         AT.controls <- getControlAddress(rgSet, controlType = c("NORM_A", "NORM_T"))
         CG.controls <- getControlAddress(rgSet, controlType = c("NORM_C", "NORM_G"))
-    } else {
+    }
+    if (.is27k(rgSet)) {
         AT.controls <- getControlAddress(rgSet, controlType = "Normalization-Red")
         CG.controls <- getControlAddress(rgSet, controlType = "Normalization-Green")
     }
@@ -58,10 +58,10 @@ bgcorrect.illumina <- function(rgSet) {
     .isRGOrStop(rgSet)
     Green <- getGreen(rgSet)
     Red <- getRed(rgSet)
-    if (rgSet@annotation[["array"]]=="IlluminaHumanMethylation450k" | 
-            rgSet@annotation[["array"]]=="IlluminaHumanMethylationEPIC"){
+    if (.is450k(rgSet) || .isEPIC(rgSet)) {
         NegControls <- getControlAddress(rgSet, controlType = "NEGATIVE")
-    } else {
+    }
+    if (.is27k(rgSet)) {
         NegControls <- getControlAddress(rgSet, controlType = "Negative")
     }
     Green.bg <- apply(Green[NegControls, , drop = FALSE], 2, function(xx) sort(xx)[31])

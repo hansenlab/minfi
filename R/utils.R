@@ -146,6 +146,18 @@ ilogit2 <- function(x) { 2^(x) / (1+2^(x)) }
                      class(object)))
 }
 
+.is27k <- function(object) {
+    annotation(object)["array"] == "IlluminaHumanMethylation27k"
+}
+
+.is450k <- function(object) {
+    annotation(object)["array"] == "IlluminaHumanMethylation450k"
+}
+
+.isEPIC <- function(object) {
+    annotation(object)["array"] == "IlluminaHumanMethylationEPIC"
+}
+
 .harmonizeSex <- function(vector) {
     ## FIXME: not done
     stop("function not done")

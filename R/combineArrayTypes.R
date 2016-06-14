@@ -11,7 +11,7 @@ combineArrayTypes <- function(rgSet1, rgSet2, verbose=TRUE){
     if(verbose) {
         message(sprintf("[combineArrayTypes] Casting as %s", annotation(rgSet1)["array"]))
     }
-    if(all(c(annotation(rgSet1)["array"], annotation(rgSet2)["array"]) %in% c("IlluminaHumanMethylation450k", "IlluminaHumanMethylationEPIC"))) {
+    if((.is450k(rgSet1) && .isEPIC(rgSet2)) || (.isEPIC(rgSet1) && .is450k(rgSet2))) {
         rgSet <- .combineArrayTypes_450k_epic(rgSet1 = rgSet1, rgSet2 = rgSet2, verbose = verbose)
     } else {
         stop("Currently, 'combineArrayTypes' only supports combining 'IlluminaHumanMethylation450k' and 'IlluminaHumanMethylationEPIC' arrays.")
@@ -22,8 +22,7 @@ combineArrayTypes <- function(rgSet1, rgSet2, verbose=TRUE){
 .combineArrayTypes_450k_epic <- function(rgSet1, rgSet2, verbose = verbose) {
     minfi:::.isRGOrStop(rgSet1)
     minfi:::.isRGOrStop(rgSet2)
-    stopifnot(all(c(annotation(rgSet1)["array"], annotation(rgSet2)["array"]) %in% c("IlluminaHumanMethylation450k", "IlluminaHumanMethylationEPIC")))
-    stopifnot(annotation(rgSet1)["array"] != annotation(rgSet2)["array"])
+    stopifnot((.is450k(rgSet1) && .isEPIC(rgSet2)) || (.isEPIC(rgSet1) && .is450k(rgSet2)))
     keepAddresses <- list(I = NULL, II = NULL, SnpI = NULL,
                           SnpII = NULL, Control = NULL)
     

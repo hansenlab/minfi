@@ -12,16 +12,16 @@ preprocessQuantile <- function(object, fixOutliers=TRUE,
     if (!is.null(sex))
         sex <- .checkSex(sex)
 
-    if(verbose) cat("[preprocessQuantile] Mapping to genome.\n")
+    if(verbose) message("[preprocessQuantile] Mapping to genome.\n")
     object <- mapToGenome(object, mergeManifest = mergeManifest)
     
-    if (annotation(object)[["array"]]=="IlluminaHumanMethylation27k" & stratified){
-        stratified=FALSE
+    if (.is27k(object) && stratified) {
+        stratified <- FALSE
         warning("The stratification option is not available for 27k arrays.")        
     }
     
     if(fixOutliers){
-        if(verbose) cat("[preprocessQuantile] Fixing outliers.\n")
+        if(verbose) message("[preprocessQuantile] Fixing outliers.\n")
         object <- fixMethOutliers(object)
     }
     qc <- getQC(object)
@@ -29,7 +29,7 @@ preprocessQuantile <- function(object, fixOutliers=TRUE,
     keepIndex <- which(meds > badSampleCutoff)
     if(length(keepIndex) == 0 && removeBadSamples) stop("All samples found to be bad")
     if(length(keepIndex) < ncol(object) && removeBadSamples) {
-        if(verbose) cat(sprintf("[preprocessQuantile] Found and removed %s bad samples.\n",
+        if(verbose) message(sprintf("[preprocessQuantile] Found and removed %s bad samples.\n",
                                 ncol(object) - length(keepIndex)))
         object <- object[, keepIndex]
     }
@@ -44,7 +44,7 @@ preprocessQuantile <- function(object, fixOutliers=TRUE,
     auIndex <- which(seqnames(object) %in% paste0("chr", 1:22))
 
     if(quantileNormalize){
-        if(verbose) cat("[preprocessQuantile] Quantile normalizing.\n")
+        if(verbose) message("[preprocessQuantile] Quantile normalizing.\n")
         if (!stratified) {
             U <- .qnormNotStratified(getUnmeth(object), auIndex, xIndex, yIndex, sex)
             M <- .qnormNotStratified(getMeth(object), auIndex, xIndex, yIndex, sex)
