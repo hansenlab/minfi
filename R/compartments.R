@@ -190,7 +190,7 @@ extractAB <- function(gr, keep = TRUE, svdMethod = "qr"){
     x[!bad] <- x[!bad] / sqrt(sum(x[!bad]^2))
     n.bad <- sum(bad)
     if (n.bad > 0){
-        cat(sprintf("[.unitarize] %i missing values were ignored.\n", n.bad))
+        message(sprintf("[.unitarize] %i missing values were ignored.\n", n.bad))
     }
     return(x)
 }
