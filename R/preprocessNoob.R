@@ -48,24 +48,26 @@ preprocessNoob <- function(rgSet, offset=15, dyeCorr=TRUE, verbose = TRUE) {
     })
     names(estimates) <- names(dat)
 
-    cy3.M <- first[['Cy3']][['M']]:last[['Cy3']][['M']]
-    meth[cy3.probes, ] <- estimates[['Cy3']][['xs']][cy3.M,]
+    if (length(cy3.probes)>0){
+        cy3.M <- first[['Cy3']][['M']]:last[['Cy3']][['M']]
+        meth[cy3.probes, ] <- estimates[['Cy3']][['xs']][cy3.M,]
+        cy3.U <- first[['Cy3']][['U']]:last[['Cy3']][['U']]
+        unmeth[cy3.probes,] <- estimates[['Cy3']][['xs']][cy3.U,]
+    }
 
-    cy3.U <- first[['Cy3']][['U']]:last[['Cy3']][['U']]
-    unmeth[cy3.probes,] <- estimates[['Cy3']][['xs']][cy3.U,]
+    if (length(cy5.probes)>0){
+        cy5.M <- first[['Cy5']][['M']]:last[['Cy5']][['M']]
+        meth[cy5.probes,] <- estimates[['Cy5']][['xs']][cy5.M,]
+        cy5.U <- first[['Cy5']][['U']]:last[['Cy5']][['U']]
+        unmeth[cy5.probes,] <- estimates[['Cy5']][['xs']][cy5.U,]
+    }
 
-    cy5.M <- first[['Cy5']][['M']]:last[['Cy5']][['M']]
-    meth[cy5.probes,] <- estimates[['Cy5']][['xs']][cy5.M,]
-
-    cy5.U <- first[['Cy5']][['U']]:last[['Cy5']][['U']]
-    unmeth[cy5.probes,] <- estimates[['Cy5']][['xs']][cy5.U,]
-
-    d2.M <- first[['Cy3']][['D2']]:last[['Cy3']][['D2']]
-    d2.U <- first[['Cy5']][['D2']]:last[['Cy5']][['D2']]
-
-    meth[d2.probes,] <- estimates[['Cy3']][['xs']][d2.M,]
-    unmeth[d2.probes,] <- estimates[['Cy5']][['xs']][d2.U,]
-
+    if (length(d2.probes)>0){
+        d2.M <- first[['Cy3']][['D2']]:last[['Cy3']][['D2']]
+        d2.U <- first[['Cy5']][['D2']]:last[['Cy5']][['D2']]
+        meth[d2.probes,] <- estimates[['Cy3']][['xs']][d2.M,]
+        unmeth[d2.probes,] <- estimates[['Cy5']][['xs']][d2.U,]
+    }
     ## This next code block does nothing because the rgSet is not returned
     ## and pData(rgSet) is not referenced below
     for(ch in names(estimates)) { 
@@ -92,8 +94,14 @@ preprocessNoob <- function(rgSet, offset=15, dyeCorr=TRUE, verbose = TRUE) {
         internal.controls[['Cy3']] <- xcs[["Cy3"]]
         internal.controls[['Cy5']] <- xcs[["Cy5"]]
 
-        CG.controls <- rownames(internal.controls[[1]]) %in% c("NORM_C", "NORM_G")
-        AT.controls <- rownames(internal.controls[[1]]) %in% c("NORM_A", "NORM_T")
+        if (rgSet@annotation[["array"]]=="IlluminaHumanMethylation450k" | 
+                rgSet@annotation[["array"]]=="IlluminaHumanMethylationEPIC"){
+            CG.controls <- rownames(internal.controls[[1]]) %in% c("NORM_C", "NORM_G")
+            AT.controls <- rownames(internal.controls[[1]]) %in% c("NORM_A", "NORM_T")
+        } else {
+            CG.controls <- rownames(internal.controls[[1]]) %in% c("Normalization-Green")
+            AT.controls <- rownames(internal.controls[[1]]) %in% c("Normalization-Red")
+        }
 
         ## Dye bias normalizastion with the corrected Illumina control probes:
         Green.avg <- colMeans(internal.controls[["Cy3"]][CG.controls,,drop=FALSE])
