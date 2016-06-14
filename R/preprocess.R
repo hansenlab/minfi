@@ -32,7 +32,7 @@ normalize.illumina.control <- function(rgSet, reference=1) {
     Green <- getGreen(rgSet)
     Red <- getRed(rgSet)    
     
-    if (.450k(rgSet) || .isEPIC(rgSet)) {
+    if (.is450k(rgSet) || .isEPIC(rgSet)) {
         AT.controls <- getControlAddress(rgSet, controlType = c("NORM_A", "NORM_T"))
         CG.controls <- getControlAddress(rgSet, controlType = c("NORM_C", "NORM_G"))
     }
