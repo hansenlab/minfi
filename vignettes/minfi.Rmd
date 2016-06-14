@@ -32,7 +32,7 @@ The MINFI package contains methods which are described across multiple manuscrip
 - If you are using MINFI in a publication, please cite [@minfi].  This publication includes details on sex estimation using `getSex()`, quality control using `getQC()`, quantile normalization using `preprocessQuantile()`, bump hunting using `bumphunter()` and block finding using `blockFinder()`.
 - If you are using `preprocessQuantile()`, it would be considerate to also cite [@Touleimat:2012], since this publication describes a method essentially identical to `preprocessQuantile()`.
 - If you are using `bumphunter()`, you should also cite the original bump hunter publication [@bumphunter].
-- If you are using SWAN normalization as implemented in `preprocessSWAN()` please cite [@Maksimovic:2012].
+- If you are using SWAN normalization as implemented in `preprocessSWAN()` please cite [@SWAN].
 - If you are using noob background correction as implemented in `preprocessNoob()`, please cite [@noob].
 - If you are using functional normalization as implemented in `preprocessFunnorm()`, please cite [@funnorm]. The default in `preprocessFunnorm()` is to do noob background correction. If this is used, please also cite [@noob].
 - If you are estimating A/B compartments as implemented in `compartments()` and `extractAB()`, please cite [@compartments].
