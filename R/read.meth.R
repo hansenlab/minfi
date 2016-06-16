@@ -68,21 +68,21 @@ read.metharray.sheet <- function(base, pattern = "csv$", ignore.case = TRUE,
             dataheader <- 0
         df <- read.csv(file, stringsAsFactor = FALSE, skip = dataheader)
         if(length(nam <- grep("Sentrix_Position", names(df), ignore.case = TRUE, value = TRUE)) == 1) {
-            df$Array <- df[, nam]
+            df$Array <- as.character(df[, nam])
             df[, nam] <- NULL
         }
         if(length(nam <- grep("Array[\\._]ID", names(df), ignore.case = TRUE, value = TRUE)) == 1) {
-            df$Array <- df[, nam]
+            df$Array <- as.character(df[, nam])
             df[, nam] <- NULL
         }
         if(! "Array" %in% names(df))
             warning(sprintf("Could not infer array name for file: %s", file))
         if(length(nam <- grep("Sentrix_ID", names(df), ignore.case = TRUE, value = TRUE)) == 1) {
-            df$Slide <- df[, nam]
+            df$Slide <- as.character(df[, nam])
             df[, nam] <- NULL
         }
         if(length(nam <- grep("Slide[\\._]ID", names(df), ignore.case = TRUE, value = TRUE)) == 1) {
-            df$Slide <- df[, nam]
+            df$Slide <- as.character(df[, nam])
             df[, nam] <- NULL
         }
         if(! "Slide" %in% names(df))
@@ -90,9 +90,15 @@ read.metharray.sheet <- function(base, pattern = "csv$", ignore.case = TRUE,
         else
             df[, "Slide"] <- as.character(df[, "Slide"])
         if(length(nam <- grep("Plate[\\._]ID", names(df), ignore.case = TRUE, value = TRUE)) == 1) {
-            df$Plate <- df[, nam]
+            df$Plate <- as.character(df[, nam])
             df[, nam] <- NULL
         }
+        for(nam in c("Pool_ID", "Sample_Plate", "Sample_Well")) {
+            if(nam %in% names(df)) {
+                df[[nam]] <- as.character(df[[nam]])
+            }
+        }
+            
         if(!is.null(df$Array)) {
             patterns <- sprintf("%s_%s_Grn.idat", df$Slide, df$Array)
             allfiles <- list.files(dirname(file), recursive = recursive, full.names = TRUE)
