@@ -1,4 +1,23 @@
-read.metharray <- function(basenames, extended = FALSE, verbose = FALSE) {
+.guessArrayTypes <- function(nProbes) {
+    if(nProbes >= 622000 && nProbes <= 623000) {
+        arrayAnnotation <- c(array = "IlluminaHumanMethylation450k", annotation = .default.450k.annotation)
+    } else if(nProbes >= 1052000 && nProbes <= 1053000) {
+        ## "Current EPIC scan type"
+        arrayAnnotation <- c(array = "IlluminaHumanMethylationEPIC", annotation = .default.epic.annotation)
+    } else if(nProbes >= 1032000 && nProbes <= 1033000) {
+        ## "Old EPIC scan type"
+        arrayAnnotation <- c(array = "IlluminaHumanMethylationEPIC", annotation = .default.epic.annotation) 
+    } else if(nProbes >= 54000 && nProbes <= 56000) {
+        arrayAnnotation <- c(array = "IlluminaHumanMethylation27k", annotation = .default.27k.annotation)
+    } else {
+        arrayAnnotation <- c(array = "Unknown", annotation = "Unknown")
+    }
+    arrayAnnotation
+}
+
+
+
+read.metharray <- function(basenames, extended = FALSE, verbose = FALSE, force = FALSE) {
     basenames <- sub("_Grn\\.idat$", "", basenames)
     basenames <- sub("_Red\\.idat$", "", basenames)
     G.files <- paste(basenames, "_Grn.idat", sep = "")
@@ -26,12 +45,38 @@ read.metharray <- function(basenames, extended = FALSE, verbose = FALSE) {
     if(verbose) message("[read.metharray] Read idat files in ", stime, "seconds\n")
     if(verbose) message("[read.metharray] Creating data matrices ... ")
     ptime1 <- proc.time()
-    GreenMean <- do.call(cbind, lapply(G.idats, function(xx) xx$Quants[, "Mean"]))
-    RedMean <- do.call(cbind, lapply(R.idats, function(xx) xx$Quants[, "Mean"]))
-    if(extended) {
-        GreenSD <- do.call(cbind, lapply(G.idats, function(xx) xx$Quants[, "SD"]))
-        RedSD <- do.call(cbind, lapply(R.idats, function(xx) xx$Quants[, "SD"]))
-        NBeads <- do.call(cbind, lapply(G.idats, function(xx) xx$Quants[, "NBeads"]))
+    allNProbes <- sapply(G.idats, function(xx) nrow(xx$Quants))
+    arrayTypes <- cbind(do.call(rbind, lapply(allNProbes, .guessArrayTypes)),
+                        size = allNProbes)
+    sameLength <- (length(unique(arrayTypes[, "size"])) == 1)
+    sameArray <- (length(unique(arrayTypes[, "array"])) == 1)
+    
+    if(!sameLength && !sameArray) {
+        cat("[read.metharray] Trying to parse IDAT files from different arrays.\n")
+        cat("  Inferred Array sizes and types:\n")
+        print(arrayTypes[, c("array", "size")])
+        stop("[read.metharray] Trying to parse different IDAT files, of different size and type.")
+    }
+    if(!sameLength && sameArray && !force) {
+        stop("[read.metharray] Trying to parse IDAT files with different array size but seemingly all of the same type.\n  You can force this by 'force=TRUE', see the man page ?read.metharray")
+    }
+    if(sameLength) {
+        GreenMean <- do.call(cbind, lapply(G.idats, function(xx) xx$Quants[, "Mean"]))
+        RedMean <- do.call(cbind, lapply(R.idats, function(xx) xx$Quants[, "Mean"]))
+        if(extended) {
+            GreenSD <- do.call(cbind, lapply(G.idats, function(xx) xx$Quants[, "SD"]))
+            RedSD <- do.call(cbind, lapply(R.idats, function(xx) xx$Quants[, "SD"]))
+            NBeads <- do.call(cbind, lapply(G.idats, function(xx) xx$Quants[, "NBeads"]))
+        }
+    } else {
+        commonAddresses <- as.character(Reduce("intersect", lapply(G.idats, function(xx) rownames(xx$Quants))))
+        GreenMean <- do.call(cbind, lapply(G.idats, function(xx) xx$Quants[commonAddresses, "Mean"]))
+        RedMean <- do.call(cbind, lapply(R.idats, function(xx) xx$Quants[commonAddresses, "Mean"]))
+        if(extended) {
+            GreenSD <- do.call(cbind, lapply(G.idats, function(xx) xx$Quants[commonAddresses, "SD"]))
+            RedSD <- do.call(cbind, lapply(R.idats, function(xx) xx$Quants[commonAddresses, "SD"]))
+            NBeads <- do.call(cbind, lapply(G.idats, function(xx) xx$Quants[commonAddresses, "NBeads"]))
+        }
     }
     ptime2 <- proc.time()
     stime <- (ptime2 - ptime1)[3]
@@ -45,15 +90,7 @@ read.metharray <- function(basenames, extended = FALSE, verbose = FALSE) {
         out <- new("RGChannelSet", Red = RedMean, Green = GreenMean)
     }
     featureNames(out) <- rownames(G.idats[[1]]$Quants)
-    if(nrow(RedMean) >= 622000 && nrow(RedMean) <= 623000) {
-        annotation(out) <- c(array = "IlluminaHumanMethylation450k", annotation = .default.450k.annotation)
-    } else if(nrow(RedMean) >= 1052000 && nrow(RedMean) <= 1053000) {
-        annotation(out) <- c(array = "IlluminaHumanMethylationEPIC", annotation = .default.epic.annotation)
-    } else if(nrow(RedMean) >= 54000 && nrow(RedMean) <= 56000) {
-        annotation(out) <- c(array = "IlluminaHumanMethylation27k", annotation = .default.27k.annotation)
-    } else {
-        annotation(out) <- c(array = "Unknown", annotation = "XX")
-    }
+    annotation(out) <- c(array = arrayTypes[1,1], annotation = arrayTypes[1,2])
     ptime2 <- proc.time()
     stime <- (ptime2 - ptime1)[3]
     if(verbose) message("done in", stime, "seconds\n")
