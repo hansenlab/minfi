@@ -7,7 +7,7 @@
   Parsing IDAT files from Illumina methylation arrays.
 }
 \usage{
-read.metharray(basenames, extended = FALSE, verbose = FALSE)
+read.metharray(basenames, extended = FALSE, verbose = FALSE, force = FALSE)
 }
 \arguments{
   \item{basenames}{The basenames or filenames of the IDAT files.  By
@@ -18,10 +18,21 @@ read.metharray(basenames, extended = FALSE, verbose = FALSE)
   \item{extended}{Should a \code{RGChannelSet} or a
     \code{RGChannelSetExtended} be returned. }
   \item{verbose}{Should the function be verbose?}
+  \item{force}{Should reading different size IDAT files be forced? See
+    Details.}
 }
 \details{
   The type of methylation array is guess by looking at the number of
   probes in the IDAT files.
+
+  We have seen IDAT files from the same array, but with different number
+  of probes in the wild.  Specifically this is the case for early access
+  EPIC arrays which have fewer probes than final release EPIC arrays.
+  It is possible to combine IDAT files from the same inferred array, but
+  with different number of probes, into the same \code{RGChannelSet} by
+  setting \code{force=TRUE}.  The output object will have the same
+  number of probes as the smallest array being parsed; effectively
+  removing probes which could have been analyzed.
 }
 \value{
   An object of class \code{RGChannelSet} or

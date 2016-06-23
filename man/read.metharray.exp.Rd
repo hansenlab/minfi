@@ -9,7 +9,7 @@
 }
 \usage{
 read.metharray.exp(base = NULL, targets = NULL, extended = FALSE,
-    recursive = FALSE, verbose = FALSE)
+    recursive = FALSE, verbose = FALSE, force = FALSE)
 }
 \arguments{
   \item{base}{The base directory.}
@@ -18,6 +18,8 @@ read.metharray.exp(base = NULL, targets = NULL, extended = FALSE,
     \code{"RGChannelSetExtended"} (default is \code{"RGChannelSet"}).}
   \item{recursive}{Should the search be recursive (see details)}
   \item{verbose}{Should the function be verbose?}
+  \item{force}{Should reading different size IDAT files be forced? See
+    the documentation for \code{\link{read.metharray}}}
 }
 \details{
   If the \code{targets} argument is \code{NULL}, the function finds all

@@ -172,7 +172,7 @@ read.metharray.sheet <- function(base, pattern = "csv$", ignore.case = TRUE,
     
 
 read.metharray.exp <- function(base = NULL, targets = NULL, extended = FALSE, 
-                               recursive = FALSE, verbose = FALSE) {
+                               recursive = FALSE, verbose = FALSE, force = FALSE) {
     if(!is.null(targets)) {
         if(! "Basename" %in% names(targets))
             stop("Need 'Basename' amongst the column names of 'targets'")
@@ -181,7 +181,7 @@ read.metharray.exp <- function(base = NULL, targets = NULL, extended = FALSE,
         } else {
             files <- targets$Basename
         }
-        rgSet <- read.metharray(files, extended = extended, verbose = verbose)
+        rgSet <- read.metharray(files, extended = extended, verbose = verbose, force = force)
         pD <- targets
         pD$filenames <- files
         rownames(pD) <- sampleNames(rgSet)
@@ -206,6 +206,6 @@ read.metharray.exp <- function(base = NULL, targets = NULL, extended = FALSE,
     if(!setequal(commonFiles.Red, Red.files))
         warning(sprintf("the following files only exists for the red channel: %s",
                         paste(setdiff(Red.files, commonFiles.Red), collapse = ", ")))
-    rgSet <- read.metharray(basenames = commonFiles, extended = extended, verbose = verbose)
+    rgSet <- read.metharray(basenames = commonFiles, extended = extended, verbose = verbose, force = force)
     rgSet
 }

@@ -15,7 +15,7 @@
   \itemize{
     \item{\code{read.450k}: Use \code{\link{read.metharray}}}
     \item{\code{read.450k.sheet}: Use \code{\link{read.metharray.sheet}}}
-    \item{\code{read.450k.exp}: \Use \code{\link{read.metharray.exp}}}
+    \item{\code{read.450k.exp}: Use \code{\link{read.metharray.exp}}}
   }
 }
 
