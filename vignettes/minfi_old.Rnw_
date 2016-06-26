@@ -1,4 +1,4 @@
-%\VignetteIndexEntry{Minfi Guide}
+%\VignetteIndexEntry{Old Minfi Guide}
 %\VignetteDepends{minfi}
 %\VignetteDepends{minfiData}
 %\VignettePackage{minfi}
@@ -23,13 +23,16 @@ options(width=70)
 \newcommand{\R}{\software{R}}
 
 \title{The minfi User's Guide\\
-  Analyzing Illumina 450k Methylation Arrays}
+  Analyzing Illumina 450k Methylation Arrays\\
+OLD -- New version is being created}
 \author{Kasper D.\ Hansen \and Martin J. Aryee}
 \date{Modified: October 9, 2011.  Compiled: \today}
 
 \begin{document}
 \maketitle
 \setcounter{secnumdepth}{1} 
+
+This vignette is being modified and re-written.
 
 \section{Introduction}
 
@@ -137,10 +140,10 @@ because of file size limitations and because we only need 6 arrays to illustrate
 functionality. 
 
 First we read the sample sheet.  We provide a convenience function for reading in this file
-\Rcode{read.450k.sheet}.  This function has a couple of attractive bells and whistles.  Let us look
+\Rcode{read.metharray.sheet}.  This function has a couple of attractive bells and whistles.  Let us look
 at the output
 <<sampleSheet>>=
-targets <- read.450k.sheet(baseDir)
+targets <- read.metharray.sheet(baseDir)
 targets
 @ 
 First the output: this is just a \Rcode{data.frame}.  It contains a column \Rcode{Basename} that
@@ -156,7 +159,7 @@ sub(baseDir, "", targets$Basename)
 
 With this \Rcode{data.frame}, it is easy to read in the data
 <<paths>>= 
-RGset <- read.450k.exp(targets = targets)
+RGset <- read.metharray.exp(targets = targets)
 @ 
 Let us look at the associated pheno data, which is really just the information contained in the
 targets object above.
@@ -166,18 +169,18 @@ pd <- pData(RGset)
 pd[,1:4]
 @ 
 
-The \Rcode{read.450k.exp} also makes it possible to read in an entire directory or directory tree
+The \Rcode{read.metharray.exp} also makes it possible to read in an entire directory or directory tree
 (with \Rcode{recursive} set to \Rcode{TRUE}) by using the function just with the argument \Rcode{base}
 and \Rcode{targets=NULL}, like
 <<read2>>=
-RGset2 = read.450k.exp(file.path(baseDir, "5723646052"))
-RGset3 = read.450k.exp(baseDir, recursive = TRUE)
+RGset2 = read.metharray.exp(file.path(baseDir, "5723646052"))
+RGset3 = read.metharray.exp(baseDir, recursive = TRUE)
 @ 
 
 \subsubsection{Advanced notes on Reading Data}
 
 The only important column in sheet \Rcode{data.frame} used in the \Rcode{targets} argument for the
-\Rcode{read.450k.exp} function is a column names \Rcode{Basename}.  Typically, such an object would
+\Rcode{read.metharray.exp} function is a column names \Rcode{Basename}.  Typically, such an object would
 also have columns named \Rcode{Array}, \Rcode{Slide}, and (optionally) \Rcode{Plate}.
 
 We used sheet data files build on top of the Sample Sheet data file provided by Illumina.  This is a
@@ -198,7 +201,7 @@ targets2$Basename <- file.path(baseDir, targets2$Sentrix_ID,
                                       targets2$Sentrix_Position))
 @ 
 
-Finally, \Rpackage{minfi} contains a file-based parser: \Rcode{read.450k}.  The return object
+Finally, \Rpackage{minfi} contains a file-based parser: \Rcode{read.metharray}.  The return object
 represents the red and the green channel measurements of the samples.  A useful function that we get
 from the package \Rpackage{Biobase} is \Rcode{combine} that combines (``adds'') two sets of samples.
 This allows the user to manually build up an \Rcode{RGChannelSet}.

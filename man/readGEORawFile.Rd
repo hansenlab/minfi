@@ -7,7 +7,11 @@
   Read in Unmethylated and Methylated signals from a GEO raw file.
 }
 \usage{
-readGEORawFile(filename, sep = ",", Uname = "Unmethylated signal", Mname = "Methylated signal", row.names = 1, pData = NULL, array = "IlluminaHumanMethylation450k", annotation = .default.450k.annotation, mergeManifest = FALSE, showProgress = TRUE)
+readGEORawFile(filename, sep = ",", Uname = "Unmethylated signal",
+               Mname = "Methylated signal", row.names = 1, pData = NULL,
+               array = "IlluminaHumanMethylation450k",
+               annotation = .default.450k.annotation, mergeManifest = FALSE,
+               showProgress = TRUE)
 }
 
 \arguments{

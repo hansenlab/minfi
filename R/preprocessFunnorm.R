@@ -8,27 +8,27 @@
 ##
 ## need stuff from gmodels.  Where?
 preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr = TRUE, verbose = TRUE) {
-    .isRG(rgSet)
+    .isRGOrStop(rgSet)
     rgSet <- updateObject(rgSet) ## FIXM: might not KDH: technically, this should not be needed, but might be nice
 
     # Background correction and dye bias normalization:
     if (bgCorr){
         if(verbose && dyeCorr) {
-            cat("[preprocessFunnorm] Background and dye bias correction with noob \n") 
+            message("[preprocessFunnorm] Background and dye bias correction with noob \n") 
         } else {
-            cat("[preprocessFunnorm] Background correction with noob \n") 
+            message("[preprocessFunnorm] Background correction with noob \n") 
         }
         gmSet <- preprocessNoob(rgSet, dyeCorr = dyeCorr)
-        if(verbose) cat("[preprocessFunnorm] Mapping to genome\n")
+        if(verbose) message("[preprocessFunnorm] Mapping to genome\n")
         gmSet <- mapToGenome(gmSet)
     } else {
-        if(verbose) cat("[preprocessFunnorm] Mapping to genome\n")
+        if(verbose) message("[preprocessFunnorm] Mapping to genome\n")
         gmSet <- mapToGenome(rgSet)
     }
   
     subverbose <- max(as.integer(verbose) - 1L, 0)
     
-    if(verbose) cat("[preprocessFunnorm] Quantile extraction\n")
+    if(verbose) message("[preprocessFunnorm] Quantile extraction\n")
     extractedData <- .extractFromRGSet450k(rgSet)
     rm(rgSet)
 
@@ -37,7 +37,7 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
         sex <- rep(1L, length(gmSet$predictedSex))
         sex[gmSet$predictedSex == "F"] <- 2L
     }
-    if(verbose) cat("[preprocessFunnorm] Normalization\n")
+    if(verbose) message("[preprocessFunnorm] Normalization\n")
     CN <- getCN(gmSet)
     gmSet <- .normalizeFunnorm450k(object = gmSet, extractedData = extractedData,
                                    sex = sex, nPCs = nPCs, verbose = subverbose)
@@ -49,7 +49,7 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
  }	
 
  .getFunnormIndices <- function(object) {
-     .isGenomic(object)
+     .isGenomicOrStop(object)
      probeType <- getProbeType(object, withColor = TRUE)
      autosomal <- (seqnames(object) %in% paste0("chr", 1:22))
      indices <- list(IGrn = which(probeType == "IGrn" & autosomal),
@@ -78,25 +78,27 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
     probs <- seq(from = 0, to = 1, length.out = 500)
     Meth <- getMeth(object)
     Unmeth <- getUnmeth(object)
-    for (type in c("IGrn", "IRed", "II")) {
-        indices <- indicesList[[type]]
-        if(length(indices) > 0) {
-            if(verbose) cat(sprintf("[normalizeFunnorm450k] Normalization of the %s probes\n", type))
-            Unmeth[indices,] <- normalizeQuantiles(Unmeth, indices = indices, sex = NULL)
-            Meth[indices,] <- normalizeQuantiles(Meth, indices = indices, sex = NULL)
+    if (nPCs > 0){
+        for (type in c("IGrn", "IRed", "II")) {
+            indices <- indicesList[[type]]
+            if(length(indices) > 0) {
+                if(verbose) message(sprintf("[normalizeFunnorm450k] Normalization of the %s probes\n", type))
+                Unmeth[indices,] <- normalizeQuantiles(Unmeth, indices = indices, sex = NULL)
+                Meth[indices,] <- normalizeQuantiles(Meth, indices = indices, sex = NULL)
+            }
         }
-    }
-
-    indices <- indicesList[["X"]]
-    if(length(indices) > 0) {
-        if(verbose) cat("[normalizeFunnorm450k] Normalization of the X-chromosome")
-        Unmeth[indices,] <- normalizeQuantiles(Unmeth, indices = indices, sex = sex)
-        Meth[indices,] <- normalizeQuantiles(Meth, indices = indices, sex = sex)
+    
+        indices <- indicesList[["X"]]
+        if(length(indices) > 0) {
+            if(verbose) message("[normalizeFunnorm450k] Normalization of the X-chromosome")
+            Unmeth[indices,] <- normalizeQuantiles(Unmeth, indices = indices, sex = sex)
+            Meth[indices,] <- normalizeQuantiles(Meth, indices = indices, sex = sex)
+        }    
     }
 
     indices <- indicesList[["Y"]]
     if(length(indices) > 0) {
-        if(verbose) cat("[normalizeFunnorm450k] Normalization of the Y-chromosome")
+        if(verbose) message("[normalizeFunnorm450k] Normalization of the Y-chromosome")
         sex <- as.character(sex)
         levels <- unique(sex)
         nSexes <- length(levels)
@@ -144,21 +146,15 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
                      "STAINING")
 
     controlAddr <- getControlAddress(rgSet, controlType = controlType, asList = TRUE)
-    controlAddr <- lapply(controlAddr, function(addr) {
-        addr[addr %in% featureNames(rgSet)]
-    })
-
-    ## New code
     ctrls <- getProbeInfo(rgSet, type = "Control")
-    ## FIXME: should be fixed in the manifest object
-    ctrls <- ctrls[ctrls$Address %in% featureNames(rgSet),]
+    if(!all(controlType %in% ctrls$Type))
+        stop("The `rgSet` does not contain all necessary control probes")
     ctrlsList <- split(ctrls, ctrls$Type)[controlType]
-    ## End new code
     
-    redControls <- getRed(rgSet)[ctrls$Address,]
-    redControls <- lapply(ctrlsList, function(ctl) redControls[ctl$Address,])
-    greenControls <- getGreen(rgSet)[ctrls$Address,]
-    greenControls <- lapply(ctrlsList, function(ctl) greenControls[ctl$Address,])
+    redControls <- getRed(rgSet)[ctrls$Address,,drop=FALSE]
+    redControls <- lapply(ctrlsList, function(ctl) redControls[ctl$Address,,drop=FALSE])
+    greenControls <- getGreen(rgSet)[ctrls$Address,,drop=FALSE]
+    greenControls <- lapply(ctrlsList, function(ctl) greenControls[ctl$Address,,drop=FALSE])
     
     ## Extraction of the undefined negative control probes
     oobRaw <- getOOB(rgSet)
@@ -180,7 +176,7 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
         ctrls <- ctrlsList[[index]]
         addr <- ctrls$Address
         names(addr) <- ctrls$ExtendedType
-        addr[exType]
+        na.omit(addr[exType])
     }
     
     greenControls <- extractedData$greenControls
@@ -329,6 +325,7 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
     design <- model.matrix(~controlPCs)
     fits <- lm.fit(x = design, y = t(res))
     newQuantiles <- meanFunction + t(fits$residuals)
+    newQuantiles <- .regularizeQuantiles(newQuantiles)
     return(newQuantiles)
 }
 
@@ -387,7 +384,11 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
         target <- sapply(1:(n-1), function(j) {
             start <- newQuantiles[j,i]
             end <- newQuantiles[j+1,i]
-            sequence <- seq(start, end,( end-start)/n)[-n]
+            if (start!=end){
+                sequence <- seq(start, end,( end-start)/n)[-(n+1)]
+            } else {
+                sequence <- rep(start, n)
+            }
             return(sequence)
         })
         target <- as.vector(target)
@@ -397,3 +398,9 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
     return(normMatrix)
 }
 
+# To ensure a monotonically increasing and non-negative quantile function
+# Necessary for pathological cases
+.regularizeQuantiles <- function(x){
+    x[x<0] <- 0
+    colCummaxs(x)
+}

@@ -12,11 +12,15 @@ setValidity("GenomicMethylSet", function(object) {
 GenomicMethylSet <- function(gr = GRanges(), Meth = new("matrix"), Unmeth = new("matrix"),
                              pData = DataFrame(), annotation = "", preprocessMethod = "") {
     assays <- SimpleList(Meth = Meth, Unmeth = Unmeth)
-    assays <- GenomicRanges:::.ShallowSimpleListAssays(data = assays)
-    colData <- as(pData, "DataFrame")
-    rowRanges <- as(gr, "GRanges")
-    new("GenomicMethylSet", assays = assays, colData = colData,
-        rowRanges = rowRanges, annotation = annotation, preprocessMethod = preprocessMethod)
+    new("GenomicMethylSet",
+        SummarizedExperiment(
+            assays = assays,
+            rowRanges = as(gr, "GRanges"),
+            colData = as(pData, "DataFrame")
+        ),
+        annotation = annotation,
+        preprocessMethod = preprocessMethod
+    )
 }
 
 setMethod("show", signature(object = "GenomicMethylSet"),
@@ -81,8 +85,8 @@ setMethod("pData", signature("GenomicMethylSet"),
 
 setReplaceMethod("pData", signature(object = "GenomicMethylSet", value = "DataFrame"),
                  function(object, value) {
-                     object <- GenomicRanges:::clone(object, colData=value)
-                     msg <- SummarizedExperiment:::.valid.SummarizedExperiment.colData_dims(object)
+                     object <- BiocGenerics:::replaceSlots(object, colData=value)
+                     msg <- SummarizedExperiment:::.valid.SummarizedExperiment.assays_ncol(object)
                      if (!is.null(msg))
                          stop(msg)
                      object

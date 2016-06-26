@@ -9,20 +9,20 @@
         mat[wh, jj] <- 2^cutoff[jj]
         nFixes[jj] <- length(wh)
         if(verbose)
-            cat(sprintf("[.fixMethOutliers] for sample %s, fixing %s outliers with 2^cutoff=%s\n",
+            message(sprintf("[.fixMethOutliers] for sample %s, fixing %s outliers with 2^cutoff=%s\n",
                         jj, nFixes[jj], round(2^cutoff[jj],0)))
     }
     return(list(mat = mat, cutoff = cutoff, nFixes = nFixes))
 }
 
 fixMethOutliers <- function(object, K=-3, verbose = FALSE){
-    .isMethyl(object)
-    if(verbose) cat("[fixMethOutliers] fixing Meth channel\n")
+    .isMethylOrStop(object)
+    if(verbose) message("[fixMethOutliers] fixing Meth channel\n")
     if(is(object, "GenomicMethylSet"))
         assay(object, "Meth") <- .fixMethOutliers(getMeth(object), K=K, verbose = verbose)$mat
     else
         assayDataElement(object, "Meth") <- .fixMethOutliers(getMeth(object), K=K, verbose = verbose)$mat
-    if(verbose) cat("[fixMethOutliers] fixing Unmeth channel\n")
+    if(verbose) message("[fixMethOutliers] fixing Unmeth channel\n")
     if(is(object, "GenomicMethylSet"))
         assay(object, "Unmeth") <- .fixMethOutliers(getUnmeth(object), K=K, verbose = verbose)$mat
     else
@@ -56,7 +56,7 @@ plotQC <- function(qc, badSampleCutoff = 10.5) {
 }
 
 getQC <- function(object) {
-    .isMethyl(object)
+    .isMethylOrStop(object)
     U.medians <- log2(matrixStats::colMedians(getUnmeth(object)))
     M.medians <- log2(matrixStats::colMedians(getMeth(object)))
     df <- DataFrame(mMed = M.medians, uMed = U.medians)
@@ -65,10 +65,10 @@ getQC <- function(object) {
 }
 
 minfiQC <- function(object, fixOutliers=TRUE, verbose = FALSE){
-    .isMethyl(object)
+    .isMethylOrStop(object)
     subverbose <- max(as.integer(verbose) - 1L, 0L)
     if(fixOutliers){
-        if(verbose) cat("[minfiQC] fixing outliers\n")
+        if(verbose) message("[minfiQC] fixing outliers\n")
         fixMethOutliers(object, verbose = subverbose)
     }
     qc <- getQC(object)

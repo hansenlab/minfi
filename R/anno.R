@@ -1,8 +1,7 @@
 setClass("IlluminaMethylationAnnotation",
          representation(data = "environment",
                         annotation = "character",
-                        defaults = "character",
-                        seqinfo = "Seqinfo"
+                        defaults = "character"
                         ))
 
 setValidity("IlluminaMethylationAnnotation", function(object) {
@@ -19,16 +18,10 @@ setMethod("show", "IlluminaMethylationAnnotation", function(object) {
     .show.availableAnnotation(object)
 })
 
-setMethod("seqinfo", "IlluminaMethylationAnnotation", function(x) {
-    x@seqinfo
-})
-
-IlluminaMethylationAnnotation <- function(listOfObjects, annotation = "", seqinfo = NULL,
-                                          defaults = "") {
+IlluminaMethylationAnnotation <- function(listOfObjects, annotation = "", defaults = "") {
     stopifnot(annotation != "")
     stopifnot(all(c("array", "annotation", "genomeBuild") %in% names(annotation)))
     stopifnot(all(c("Manifest", "Locations") %in% names(listOfObjects)))
-    stopifnot(!is.null(seqinfo))
     Manifest <- listOfObjects[["Manifest"]]
     stopifnot(setequal(names(Manifest),
                        c("Name", "AddressA", "AddressB", "ProbeSeqA",
@@ -40,7 +33,7 @@ IlluminaMethylationAnnotation <- function(listOfObjects, annotation = "", seqinf
     })))
     stopifnot(all(c("chr", "pos") %in% names(listOfObjects[["Locations"]])))
     stopifnot(all(listOfObjects[["Locations"]]$chr %in% .seqnames.order.all))
-    available <- .availableAnnotation(listOfObjects)
+    ##available <- .availableAnnotation(listOfObjects)
     stopifnot(all(defaults %in% names(listOfObjects)))
     stopifnot(!anyDuplicated(sub("\\..*", "", defaults)))
     ## FIXME: Check column names of any Islands object
@@ -52,8 +45,7 @@ IlluminaMethylationAnnotation <- function(listOfObjects, annotation = "", seqinf
     }
     lockEnvironment(data, bindings = TRUE)
     anno <- new("IlluminaMethylationAnnotation",
-                annotation = annotation, data = data, defaults = defaults,
-                seqinfo = seqinfo)
+                annotation = annotation, data = data, defaults = defaults)
     anno
 }
 
@@ -199,7 +191,7 @@ getIslandStatus <- function(object, islandAnno = NULL) {
 getProbeType <- function(object, withColor = FALSE) {
     if(withColor) {
         probeType <- paste0(getAnnotation(object, what = "Manifest")$Type,
-                           getAnnotation(object, what = "Manifest")$Color)
+                            getAnnotation(object, what = "Manifest")$Color)
     } else {
         probeType <- getAnnotation(object, what = "Manifest")$Type
     }
@@ -223,7 +215,7 @@ getSnpInfo <- function(object, snpAnno = NULL) {
 }
 
 addSnpInfo <- function(object, snpAnno = NULL) {
-    .isGenomic(object)
+    .isGenomicOrStop(object)
     snps <- getSnpInfo(object = object, snpAnno = snpAnno)
     mcolsNames <- names(mcols(granges(object)))
     if(any(mcolsNames %in% names(snps)))
@@ -260,7 +252,7 @@ addSnpInfo <- function(object, snpAnno = NULL) {
 }
 
 dropLociWithSnps <- function(object, snps = c("CpG", "SBE"), maf = 0, snpAnno = NULL){
-    .isGenomic(object)
+    .isGenomicOrStop(object)
     maf_cols <- paste0(snps, "_maf")
     snpDF  <- getSnpInfo(object, snpAnno = snpAnno)
     choices <- c("Probe_maf", "CpG_maf", "SBE_maf")

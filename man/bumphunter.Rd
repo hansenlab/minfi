@@ -100,10 +100,12 @@ An object of class \code{bumps} with the following components:
 }
 
 \references{
-Jaffe AE, Murakami P, Lee H, Leek JT, Fallin MD, Feinberg AP, Irizarry
-RA (2012) Bump hunting to identify differentially methylated regions in
-epigenetic epidemiology studies. International Journal of Epidemiology
-41(1):200-9.
+AE Jaffe, P Murakami, H Lee, JT Leek, MD Fallin, AP Feinberg, and RA
+Irizarry.
+\emph{Bump hunting to identify differentially methylated regions in
+  epigenetic epidemiology studies.}
+International Journal of Epidemiology (2012) 41(1):200-209.
+doi:\href{http://www.dx.doi.org/10.1093/ije/dyr238}{10.1093/ije/dyr238}
 }
 
 \seealso{\code{\link[bumphunter]{bumphunter}}}

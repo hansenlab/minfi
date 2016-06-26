@@ -2,7 +2,9 @@ logit2 <- function(x) { log2(x) - log2(1-x) }
 
 ilogit2 <- function(x) { 2^(x) / (1+2^(x)) }
 
+.default.27k.annotation  <- "ilmn12.hg19"
 .default.450k.annotation <- "ilmn12.hg19"
+.default.epic.annotation <- "ilm10b2.hg19"
 .seqnames.order.all <- c(paste0("chr", c(1:22, "X", "Y")), "multi", "unmapped")
 .seqnames.order <- paste0("chr", c(1:22, "X", "Y"))
 
@@ -106,39 +108,55 @@ ilogit2 <- function(x) { 2^(x) / (1+2^(x)) }
     content[content == paste0("-", zero)] <- zero
     digest::digest(content)
 }
- 
-.isGenomic <- function(object) {
+
+.isGenomicOrStop <- function(object) {
     if(!is(object, "GenomicMethylSet") && !is(object, "GenomicRatioSet"))
         stop(sprintf("object is of class '%s', but needs to be of class 'GenomicMethylSet' or 'GenomicRatioSet'",
                      class(object)))
 }
 
-.isMethyl <- function(object) {
+.isMethylOrStop <- function(object) {
     if(!is(object, "MethylSet") && !is(object, "GenomicMethylSet"))
         stop(sprintf("object is of class '%s', but needs to be of class 'MethylSet' or 'GenomicMethylSet'",
                      class(object)))
 }
 
-.isGenomicMethyl <- function(object) {
+.isGenomicMethylOrStop <- function(object) {
     if(!is(object, "GenomicMethylSet"))
         stop(sprintf("object is of class '%s', but needs to be of class 'GenomicMethylSet'",
                      class(object)))
 }
 
-.isMethylOrRatio <- function(object) {
+.isMethylOrRatioOrStop <- function(object) {
     if(!is(object, "MethylSet") && !is(object, "GenomicMethylSet") &&
        !is(object, "RatioSet") && !is(object, "GenomicRatioSet"))
         stop(sprintf("object is of class '%s', but needs to be of class '[Genomic]MethylSet' or '[Genomic]RatioSet",
                      class(object)))
 }
 
-.isRG <- function(object) {
+.isMethylOrRatio <- function(object) {
+    (is(object, "MethylSet") || is(object, "GenomicMethylSet") ||
+        is(object, "RatioSet") || is(object, "GenomicRatioSet"))
+}
+
+
+.isRGOrStop <- function(object) {
     if(!is(object, "RGChannelSet"))
         stop(sprintf("object is of class '%s', but needs to be of class 'RGChannelSet' or 'RGChannelSetExtended'",
                      class(object)))
 }
 
+.is27k <- function(object) {
+    annotation(object)["array"] == "IlluminaHumanMethylation27k"
+}
 
+.is450k <- function(object) {
+    annotation(object)["array"] == "IlluminaHumanMethylation450k"
+}
+
+.isEPIC <- function(object) {
+    annotation(object)["array"] == "IlluminaHumanMethylationEPIC"
+}
 
 .harmonizeSex <- function(vector) {
     ## FIXME: not done

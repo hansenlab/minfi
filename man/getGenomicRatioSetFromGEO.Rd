@@ -8,7 +8,9 @@ Reading Illumina methylation array data from GEO.
 Reading Illumina methylation array data from GEO.
 }
 \usage{
-getGenomicRatioSetFromGEO(GSE = NULL, path = NULL, array = "IlluminaHumanMethylation450k", annotation = .default.450k.annotation, what = c("Beta", "M"), mergeManifest = FALSE, i = 1)
+getGenomicRatioSetFromGEO(GSE = NULL, path = NULL, array = "IlluminaHumanMethylation450k",
+                          annotation = .default.450k.annotation, what = c("Beta", "M"),
+                          mergeManifest = FALSE, i = 1)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{

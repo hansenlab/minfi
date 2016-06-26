@@ -34,7 +34,10 @@ No return value. Plots are produced as a side-effect.
 
 }
 \references{
-Kampstra, P. Beanplot: A boxplot alternative for visual comparison of distributions. Journal of Statistical Software 28, (2008). http://www.jstatsoft.org/v28/c01
+  P Kampstra.
+  \emph{Beanplot: A boxplot alternative for visual comparison of
+    distributions.}
+  Journal of Statistical Software 28, (2008). \url{http://www.jstatsoft.org/v28/c01}
 }
 \author{
 Martin Aryee \email{aryee@jhu.edu}.

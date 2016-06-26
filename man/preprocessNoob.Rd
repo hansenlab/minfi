@@ -24,7 +24,8 @@
   TJ Triche, DJ Weisenberger, D Van Den Berg, PW Laird and KD Siegmund
   \emph{Low-level processing of Illumina Infinium DNA Methylation
     BeadArrays}.
-  (2013) Nucleic Acids Res 41, e90.
+  Nucleic Acids Res (2013) 41, e90.
+  doi:\href{http://www.dx.doi.org/10.1093/nar/gkt090}{10.1093/nar/gkt090}.
 }
 \author{
   Tim Triche, Jr.

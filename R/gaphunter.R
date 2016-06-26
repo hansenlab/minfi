@@ -11,7 +11,7 @@ gaphunter <- function(object, threshold = 0.05, keepOutliers = FALSE,
         Beta <- getBeta(object)
     } else {
         if(is(object,"matrix")) {
-            test <- rowRanges(object)
+            test <- matrixStats::rowRanges(object)
             if(sum(test[,1] < 0,na.rm = TRUE) == 0 && sum(test[,2] > 1,na.rm = TRUE) == 0) {
                 Beta <- object } else { stop("[gaphunter] Matrix must be of Beta values with range from 0 to 1") }
         } else {

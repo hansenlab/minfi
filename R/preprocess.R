@@ -1,5 +1,5 @@
 preprocessRaw <- function(rgSet) {
-    .isRG(rgSet)
+    .isRGOrStop(rgSet)
     locusNames <- getManifestInfo(rgSet, "locusNames")
     M <- matrix(NA_real_, ncol = ncol(rgSet), nrow = length(locusNames),
                 dimnames = list(locusNames, sampleNames(rgSet)))
@@ -20,7 +20,7 @@ preprocessRaw <- function(rgSet) {
     ## packageVersion expects a string
     out@preprocessMethod <- c(rg.norm = "Raw (no normalization or bg correction)",
                               minfi = as.character(packageVersion("minfi")),
-                              manifest = as.character(packageVersion("IlluminaHumanMethylation450kmanifest")))
+                              manifest = as.character(packageVersion(.getManifestString(rgSet@annotation))))
                               #packageVersion(getManifest(rgSet)))
     out
 }
@@ -31,8 +31,15 @@ normalize.illumina.control <- function(rgSet, reference=1) {
     ## code duplication
     Green <- getGreen(rgSet)
     Red <- getRed(rgSet)    
-    AT.controls <- getControlAddress(rgSet, controlType = c("NORM_A", "NORM_T"))
-    CG.controls <- getControlAddress(rgSet, controlType = c("NORM_C", "NORM_G"))
+    
+    if (.is450k(rgSet) || .isEPIC(rgSet)) {
+        AT.controls <- getControlAddress(rgSet, controlType = c("NORM_A", "NORM_T"))
+        CG.controls <- getControlAddress(rgSet, controlType = c("NORM_C", "NORM_G"))
+    }
+    if (.is27k(rgSet)) {
+        AT.controls <- getControlAddress(rgSet, controlType = "Normalization-Red")
+        CG.controls <- getControlAddress(rgSet, controlType = "Normalization-Green")
+    }
     Green.avg <- colMeans(Green[CG.controls, , drop = FALSE])
     Red.avg <- colMeans(Red[AT.controls, , drop = FALSE])
     ref <- (Green.avg + Red.avg)[reference]/2
@@ -48,10 +55,15 @@ normalize.illumina.control <- function(rgSet, reference=1) {
 }
 
 bgcorrect.illumina <- function(rgSet) {
-    .isRG(rgSet)
+    .isRGOrStop(rgSet)
     Green <- getGreen(rgSet)
     Red <- getRed(rgSet)
-    NegControls <- getControlAddress(rgSet, controlType = "NEGATIVE")
+    if (.is450k(rgSet) || .isEPIC(rgSet)) {
+        NegControls <- getControlAddress(rgSet, controlType = "NEGATIVE")
+    }
+    if (.is27k(rgSet)) {
+        NegControls <- getControlAddress(rgSet, controlType = "Negative")
+    }
     Green.bg <- apply(Green[NegControls, , drop = FALSE], 2, function(xx) sort(xx)[31])
     Red.bg <- apply(Red[NegControls, , drop = FALSE], 2, function(xx) sort(xx)[31])
     Green <- pmax(sweep(Green, 2, Green.bg), 0)
@@ -64,7 +76,7 @@ bgcorrect.illumina <- function(rgSet) {
 
 preprocessIllumina <- function(rgSet, bg.correct = TRUE, normalize = c("controls", "no"),
                                 reference = 1) {
-    .isRG(rgSet)
+    .isRGOrStop(rgSet)
     normalize <- match.arg(normalize)
 
     if(normalize == "controls") {
@@ -81,7 +93,7 @@ preprocessIllumina <- function(rgSet, bg.correct = TRUE, normalize = c("controls
     ## packageVersion expects a string
     out@preprocessMethod <- c(rg.norm = preprocess,
                               minfi = as.character(packageVersion("minfi")),
-                              manifest = as.character(packageVersion("IlluminaHumanMethylation450kmanifest")))
+                              manifest = as.character(packageVersion(.getManifestString(rgSet@annotation))))
                               #packageVersion(getManifest(rgSet)))
     out
 }

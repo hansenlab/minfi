@@ -1,80 +1,90 @@
 Package: minfi
-Version: 1.15.7
-Title: Analyze Illumina's Infinium DNA methylation arrays
+Version: 1.19.6
+Title: Analyze Illumina Infinium DNA methylation arrays
 Description: Tools to analyze & visualize Illumina Infinium methylation arrays.
 Authors@R: c(person(c("Kasper", "Daniel"), "Hansen", role = c("cre", "aut"),
                     email = "kasperdanielhansen@gmail.com"),
              person("Martin", "Aryee", role = "aut"),
              person(c("Rafael", "A."), "Irizarry", role = "aut"),
-	     person(c("Andrew", "E."), "Jaffe", role = "ctb"),
-	     person("Jovana", "Maksimovic", role = "ctb"),
+             person(c("Andrew", "E."), "Jaffe", role = "ctb"),
+             person("Jovana", "Maksimovic", role = "ctb"),
              person(c("E.", "Andres"), "Houseman", role = "ctb"),
              person("Jean-Philippe", "Fortin", role = "ctb"),
              person("Tim", "Triche", role = "ctb"),
-	     person("Shan", "Andrews", role = "ctb"))
+             person(c("Shan", "V."), "Andrews", role = "ctb"))
 Depends:  methods,
-	  BiocGenerics (>= 0.3.2),
+	  BiocGenerics (>= 0.15.3),
 	  Biobase (>= 2.17.8),
 	  lattice,
 	  GenomicRanges,
-	  SummarizedExperiment (>= 0.1.1),
+	  SummarizedExperiment (>= 1.1.6),
 	  Biostrings,
-	  utils,
 	  bumphunter (>= 1.1.9)
 Suggests: IlluminaHumanMethylation450kmanifest (>= 0.2.0),
-	  IlluminaHumanMethylation450kanno.ilmn12.hg19 (>= 0.2.2),
+	  IlluminaHumanMethylation450kanno.ilmn12.hg19 (>= 0.2.1),
 	  minfiData (>= 0.4.1),
 	  FlowSorted.Blood.450k (>= 1.0.1),
 	  RUnit,
 	  digest,
-	  data.table
+	  BiocStyle,
+	  knitr,
+	  rmarkdown
 Imports:  S4Vectors,
 	  GenomeInfoDb,
 	  IRanges,
-	  beanplot, 
-	  RColorBrewer, 
-	  nor1mix, 
-	  siggenes, 
-	  limma, 
-	  preprocessCore, 
-	  illuminaio, 
-	  matrixStats, 
+	  beanplot,
+	  RColorBrewer,
+	  nor1mix,
+	  siggenes,
+	  limma,
+	  preprocessCore,
+	  illuminaio,
+	  matrixStats (>= 0.50.0),
 	  mclust,
 	  genefilter,
 	  nlme,
 	  reshape,
 	  MASS,
 	  quadprog,
+ 	  data.table,
 	  GEOquery,
-	  mixOmics
+          stats,
+          grDevices,
+          graphics,
+          utils
 Collate:  generics.R
 	  mset.R
 	  rset.R
 	  rgset.R
 	  gmset.R
 	  grset.R
-	  utils.R 
+	  utils.R
 	  manifest.R
 	  anno.R
 	  minfiQC.R
 	  getSex.R
-          dmr.R
-          blocks.R
+	  dmr.R
+	  blocks.R
 	  plot.R
 	  plotBetasByType.R
 	  preprocess.R
 	  preprocessSwan.R
 	  preprocessQuantile.R
 	  preprocessNoob.R
-	  preprocessFunnorm.R   
+	  preprocessFunnorm.R
 	  qc.R
 	  read.450k.R
+	  read.meth.R
+	  read.geo.R
 	  read.manifest.R
 	  bumphunter.R
 	  estimateCellCounts.R
 	  gaphunter.R
 	  compartments.R
+	  combineArrayTypes.R
+VignetteBuilder: knitr
 License: Artistic-2.0
 URL: https://github.com/kasperdanielhansen/minfi
+BugReports: https://github.com/kasperdanielhansen/minfi/issues
 LazyData: yes
 biocViews: DNAMethylation, Microarray, TwoChannel, DataImport, Preprocessing, QualityControl

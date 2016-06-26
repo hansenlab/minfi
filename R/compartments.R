@@ -19,7 +19,7 @@
 compartments <- function(object, resolution = 100*1000, what="OpenSea",
                          chr = "chr22", method = c("pearson", "spearman"),
                          keep = TRUE){
-    .isGenomic(object)
+    .isGenomicOrStop(object)
     stopifnot(length(chr) == 1 && chr %in% seqlevels(object))
     method <- match.arg(method)
     gr <- createCorMatrix(object = object, resolution = resolution,
@@ -31,7 +31,7 @@ compartments <- function(object, resolution = 100*1000, what="OpenSea",
 
 createCorMatrix <- function(object, resolution = 100*1000, what = "OpenSea",
                              chr = "chr22", method = c("pearson", "spearman")) {
-    .isGenomic(object)
+    .isGenomicOrStop(object)
     stopifnot(length(chr) == 1 && chr %in% seqlevels(object))
     method <- match.arg(method)
 
@@ -115,19 +115,20 @@ createCorMatrix <- function(object, resolution = 100*1000, what = "OpenSea",
     return(gr)
 }
 
-extractAB <- function(gr, keep = TRUE){
+extractAB <- function(gr, keep = TRUE, svdMethod = "qr"){
     if (! (is(gr, "GRanges") && "cor.matrix" %in% names(mcols(gr)))) {
         stop("'gr' must be an object created by createCorMatrix")
     }
-    
-    pc <- .getFirstPC(gr$cor.matrix)
+    pc <- .getFirstPC(gr$cor.matrix, method = svdMethod)
     pc <- .meanSmoother(pc)
     pc <- .unitarize(pc)
     ## Fixing sign of eigenvector
     if (cor(colSums(gr$cor.matrix), pc) <0 ){
         pc <- -pc
     }
+    pc <- pc*sqrt(length(pc))
     gr$pc <- pc
+    
     if (!keep) {
         gr$cor.matrix <- NULL
     }
@@ -139,11 +140,14 @@ extractAB <- function(gr, keep = TRUE){
     ifelse(pc < cutoff, "open", "closed")
 }
 
-.getFirstPC <- function(matrix, ncomp = 1){
+.getFirstPC <- function(matrix, method){
     ## Centering the matrix
     center <- rowMeans(matrix, na.rm = TRUE)
     matrix <- sweep(matrix, 1L, center, check.margin = FALSE)
-    return(mixOmics::nipals(matrix, ncomp = ncomp)$p[,1])
+    ## if(method == "nipals")
+    ##     pc <- mixOmics::nipals(matrix, ncomp = 1)$p[,1]
+    pc <- .fsvd(matrix, k = 1, method = method)$u
+    return(pc)
 }
 
 
@@ -186,8 +190,78 @@ extractAB <- function(gr, keep = TRUE){
     x[!bad] <- x[!bad] / sqrt(sum(x[!bad]^2))
     n.bad <- sum(bad)
     if (n.bad > 0){
-        cat(sprintf("[.unitarize] %i missing values were ignored.\n", n.bad))
+        message(sprintf("[.unitarize] %i missing values were ignored.\n", n.bad))
     }
     return(x)
 }
 
+.fsvd <- function(A, k, i = 1, p = 2, method = c("qr", "svd", "exact")){
+    method <- match.arg(method)
+    l <- k + p 
+    n <- ncol(A)
+    m <- nrow(A)
+    tall <- TRUE
+    ## In the case a WIDE matrix is provided:
+    if (m < n){
+        A <- t(A) # This is potentially expensive
+        n <- ncol(A)
+        m <- nrow(A)
+        tall <- FALSE
+    }
+    if (l > ncol(A) && method != "exact"){
+        stop("(k+p) is greater than the number of columns. Please decrease the value of k.")
+    }
+    ## Construct G to be n x l and Gaussian
+    G <- matrix(rnorm(n*l,0,1), nrow=n, ncol=l)
+    ## SVD approach
+    if (method == "svd"){
+        ## Power method: 
+        H <- A %*% G # m x l matrix
+        for (j in 1:i){
+            H <- A %*% (crossprod(A, H))
+        }
+        ## We use a SVD to find an othogonal basis Q:
+        ## H = F %*% Omega %*% t(S)
+        svd <- svd(crossprod(H))
+        F   <- svd$u # l x l
+        omega <- diag(1/sqrt(svd$d)) # l x l
+        S <- H %*% F %*% omega # m x l 
+        ## Define the orthogonal basis:
+        Q <- S[,1:k,drop=FALSE] # m x k
+        ## T <- t(A) %*% Q # n x k 
+        ## T <- t(T)
+        T <- crossprod(Q, A)
+    } 
+    ## QR approach
+    if (method == "qr"){
+        ## Need to create a list of H matrices
+        h.list <- vector("list", i+1)
+        h.list[[1]] <- A %*% G 
+        for (j in 2:(i+1)){
+            h.list[[j]] <- A %*% (crossprod(A, h.list[[j-1]]))
+        }
+        H <- do.call("cbind",h.list) # n x [(1+1)l] matrix
+        ## QR algorithm
+        Q <- qr.Q(qr(H,0))
+        ## T <- t(A)%*%Q # n x [(i+1)l]
+        ## T <- t(T)
+        T <- crossprod(Q, A)
+    }
+    if (method == "svd" | method == "qr"){
+        svd <- svd(T)
+        u <- Q %*% svd$u[,1:k,drop=FALSE]
+        v <- svd$v[,1:k,drop=FALSE]
+        d <- svd$d[1:k]
+    } else { # For exact SVD:
+        svd <- svd(A)
+        u <- svd$u[,1:k,drop=FALSE]
+        v <- svd$v[,1:k,drop=FALSE]
+        d <- svd$d[1:k]
+    }
+    if (!tall){
+        uu <- v
+        v <- u
+        u <- uu
+    } 
+    list(u=u, v=v, d=d)
+}

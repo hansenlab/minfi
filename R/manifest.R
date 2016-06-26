@@ -97,13 +97,29 @@ setMethod("getManifest", signature(object = "character"),
 
 getProbeInfo <- function(object, type = c("I", "II", "Control", "I-Green", "I-Red", "SnpI", "SnpII")) {
     type <- match.arg(type)
-    if(type %in% c("I", "II", "Control", "SnpI", "SnpII"))
-        return(getManifest(object)@data[[paste("Type", type, sep = "")]])
-    typeI <- getManifest(object)@data[["TypeI"]]
-    if(type == "I-Green")
-        return(typeI[typeI$Color == "Grn",])
-    if(type == "I-Red")
-        return(typeI[typeI$Color == "Red",])
+    if(type %in% c("I", "II", "Control", "SnpI", "SnpII")) {
+        out <- getManifest(object)@data[[paste("Type", type, sep = "")]]
+    }
+    if(type == "I-Green") {
+        out <- getManifest(object)@data[["TypeI"]]
+        out <- out[out$Color == "Grn",]
+    }
+    if(type == "I-Red") {
+        out <- getManifest(object)@data[["TypeI"]]
+        out <- out[out$Color == "Red",]
+    }
+    if(is(object, "RGChannelSet")) {
+        if("Address" %in% names(out))
+            out <- out[out$Address %in% rownames(object),]
+        if("AddressA" %in% names(out))
+            out <- out[out$AddressA %in% rownames(object),]
+        if("AddressB" %in% names(out))
+            out <- out[out$AddressB %in% rownames(object),]
+    }
+    if(.isMethylOrRatio(object)) {
+        out <- out[out$Name %in% rownames(object),]
+    }
+    out
 }
 
 getManifestInfo <- function(object, type = c("nLoci", "locusNames")) {
@@ -132,12 +148,7 @@ getControlAddress <- function(object, controlType = c("NORM_A", "NORM_C", "NORM_
     out
 }
 
-getControlTypes <- function(object) {
-    ctrls <- getProbeInfo(object, type = "Control")
-    table(ctrls[, ""])
-}
-
-getProbePositionsDetailed <- function(map) {
+.getProbePositionsDetailed <- function(map) {
     ## map is GR with metadata columns strand and type
     stopifnot(is(map, "GRanges"))
     stopifnot(c("Strand", "Type") %in% names(mcols(map)))
@@ -171,3 +182,14 @@ getProbePositionsDetailed <- function(map) {
     map
 }
     
+.getAddressesNotInManifest <- function(rgSet) {
+    .isRGOrStop(rgSet)
+    addressesInManifest <- c(getProbeInfo(rgSet, type = "I")$AddressA,
+                             getProbeInfo(rgSet, type = "I")$AddressB,
+                             getProbeInfo(rgSet, type = "II")$AddressA,
+                             getProbeInfo(rgSet, type = "Control")$Address,
+                             getProbeInfo(rgSet, type = "SnpI")$AddressA,
+                             getProbeInfo(rgSet, type = "SnpI")$AddressB,
+                             getProbeInfo(rgSet, type = "SnpII")$AddressA)
+    setdiff(rownames(rgSet), addressesInManifest)
+}

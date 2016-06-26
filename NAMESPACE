@@ -1,5 +1,5 @@
 import(methods)
-importFrom(matrixStats, rowVars, colMedians, colMads, colQuantiles)
+importFrom(matrixStats, rowVars, colMedians, colMads, colQuantiles, rowDiffs, colCummaxs)
 import(BiocGenerics)
 importClassesFrom(Biobase, AnnotatedDataFrame, AssayData, eSet, MIAxE,
                   Versions)
@@ -18,7 +18,7 @@ import(SummarizedExperiment)
 import(S4Vectors)
 import(IRanges)
 importFrom(Biobase, assayDataElementNames, assayDataElementReplace,
-           assayDataElement, "assayDataElement<-", validMsg)
+           assayDataElement, "assayDataElement<-", validMsg, assayDataValidMembers)
 ## The following should not be necessary, but Hadley does not use S3export in reshape
 importFrom(reshape, melt, melt.array, melt.data.frame, melt.list, melt.matrix, melt.table)
 importFrom(mclust, Mclust)
@@ -30,7 +30,7 @@ importFrom(limma, squeezeVar, lmFit, eBayes, contrasts.fit, normexp.signal)
 importFrom(preprocessCore, normalize.quantiles)
 importFrom(illuminaio, readIDAT)
 importFrom(genefilter, rowFtests, rowttests)
-importFrom(utils, packageVersion, read.csv, read.table)
+importFrom(utils, packageVersion, read.csv, read.table, data)
 importFrom(bumphunter, bumphunter, bumphunterEngine, locfitByCluster,
            clusterMaker, boundedClusterMaker)
 importMethodsFrom(bumphunter, bumphunter)
@@ -39,18 +39,24 @@ importFrom(nlme, lme, getVarCov)
 importFrom(MASS, huber)
 importFrom(quadprog, solve.QP)
 importFrom(GEOquery,getGEO)
-importFrom(matrixStats,rowDiffs)
-importFrom(mixOmics, nipals)
+importFrom(data.table, fread)
+importFrom("grDevices", "dev.off")
+importFrom("graphics", "abline", "axis", "legend", "lines", "par",
+           "plot", "plot.new", "stripchart", "text")
+importFrom("stats", "approx", "as.formula", "cmdscale", "contrasts",
+           "dist", "fitted", "kmeans", "lm", "lm.fit", "model.matrix",
+           "pchisq", "pf", "pnorm", "prcomp", "pt", "rnorm", "runif",
+           "vcov")
 
 export(getManifest, getProbeInfo, getManifestInfo,
        IlluminaMethylationManifest, IlluminaMethylationAnnotation,
-       getControlAddress, getControlTypes,
+       getControlAddress, 
        getRed, getGreen, getMeth, getUnmeth,
        getBeta, getM, getCN, getMethSignal,
        getOOB, getSnpBeta,
        dropMethylationLoci, getLocations, getAnnotation,
        getAnnotationObject,
-       mapToGenome,
+       mapToGenome, subsetByLoci,
        getIslandStatus, getProbeType, getSnpInfo, addSnpInfo, dropLociWithSnps,
        normalize.illumina.control, bgcorrect.illumina,
        preprocessRaw, preprocessIllumina,
@@ -60,6 +66,7 @@ export(getManifest, getProbeInfo, getManifestInfo,
        MethylSet, RatioSet,
        GenomicMethylSet, GenomicRatioSet,
        read.450k, read.450k.sheet, read.450k.exp,
+       read.metharray, read.metharray.sheet, read.metharray.exp,
        getGenomicRatioSetFromGEO, makeGenomicRatioSetFromMatrix,
        readGEORawFile, readTCGA,
        logit2, ilogit2,
@@ -69,7 +76,8 @@ export(getManifest, getProbeInfo, getManifestInfo,
        getSex, plotSex, addSex, bumphunter,
        blockFinder, cpgCollapse,
        estimateCellCounts, gaphunter,
-       compartments, createCorMatrix, extractAB)
+       compartments, createCorMatrix, extractAB,
+       combineArrayTypes)
 
 exportClasses(RGChannelSet, RGChannelSetExtended,
               MethylSet, RatioSet,
