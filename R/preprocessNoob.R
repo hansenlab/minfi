@@ -1,4 +1,5 @@
-preprocessNoob <- function(rgSet, offset=15, dyeCorr=TRUE, verbose = TRUE) { 
+preprocessNoob <- function(rgSet, offset=15, dyeCorr=TRUE, verbose = TRUE, how = c("reference", "equalize")) { 
+
     .isRG(rgSet)
     subverbose <- max(as.integer(verbose) - 1L, 0)
 
@@ -76,9 +77,21 @@ preprocessNoob <- function(rgSet, offset=15, dyeCorr=TRUE, verbose = TRUE) {
     } 
 
     ## Performing dye bias normalization
+    ## 
+    ## "reference" = use the least-worst sample in the batch (previous default) 
+    ## "equalize" = all-sample mean norm (Decker et al., doi:10.4161/epi.26037)
+    ## 
+    ## Equalize will become the default: it provides single-sample preprocessing
+    ## and thus decouples preprocessing from batch or condition normalization.
+    ## 
+    ## Decker's implementation was annoying and complicated, so I turned it into
+    ## a true single-sample approach by reciprocating the Cy5 bias directly.
+    ## 
+    ## --tjt, 2016-06-16
+    ## 
     if (dyeCorr){
-        ## Correction of the Illumina control probes with the background correction:
-        ctrls <- getProbeInfo(rgSet, type = "Control")
+        ## Background correct the Illumina normalization controls:
+	ctrls <- getProbeInfo(rgSet, type = "Control")
         ctrls <- ctrls[ctrls$Address %in% featureNames(rgSet),]
         redControls <- getRed(rgSet)[ctrls$Address,]
         greenControls <- getGreen(rgSet)[ctrls$Address,]
@@ -95,42 +108,59 @@ preprocessNoob <- function(rgSet, offset=15, dyeCorr=TRUE, verbose = TRUE) {
         CG.controls <- rownames(internal.controls[[1]]) %in% c("NORM_C", "NORM_G")
         AT.controls <- rownames(internal.controls[[1]]) %in% c("NORM_A", "NORM_T")
 
-        ## Dye bias normalizastion with the corrected Illumina control probes:
-        Green.avg <- colMeans(internal.controls[["Cy3"]][CG.controls,])
-        Red.avg <- colMeans(internal.controls[["Cy5"]][AT.controls,])
+        ## Dye bias normalization with the corrected Illumina control probes:
+        Green.avg <- colMeans(internal.controls[["Cy3"]][CG.controls, , drop=F])
+        Red.avg <- colMeans(internal.controls[["Cy5"]][AT.controls, , drop=F])
         R.G.ratio <- Red.avg/Green.avg
 
-        reference <- which.min(abs(R.G.ratio-1) )
-        if(verbose)
-            cat('[preprocessNoob] Using sample number', reference, 'as reference level...\n')
-        ref <- (Green.avg + Red.avg)[reference]/2
-        if(is.na(ref))
-            stop("'reference' refers to an array that is not present")
-        Grn.factor <- ref/Green.avg
-        Red.factor <- ref/Red.avg
+	if (how == "equalize") {
+          if(verbose) {
+            cat('[preprocessNoob] Applying R/G ratio flip to fix dye bias...\n')
+          }
+	  Red.factor <- 1 / R.G.ratio
+          Grn.factor <- 1
+	} else { 
+          reference <- which.min(abs(R.G.ratio-1) )
+          if(verbose) {
+            cat('[preprocessNoob] Using sample number', reference, 
+		'as reference level...\n')
+	  }
+          ref <- (Green.avg + Red.avg)[reference]/2
+          if(is.na(ref)) {
+	    stop("'reference' refers to an array that is not present")
+	  }
+          Grn.factor <- ref/Green.avg
+          Red.factor <- ref/Red.avg
+	}
 
         Grn <- list(M = as.matrix(meth[cy3.probes,]), 
-                    U = as.matrix(unmeth[cy3.probes,]),
-                    D2 = as.matrix(meth[d2.probes,]))
+    		    U = as.matrix(unmeth[cy3.probes,]),
+ 		    D2 = as.matrix(meth[d2.probes,]))
         Red <- list(M = as.matrix(meth[cy5.probes,]), 
-                    U = as.matrix(unmeth[cy5.probes,]),
-                    D2 = as.matrix(unmeth[d2.probes,]))
-        Grn <- lapply(Grn, function(y) sweep(y, 2, FUN="*", Grn.factor))
-        Red <- lapply(Red, function(y) sweep(y, 2, FUN="*", Red.factor))
+	  	    U = as.matrix(unmeth[cy5.probes,]),
+		    D2 = as.matrix(unmeth[d2.probes,]))
 
-        meth[cy3.probes,] <- Grn$M
-        unmeth[cy3.probes,] <- Grn$U
-        meth[d2.probes,] <- Grn$D2
-
+        # do this regardless of reference or equalization approach
+	Red <- lapply(Red, function(y) sweep(y, 2, FUN="*", Red.factor))
         meth[cy5.probes,] <- Red$M
         unmeth[cy5.probes,] <- Red$U
         unmeth[d2.probes,] <- Red$D2
+
+	# but only adjust the green channel if using the older reference method
+        if (how != "equalize") {
+          Grn <- lapply(Grn, function(y) sweep(y, 2, FUN="*", Grn.factor))
+          meth[cy3.probes,] <- Grn$M
+          unmeth[cy3.probes,] <- Grn$U
+          meth[d2.probes,] <- Grn$D2
+        }
     }
 
     assayDataElement(mset, "Meth") <- meth
     assayDataElement(mset, "Unmeth") <- unmeth
 
-    mset@preprocessMethod <- c( mu.norm = sprintf("Noob, dyeCorr=%s", dyeCorr))
+    mset@preprocessMethod <- c( mu.norm = 
+				sprintf("Noob, dyeCorr=%s, how=%s", 
+					dyeCorr, ifelse(dyeCorr, how, "NA") ) )
     return(mset)
 }
 

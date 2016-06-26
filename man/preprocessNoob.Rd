@@ -4,17 +4,18 @@
   The Noob background correction for 450k arrays.
 }
 \description{
-  Noob is a background correction method with dye-bias normalization for
-  the Illumina Infinium HumanMethylation450 platform.
+  Noob (normal-exponential out-of-band) is a background correction method 
+  with dye-bias normalization for Illumina Infinium methylation arrays.
 }
 \usage{
-preprocessNoob(rgSet, offset = 15, dyeCorr = TRUE, verbose = TRUE)
+  preprocessNoob(rgSet, offset = 15, dyeCorr = TRUE, verbose = TRUE, how=c("reference","equalize"))
 }
 \arguments{
   \item{rgSet}{An object of class \code{RGChannelSet}.}
   \item{offset}{An offset for the normexp background correction.}
   \item{dyeCorr}{Should dye correction be done?}
   \item{verbose}{Should the function be verbose?}
+  \item{how}{How should dye bias correction be done: use a reference, or equalize (single-sample)?}
 }
 \value{
   An object of class \code{MethylSet}.
@@ -37,7 +38,8 @@ preprocessNoob(rgSet, offset = 15, dyeCorr = TRUE, verbose = TRUE)
 \examples{
 \dontrun{
 if (require(minfiData)) {
-  GRset.noob <- preprocessNoob(RGsetEx)
+  GRset.noob.ref <- preprocessNoob(RGsetEx, how="reference")
+  GRset.noob.ss <- preprocessNoob(RGsetEx, how="equalize") # single-sample norm
 }
 }
 }

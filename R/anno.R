@@ -1,7 +1,7 @@
 setClass("IlluminaMethylationAnnotation",
          representation(data = "environment",
                         annotation = "character",
-                        defaults = "character"
+                        defaults = "character",
                         seqinfo = "Seqinfo"
                         ))
 
