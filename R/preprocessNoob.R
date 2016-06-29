@@ -1,4 +1,5 @@
-preprocessNoob <- function(rgSet, offset=15, dyeCorr=TRUE, verbose = TRUE, dyeMethod = c("reference", "single")) {
+preprocessNoob <- function(rgSet, offset=15, dyeCorr=TRUE, verbose = TRUE,
+                           dyeMethod = c("reference", "single")) {
     .isRGOrStop(rgSet)
     subverbose <- max(as.integer(verbose) - 1L, 0)
     dyeMethod <- match.arg(dyeMethod)
@@ -121,13 +122,13 @@ preprocessNoob <- function(rgSet, offset=15, dyeCorr=TRUE, verbose = TRUE, dyeMe
         Red.avg <- colMeans(internal.controls[["Cy5"]][AT.controls,, drop=FALSE])
         R.G.ratio <- Red.avg/Green.avg
 
-	if (dyeMethod == "equalize") {
+	if (dyeMethod == "single") {
           if(verbose) {
             cat('[preprocessNoob] Applying R/G ratio flip to fix dye bias...\n')
           }
 	  Red.factor <- 1 / R.G.ratio
           Grn.factor <- 1
-	} else if(dyeMethod == "single") {
+	} else if(dyeMethod == "reference") {
           reference <- which.min(abs(R.G.ratio-1) )
           if(verbose) {
             cat('[preprocessNoob] Using sample number', reference, 
@@ -155,7 +156,7 @@ preprocessNoob <- function(rgSet, offset=15, dyeCorr=TRUE, verbose = TRUE, dyeMe
         unmeth[d2.probes,] <- Red$D2
 
 	# but only adjust the green channel if using the older reference method
-        if (how != "equalize") {
+        if (dyeMethod == "reference") {
           Grn <- lapply(Grn, function(y) sweep(y, 2, FUN="*", Grn.factor))
           meth[cy3.probes,] <- Grn$M
           unmeth[cy3.probes,] <- Grn$U
@@ -167,8 +168,8 @@ preprocessNoob <- function(rgSet, offset=15, dyeCorr=TRUE, verbose = TRUE, dyeMe
     assayDataElement(mset, "Unmeth") <- unmeth
 
     mset@preprocessMethod <- c( mu.norm = 
-				sprintf("Noob, dyeCorr=%s, how=%s", 
-					dyeCorr, ifelse(dyeCorr, how, "NA") ) )
+				sprintf("Noob, dyeCorr=%s, dyeMethod=%s", 
+					dyeCorr, dyeMethod))
     return(mset)
 }
 

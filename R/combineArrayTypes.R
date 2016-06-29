@@ -1,6 +1,6 @@
 combineArrayTypes <- function(rgSet1, rgSet2, outType = c("IlluminaHumanMethylation450k", "IlluminaHumanMethylationEPIC"), verbose=TRUE){
-    minfi:::.isRGOrStop(rgSet1)
-    minfi:::.isRGOrStop(rgSet2)
+    .isRGOrStop(rgSet1)
+    .isRGOrStop(rgSet2)
     outType <- match.arg(outType)
     sampleNames1 <- sampleNames(rgSet1)
     sampleNames2 <- sampleNames(rgSet2)
@@ -36,8 +36,8 @@ combineArrayTypes <- function(rgSet1, rgSet2, outType = c("IlluminaHumanMethylat
 .combineArrayTypes_450k_epic <- function(rgSet1, rgSet2,
                                          verbose = verbose) {
     ## This function makes the output array equal to rgSet1
-    minfi:::.isRGOrStop(rgSet1)
-    minfi:::.isRGOrStop(rgSet2)
+    .isRGOrStop(rgSet1)
+    .isRGOrStop(rgSet2)
     stopifnot((.is450k(rgSet1) && .isEPIC(rgSet2)) || (.isEPIC(rgSet1) && .is450k(rgSet2)))
     keepAddresses <- list(I = NULL, II = NULL, SnpI = NULL,
                           SnpII = NULL, Control = NULL)

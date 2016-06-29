@@ -41,8 +41,8 @@ preprocessNoob(rgSet, offset = 15, dyeCorr = TRUE, verbose = TRUE,
 \examples{
 \dontrun{
 if (require(minfiData)) {
-  GRset.noob.ref <- preprocessNoob(RGsetEx, how="reference")
-  GRset.noob.ss <- preprocessNoob(RGsetEx, how="equalize") # single-sample norm
+  GRset.noob.ref <- preprocessNoob(RGsetEx, dyeMethod="reference")
+  GRset.noob.ss <- preprocessNoob(RGsetEx, dyeMethod="single") # single-sample norm
 }
 }
 }
