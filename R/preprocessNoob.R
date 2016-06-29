@@ -1,5 +1,5 @@
-preprocessNoob <- function(rgSet, offset=15, dyeCorr=TRUE, verbose = TRUE, how = c("reference", "equalize")) { 
-
+preprocessNoob <- function(rgSet, offset=15, dyeCorr=TRUE, verbose = TRUE, how = c("reference", "equalize")) {
+    .isRGOrStop(rgSet)
     subverbose <- max(as.integer(verbose) - 1L, 0)
 
     ## Extraction of the out-of-band controls
@@ -116,8 +116,8 @@ preprocessNoob <- function(rgSet, offset=15, dyeCorr=TRUE, verbose = TRUE, how =
         }
 
         ## Dye bias normalization with the corrected Illumina control probes:
-        Green.avg <- colMeans(internal.controls[["Cy3"]][CG.controls, , drop=F])
-        Red.avg <- colMeans(internal.controls[["Cy5"]][AT.controls, , drop=F])
+        Green.avg <- colMeans(internal.controls[["Cy3"]][CG.controls,, drop=FALSE])
+        Red.avg <- colMeans(internal.controls[["Cy5"]][AT.controls,, drop=FALSE])
         R.G.ratio <- Red.avg/Green.avg
 
 	if (how == "equalize") {
