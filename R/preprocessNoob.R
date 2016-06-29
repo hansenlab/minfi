@@ -1,6 +1,7 @@
-preprocessNoob <- function(rgSet, offset=15, dyeCorr=TRUE, verbose = TRUE, how = c("reference", "equalize")) {
+preprocessNoob <- function(rgSet, offset=15, dyeCorr=TRUE, verbose = TRUE, dyeMethod = c("reference", "single")) {
     .isRGOrStop(rgSet)
     subverbose <- max(as.integer(verbose) - 1L, 0)
+    dyeMethod <- match.arg(dyeMethod)
 
     ## Extraction of the out-of-band controls
     controls <- getOOB(rgSet)
@@ -120,13 +121,13 @@ preprocessNoob <- function(rgSet, offset=15, dyeCorr=TRUE, verbose = TRUE, how =
         Red.avg <- colMeans(internal.controls[["Cy5"]][AT.controls,, drop=FALSE])
         R.G.ratio <- Red.avg/Green.avg
 
-	if (how == "equalize") {
+	if (dyeMethod == "equalize") {
           if(verbose) {
             cat('[preprocessNoob] Applying R/G ratio flip to fix dye bias...\n')
           }
 	  Red.factor <- 1 / R.G.ratio
           Grn.factor <- 1
-	} else { 
+	} else if(dyeMethod == "single") {
           reference <- which.min(abs(R.G.ratio-1) )
           if(verbose) {
             cat('[preprocessNoob] Using sample number', reference, 
@@ -138,7 +139,7 @@ preprocessNoob <- function(rgSet, offset=15, dyeCorr=TRUE, verbose = TRUE, how =
 	  }
           Grn.factor <- ref/Green.avg
           Red.factor <- ref/Red.avg
-	}
+	} else { stop("unknown 'dyeMethod'") }
 
         Grn <- list(M = as.matrix(meth[cy3.probes,]), 
     		    U = as.matrix(unmeth[cy3.probes,]),

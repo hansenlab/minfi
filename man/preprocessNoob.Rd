@@ -8,14 +8,16 @@
   with dye-bias normalization for Illumina Infinium methylation arrays.
 }
 \usage{
-  preprocessNoob(rgSet, offset = 15, dyeCorr = TRUE, verbose = TRUE, how=c("reference","equalize"))
+preprocessNoob(rgSet, offset = 15, dyeCorr = TRUE, verbose = TRUE,
+               dyeMethod=c("reference", "single"))
 }
 \arguments{
   \item{rgSet}{An object of class \code{RGChannelSet}.}
   \item{offset}{An offset for the normexp background correction.}
   \item{dyeCorr}{Should dye correction be done?}
   \item{verbose}{Should the function be verbose?}
-  \item{how}{How should dye bias correction be done: use a reference, or equalize (single-sample)?}
+  \item{dyeMethod}{How should dye bias correction be done: use a
+    reference, or use a single sample approach?}
 }
 \value{
   An object of class \code{MethylSet}.
