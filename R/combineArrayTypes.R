@@ -1,6 +1,7 @@
-combineArrayTypes <- function(rgSet1, rgSet2, verbose=TRUE){
+combineArrayTypes <- function(rgSet1, rgSet2, outType = c("IlluminaHumanMethylation450k", "IlluminaHumanMethylationEPIC"), verbose=TRUE){
     minfi:::.isRGOrStop(rgSet1)
     minfi:::.isRGOrStop(rgSet2)
+    outType <- match.arg(outType)
     sampleNames1 <- sampleNames(rgSet1)
     sampleNames2 <- sampleNames(rgSet2)
     if(annotation(rgSet1)["array"] == annotation(rgSet2)["array"])
@@ -11,21 +12,35 @@ combineArrayTypes <- function(rgSet1, rgSet2, verbose=TRUE){
     if(verbose) {
         message(sprintf("[combineArrayTypes] Casting as %s", annotation(rgSet1)["array"]))
     }
-    if((.is450k(rgSet1) && .isEPIC(rgSet2)) || (.isEPIC(rgSet1) && .is450k(rgSet2))) {
-        rgSet <- .combineArrayTypes_450k_epic(rgSet1 = rgSet1, rgSet2 = rgSet2, verbose = verbose)
-    } else {
-        stop("Currently, 'combineArrayTypes' only supports combining 'IlluminaHumanMethylation450k' and 'IlluminaHumanMethylationEPIC' arrays.")
+    if(outType == "IlluminaHumanMethylationEPIC") {
+        if(.isEPIC(rgSet1) && .is450k(rgSet2)) {
+            rgSet <- .combineArrayTypes_450k_epic(rgSet1 = rgSet1, rgSet2 = rgSet2, verbose = verbose)
+        } else if(.isEPIC(rgSet2) && .is450k(rgSet1)) {
+            rgSet <- .combineArrayTypes_450k_epic(rgSet1 = rgSet2, rgSet2 = rgSet1, verbose = verbose)
+        } else {
+            stop("Currently, 'combineArrayTypes' only supports combining 'IlluminaHumanMethylation450k' and 'IlluminaHumanMethylationEPIC' arrays.")
+        }
+    }
+    if(outType == "IlluminaHumanMethylation450k") {
+        if(.isEPIC(rgSet1) && .is450k(rgSet2)) {
+            rgSet <- .combineArrayTypes_450k_epic(rgSet1 = rgSet2, rgSet2 = rgSet1, verbose = verbose)
+        } else if(.isEPIC(rgSet2) && .is450k(rgSet1)) {
+            rgSet <- .combineArrayTypes_450k_epic(rgSet1 = rgSet1, rgSet2 = rgSet2, verbose = verbose)
+        } else {
+            stop("Currently, 'combineArrayTypes' only supports combining 'IlluminaHumanMethylation450k' and 'IlluminaHumanMethylationEPIC' arrays.")
+        }
     }
     rgSet
 }
 
-.combineArrayTypes_450k_epic <- function(rgSet1, rgSet2, verbose = verbose) {
+.combineArrayTypes_450k_epic <- function(rgSet1, rgSet2,
+                                         verbose = verbose) {
+    ## This function makes the output array equal to rgSet1
     minfi:::.isRGOrStop(rgSet1)
     minfi:::.isRGOrStop(rgSet2)
     stopifnot((.is450k(rgSet1) && .isEPIC(rgSet2)) || (.isEPIC(rgSet1) && .is450k(rgSet2)))
     keepAddresses <- list(I = NULL, II = NULL, SnpI = NULL,
                           SnpII = NULL, Control = NULL)
-    
     ## Probes of Type I
     probes1 <- getProbeInfo(rgSet1, type = "I")
     probes2 <- getProbeInfo(rgSet2, type = "I")
