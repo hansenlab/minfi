@@ -82,7 +82,17 @@ c(bibentry(bibtype = "Article",
            pages = "180",
            doi = "10.1186/s13059-015-0741-y",
            pubmed = "26316348",
-           header = "Reconstruction of A/B compartments (compartments, extractAB) is described in:")
+           header = "Reconstruction of A/B compartments (compartments, extractAB) is described in:"),
+
+    bibentry(bibtype = "Article",
+           key = "gaphunter",
+           author = c(person(given = "Jean-Philippe", family = "Fortin"),
+                      person(given = c("Kasper", "D."), family = "Hansen")),
+           title = "'Gap hunting' to identify multimodal distributions of {DNA} methylation",
+           journal = "bioRxiv",
+           year = "2016",
+           doi = "10.1101/059659",
+           header = "Gap hunting is described in:")
 
 )
 
