@@ -59,8 +59,8 @@
 }
 \references{
   SV Andrews, C Ladd-Acosta, KD Hansen, AP Feinberg, MD Fallin.
-  \emph{"Gap hunting" to identify multimodal distributions of DNA methylation.}
-  Manuscript in preparation.
+  \emph{\sQuote{Gap hunting} to identify multimodal distributions of DNA methylation.}
+  bioRxiv (2016). doi:\href{http://dx.doi.org/10.1101/059659}{10.1101/059659}.
 }
 \author{
   Shan V. Andrews \email{sandre17@jhu.edu}.
