@@ -10,6 +10,7 @@
     combine 450k and EPIC array data at the RGChannelSet level.
     \item Support for early access IDAT files form the EPIC array.
     \item message() is now used instead of cat().
+    \item Some functions moved from deprecated to defunct.
   }
 }
 
