@@ -2,6 +2,18 @@
 \title{Minfi News}
 \encoding{UTF-8}
 
+\section{Version 1.19}{
+  \itemize{
+    \item preprocessNoob gets a dyeMethod argument which now allows for
+    true single sample processing.
+    \item combineArrayTypes is added; the intention is to be able to
+    combine 450k and EPIC array data at the RGChannelSet level.
+    \item Support for early access IDAT files form the EPIC array.
+    \item message() is now used instead of cat().
+  }
+}
+
+
 \section{Version 1.15}{
   \itemize{
     \item Adding testing for preprocessNoob, preprocessFunnorm.
