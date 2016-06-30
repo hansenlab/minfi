@@ -56,7 +56,7 @@ export(getManifest, getProbeInfo, getManifestInfo,
        getOOB, getSnpBeta,
        dropMethylationLoci, getLocations, getAnnotation,
        getAnnotationObject,
-       mapToGenome,
+       mapToGenome, subsetByLoci,
        getIslandStatus, getProbeType, getSnpInfo, addSnpInfo, dropLociWithSnps,
        normalize.illumina.control, bgcorrect.illumina,
        preprocessRaw, preprocessIllumina,
@@ -76,7 +76,8 @@ export(getManifest, getProbeInfo, getManifestInfo,
        getSex, plotSex, addSex, bumphunter,
        blockFinder, cpgCollapse,
        estimateCellCounts, gaphunter,
-       compartments, createCorMatrix, extractAB)
+       compartments, createCorMatrix, extractAB,
+       combineArrayTypes)
 
 exportClasses(RGChannelSet, RGChannelSetExtended,
               MethylSet, RatioSet,

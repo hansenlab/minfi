@@ -19,7 +19,7 @@
 compartments <- function(object, resolution = 100*1000, what="OpenSea",
                          chr = "chr22", method = c("pearson", "spearman"),
                          keep = TRUE){
-    .isGenomic(object)
+    .isGenomicOrStop(object)
     stopifnot(length(chr) == 1 && chr %in% seqlevels(object))
     method <- match.arg(method)
     gr <- createCorMatrix(object = object, resolution = resolution,
@@ -31,7 +31,7 @@ compartments <- function(object, resolution = 100*1000, what="OpenSea",
 
 createCorMatrix <- function(object, resolution = 100*1000, what = "OpenSea",
                              chr = "chr22", method = c("pearson", "spearman")) {
-    .isGenomic(object)
+    .isGenomicOrStop(object)
     stopifnot(length(chr) == 1 && chr %in% seqlevels(object))
     method <- match.arg(method)
 
@@ -190,7 +190,7 @@ extractAB <- function(gr, keep = TRUE, svdMethod = "qr"){
     x[!bad] <- x[!bad] / sqrt(sum(x[!bad]^2))
     n.bad <- sum(bad)
     if (n.bad > 0){
-        cat(sprintf("[.unitarize] %i missing values were ignored.\n", n.bad))
+        message(sprintf("[.unitarize] %i missing values were ignored.\n", n.bad))
     }
     return(x)
 }

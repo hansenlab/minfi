@@ -191,7 +191,7 @@ getIslandStatus <- function(object, islandAnno = NULL) {
 getProbeType <- function(object, withColor = FALSE) {
     if(withColor) {
         probeType <- paste0(getAnnotation(object, what = "Manifest")$Type,
-                           getAnnotation(object, what = "Manifest")$Color)
+                            getAnnotation(object, what = "Manifest")$Color)
     } else {
         probeType <- getAnnotation(object, what = "Manifest")$Type
     }
@@ -215,7 +215,7 @@ getSnpInfo <- function(object, snpAnno = NULL) {
 }
 
 addSnpInfo <- function(object, snpAnno = NULL) {
-    .isGenomic(object)
+    .isGenomicOrStop(object)
     snps <- getSnpInfo(object = object, snpAnno = snpAnno)
     mcolsNames <- names(mcols(granges(object)))
     if(any(mcolsNames %in% names(snps)))
@@ -252,7 +252,7 @@ addSnpInfo <- function(object, snpAnno = NULL) {
 }
 
 dropLociWithSnps <- function(object, snps = c("CpG", "SBE"), maf = 0, snpAnno = NULL){
-    .isGenomic(object)
+    .isGenomicOrStop(object)
     maf_cols <- paste0(snps, "_maf")
     snpDF  <- getSnpInfo(object, snpAnno = snpAnno)
     choices <- c("Probe_maf", "CpG_maf", "SBE_maf")

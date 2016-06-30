@@ -3,7 +3,7 @@ estimateCellCounts <- function (rgSet, compositeCellType = "Blood", processMetho
                                 returnAll = FALSE, meanPlot = FALSE, verbose=TRUE, ...) {
     platform <- sub("IlluminaHumanMethylation", "", annotation(rgSet)[which(names(annotation(rgSet))=="array")])
     if((compositeCellType == "CordBlood") && (!"nRBC" %in% cellTypes))
-        cat("[estimateCellCounts] Consider including 'nRBC' in argument 'cellTypes' for cord blood estimation.\n")   
+        message("[estimateCellCounts] Consider including 'nRBC' in argument 'cellTypes' for cord blood estimation.\n")   
     referencePkg <- sprintf("FlowSorted.%s.%s", compositeCellType, platform)
     subverbose <- max(as.integer(verbose) - 1L, 0L)
     if(!require(referencePkg, character.only = TRUE))
@@ -31,7 +31,7 @@ estimateCellCounts <- function (rgSet, compositeCellType = "Blood", processMetho
     if ((probeSelect == "auto") && (compositeCellType != "CordBlood")){
         probeSelect <- "both"} 	
     
-    if(verbose) cat("[estimateCellCounts] Combining user data with reference (flow sorted) data.\n")
+    if(verbose) message("[estimateCellCounts] Combining user data with reference (flow sorted) data.\n")
     newpd <- data.frame(sampleNames = c(sampleNames(rgSet), sampleNames(referenceRGset)),
                         studyIndex = rep(c("user", "reference"),
                                          times = c(ncol(rgSet), ncol(referenceRGset))),
@@ -43,7 +43,7 @@ estimateCellCounts <- function (rgSet, compositeCellType = "Blood", processMetho
     sampleNames(combinedRGset) <- newpd$sampleNames
     rm(referenceRGset)
     
-    if(verbose) cat("[estimateCellCounts] Processing user and reference data together.\n")
+    if(verbose) message("[estimateCellCounts] Processing user and reference data together.\n")
     if (compositeCellType == "CordBlood"){
         ## Here Shan wants to discard probes that they have decided shouldn't be used, for example multi-mapping probes
         ## This is done by only using probes with names in the comptable.
@@ -63,12 +63,12 @@ estimateCellCounts <- function (rgSet, compositeCellType = "Blood", processMetho
     pData(mSet) <- as(pData(rgSet), "DataFrame")
     rm(combinedMset)
     
-    if(verbose) cat("[estimateCellCounts] Picking probes for composition estimation.\n")
+    if(verbose) message("[estimateCellCounts] Picking probes for composition estimation.\n")
     compData <- pickCompProbes(referenceMset, cellTypes = cellTypes, compositeCellType = compositeCellType, probeSelect = probeSelect)
     coefs <- compData$coefEsts
     rm(referenceMset)
     
-    if(verbose) cat("[estimateCellCounts] Estimating composition.\n")
+    if(verbose) message("[estimateCellCounts] Estimating composition.\n")
     counts <- projectCellType(getBeta(mSet)[rownames(coefs), ], coefs)
     rownames(counts) <- sampleNames(rgSet)
 

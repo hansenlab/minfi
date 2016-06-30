@@ -63,7 +63,7 @@ cpgCollapse <- function(object, what = c("Beta", "M"), maxGap = 500,
     islands <- .getIslandAnnotation(object = object, islandAnno = islandAnno)
     relationToIsland <- islands$Relation_to_Island
     islandName <- islands$Islands_Name
-    if(verbose) cat("[cpgCollapse] Creating annotation.\n")
+    if(verbose) message("[cpgCollapse] Creating annotation.\n")
     anno <- cpgCollapseAnnotation(gr, relationToIsland, islandName,
                                   maxGap = maxGap, blockMaxGap = blockMaxGap,
                                   maxClusterWidth = maxClusterWidth,
@@ -71,7 +71,7 @@ cpgCollapse <- function(object, what = c("Beta", "M"), maxGap = 500,
     y <- getMethSignal(object, what = what, ...)
     a <- getCN(object,...)
     
-    if(verbose) cat("[cpgCollapse] Collapsing data")
+    if(verbose) message("[cpgCollapse] Collapsing data")
     Indexes <- split(seq(along = anno$pns), anno$pns)
     yy  <- matrix(0, length(Indexes), ncol(y))
     Ns <- sapply(Indexes, length)
@@ -127,7 +127,7 @@ cpgCollapseAnnotation <- function(gr, relationToIsland, islandName,
     ## but they save me work
     
     ## make sure chr is a factor.. Kasper, should this be done from get-go?
-    if(verbose) cat("[cpgCollapseAnnotation] Clustering islands and clusters of probes.\n")
+    if(verbose) message("[cpgCollapseAnnotation] Clustering islands and clusters of probes.\n")
     ## block tab has the block group ids
     blocktab <- clusterMaker4Blocks(gr, relationToIsland, islandName,
                                     maxClusterWidth = maxClusterWidth,
@@ -137,7 +137,7 @@ cpgCollapseAnnotation <- function(gr, relationToIsland, islandName,
     groupIndexes <- split(seq(along = blocktab$pns), blocktab$pns)
 
     ## make an object with results
-    if(verbose) cat("[cpgCollapseAnnotation] Computing new annotation.\n")
+    if(verbose) message("[cpgCollapseAnnotation] Computing new annotation.\n")
     tmpRanges <- t(sapply(groupIndexes, function(ind) range(start(gr)[ind])))
 
     anno <- GRanges(seqnames = Rle(tapply(as.vector(seqnames(gr)), blocktab$pns,function(x) x[1])),
@@ -148,7 +148,7 @@ cpgCollapseAnnotation <- function(gr, relationToIsland, islandName,
     seql <- seqlevels(res$anno)
     seqlevels(res$anno, force = TRUE) <- .seqnames.order[.seqnames.order %in% seql]
     
-    if(verbose) cat("[cpgCollapseAnnotation] Defining blocks.\n")
+    if(verbose) message("[cpgCollapseAnnotation] Defining blocks.\n")
     ind <- (res$anno$type == "OpenSea")
     pns <- rep(NA, length(res$anno))
     pns[ind] <- clusterMaker(as.numeric(seqnames(res$anno[ind,])),

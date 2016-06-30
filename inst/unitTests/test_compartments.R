@@ -11,4 +11,3 @@ test_compartments <- function() {
     checkEquals(digest_compartments$pc,
                 minfi:::.digestVector(gr.ab$pc, digits = 2))
 }
-

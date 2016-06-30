@@ -36,7 +36,7 @@ preprocessSWAN <- function(rgSet, mSet = NULL, verbose = FALSE){
     normUnmethData <- normMethData
     normSet <- mSet
     for(i in 1:ncol(mSet)) {
-        if(verbose) cat(sprintf("[preprocessSwan] Normalizing array %d of %d\n", i, ncol(mSet)))
+        if(verbose) message(sprintf("[preprocessSwan] Normalizing array %d of %d\n", i, ncol(mSet)))
         normMeth <- normaliseChannel(methData[rownames(methData) %in% counts$Name[counts$Type=="I"], i],
                                      methData[rownames(methData) %in% counts$Name[counts$Type=="II"], i],
                                      xNormSet, bg[i])

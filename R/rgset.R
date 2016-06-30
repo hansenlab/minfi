@@ -105,17 +105,17 @@ setMethod("updateObject", signature(object="RGChannelSetExtended"),
 
 
 getRed <- function(object) {
-    .isRG(object)
+    .isRGOrStop(object)
     assayDataElement(object, "Red")
 }
 
 getGreen <- function(object) {
-    .isRG(object)
+    .isRGOrStop(object)
     assayDataElement(object, "Green")
 }
 
 getOOB <- function(object) {
-    .isRG(object)
+    .isRGOrStop(object)
     IRed   <- getProbeInfo(object, type = "I-Red")
     IGrn <- getProbeInfo(object, type = "I-Green")
     oob.green <- rbind(getGreen(object)[IRed$AddressA,,drop=FALSE], getGreen(object)[IRed$AddressB,,drop=FALSE])
@@ -124,7 +124,7 @@ getOOB <- function(object) {
 }
 
 getSnpBeta <- function(object){
-    .isRG(object)
+    .isRGOrStop(object)
     manifest <- getManifest(object)
     snpProbesII <- getProbeInfo(manifest, type = "SnpII")$Name
     M.II <- getGreen(object)[getProbeInfo(object, type = "SnpII")$AddressA,,drop=FALSE]
@@ -163,3 +163,34 @@ setMethod("mapToGenome", signature(object = "RGChannelSet"),
               object <- preprocessRaw(object)
               callGeneric(object)
           })
+
+subsetByLoci <- function(rgSet, includeLoci = NULL, excludeLoci = NULL, keepControls = TRUE, keepSnps = TRUE){
+    .isRGOrStop(rgSet)
+    TypeII <- getProbeInfo(rgSet, type = "II")
+    TypeI.Red <- getProbeInfo(rgSet, type = "I-Red")
+    TypeI.Green <- getProbeInfo(rgSet, type = "I-Green")
+    if(!is.null(includeLoci)) {
+        TypeII <- TypeII[TypeII$Name %in% includeLoci, ]
+        TypeI.Red <- TypeI.Red[TypeI.Red$Name %in% includeLoci, ]
+        TypeI.Green <- TypeI.Green[TypeI.Green$Name %in% includeLoci, ]
+    }
+    if(!is.null(excludeLoci)) {
+        TypeII <- TypeII[! TypeII$Name %in% excludeLoci, ]
+        TypeI.Red <- TypeI.Red[! TypeI.Red$Name %in% excludeLoci, ]
+        TypeI.Green <- TypeI.Green[! TypeI.Green$Name %in% excludeLoci, ]
+    }
+    addresses <- c(TypeII$AddressA, 
+                   TypeI.Red$AddressA, TypeI.Red$AddressB,
+                   TypeI.Green$AddressA, TypeI.Green$AddressB)
+    if (keepControls){
+        addresses <- c(addresses, getProbeInfo(rgSet, type = "Control")$Address)
+    }
+    if (keepSnps){
+        addresses <- c(addresses,
+                       getProbeInfo(rgSet, type = "SnpI")$AddressA, getProbeInfo(rgSet, type = "SnpI")$AddressB,
+                       getProbeInfo(rgSet, type = "SnpII")$AddressA)
+    }
+    indices <- which(rownames(rgSet) %in% addresses)
+    rgSet <- rgSet[indices,]
+    rgSet
+}

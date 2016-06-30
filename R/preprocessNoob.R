@@ -1,6 +1,8 @@
-preprocessNoob <- function(rgSet, offset=15, dyeCorr=TRUE, verbose = TRUE) { 
-    .isRG(rgSet)
+preprocessNoob <- function(rgSet, offset=15, dyeCorr=TRUE, verbose = TRUE,
+                           dyeMethod = c("reference", "single")) {
+    .isRGOrStop(rgSet)
     subverbose <- max(as.integer(verbose) - 1L, 0)
+    dyeMethod <- match.arg(dyeMethod)
 
     ## Extraction of the out-of-band controls
     controls <- getOOB(rgSet)
@@ -48,24 +50,26 @@ preprocessNoob <- function(rgSet, offset=15, dyeCorr=TRUE, verbose = TRUE) {
     })
     names(estimates) <- names(dat)
 
-    cy3.M <- first[['Cy3']][['M']]:last[['Cy3']][['M']]
-    meth[cy3.probes, ] <- estimates[['Cy3']][['xs']][cy3.M,]
+    if (length(cy3.probes)>0){
+        cy3.M <- first[['Cy3']][['M']]:last[['Cy3']][['M']]
+        meth[cy3.probes, ] <- estimates[['Cy3']][['xs']][cy3.M,]
+        cy3.U <- first[['Cy3']][['U']]:last[['Cy3']][['U']]
+        unmeth[cy3.probes,] <- estimates[['Cy3']][['xs']][cy3.U,]
+    }
 
-    cy3.U <- first[['Cy3']][['U']]:last[['Cy3']][['U']]
-    unmeth[cy3.probes,] <- estimates[['Cy3']][['xs']][cy3.U,]
+    if (length(cy5.probes)>0){
+        cy5.M <- first[['Cy5']][['M']]:last[['Cy5']][['M']]
+        meth[cy5.probes,] <- estimates[['Cy5']][['xs']][cy5.M,]
+        cy5.U <- first[['Cy5']][['U']]:last[['Cy5']][['U']]
+        unmeth[cy5.probes,] <- estimates[['Cy5']][['xs']][cy5.U,]
+    }
 
-    cy5.M <- first[['Cy5']][['M']]:last[['Cy5']][['M']]
-    meth[cy5.probes,] <- estimates[['Cy5']][['xs']][cy5.M,]
-
-    cy5.U <- first[['Cy5']][['U']]:last[['Cy5']][['U']]
-    unmeth[cy5.probes,] <- estimates[['Cy5']][['xs']][cy5.U,]
-
-    d2.M <- first[['Cy3']][['D2']]:last[['Cy3']][['D2']]
-    d2.U <- first[['Cy5']][['D2']]:last[['Cy5']][['D2']]
-
-    meth[d2.probes,] <- estimates[['Cy3']][['xs']][d2.M,]
-    unmeth[d2.probes,] <- estimates[['Cy5']][['xs']][d2.U,]
-
+    if (length(d2.probes)>0){
+        d2.M <- first[['Cy3']][['D2']]:last[['Cy3']][['D2']]
+        d2.U <- first[['Cy5']][['D2']]:last[['Cy5']][['D2']]
+        meth[d2.probes,] <- estimates[['Cy3']][['xs']][d2.M,]
+        unmeth[d2.probes,] <- estimates[['Cy5']][['xs']][d2.U,]
+    }
     ## This next code block does nothing because the rgSet is not returned
     ## and pData(rgSet) is not referenced below
     for(ch in names(estimates)) { 
@@ -76,9 +80,21 @@ preprocessNoob <- function(rgSet, offset=15, dyeCorr=TRUE, verbose = TRUE) {
     } 
 
     ## Performing dye bias normalization
+    ## 
+    ## "reference" = use the least-worst sample in the batch (previous default) 
+    ## "equalize" = all-sample mean norm (Decker et al., doi:10.4161/epi.26037)
+    ## 
+    ## Equalize will become the default: it provides single-sample preprocessing
+    ## and thus decouples preprocessing from batch or condition normalization.
+    ## 
+    ## Decker's implementation was annoying and complicated, so I turned it into
+    ## a true single-sample approach by reciprocating the Cy5 bias directly.
+    ## 
+    ## --tjt, 2016-06-16
+    ## 
     if (dyeCorr){
-        ## Correction of the Illumina control probes with the background correction:
-        ctrls <- getProbeInfo(rgSet, type = "Control")
+        ## Background correct the Illumina normalization controls:
+	ctrls <- getProbeInfo(rgSet, type = "Control")
         ctrls <- ctrls[ctrls$Address %in% featureNames(rgSet),]
         redControls <- getRed(rgSet)[ctrls$Address,,drop=FALSE]
         greenControls <- getGreen(rgSet)[ctrls$Address,,drop=FALSE]
@@ -92,50 +108,74 @@ preprocessNoob <- function(rgSet, offset=15, dyeCorr=TRUE, verbose = TRUE) {
         internal.controls[['Cy3']] <- xcs[["Cy3"]]
         internal.controls[['Cy5']] <- xcs[["Cy5"]]
 
-        CG.controls <- rownames(internal.controls[[1]]) %in% c("NORM_C", "NORM_G")
-        AT.controls <- rownames(internal.controls[[1]]) %in% c("NORM_A", "NORM_T")
+        if (rgSet@annotation[["array"]]=="IlluminaHumanMethylation450k" || 
+                rgSet@annotation[["array"]]=="IlluminaHumanMethylationEPIC"){
+            CG.controls <- rownames(internal.controls[[1]]) %in% c("NORM_C", "NORM_G")
+            AT.controls <- rownames(internal.controls[[1]]) %in% c("NORM_A", "NORM_T")
+        } else {
+            CG.controls <- rownames(internal.controls[[1]]) %in% c("Normalization-Green")
+            AT.controls <- rownames(internal.controls[[1]]) %in% c("Normalization-Red")
+        }
 
-        ## Dye bias normalizastion with the corrected Illumina control probes:
-        Green.avg <- colMeans(internal.controls[["Cy3"]][CG.controls,,drop=FALSE])
-        Red.avg <- colMeans(internal.controls[["Cy5"]][AT.controls,,drop=FALSE])
+        ## Dye bias normalization with the corrected Illumina control probes:
+        Green.avg <- colMeans(internal.controls[["Cy3"]][CG.controls,, drop=FALSE])
+        Red.avg <- colMeans(internal.controls[["Cy5"]][AT.controls,, drop=FALSE])
         R.G.ratio <- Red.avg/Green.avg
 
-        reference <- which.min(abs(R.G.ratio-1) )
-        if(verbose)
-            cat('[preprocessNoob] Using sample number', reference, 'as reference level...\n')
-        ref <- (Green.avg + Red.avg)[reference]/2
-        if(is.na(ref))
-            stop("'reference' refers to an array that is not present")
-        Grn.factor <- ref/Green.avg
-        Red.factor <- ref/Red.avg
+	if (dyeMethod == "single") {
+          if(verbose) {
+            cat('[preprocessNoob] Applying R/G ratio flip to fix dye bias...\n')
+          }
+	  Red.factor <- 1 / R.G.ratio
+          Grn.factor <- 1
+	} else if(dyeMethod == "reference") {
+          reference <- which.min(abs(R.G.ratio-1) )
+          if(verbose) {
+            cat('[preprocessNoob] Using sample number', reference, 
+		'as reference level...\n')
+	  }
+          ref <- (Green.avg + Red.avg)[reference]/2
+          if(is.na(ref)) {
+	    stop("'reference' refers to an array that is not present")
+	  }
+          Grn.factor <- ref/Green.avg
+          Red.factor <- ref/Red.avg
+	} else { stop("unknown 'dyeMethod'") }
 
         Grn <- list(M = as.matrix(meth[cy3.probes,]), 
-                    U = as.matrix(unmeth[cy3.probes,]),
-                    D2 = as.matrix(meth[d2.probes,]))
+    		    U = as.matrix(unmeth[cy3.probes,]),
+ 		    D2 = as.matrix(meth[d2.probes,]))
         Red <- list(M = as.matrix(meth[cy5.probes,]), 
-                    U = as.matrix(unmeth[cy5.probes,]),
-                    D2 = as.matrix(unmeth[d2.probes,]))
-        Grn <- lapply(Grn, function(y) sweep(y, 2, FUN="*", Grn.factor))
-        Red <- lapply(Red, function(y) sweep(y, 2, FUN="*", Red.factor))
+	  	    U = as.matrix(unmeth[cy5.probes,]),
+		    D2 = as.matrix(unmeth[d2.probes,]))
 
-        meth[cy3.probes,] <- Grn$M
-        unmeth[cy3.probes,] <- Grn$U
-        meth[d2.probes,] <- Grn$D2
-
+        # do this regardless of reference or equalization approach
+	Red <- lapply(Red, function(y) sweep(y, 2, FUN="*", Red.factor))
         meth[cy5.probes,] <- Red$M
         unmeth[cy5.probes,] <- Red$U
         unmeth[d2.probes,] <- Red$D2
+
+	# but only adjust the green channel if using the older reference method
+        if (dyeMethod == "reference") {
+          Grn <- lapply(Grn, function(y) sweep(y, 2, FUN="*", Grn.factor))
+          meth[cy3.probes,] <- Grn$M
+          unmeth[cy3.probes,] <- Grn$U
+          meth[d2.probes,] <- Grn$D2
+        }
     }
 
     assayDataElement(mset, "Meth") <- meth
     assayDataElement(mset, "Unmeth") <- unmeth
-    mset@preprocessMethod <- c(preprocessMethod(mset), mu.norm = sprintf("Noob, dyeCorr=%s", dyeCorr))
+
+    mset@preprocessMethod <- c( mu.norm = 
+				sprintf("Noob, dyeCorr=%s, dyeMethod=%s", 
+					dyeCorr, dyeMethod))
     return(mset)
 }
 
 normexp.get.xs <- function(xf, controls, offset=50, verbose = FALSE){
     if(verbose)
-        cat("[normexp.get.xs] Background mean & SD estimated from", nrow(controls), "probes\n")
+        message("[normexp.get.xs] Background mean & SD estimated from", nrow(controls), "probes\n")
     mu <- sigma <- alpha <- rep(NA, ncol(xf))
     for( i in 1:ncol(xf) ) {
         ests <- huber(controls[, i]) # from MASS

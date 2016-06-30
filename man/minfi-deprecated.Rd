@@ -8,6 +8,8 @@
 }
 
 \details{
+  No functions are currently deprecated.
+  
   The following functions are deprecated and will be made defunct; use
   the replacement indicated below:
   \itemize{

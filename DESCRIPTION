@@ -1,7 +1,7 @@
 Package: minfi
-Version: 1.19.2
-Title: Analyze Illumina's methylation arrays
-Description: Tools for analyzing and visualizing Illumina's methylation array data.
+Version: 1.19.6
+Title: Analyze Illumina Infinium DNA methylation arrays
+Description: Tools to analyze & visualize Illumina Infinium methylation arrays.
 Authors@R: c(person(c("Kasper", "Daniel"), "Hansen", role = c("cre", "aut"),
                     email = "kasperdanielhansen@gmail.com"),
              person("Martin", "Aryee", role = "aut"),
@@ -23,6 +23,7 @@ Depends:  methods,
 Suggests: IlluminaHumanMethylation450kmanifest (>= 0.2.0),
 	  IlluminaHumanMethylation450kanno.ilmn12.hg19 (>= 0.2.1),
 	  minfiData (>= 0.4.1),
+	  minfiDataEPIC,
 	  FlowSorted.Blood.450k (>= 1.0.1),
 	  RUnit,
 	  digest,
@@ -81,6 +82,7 @@ Collate:  generics.R
 	  estimateCellCounts.R
 	  gaphunter.R
 	  compartments.R
+	  combineArrayTypes.R
 VignetteBuilder: knitr
 License: Artistic-2.0
 URL: https://github.com/kasperdanielhansen/minfi
