@@ -100,6 +100,7 @@ preprocessIllumina <- function(rgSet, bg.correct = TRUE, normalize = c("controls
 
 
 detectionP <- function(rgSet, type = "m+u") {
+    .isRGOrStop(rgSet)
     locusNames <- getManifestInfo(rgSet, "locusNames")
     detP <- matrix(NA_real_, ncol = ncol(rgSet), nrow = length(locusNames),
                    dimnames = list(locusNames, sampleNames(rgSet)))
