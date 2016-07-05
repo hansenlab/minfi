@@ -1,4 +1,10 @@
 language: r
+sudo: false # NOTE: This uses container-based builds and caching
+            # (https://docs.travis-ci.com/user/languages/r#Basic-configuration)
+            # Container-based builds supposely give us more memory
+            # (https://github.com/travis-ci/travis-ci/issues/3416#issuecomment-84364212)
+            # although https://docs.travis-ci.com/user/ci-environment/#Virtualization-environments
+            # suggests otherwise
 cache: packages
 warnings_are_errors: false
 r: bioc-devel
