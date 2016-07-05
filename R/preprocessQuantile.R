@@ -11,7 +11,7 @@ preprocessQuantile <- function(object, fixOutliers=TRUE,
         warning("preprocessQuantile has only been tested with 'preprocessRaw'")
     if (!is.null(sex))
         sex <- .checkSex(sex)
-
+    
     if(verbose) message("[preprocessQuantile] Mapping to genome.\n")
     object <- mapToGenome(object, mergeManifest = mergeManifest)
     
@@ -121,7 +121,8 @@ preprocessQuantile <- function(object, fixOutliers=TRUE,
         Index2 <- which(inRegion & probeType == "II")
         mat[Index2,] <- preprocessCore::normalize.quantiles(mat[Index2,])
         target <- approx(seq(along=Index2), sort(mat[Index2,1]),
-                         seq(1,length(Index2), length.out=length(Index1)))$y
+                         seq(from = min(mat[Index2,1]), to = max(mat[Index2,1]),
+                             length.out=length(Index1)))$y
         mat[Index1,] <- preprocessCore::normalize.quantiles.use.target(mat[Index1,,drop=FALSE],
                                                                        target)
     }
