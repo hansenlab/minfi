@@ -68,6 +68,12 @@ supported version.
   a \code{GenomicRatioSet}
 }
 
+\note{
+  A bug in the function was found to affect the Beta values of type I
+  probes, when \code{stratified=TRUE} (default). This is fixed in minfi
+  version 1.19.7 and 1.18.4 and greater.
+}
+
 \references{
   N Touleimat and J Tost.
   \emph{Complete pipeline for Infinium Human
