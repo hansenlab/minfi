@@ -11,6 +11,10 @@
     \item Support for early access IDAT files form the EPIC array.
     \item message() is now used instead of cat().
     \item Some functions moved from deprecated to defunct.
+    \item Addressing a bug in preprocessQuantile which led to reduced
+    performance for Type I probes when run with default paramters
+    (stratified=TRUE).  Users are strongly encouraged to update to the
+    latest version (1.19.7 or greater) and rerun the function.
   }
 }
 
