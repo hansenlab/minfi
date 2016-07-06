@@ -15,9 +15,12 @@
     performance for Type I probes when run with default paramters
     (stratified=TRUE).  Users are strongly encouraged to update to the
     latest version (1.19.7 or greater) and rerun the function.
+    \item Extended combineArrayTypes to deal with control probes with
+    the same address, but different characteristics (Color, Type,
+    ExtendedType). Discussions with Illumina support reveals that, for
+    control probes, same address is same probe.
   }
 }
-
 
 \section{Version 1.15}{
   \itemize{

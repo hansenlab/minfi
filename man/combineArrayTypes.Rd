@@ -38,7 +38,7 @@ if(require(minfiData) && require(minfiDataEPIC)) {
     library(minfiData)
     library(minfiDataEPIC)
     data(RGsetEx)
-    data(RSsetEPIC)
+    data(RGsetEPIC)
     rgSet <- combineArrayTypes(RGsetEPIC, RGsetEx)
     rgSet
 }

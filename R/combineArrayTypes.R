@@ -106,16 +106,16 @@ combineArrayTypes <- function(rgSet1, rgSet2, outType = c("IlluminaHumanMethylat
     commonAddress <- intersect(probes1$Address, probes2$Address)
     probes1 <- probes1[match(commonAddress, probes1$Address),]
     probes2 <- probes2[match(commonAddress, probes2$Address),]
-    ## Even with a common address, there are 1+2+11=14 probes with
+    ## Even with a common address, there are 11 probes with
     ## different Type / Color / ExtendedType
-    wh <- sapply(colnames(probes1), function(nam) {
-        which(probes1[, nam] != probes2[, nam])
-    })
-    wh <- unique(unname(unlist(wh)))
-    probes1 <- probes1[-wh,]
-    probes2 <- probes2[-wh,]
-    ## FIXME: it might be possible to include more control probes
-    ##        this is pretty stringent
+    ## Discussion with Illumina support reveals that these
+    ## are actually the same probes
+    ## wh <- sapply(colnames(probes1), function(nam) {
+    ##     which(probes1[, nam] != probes2[, nam])
+    ## })
+    ## wh <- unique(unname(unlist(wh)))
+    ## probes1 <- probes1[-wh,]
+    ## probes2 <- probes2[-wh,]
     keepAddresses$Control <- unname(probes1$Address)
     
     keepAddresses <- do.call(c, keepAddresses)
