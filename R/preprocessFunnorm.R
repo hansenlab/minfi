@@ -197,7 +197,7 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
     if (array=="IlluminaHumanMethylation450k"){
         addr <- getCtrlsAddr(exType = sprintf("BS Conversion I%sC%s", c(" ", "-", "-"), 1:3), index = index)
     } else {
-        addr <- getCtrlsAddr(exType = sprintf("BS Conversion I%sC%s", c(" ", "-", "-"), 1:2), index = index)
+        addr <- getCtrlsAddr(exType = sprintf("BS Conversion I%sC%s", c("-", "-"), 1:2), index = index)
     }
     greenControls.current <- greenControls[[ index ]][addr,,drop=FALSE] 
     if (array=="IlluminaHumanMethylation450k"){
