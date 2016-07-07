@@ -145,6 +145,7 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
                      "TARGET REMOVAL",
                      "STAINING")
 
+    array <- annotation(rgSet)[["array"]]
     controlAddr <- getControlAddress(rgSet, controlType = controlType, asList = TRUE)
     ctrls <- getProbeInfo(rgSet, type = "Control")
     if(!all(controlType %in% ctrls$Type))
@@ -166,7 +167,8 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
     return(list(
         greenControls = greenControls,
         redControls = redControls,
-        oob = oob, ctrlsList = ctrlsList))
+        oob = oob, ctrlsList = ctrlsList,
+        array = array))
 }
 
 
@@ -179,6 +181,7 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
         na.omit(addr[exType])
     }
     
+    array <- extractedData$array
     greenControls <- extractedData$greenControls
     redControls <- extractedData$redControls
     controlNames <- names(greenControls)
@@ -191,9 +194,17 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
     
     ## Bisulfite conversion extraction for probe type I:
     index <- match("BISULFITE CONVERSION I", controlNames)
-    addr <- getCtrlsAddr(exType = sprintf("BS Conversion I%sC%s", c(" ", "-", "-"), 1:3), index = index)
+    if (array=="IlluminaHumanMethylation450k"){
+        addr <- getCtrlsAddr(exType = sprintf("BS Conversion I%sC%s", c(" ", "-", "-"), 1:3), index = index)
+    } else {
+        addr <- getCtrlsAddr(exType = sprintf("BS Conversion I%sC%s", c(" ", "-", "-"), 1:2), index = index)
+    }
     greenControls.current <- greenControls[[ index ]][addr,,drop=FALSE] 
-    addr <- getCtrlsAddr(exType = sprintf("BS Conversion I-C%s", 4:6), index = index)
+    if (array=="IlluminaHumanMethylation450k"){
+        addr <- getCtrlsAddr(exType = sprintf("BS Conversion I-C%s", 4:6), index = index)
+    } else {
+        addr <- getCtrlsAddr(exType = sprintf("BS Conversion I-C%s", 3:5), index = index)
+    }
     redControls.current <- redControls[[ index ]][addr,, drop=FALSE]
     if (nrow(redControls.current)==nrow(greenControls.current)){
         bisulfite1 <- colMeans(redControls.current + greenControls.current, na.rm = TRUE)
