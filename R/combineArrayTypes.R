@@ -1,37 +1,117 @@
-combineArrayTypes <- function(rgSet1, rgSet2, outType = c("IlluminaHumanMethylation450k", "IlluminaHumanMethylationEPIC"), verbose=TRUE){
-    .isRGOrStop(rgSet1)
-    .isRGOrStop(rgSet2)
-    outType <- match.arg(outType)
-    sampleNames1 <- sampleNames(rgSet1)
-    sampleNames2 <- sampleNames(rgSet2)
-    if(annotation(rgSet1)["array"] == annotation(rgSet2)["array"])
-        stop("The two objects 'rgSet1' and 'rgSet2' are the same array type; the function `combineArrayTypes` is for combining different types of arrays. Have a look at 'combine'") 
-    if(length(intersect(sampleNames1, sampleNames2)) > 0) {
-        stop("The two objects 'rgSet1' and 'rgSet2' must have different sample names.")
+##
+## Need this for MethylSet, RatioSet (standard combine complains because of different annotation())
+## Need this for GenomicMethylSet and GenomicRatioSet (cbind complains because of different rowRanges)
+##
+
+.checkCombineAnnotation <- function(object1, object2, outType) {
+    array1 <- annotation(object1)["array"]
+    array2 <- annotation(object2)["array"]
+    stopifnot(array1 %in% .metharray.types)
+    stopifnot(array2 %in% .metharray.types)
+    if(! array1 %in% outType && ! array2 %in% outType) {
+        stop("`combineArrayTypes` requires that one of the two arrays being combined is of the same kind as `outType`")
     }
+    if(array1 == array2) {
+        stop("The two objects 'object1' and 'object2' are the same array type; the function `combineArrayTypes` is for combining different types of arrays. Have a look at 'cbind'")
+    }
+    if(array1 == outType) {
+        outAnno <- annotation(object1)
+    } else if(array2 == outType) {
+        outAnno <- annotation(object2)
+    }
+    list(annotation = outAnno)
+}
+
+setMethod("combineArrayTypes",
+          signature(object1 = "MethylSet", object2 = "MethylSet"),
+          function(object1, object2, outType = c("IlluminaHumanMethylation450k", "IlluminaHumanMethylationEPIC", "IlluminaHumanMethylation27k"), verbose = TRUE) {
+})
+
+setMethod("combineArrayTypes",
+          signature(object1 = "RatioSet", object2 = "RatioSet"),
+          function(object1, object2, outType = c("IlluminaHumanMethylation450k", "IlluminaHumanMethylationEPIC", "IlluminaHumanMethylation27k"), verbose = TRUE) {
+})
+
+setMethod("combineArrayTypes",
+          signature(object1 = "GenomicRatioSet", object2 = "GenomicRatioSet"),
+          function(object1, object2, outType = c("IlluminaHumanMethylation450k", "IlluminaHumanMethylationEPIC", "IlluminaHumanMethylation27k"), verbose = TRUE) {
+    outType <- match.arg(outType)
+    outAnno <- .checkCombineAnnotation(object1, object2, outType)
+    colData1 <- colData(object1)
+    colData2 <- colData(object2)
+    colData1$ArrayTypes <- annotation(object1)["array"]
+    colData2$ArrayTypes <- annotation(object2)["array"]
+    by <- c("row.names", intersect(names(colData1), names(colData2)))
+    colData.merged <- merge(colData1, colData2, all = TRUE, by = by)
+    colData(object1) <- colData.merged[match(colnames(object1), colData.merged[, "Row.names"]), ]
+    colData(object2) <- colData.merged[match(colnames(object2), colData.merged[, "Row.names"]), ]
+    gr.common <- intersect(granges(object1), granges(object2))
+    object1 <- sort(subsetByOverlaps(object1, gr.common))
+    object2 <- sort(subsetByOverlaps(object2, gr.common))
+    GRset <- cbind(object1, object2)
+    colnames(GRset) <- GRset$Row.names
+    GRset$Row.names <- NULL
+    GRset@annotation <- outAnno$annotation
+    GRset
+})
+
+setMethod("combineArrayTypes",
+          signature(object1 = "GenomicMethylSet", object2 = "GenomicMethylSet"),
+          function(object1, object2, outType = c("IlluminaHumanMethylation450k", "IlluminaHumanMethylationEPIC", "IlluminaHumanMethylation27k"), verbose = TRUE) {
+    outType <- match.arg(outType)
+    outAnno <- .checkCombineAnnotation(object1, object2, outType)
+    colData1 <- colData(object1)
+    colData2 <- colData(object2)
+    colData1$ArrayTypes <- annotation(object1)["array"]
+    colData2$ArrayTypes <- annotation(object2)["array"]
+    by <- c("row.names", intersect(names(colData1), names(colData2)))
+    colData.merged <- merge(colData1, colData2, all = TRUE, by = by)
+    colData(object1) <- colData.merged[match(colnames(object1), colData.merged[, "Row.names"]), ]
+    colData(object2) <- colData.merged[match(colnames(object2), colData.merged[, "Row.names"]), ]
+    gr.common <- intersect(granges(object1), granges(object2))
+    object1 <- sort(subsetByOverlaps(object1, gr.common))
+    object2 <- sort(subsetByOverlaps(object2, gr.common))
+    GMset <- cbind(object1, object2)
+    colnames(GMset) <- GMset$Row.names
+    GMset$Row.names <- NULL
+    GMset@annotation <- outAnno$annotation
+    GMset
+})
+
+setMethod("combineArrayTypes",
+          signature(object1 = "RGChannelSet", object2 = "RGChannelSet"),
+          function(object1, object2, outType = c("IlluminaHumanMethylation450k", "IlluminaHumanMethylationEPIC"), verbose = TRUE) {
+    outType <- match.arg(outType)
+    sampleNames1 <- sampleNames(object1)
+    sampleNames2 <- sampleNames(object2)
+    if(annotation(object1)["array"] == annotation(object2)["array"])
+        stop("The two objects 'object1' and 'object2' are the same array type; the function `combineArrayTypes` is for combining different types of arrays. Have a look at 'combine'") 
+    ## if(length(intersect(sampleNames1, sampleNames2)) > 0) {
+    ##     stop("The two objects 'object1' and 'object2' must have different sample names.")
+    ## }
     if(verbose) {
-        message(sprintf("[combineArrayTypes] Casting as %s", annotation(rgSet1)["array"]))
+        message(sprintf("[combineArrayTypes] Casting as %s", outType))
     }
     if(outType == "IlluminaHumanMethylationEPIC") {
-        if(.isEPIC(rgSet1) && .is450k(rgSet2)) {
-            rgSet <- .combineArrayTypes_450k_epic(rgSet1 = rgSet1, rgSet2 = rgSet2, verbose = verbose)
-        } else if(.isEPIC(rgSet2) && .is450k(rgSet1)) {
-            rgSet <- .combineArrayTypes_450k_epic(rgSet1 = rgSet2, rgSet2 = rgSet1, verbose = verbose)
+        if(.isEPIC(object1) && .is450k(object2)) {
+            rgSet <- .combineArrayTypes_450k_epic(rgSet1 = object1, rgSet2 = object2, verbose = verbose)
+        } else if(.isEPIC(object2) && .is450k(object1)) {
+            rgSet <- .combineArrayTypes_450k_epic(rgSet1 = object2, rgSet2 = object1, verbose = verbose)
         } else {
             stop("Currently, 'combineArrayTypes' only supports combining 'IlluminaHumanMethylation450k' and 'IlluminaHumanMethylationEPIC' arrays.")
         }
     }
     if(outType == "IlluminaHumanMethylation450k") {
-        if(.isEPIC(rgSet1) && .is450k(rgSet2)) {
-            rgSet <- .combineArrayTypes_450k_epic(rgSet1 = rgSet2, rgSet2 = rgSet1, verbose = verbose)
-        } else if(.isEPIC(rgSet2) && .is450k(rgSet1)) {
-            rgSet <- .combineArrayTypes_450k_epic(rgSet1 = rgSet1, rgSet2 = rgSet2, verbose = verbose)
+        if(.isEPIC(object1) && .is450k(object2)) {
+            rgSet <- .combineArrayTypes_450k_epic(rgSet1 = object2, rgSet2 = object1, verbose = verbose)
+        } else if(.isEPIC(object2) && .is450k(object1)) {
+            rgSet <- .combineArrayTypes_450k_epic(rgSet1 = object1, rgSet2 = object2, verbose = verbose)
         } else {
             stop("Currently, 'combineArrayTypes' only supports combining 'IlluminaHumanMethylation450k' and 'IlluminaHumanMethylationEPIC' arrays.")
         }
     }
     rgSet
-}
+})
 
 .combineArrayTypes_450k_epic <- function(rgSet1, rgSet2,
                                          verbose = verbose) {
