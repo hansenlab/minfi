@@ -145,6 +145,7 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
                      "TARGET REMOVAL",
                      "STAINING")
 
+    array <- annotation(rgSet)[["array"]]
     controlAddr <- getControlAddress(rgSet, controlType = controlType, asList = TRUE)
     ctrls <- getProbeInfo(rgSet, type = "Control")
     if(!all(controlType %in% ctrls$Type))
@@ -166,7 +167,8 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
     return(list(
         greenControls = greenControls,
         redControls = redControls,
-        oob = oob, ctrlsList = ctrlsList))
+        oob = oob, ctrlsList = ctrlsList,
+        array = array))
 }
 
 
@@ -179,6 +181,7 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
         na.omit(addr[exType])
     }
     
+    array <- extractedData$array
     greenControls <- extractedData$greenControls
     redControls <- extractedData$redControls
     controlNames <- names(greenControls)
@@ -191,26 +194,39 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
     
     ## Bisulfite conversion extraction for probe type I:
     index <- match("BISULFITE CONVERSION I", controlNames)
-    addr <- getCtrlsAddr(exType = sprintf("BS Conversion I%sC%s", c(" ", "-", "-"), 1:3), index = index)
-    greenControls.current <- greenControls[[ index ]][addr,]
-    addr <- getCtrlsAddr(exType = sprintf("BS Conversion I-C%s", 4:6), index = index)
-    redControls.current <- redControls[[ index ]][addr,]
-    bisulfite1 <- colMeans(redControls.current + greenControls.current, na.rm = TRUE)
+    if (array=="IlluminaHumanMethylation450k"){
+        addr <- getCtrlsAddr(exType = sprintf("BS Conversion I%sC%s", c(" ", "-", "-"), 1:3), index = index)
+    } else {
+        addr <- getCtrlsAddr(exType = sprintf("BS Conversion I%sC%s", c("-", "-"), 1:2), index = index)
+    }
+    greenControls.current <- greenControls[[ index ]][addr,,drop=FALSE] 
+    if (array=="IlluminaHumanMethylation450k"){
+        addr <- getCtrlsAddr(exType = sprintf("BS Conversion I-C%s", 4:6), index = index)
+    } else {
+        addr <- getCtrlsAddr(exType = sprintf("BS Conversion I-C%s", 3:5), index = index)
+    }
+    redControls.current <- redControls[[ index ]][addr,, drop=FALSE]
+    if (nrow(redControls.current)==nrow(greenControls.current)){
+        bisulfite1 <- colMeans(redControls.current + greenControls.current, na.rm = TRUE)
+    } else {
+        bisulfite1 <- colMeans(redControls.current, na.rm=TRUE) + colMeans(greenControls.current, na.rm = TRUE)
+    }
+    
     
     ## Staining
     index <- match("STAINING", controlNames)
     addr <- getCtrlsAddr(exType = "Biotin (High)", index = index)
-    stain.green <- greenControls[[ index ]][addr,]
+    stain.green <- t(greenControls[[ index ]][addr,,drop=FALSE])
     addr <- getCtrlsAddr(exType = "DNP (High)", index = index)
-    stain.red <- redControls[[ index ]][addr, ] 
+    stain.red <- t(redControls[[ index ]][addr,, drop=FALSE ])
     
     ## Extension
     index <-    match("EXTENSION", controlNames)
     addr <- getCtrlsAddr(exType = sprintf("Extension (%s)", c("A", "T")), index = index)
-    extension.red <- t(redControls[[index]][addr,])
+    extension.red <- t(redControls[[index]][addr,,drop=FALSE])
     colnames(extension.red) <- paste0("extRed", 1:ncol(extension.red))
     addr <- getCtrlsAddr(exType = sprintf("Extension (%s)", c("C", "G")), index = index)
-    extension.green <- t(greenControls[[index]][addr,])
+    extension.green <- t(greenControls[[index]][addr,,drop=FALSE])
     colnames(extension.green) <- paste0("extGrn", 1:ncol(extension.green))
     
     ## Hybridization should be monitored only in the green channel
@@ -226,10 +242,10 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
     ## Non-polymorphic probes
     index <- match("NON-POLYMORPHIC", controlNames)
     addr <- getCtrlsAddr(exType = sprintf("NP (%s)", c("A", "T")), index = index)
-    nonpoly.red <- t(redControls[[index]][addr, ])
+    nonpoly.red <- t(redControls[[index]][addr, ,drop=FALSE])
     colnames(nonpoly.red) <- paste0("nonpolyRed", 1:ncol(nonpoly.red))
     addr <- getCtrlsAddr(exType = sprintf("NP (%s)", c("C", "G")), index = index)
-    nonpoly.green <- t(greenControls[[index]][addr, ])
+    nonpoly.green <- t(greenControls[[index]][addr, ,drop=FALSE])
     colnames(nonpoly.green) <- paste0("nonpolyGrn", 1:ncol(nonpoly.green))
     
     ## Specificity II
@@ -246,17 +262,17 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
     ## Specificity I
     index <- match("SPECIFICITY I", controlNames)
     addr <- getCtrlsAddr(exType = sprintf("GT Mismatch %s (PM)", 1:3), index = index)
-    greenControls.current <- greenControls[[index]][addr,]
-    redControls.current <- redControls[[index]][addr,]
+    greenControls.current <- greenControls[[index]][addr,,drop=FALSE] 
+    redControls.current <- redControls[[index]][addr,,drop=FALSE] 
     spec1.green <- t(greenControls.current)
     colnames(spec1.green) <- paste0("spec1Grn", 1:ncol(spec1.green))
     spec1.ratio1 <- colMeans(redControls.current, na.rm = TRUE) /
         colMeans(greenControls.current, na.rm = TRUE)
     
-
+    index <- match("SPECIFICITY I", controlNames) # Added that line
     addr <- getCtrlsAddr(exType = sprintf("GT Mismatch %s (PM)", 4:6), index = index)
-    greenControls.current <- greenControls[[index]][addr,]
-    redControls.current <- redControls[[index]][addr,]
+    greenControls.current <- greenControls[[index]][addr,,drop=FALSE]
+    redControls.current <- redControls[[index]][addr,,drop=FALSE]
     spec1.red <- t(redControls.current)
     colnames(spec1.red) <- paste0("spec1Red", 1:ncol(spec1.red))
     spec1.ratio2 <- colMeans(greenControls.current, na.rm = TRUE) / 
@@ -288,6 +304,7 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
         spec1.ratio, spec2.ratio, spec1.ratio2, normA, normC, normT, normG, dyebias,
         oobG, oob.ratio)
     
+
     ## Imputation
     for (colindex in 1:ncol(model.matrix)) {
         if(any(is.na(model.matrix[,colindex]))) {
