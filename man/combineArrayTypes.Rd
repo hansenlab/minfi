@@ -1,5 +1,10 @@
 \name{combineArrayTypes}
 \alias{combineArrayTypes}
+\alias{combineArrayTypes,RGChannelSet,RGChannelSet-method}
+\alias{combineArrayTypes,MethylSet,MethylSet-method}
+\alias{combineArrayTypes,GenomicMethylSet,GenomicMethylSet-method}
+\alias{combineArrayTypes,RatioSet,RatioSet-method}
+\alias{combineArrayTypes,GenomicRatioSet,GenomicRatioSet-method}
 \title{
 A method for combining different types of methylation arrays into a
 virtual array.
@@ -13,11 +18,34 @@ type.  Essentially this new object will be like (for example) an EPIC
 array with many probes missing.
 }
 \usage{
-combineArrayTypes(rgSet1, rgSet2, outType = c("IlluminaHumanMethylation450k", "IlluminaHumanMethylationEPIC"), verbose = TRUE)
+\S4method{combineArrayTypes}{RGChannelSet,RGChannelSet}(object1, object2,
+                  outType = c("IlluminaHumanMethylation450k",
+                              "IlluminaHumanMethylationEPIC"),
+                  verbose = TRUE)
+\S4method{combineArrayTypes}{MethylSet,MethylSet}(object1, object2,
+                  outType = c("IlluminaHumanMethylation450k",
+                              "IlluminaHumanMethylationEPIC",
+                              "IlluminaHumanMethylation27k"),
+                  verbose = TRUE)
+\S4method{combineArrayTypes}{RatioSet,RatioSet}(object1, object2,
+                  outType = c("IlluminaHumanMethylation450k",
+                              "IlluminaHumanMethylationEPIC",
+                              "IlluminaHumanMethylation27k"),
+                  verbose = TRUE)
+\S4method{combineArrayTypes}{GenomicMethylSet,GenomicMethylSet}(object1, object2,
+                  outType = c("IlluminaHumanMethylation450k",
+                              "IlluminaHumanMethylationEPIC",
+                              "IlluminaHumanMethylation27k"),
+                  verbose = TRUE)
+\S4method{combineArrayTypes}{GenomicRatioSet,GenomicRatioSet}(object1, object2,
+                  outType = c("IlluminaHumanMethylation450k",
+                              "IlluminaHumanMethylationEPIC",
+                              "IlluminaHumanMethylation27k"),
+                  verbose = TRUE)
 }
 \arguments{
-  \item{rgSet1}{The first \code{RGChannelSet}.}
-  \item{rgSet2}{The second \code{RGChannelSet}.}
+  \item{object1}{The first object.}
+  \item{object2}{The second object.}
   \item{outType}{The array type of the output.}
   \item{verbose}{Should the function be verbose?}
 }

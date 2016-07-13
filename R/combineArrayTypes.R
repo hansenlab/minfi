@@ -36,7 +36,7 @@ setMethod("combineArrayTypes",
     annotation(object2) <- outAnno$annotation
     Mset <- combine(object1, object2)
     Mset
-}
+})
 
 
 setMethod("combineArrayTypes",
