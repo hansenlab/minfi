@@ -25,11 +25,34 @@
 setMethod("combineArrayTypes",
           signature(object1 = "MethylSet", object2 = "MethylSet"),
           function(object1, object2, outType = c("IlluminaHumanMethylation450k", "IlluminaHumanMethylationEPIC", "IlluminaHumanMethylation27k"), verbose = TRUE) {
-})
+    outType <- match.arg(outType)
+    outAnno <- .checkCombineAnnotation(object1, object2, outType)
+    common.features <- intersect(rownames(object1), rownames(object2))
+    object1 <- object1[common.features,]
+    object2 <- object2[common.features,]
+    object1$ArrayTypes <- annotation(object1)["array"]
+    object2$ArrayTypes <- annotation(object2)["array"]
+    annotation(object1) <- outAnno$annotation
+    annotation(object2) <- outAnno$annotation
+    Mset <- combine(object1, object2)
+    Mset
+}
+
 
 setMethod("combineArrayTypes",
           signature(object1 = "RatioSet", object2 = "RatioSet"),
           function(object1, object2, outType = c("IlluminaHumanMethylation450k", "IlluminaHumanMethylationEPIC", "IlluminaHumanMethylation27k"), verbose = TRUE) {
+    outType <- match.arg(outType)
+    outAnno <- .checkCombineAnnotation(object1, object2, outType)
+    common.features <- intersect(rownames(object1), rownames(object2))
+    object1 <- object1[common.features,]
+    object2 <- object2[common.features,]
+    object1$ArrayTypes <- annotation(object1)["array"]
+    object2$ArrayTypes <- annotation(object2)["array"]
+    annotation(object1) <- outAnno$annotation
+    annotation(object2) <- outAnno$annotation
+    Rset <- combine(object1, object2)
+    Rset
 })
 
 setMethod("combineArrayTypes",

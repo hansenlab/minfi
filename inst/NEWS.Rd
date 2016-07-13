@@ -19,6 +19,8 @@
     the same address, but different characteristics (Color, Type,
     ExtendedType). Discussions with Illumina support reveals that, for
     control probes, same address is same probe.
+    \item Extended combineArrayTypes to support
+    [Genomic](Methyl|Ratio)Set. 
   }
 }
 
