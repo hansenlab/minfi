@@ -63,7 +63,7 @@ array with many probes missing.
 if(require(minfiData)) {
     library(minfiData)
     data(RGsetEx)
-    rgSet <- convertArray(RGsetEPIC, outType = "IlluminaHumanMethylationEPIC")
+    rgSet <- convertArray(RGsetEx, outType = "IlluminaHumanMethylationEPIC")
     rgSet
 }
 }

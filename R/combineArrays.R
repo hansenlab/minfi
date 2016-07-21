@@ -1,27 +1,7 @@
-.checkCombineAnnotation <- function(object1, object2, outType) {
-    array1 <- annotation(object1)["array"]
-    array2 <- annotation(object2)["array"]
-    stopifnot(array1 %in% .metharray.types)
-    stopifnot(array2 %in% .metharray.types)
-    if(! array1 %in% outType && ! array2 %in% outType) {
-        stop("`combineArrayTypes` requires that one of the two arrays being combined is of the same kind as `outType`")
-    }
-    if(array1 == array2) {
-        stop("The two objects 'object1' and 'object2' are the same array type; the function `combineArrayTypes` is for combining different types of arrays. Have a look at 'cbind'")
-    }
-    if(array1 == outType) {
-        outAnno <- annotation(object1)
-    } else if(array2 == outType) {
-        outAnno <- annotation(object2)
-    }
-    list(annotation = outAnno)
-}
-
 .getAnnotationFromOutType <- function(outType = c("IlluminaHumanMethylation450k", 
         "IlluminaHumanMethylationEPIC", 
         "IlluminaHumanMethylation27k")){
     outType <- match.arg(outType)
-    array <- outType
     if (outType=="IlluminaHumanMethylation450k"){
         anno <-  .default.450k.annotation
     } else if (outType=="IlluminaHumanMethylation27k"){
@@ -33,13 +13,13 @@
 }
 
 
-.getProbesFromOutType <- function(outType = c("IlluminaHumanMethylation450k", 
+.getLociFromOutType <- function(outType = c("IlluminaHumanMethylation450k", 
         "IlluminaHumanMethylationEPIC", 
         "IlluminaHumanMethylation27k")){
-    outType <- match.arg(outType )
+    outType <- match.arg(outType)
     manifest <- getManifest(outType)
-    probesI  <- getProbeInfo(manifest, type="I")$Name
-    probesII  <- getProbeInfo(manifest, type="II")$Name
+    probesI <- getProbeInfo(manifest, type="I")$Name
+    probesII <- getProbeInfo(manifest, type="II")$Name
     probes <- c(probesI, probesII)
     probes
 }
@@ -51,17 +31,21 @@ setMethod("combineArrays",
     outType <- match.arg(outType)
     array1 <- annotation(object1)[["array"]]
     array2 <- annotation(object2)[["array"]]
+    if(array1 == array2) {
+        outType <- array1
+    }
     if (array1=="IlluminaHumanMethylation27k" | array2=="IlluminaHumanMethylation27k"){
         stop("27k arrays cannot be combined at the RGChannelSet level.")
     }
-    object1 <- convertArray(object1, outType = outType)
-    object2 <- convertArray(object2, outType = outType)
+    object1 <- convertArray(object1, outType = outType, verbose = verbose)
+    object2 <- convertArray(object2, outType = outType, verbose = verbose)
     features1 <- rownames(object1)
     features2 <- rownames(object2)
     features  <- intersect(features1, features2)
     object1  <- object1[features,]
     object2  <- object2[features,]
     rgSet <- combine(object1, object2)
+    rgSet$ArrayTypes <- rep(c(array1, array2), times = c(ncol(object1), ncol(object2)))
     rgSet
 })
 
@@ -70,12 +54,18 @@ setMethod("combineArrays",
           signature(object1 = "MethylSet", object2 = "MethylSet"),
           function(object1, object2, outType = c("IlluminaHumanMethylation450k", "IlluminaHumanMethylationEPIC", "IlluminaHumanMethylation27k"), verbose = TRUE) {
     outType <- match.arg(outType)
-    object1 <- convertArray(object1, outType = outType)
-    object2 <- convertArray(object2, outType = outType)
+    array1 <- annotation(object1)["array"]
+    array2 <- annotation(object2)["array"]
+    if(array1 == array2) {
+        outType <- array1
+    }
+    object1 <- convertArray(object1, outType = outType, verbose = verbose)
+    object2 <- convertArray(object2, outType = outType, verbose = verbose)
     common.features <- intersect(rownames(object1), rownames(object2))
     object1 <- object1[common.features,]
     object2 <- object2[common.features,]
     Mset <- combine(object1, object2)
+    Mset$ArrayTypes <- rep(c(array1, array2), times = c(ncol(object1), ncol(object2)))
     Mset
 })
 
@@ -84,12 +74,18 @@ setMethod("combineArrays",
           signature(object1 = "RatioSet", object2 = "RatioSet"),
           function(object1, object2, outType = c("IlluminaHumanMethylation450k", "IlluminaHumanMethylationEPIC", "IlluminaHumanMethylation27k"), verbose = TRUE) {
     outType <- match.arg(outType)
-    object1 <- convertArray(object1, outType = outType)
-    object2 <- convertArray(object2, outType = outType)
+    array1 <- annotation(object1)["array"]
+    array2 <- annotation(object2)["array"]
+    if(array1 == array2) {
+        outType <- array1
+    }
+    object1 <- convertArray(object1, outType = outType, verbose = verbose)
+    object2 <- convertArray(object2, outType = outType, verbose = verbose)
     common.features <- intersect(rownames(object1), rownames(object2))
     object1 <- object1[common.features,]
     object2 <- object2[common.features,]
     Rset <- combine(object1, object2)
+    Rset$ArrayTypes <- rep(c(array1, array2), times = c(ncol(object1), ncol(object2)))
     Rset
 })
 
@@ -98,11 +94,17 @@ setMethod("combineArrays",
           signature(object1 = "GenomicRatioSet", object2 = "GenomicRatioSet"),
           function(object1, object2, outType = c("IlluminaHumanMethylation450k", "IlluminaHumanMethylationEPIC", "IlluminaHumanMethylation27k"), verbose = TRUE) {
     outType <- match.arg(outType)
-    object1 <- convertArray(object1, outType = outType)
-    object2 <- convertArray(object2, outType = outType)
-
-    colData1$ArrayTypes <- annotation(object1)["array"]
-    colData2$ArrayTypes <- annotation(object2)["array"]
+    array1 <- annotation(object1)["array"]
+    array2 <- annotation(object2)["array"]
+    if(array1 == array2) {
+        outType <- array1
+    }
+    object1 <- convertArray(object1, outType = outType, verbose = verbose)
+    object2 <- convertArray(object2, outType = outType, verbose = verbose)
+    colData1 <- colData(object1)
+    colData2 <- colData(object2)
+    colData1$ArrayTypes <- array1
+    colData2$ArrayTypes <- array2
     colData1 <- colData(object1)
     colData2 <- colData(object2)
     by <- c("row.names", intersect(names(colData1), names(colData2)))
@@ -123,13 +125,17 @@ setMethod("combineArrays",
           signature(object1 = "GenomicMethylSet", object2 = "GenomicMethylSet"),
           function(object1, object2, outType = c("IlluminaHumanMethylation450k", "IlluminaHumanMethylationEPIC", "IlluminaHumanMethylation27k"), verbose = TRUE) {
     outType <- match.arg(outType)
-    object1 <- convertArray(object1, outType = outType)
-    object2 <- convertArray(object2, outType = outType)
-    
+    array1 <- annotation(object1)["array"]
+    array2 <- annotation(object2)["array"]
+    if(array1 == array2) {
+        outType <- array1
+    }
+    object1 <- convertArray(object1, outType = outType, verbose = verbose)
+    object2 <- convertArray(object2, outType = outType, verbose = verbose)
     colData1 <- colData(object1)
     colData2 <- colData(object2)
-    colData1$ArrayTypes <- annotation(object1)["array"]
-    colData2$ArrayTypes <- annotation(object2)["array"]
+    colData1$ArrayTypes <- array1
+    colData2$ArrayTypes <- array2
     by <- c("row.names", intersect(names(colData1), names(colData2)))
     colData.merged <- merge(colData1, colData2, all = TRUE, by = by)
     colData(object1) <- colData.merged[match(colnames(object1), colData.merged[, "Row.names"]), ]
@@ -149,14 +155,12 @@ setMethod("convertArray",
     outType <- match.arg(outType)
     array <- annotation(object)[["array"]]
     if(array == outType){
-        rgSet <- object
-        #stop("The 'object' is already in the 'outType' array type and the function `convertArrayTypes` is for converting to a different types of arrays.") 
-    } else {
-        if(verbose) {
-            message(sprintf("[convertArray] Casting as %s", outType))
-        }
-        rgSet <- .convertArray_450k_epic(rgSet = object, outType = outType, verbose = verbose)
+        return(object)
     }
+    if(verbose) {
+        message(sprintf("[convertArray] Casting as %s", outType))
+    }
+    rgSet <- .convertArray_450k_epic(rgSet = object, outType = outType, verbose = verbose)
     rgSet
 })
 
@@ -168,11 +172,15 @@ setMethod("convertArray",
             "IlluminaHumanMethylation27k"), verbose = TRUE){
     outType <- match.arg(outType)
     array <- annotation(object)[["array"]]
-    if (array != outType){
-        common.features <- intersect(rownames(object), .getProbesFromOutType(outType))
-        object <- object[common.features,]
-        annotation(object) <- .getAnnotationFromOutType(outType)
+    if(array == outType){
+        return(object)
     }
+    if(verbose) {
+        message(sprintf("[convertArray] Casting as %s", outType))
+    }
+    common.features <- intersect(rownames(object), .getLociFromOutType(outType))
+    object <- object[common.features,]
+    annotation(object) <- .getAnnotationFromOutType(outType)
     object
 })
 
@@ -184,11 +192,15 @@ setMethod("convertArray",
             "IlluminaHumanMethylation27k"), verbose = TRUE){
     outType <- match.arg(outType)
     array <- annotation(object)[["array"]]
-    if (array != outType){
-        common.features <- intersect(rownames(object), .getProbesFromOutType(outType))
-        object <- object[common.features,]
-        annotation(object) <- .getAnnotationFromOutType(outType)
+    if(array == outType){
+        return(object)
     }
+    if(verbose) {
+        message(sprintf("[convertArray] Casting as %s", outType))
+    }
+    common.features <- intersect(rownames(object), .getLociFromOutType(outType))
+    object <- object[common.features,]
+    annotation(object) <- .getAnnotationFromOutType(outType)
     object
 })
 
@@ -200,11 +212,15 @@ setMethod("convertArray",
             "IlluminaHumanMethylation27k"), verbose = TRUE){
     outType <- match.arg(outType)
     array <- annotation(object)[["array"]]
-    if (array != outType){
-        common.features <- intersect(rownames(object), .getProbesFromOutType(outType))
-        object <- object[common.features,]
-        object@annotation <- .getAnnotationFromOutType(outType)
+    if(array == outType){
+        return(object)
     }
+    if(verbose) {
+        message(sprintf("[convertArray] Casting as %s", outType))
+    }
+    common.features <- intersect(rownames(object), .getLociFromOutType(outType))
+    object <- object[common.features,]
+    object@annotation <- .getAnnotationFromOutType(outType)
     object
 })
 
@@ -216,11 +232,15 @@ setMethod("convertArray",
          "IlluminaHumanMethylation27k"), verbose = TRUE){
     outType <- match.arg(outType)
     array <- annotation(object)[["array"]]
-    if (array != outType){
-        common.features <- intersect(rownames(object), .getProbesFromOutType(outType))
-        object <- object[common.features,]
-        object@annotation <- .getAnnotationFromOutType(outType)
+    if(array == outType){
+        return(object)
     }
+    if(verbose) {
+        message(sprintf("[convertArray] Casting as %s", outType))
+    }
+    common.features <- intersect(rownames(object), .getLociFromOutType(outType))
+    object <- object[common.features,]
+    object@annotation <- .getAnnotationFromOutType(outType)
     object
 })
 

@@ -146,7 +146,7 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
                      "STAINING")
 
     array <- annotation(rgSet)[["array"]]
-    controlAddr <- getControlAddress(rgSet, controlType = controlType, asList = TRUE)
+    ## controlAddr <- getControlAddress(rgSet, controlType = controlType, asList = TRUE)
     ctrls <- getProbeInfo(rgSet, type = "Control")
     if(!all(controlType %in% ctrls$Type))
         stop("The `rgSet` does not contain all necessary control probes")
