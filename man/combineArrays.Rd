@@ -11,10 +11,12 @@ virtual array.
 }
 \description{
 A method for combining different types of methylation arrays into a
-virtual array. Specifically, the 450k array and the EPIC array share
-many probes in common.  This functions combines data from the two
-different array types and outputs a data object of the user specified
-type.  Essentially this new object will be like (for example) an EPIC
+virtual array. The three generations of Illumina 
+methylation arrays are supported: the 27k, the 450k and the EPIC arrays.
+Specifically, the 450k array and the EPIC array share
+many probes in common.  This function combines data from the two
+different array types and outputs a data object of the user-specified
+type.  Essentially, this new object will be like (for example) an EPIC
 array with many probes missing.
 }
 \usage{
@@ -55,8 +57,7 @@ array with many probes missing.
   SNP probes. Control probes.
 }
 \value{
-  An object of class \code{RGChannelSet}, with the type of array given
-  by the \code{outType} argument.
+  The output object has the same class as the two input objects, that is either an \code{RGChannelSet, a \code{MethylSet}, a \code{RatioSet}, a \code{GemomicMethylSet} or a \code{GenomicRatioSet}, with the type of the array given by the \code{outType} argument. 
 }
 \author{
   Jean-Philippe Fortin and Kasper D. Hansen.
