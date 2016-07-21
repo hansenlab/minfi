@@ -1,10 +1,10 @@
-\name{combineArrayTypes}
-\alias{combineArrayTypes}
-\alias{combineArrayTypes,RGChannelSet,RGChannelSet-method}
-\alias{combineArrayTypes,MethylSet,MethylSet-method}
-\alias{combineArrayTypes,GenomicMethylSet,GenomicMethylSet-method}
-\alias{combineArrayTypes,RatioSet,RatioSet-method}
-\alias{combineArrayTypes,GenomicRatioSet,GenomicRatioSet-method}
+\name{convertArray}
+\alias{convertArray}
+\alias{convertArray,RGChannelSet-method}
+\alias{convertArray,MethylSet-method}
+\alias{convertArray,GenomicMethylSet-method}
+\alias{convertArray,RatioSet-method}
+\alias{convertArray,GenomicRatioSet-method}
 \title{
 A method for combining different types of methylation arrays into a
 virtual array.
@@ -18,34 +18,33 @@ type.  Essentially this new object will be like (for example) an EPIC
 array with many probes missing.
 }
 \usage{
-\S4method{combineArrayTypes}{RGChannelSet,RGChannelSet}(object1, object2,
+\S4method{convertArray}{RGChannelSet}(object,
                   outType = c("IlluminaHumanMethylation450k",
                               "IlluminaHumanMethylationEPIC"),
                   verbose = TRUE)
-\S4method{combineArrayTypes}{MethylSet,MethylSet}(object1, object2,
+\S4method{convertArray}{MethylSet}(object,
                   outType = c("IlluminaHumanMethylation450k",
                               "IlluminaHumanMethylationEPIC",
                               "IlluminaHumanMethylation27k"),
                   verbose = TRUE)
-\S4method{combineArrayTypes}{RatioSet,RatioSet}(object1, object2,
+\S4method{convertArray}{RatioSet}(object,
                   outType = c("IlluminaHumanMethylation450k",
                               "IlluminaHumanMethylationEPIC",
                               "IlluminaHumanMethylation27k"),
                   verbose = TRUE)
-\S4method{combineArrayTypes}{GenomicMethylSet,GenomicMethylSet}(object1, object2,
+\S4method{convertArray}{GenomicMethylSet}(object, 
                   outType = c("IlluminaHumanMethylation450k",
                               "IlluminaHumanMethylationEPIC",
                               "IlluminaHumanMethylation27k"),
                   verbose = TRUE)
-\S4method{combineArrayTypes}{GenomicRatioSet,GenomicRatioSet}(object1, object2,
+\S4method{convertArray}{GenomicRatioSet}(object, 
                   outType = c("IlluminaHumanMethylation450k",
                               "IlluminaHumanMethylationEPIC",
                               "IlluminaHumanMethylation27k"),
                   verbose = TRUE)
 }
 \arguments{
-  \item{object1}{The first object.}
-  \item{object2}{The second object.}
+  \item{object}{The input object.}
   \item{outType}{The array type of the output.}
   \item{verbose}{Should the function be verbose?}
 }
@@ -55,19 +54,16 @@ array with many probes missing.
   SNP probes. Control probes.
 }
 \value{
-  An object of class \code{RGChannelSet}, with the type of array given
-  by the \code{outType} argument.
+  FIXME
 }
 \author{
   Jean-Philippe Fortin and Kasper D. Hansen.
 }
 \examples{
-if(require(minfiData) && require(minfiDataEPIC)) {
+if(require(minfiData)) {
     library(minfiData)
-    library(minfiDataEPIC)
     data(RGsetEx)
-    data(RGsetEPIC)
-    rgSet <- combineArrayTypes(RGsetEPIC, RGsetEx)
+    rgSet <- convertArray(RGsetEPIC, outType = "IlluminaHumanMethylationEPIC")
     rgSet
 }
 }

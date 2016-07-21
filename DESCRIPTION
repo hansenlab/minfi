@@ -82,7 +82,7 @@ Collate:  generics.R
 	  estimateCellCounts.R
 	  gaphunter.R
 	  compartments.R
-	  combineArrayTypes.R
+	  combineArrays.R
 VignetteBuilder: knitr
 License: Artistic-2.0
 URL: https://github.com/kasperdanielhansen/minfi
