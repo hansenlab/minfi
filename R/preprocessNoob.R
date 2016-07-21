@@ -1,5 +1,5 @@
 preprocessNoob <- function(rgSet, offset=15, dyeCorr=TRUE, verbose = TRUE,
-                           dyeMethod = c("reference", "single")) {
+                           dyeMethod = c("single", "reference")) {
     .isRGOrStop(rgSet)
     subverbose <- max(as.integer(verbose) - 1L, 0)
     dyeMethod <- match.arg(dyeMethod)
@@ -81,14 +81,14 @@ preprocessNoob <- function(rgSet, offset=15, dyeCorr=TRUE, verbose = TRUE,
 
     ## Performing dye bias normalization
     ## 
+    ## "single" = just reciprocate out the dye bias, don't use a reference.
+    ##            (similar to, but implemented differently from, unmaintained
+    ##             "asmn" package by Decker et al., doi:10.4161/epi.26037)
     ## "reference" = use the least-worst sample in the batch (previous default) 
-    ## "equalize" = all-sample mean norm (Decker et al., doi:10.4161/epi.26037)
     ## 
-    ## Equalize will become the default: it provides single-sample preprocessing
-    ## and thus decouples preprocessing from batch or condition normalization.
-    ## 
-    ## Decker's implementation was annoying and complicated, so I turned it into
-    ## a true single-sample approach by reciprocating the Cy5 bias directly.
+    ## "single" is now the default: it provides single-sample preprocessing
+    ## and betas/M-values produced by this method are identical to those from
+    ## the "reference" version used in (e.g.) the TCGA data processing pipeline.
     ## 
     ## --tjt, 2016-06-16
     ## 
