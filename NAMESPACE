@@ -77,7 +77,7 @@ export(getManifest, getProbeInfo, getManifestInfo,
        blockFinder, cpgCollapse,
        estimateCellCounts, gaphunter,
        compartments, createCorMatrix, extractAB,
-       combineArrayTypes)
+       convertArray, combineArrays)
 
 exportClasses(RGChannelSet, RGChannelSetExtended,
               MethylSet, RatioSet,
