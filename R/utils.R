@@ -5,6 +5,10 @@ ilogit2 <- function(x) { 2^(x) / (1+2^(x)) }
 .default.27k.annotation  <- "ilmn12.hg19"
 .default.450k.annotation <- "ilmn12.hg19"
 .default.epic.annotation <- "ilm10b2.hg19"
+.metharray.types <- c("IlluminaHumanMethylation450k",
+                      "IlluminaHumanMethylationEPIC",
+                      "IlluminaHumanMethylation27k")
+
 .seqnames.order.all <- c(paste0("chr", c(1:22, "X", "Y")), "multi", "unmapped")
 .seqnames.order <- paste0("chr", c(1:22, "X", "Y"))
 

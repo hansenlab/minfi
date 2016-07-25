@@ -34,7 +34,9 @@ makeGenomicRatioSetFromMatrix <- function(mat,rownames=NULL,
 
     if(!is.matrix(mat)) stop(sprintf("'mat' must be a matrix. It is a %s.",class(mat)))
 
-    if(is.null(rownames)) rownmaes <- rownames(mat) else{
+    if(is.null(rownames)) {
+        rownmaes <- rownames(mat)
+    } else {
         if(length(rownames)!=nrow(mat))
             stop("Number of rows of mat and length of rownames must match.")
         rownames(mat) <- rownames
