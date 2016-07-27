@@ -55,7 +55,7 @@ will be like (for example) an EPIC array with many probes missing.
 }
 \value{
   The output object has the same class as the two input objects, that is
-  either an \code{RGChannelSet, a \code{MethylSet}, a \code{RatioSet}, a
+  either an \code{RGChannelSet}, a \code{MethylSet}, a \code{RatioSet}, a
   \code{GemomicMethylSet} or a \code{GenomicRatioSet}, with the type of
   the array given by the \code{outType} argument.
 }

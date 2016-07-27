@@ -60,7 +60,7 @@ The output array is specified by the \code{outType} argument.
 }
 \value{
   The output object has the same class as the input object, that is
-  either an \code{RGChannelSet, a \code{MethylSet}, a \code{RatioSet}, a
+  either an \code{RGChannelSet}, a \code{MethylSet}, a \code{RatioSet}, a
   \code{GemomicMethylSet} or a \code{GenomicRatioSet}, with the type of
   the array given by the \code{outType} argument.
   }
