@@ -20,7 +20,13 @@
     ExtendedType). Discussions with Illumina support reveals that, for
     control probes, same address is same probe.
     \item Extended combineArrayTypes to support
-    [Genomic](Methyl|Ratio)Set. 
+    [Genomic](Methyl|Ratio)Set.
+    \item Fixed a bug that made detectionP fail with an error if used on
+    only 1 sample.
+    \item Fixed a bug in read.metharray where we assumed a certain
+    ordering is consistent in IDAT files from different samples. This is
+    no longer assumed, but as a consequence the function is a bit slower.
+    Bug (indirectly) observed by Giovanni Calice <giovcalice@gmail.com>.
   }
 }
 
