@@ -107,12 +107,12 @@ detectionP <- function(rgSet, type = "m+u") {
 
     controlIdx <- getControlAddress(rgSet, controlType = "NEGATIVE")   
     r <- getRed(rgSet)
-    rBg <- r[controlIdx,]
+    rBg <- r[controlIdx,,drop=FALSE]
     rMu <- matrixStats::colMedians(rBg)
     rSd <- matrixStats::colMads(rBg)
 
     g <- getGreen(rgSet)
-    gBg <- g[controlIdx,]
+    gBg <- g[controlIdx,,drop=FALSE]
     gMu <- matrixStats::colMedians(gBg)
     gSd <- matrixStats::colMads(gBg)
 
