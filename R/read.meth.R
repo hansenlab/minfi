@@ -60,15 +60,15 @@ read.metharray <- function(basenames, extended = FALSE, verbose = FALSE, force =
     if(!sameLength && sameArray && !force) {
         stop("[read.metharray] Trying to parse IDAT files with different array size but seemingly all of the same type.\n  You can force this by 'force=TRUE', see the man page ?read.metharray")
     }
-    if(sameLength) {
-        GreenMean <- do.call(cbind, lapply(G.idats, function(xx) xx$Quants[, "Mean"]))
-        RedMean <- do.call(cbind, lapply(R.idats, function(xx) xx$Quants[, "Mean"]))
-        if(extended) {
-            GreenSD <- do.call(cbind, lapply(G.idats, function(xx) xx$Quants[, "SD"]))
-            RedSD <- do.call(cbind, lapply(R.idats, function(xx) xx$Quants[, "SD"]))
-            NBeads <- do.call(cbind, lapply(G.idats, function(xx) xx$Quants[, "NBeads"]))
-        }
-    } else {
+    ## if(sameLength) {
+    ##     GreenMean <- do.call(cbind, lapply(G.idats, function(xx) xx$Quants[, "Mean"]))
+    ##     RedMean <- do.call(cbind, lapply(R.idats, function(xx) xx$Quants[, "Mean"]))
+    ##     if(extended) {
+    ##         GreenSD <- do.call(cbind, lapply(G.idats, function(xx) xx$Quants[, "SD"]))
+    ##         RedSD <- do.call(cbind, lapply(R.idats, function(xx) xx$Quants[, "SD"]))
+    ##         NBeads <- do.call(cbind, lapply(G.idats, function(xx) xx$Quants[, "NBeads"]))
+    ##     }
+    ## } else {
         commonAddresses <- as.character(Reduce("intersect", lapply(G.idats, function(xx) rownames(xx$Quants))))
         GreenMean <- do.call(cbind, lapply(G.idats, function(xx) xx$Quants[commonAddresses, "Mean"]))
         RedMean <- do.call(cbind, lapply(R.idats, function(xx) xx$Quants[commonAddresses, "Mean"]))
@@ -77,7 +77,7 @@ read.metharray <- function(basenames, extended = FALSE, verbose = FALSE, force =
             RedSD <- do.call(cbind, lapply(R.idats, function(xx) xx$Quants[commonAddresses, "SD"]))
             NBeads <- do.call(cbind, lapply(G.idats, function(xx) xx$Quants[commonAddresses, "NBeads"]))
         }
-    }
+    ## }
     ptime2 <- proc.time()
     stime <- (ptime2 - ptime1)[3]
     if(verbose) message("done in", stime, "seconds\n")
