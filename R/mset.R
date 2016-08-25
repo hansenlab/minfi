@@ -17,11 +17,13 @@ MethylSet <- function(Meth, Unmeth, phenoData, annotation = NULL) {
     stopifnot(rownames(Meth) == rownames(Unmeth))
     stopifnot(colnames(Meth) == colnames(Unmeth))
     stopifnot(colnames(Meth) == rownames(phenoData))
-    tmp <- matrix(nrow = 0, ncol = ncol(Meth))
-    out <- new("MethylSet", Meth = tmp, Unmeth = tmp,
-               phenoData = phenoData, annotation = annotation)
-    assayDataElement(out, "Meth") <- Meth
-    assayDataElement(out, "Unmeth") <- Unmeth
+    ## tmp <- matrix(nrow = 0, ncol = ncol(Meth))
+    ## out <- new("MethylSet", Meth = tmp, Unmeth = tmp,
+    ##            phenoData = phenoData, annotation = annotation)
+    ## assayDataElement(out, "Meth") <- Meth
+    ## assayDataElement(out, "Unmeth") <- Unmeth
+    out <- new("MethylSet", Meth = Meth, Unmeth = Unmeth,
+                phenoData = phenoData, annotation = annotation)
     featureData(out) <- AnnotatedDataFrame(data = data.frame(row.names = row.names(Meth)),
                                            dimLabels = c("featureNames", "featureColumns"))
     out
