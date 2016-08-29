@@ -29,6 +29,8 @@
     Bug (indirectly) observed by Giovanni Calice <giovcalice@gmail.com>.
     \item Changing internals of MethylSet() to follow recent changes in
     assayDataElement<- in Biobase 2.33.1.
+    \item Changing internals of MethylSet() (again) to follow recent
+    changes in assayDataElement<- in Biobase 2.33.2.
   }
 }
 
