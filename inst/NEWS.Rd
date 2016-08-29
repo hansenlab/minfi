@@ -27,6 +27,10 @@
     ordering is consistent in IDAT files from different samples. This is
     no longer assumed, but as a consequence the function is a bit slower.
     Bug (indirectly) observed by Giovanni Calice <giovcalice@gmail.com>.
+    \item Changing internals of MethylSet() to follow recent changes in
+    assayDataElement<- in Biobase 2.33.1.
+    \item Changing internals of MethylSet() (again) to follow recent
+    changes in assayDataElement<- in Biobase 2.33.2.
   }
 }
 

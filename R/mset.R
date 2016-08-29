@@ -20,8 +20,8 @@ MethylSet <- function(Meth, Unmeth, phenoData, annotation = NULL) {
     tmp <- matrix(nrow = 0, ncol = ncol(Meth))
     out <- new("MethylSet", Meth = tmp, Unmeth = tmp,
                phenoData = phenoData, annotation = annotation)
-    assayDataElement(out, "Meth") <- Meth
-    assayDataElement(out, "Unmeth") <- Unmeth
+    assayDataElement(out, "Meth", validate = FALSE) <- Meth
+    assayDataElement(out, "Unmeth", validate = FALSE) <- Unmeth
     featureData(out) <- AnnotatedDataFrame(data = data.frame(row.names = row.names(Meth)),
                                            dimLabels = c("featureNames", "featureColumns"))
     out
