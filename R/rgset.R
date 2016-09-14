@@ -194,3 +194,10 @@ subsetByLoci <- function(rgSet, includeLoci = NULL, excludeLoci = NULL, keepCont
     rgSet <- rgSet[indices,]
     rgSet
 }
+
+setMethod("combine", signature(x = "RGChannelSet", y = "RGChannelSet"),
+          function(x, y, ...) {
+    pData(x) <- .pDataFix(pData(x))
+    pData(y) <- .pDataFix(pData(y))
+    callNextMethod()
+})

@@ -85,7 +85,7 @@ exportClasses(RGChannelSet, RGChannelSetExtended,
               IlluminaMethylationManifest, IlluminaMethylationAnnotation)
 
 exportMethods(show, initialize, getBeta, getM, getCN, getMeth, getUnmeth,
-              getManifest, annotation, preprocessMethod,
+              getManifest, annotation, preprocessMethod, combine,
               sampleNames, featureNames, pData, mapToGenome, ratioConvert,
               bumphunter)
 

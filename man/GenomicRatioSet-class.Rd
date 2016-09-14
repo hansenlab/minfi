@@ -15,6 +15,7 @@
 \alias{annotation,GenomicRatioSet-method}
 \alias{preprocessMethod,GenomicRatioSet-method}
 \alias{mapToGenome,GenomicRatioSet-method}
+\alias{combine,GenomicRatioSet,GenomicRatioSet-method}
 
 \title{GenomicRatioSet instances}
 
@@ -96,6 +97,8 @@ arguments outlined above.
     \item{\code{mapToGenome(object)}}{ Since \code{object} is already
  	mapped to the genome, this method simply returns \code{object}
 	unchanged.}
+    \item{\code{combine}:}{Combines two different \code{GenomicRatioSet},
+      eventually using the \code{cbind} method for \code{SummarizedExperiment}.}
   }
 }
 

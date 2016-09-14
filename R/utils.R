@@ -208,3 +208,12 @@ getMethSignal <- function(object, what = c("Beta", "M"), ...) {
     pData(object) <- pD
     object
 }
+
+.pDataFix <- function(df) {
+    characterColumns <- c("Slide", "Array", "Sample_Name", "Basename", "SampleID")
+    for(col in characterColumns) {
+        if(col %in% names(df))
+            df[[col]] <- as.character(df[[col]])
+    }
+    df
+}

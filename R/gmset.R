@@ -136,3 +136,9 @@ setMethod("updateObject", signature(object = "GenomicMethylSet"),
               object
           })
 
+setMethod("combine", signature(x = "GenomicMethylSet", y = "GenomicMethylSet"),
+          function(x, y, ...) {
+    pData(x) <- .pDataFix(pData(x))
+    pData(y) <- .pDataFix(pData(y))
+    cbind(x,y)
+})
