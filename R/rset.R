@@ -98,3 +98,10 @@ setMethod("updateObject", signature(object = "RatioSet"),
                   object@annotation["annotation"] <- .default.450k.annotation
               object
           })
+
+setMethod("combine", signature(x = "RatioSet", y = "RatioSet"),
+          function(x, y, ...) {
+    pData(x) <- .pDataFix(pData(x))
+    pData(y) <- .pDataFix(pData(y))
+    callNextMethod()
+})

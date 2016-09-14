@@ -117,3 +117,10 @@ setMethod("updateObject", signature(object = "GenomicRatioSet"),
                   object@annotation["annotation"] <- .default.450k.annotation
               object
           })
+
+setMethod("combine", signature(x = "GenomicRatioSet", y = "GenomicRatioSet"),
+          function(x, y, ...) {
+    pData(x) <- .pDataFix(pData(x))
+    pData(y) <- .pDataFix(pData(y))
+    cbind(x,y)
+})

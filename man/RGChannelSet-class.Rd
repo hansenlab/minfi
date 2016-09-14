@@ -9,6 +9,7 @@
 \alias{show,RGChannelSet-method}
 \alias{initialize,RGChannelSet-method}
 \alias{initialize,RGChannelSetExtended-method}
+\alias{combine,RGChannelSet,RGChannelSet-method}
 \alias{getBeta,RGChannelSet-method}
 \alias{getManifest,RGChannelSet-method}
 %% functions
@@ -84,7 +85,10 @@ getSnpBeta(object)
       probes located on the array.  These SNP probes are intended to be used
       for sample tracking and sample mixups.  The return value is a
       matrix of beta values.  Each SNP probe ought to have values clustered
-      around 3 distinct values corresponding to homo-, and hetero-zygotes.}
+      around 3 distinct values corresponding to homo-, and
+      hetero-zygotes.}
+    \item{\code{combine}:}{Combines two different \code{RGChannelSet},
+      eventually using the \code{combine} method for \code{eSet}.}
   }
 }
 

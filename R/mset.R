@@ -165,3 +165,10 @@ dropMethylationLoci <- function(object, dropRS = TRUE, dropCH = TRUE) {
         return(object)
     object[-whDrop, ]
 }
+
+setMethod("combine", signature(x = "MethylSet", y = "MethylSet"),
+          function(x, y, ...) {
+    pData(x) <- .pDataFix(pData(x))
+    pData(y) <- .pDataFix(pData(y))
+    callNextMethod()
+})

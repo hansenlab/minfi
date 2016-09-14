@@ -31,6 +31,9 @@
     assayDataElement<- in Biobase 2.33.1.
     \item Changing internals of MethylSet() (again) to follow recent
     changes in assayDataElement<- in Biobase 2.33.2.
+    \item Fixing issues with combine() on various classes where pData
+    columns doesn't have the same class. This translates to fixes for
+    combineArrays and estimateCellType.
   }
 }
 
