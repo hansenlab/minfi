@@ -1,16 +1,22 @@
 estimateCellCounts <- function (rgSet, compositeCellType = "Blood", processMethod = "auto", probeSelect = "auto",
                                 cellTypes = c("CD8T","CD4T", "NK","Bcell","Mono","Gran"),
+                                referencePlatform = c("IlluminaHumanMethylation450k", "IlluminaHumanMethylationEPIC", "IlluminaHumanMethylation27k"),
                                 returnAll = FALSE, meanPlot = FALSE, verbose=TRUE, ...) {
-    platform <- sub("IlluminaHumanMethylation", "", annotation(rgSet)[which(names(annotation(rgSet))=="array")])
+    referencePlatform <- match.arg(referencePlatform)
+    rgPlatform <- sub("IlluminaHumanMethylation", "", annotation(rgSet)[which(names(annotation(rgSet))=="array")])
+    platform <- sub("IlluminaHumanMethylation", "", referencePlatform)
     if((compositeCellType == "CordBlood") && (!"nRBC" %in% cellTypes))
         message("[estimateCellCounts] Consider including 'nRBC' in argument 'cellTypes' for cord blood estimation.\n")   
     referencePkg <- sprintf("FlowSorted.%s.%s", compositeCellType, platform)
     subverbose <- max(as.integer(verbose) - 1L, 0L)
     if(!require(referencePkg, character.only = TRUE))
-        stop(sprintf("Could not find reference data package for compositeCellType '%s' and platform '%s' (inferred package name is '%s')",
+        stop(sprintf("Could not find reference data package for compositeCellType '%s' and referencePlatform '%s' (inferred package name is '%s')",
                      compositeCellType, platform, referencePkg))
     data(list = referencePkg) 
-    referenceRGset <- get(referencePkg) 
+    referenceRGset <- get(referencePkg)
+    if(rgPlatform != platform) {
+        rgSet <- convertArray(rgSet, outType = referencePlatform)
+    }
     if(! "CellType" %in% names(pData(referenceRGset)))
         stop(sprintf("the reference sorted dataset (in this case '%s') needs to have a phenoData column called 'CellType'"),
              names(referencePkg))
