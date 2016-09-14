@@ -12,6 +12,7 @@ Estimates the relative proportion of pure cell types within a sample. For exampl
 estimateCellCounts(rgSet, compositeCellType = "Blood",
                    processMethod = "auto", probeSelect = "auto",
                    cellTypes = c("CD8T","CD4T", "NK","Bcell","Mono","Gran"),
+                   referencePlatform = c("IlluminaHumanMethylation450k", "IlluminaHumanMethylationEPIC", "IlluminaHumanMethylation27k"),
                    returnAll = FALSE, meanPlot = FALSE, verbose = TRUE, \dots)
 }
 \arguments{
@@ -33,6 +34,9 @@ estimateCellCounts(rgSet, compositeCellType = "Blood",
 	Please see the references for more details.}
   \item{cellTypes}{Which cell types, from the reference object, should be
     we use for the deconvolution? See details. }
+  \item{referencePlatform}{The platform for the reference dataset; if
+    the input \code{rgSet} belongs to another platform, it will be
+    converted using \code{\link{convertArray}}.}
   \item{returnAll}{Should the composition table and the normalized user
     supplied data be return?}
   \item{verbose}{Should the function be verbose?}
@@ -102,7 +106,7 @@ batch effects.
 Andrew E. Jaffe, Shan V. Andrews, E. Andres Houseman
 }
 
-\seealso{\code{\link{preprocessQuantile}}}
+\seealso{\code{\link{preprocessQuantile}} and \code{\link{convertArray}}.}
 
 \examples{
 \dontrun{

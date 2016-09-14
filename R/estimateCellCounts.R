@@ -15,7 +15,7 @@ estimateCellCounts <- function (rgSet, compositeCellType = "Blood", processMetho
     data(list = referencePkg) 
     referenceRGset <- get(referencePkg)
     if(rgPlatform != platform) {
-        rgSet <- convertArray(rgSet, outType = referencePlatform)
+        rgSet <- convertArray(rgSet, outType = referencePlatform, verbose = subverbose)
     }
     if(! "CellType" %in% names(pData(referenceRGset)))
         stop(sprintf("the reference sorted dataset (in this case '%s') needs to have a phenoData column called 'CellType'"),
