@@ -37,7 +37,6 @@ estimateCellCounts <- function (rgSet, compositeCellType = "Blood", processMetho
                                          times = c(ncol(rgSet), ncol(referenceRGset))),
                         stringsAsFactors = FALSE)
     referencePd <- pData(referenceRGset)
-    pData(referenceRGset) <- data.frame() #To avoid errors in the combine call
     combinedRGset <- combineArrays(rgSet, referenceRGset, outType = "IlluminaHumanMethylation450k")
     pData(combinedRGset) <- newpd
     sampleNames(combinedRGset) <- newpd$sampleNames
