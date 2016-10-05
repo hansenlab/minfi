@@ -37,6 +37,8 @@
     \item estimateCellCounts gets a referencePlatform array (defaulting to
     450k) and now silently converts the input data to the desired platform
     using convertArray.
+    \item Major refactoring of the annotation packages to reduce memory
+    consumption. 
   }
 }
 
