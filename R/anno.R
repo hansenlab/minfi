@@ -4,13 +4,13 @@ setClass("IlluminaMethylationAnnotation",
                         defaults = "character"
                         ))
 
-setValidity("IlluminaMethylationAnnotation", function(object) {
-    msg <- NULL
-    if(!(all(sapply(object@data, class) == "DataFrame")))
-        msg <- paste(msg,
-                     "All objects in 'objects@data' has to be of class 'DataFrame'", sep = "\n")
-    if (is.null(msg)) TRUE else msg
-})
+## setValidity("IlluminaMethylationAnnotation", function(object) {
+##     msg <- NULL
+##     if(!(all(sapply(object@data, class) == "DataFrame")))
+##         msg <- paste(msg,
+##                      "All objects in 'objects@data' has to be of class 'DataFrame'", sep = "\n")
+##     if (is.null(msg)) TRUE else msg
+## })
 
 setMethod("show", "IlluminaMethylationAnnotation", function(object) {
     cat("IlluminaMethylationAnnotation object\n")
@@ -18,30 +18,30 @@ setMethod("show", "IlluminaMethylationAnnotation", function(object) {
     .show.availableAnnotation(object)
 })
 
-IlluminaMethylationAnnotation <- function(listOfObjects, annotation = "", defaults = "") {
+IlluminaMethylationAnnotation <- function(objectNames, annotation = "", defaults = "", packageName = "") {
     stopifnot(annotation != "")
+    stopifnot(packageName != "")
     stopifnot(all(c("array", "annotation", "genomeBuild") %in% names(annotation)))
-    stopifnot(all(c("Manifest", "Locations") %in% names(listOfObjects)))
-    Manifest <- listOfObjects[["Manifest"]]
-    stopifnot(setequal(names(Manifest),
-                       c("Name", "AddressA", "AddressB", "ProbeSeqA",
-                         "ProbeSeqB", "Type", "NextBase", "Color")))
-    stopifnot(all(sapply(listOfObjects, class) %in% c("DataFrame", "data.frame")))
-    stopifnot(all(nrow(Manifest) == sapply(listOfObjects, nrow)))
-    stopifnot(all(sapply(listOfObjects, function(obj) {
-        all(rownames(obj) == rownames(Manifest))
-    })))
-    stopifnot(all(c("chr", "pos") %in% names(listOfObjects[["Locations"]])))
-    stopifnot(all(listOfObjects[["Locations"]]$chr %in% .seqnames.order.all))
-    ##available <- .availableAnnotation(listOfObjects)
-    stopifnot(all(defaults %in% names(listOfObjects)))
-    stopifnot(!anyDuplicated(sub("\\..*", "", defaults)))
+    ## stopifnot(all(c("Manifest", "Locations") %in% names(listOfObjects)))
+    ## Manifest <- listOfObjects[["Manifest"]]
+    ## stopifnot(setequal(names(Manifest),
+    ##                    c("Name", "AddressA", "AddressB", "ProbeSeqA",
+    ##                      "ProbeSeqB", "Type", "NextBase", "Color")))
+    ## stopifnot(all(sapply(listOfObjects, class) %in% c("DataFrame", "data.frame")))
+    ## stopifnot(all(nrow(Manifest) == sapply(listOfObjects, nrow)))
+    ## stopifnot(all(sapply(listOfObjects, function(obj) {
+    ##     all(rownames(obj) == rownames(Manifest))
+    ## })))
+    ## stopifnot(all(c("chr", "pos") %in% names(listOfObjects[["Locations"]])))
+    ## stopifnot(all(listOfObjects[["Locations"]]$chr %in% .seqnames.order.all))
+    ## ##available <- .availableAnnotation(listOfObjects)
+    stopifnot(all(defaults %in% objectNames))
+    ## stopifnot(!anyDuplicated(sub("\\..*", "", defaults)))
     ## FIXME: Check column names of any Islands object
     ## Instantiating
     data <- new.env(parent = emptyenv())
-    for(nam in names(listOfObjects)) {
-        cat(nam, "\n")
-        assign(nam, as(listOfObjects[[nam]], "DataFrame"), envir = data)
+    for(nam in objectNames) {
+        assign(nam, list(what = nam, envir = sprintf("package:%s", packageName)), envir = data)
     }
     lockEnvironment(data, bindings = TRUE)
     anno <- new("IlluminaMethylationAnnotation",
@@ -86,6 +86,13 @@ getAnnotationObject <- function(object) {
     out
 }
 
+.annoGet <- function(what, envir) {
+    pointer <- get(what, envir = envir)
+    if(is(pointer, "DataFrame"))
+        return(pointer)
+    get(pointer$what, envir = as.environment(pointer$envir))
+}
+
 getAnnotation <- function(object, what = "everything", lociNames = NULL,
                           orderByLocation = FALSE, dropNonMapping = FALSE) {
     ## processing of arguments and check
@@ -105,7 +112,7 @@ getAnnotation <- function(object, what = "everything", lociNames = NULL,
     ## what <- bestOrder[bestOrder %in% what]
     
     out <- do.call(cbind, lapply(what, function(wh) {
-        get(wh, envir = annoObject@data)
+        .annoGet(wh, envir = annoObject@data)
     }))
 
     if(!is.null(lociNames)) {
