@@ -42,6 +42,7 @@ This function extracts A/B compartments from Illumina methylation microarrays. A
 \examples{
 if (require(minfiData)) {
   GMset <- mapToGenome(MsetEx)
-  comps <- compartments(GMset)
+  ## compartments at 1MB resolution; we recommend 100kb.  
+  comps <- compartments(GMset, res = 10^6)
 }
 }

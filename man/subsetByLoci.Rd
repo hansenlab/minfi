@@ -29,7 +29,7 @@ subsetByLoci(rgSet, includeLoci = NULL, excludeLoci = NULL,
 }
 \examples{
 if(require(minfiData)) {
-  loci <- c("cg00050873" "cg00212031" "cg00213748" "cg00214611")
+  loci <- c("cg00050873", "cg00212031", "cg00213748", "cg00214611")
   subsetByLoci(RGsetEx.sub, includeLoci = loci)
   subsetByLoci(RGsetEx.sub, excludeLoci = loci)
 }

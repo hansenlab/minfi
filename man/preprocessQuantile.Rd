@@ -93,6 +93,11 @@ supported version.
   }
 
 \examples{
+if (require(minfiData)) {
+  ## RGsetEx.sub is a small subset of RGsetEx; 
+  ## only used for computational speed.
+  GMset.sub.quantile <- preprocessSWAN(RGsetEx.sub)
+}
 \dontrun{
 if(require(minfiData)) {
   GMset <- preprocessQuantile(RGsetEx)

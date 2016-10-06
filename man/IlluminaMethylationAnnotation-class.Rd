@@ -32,8 +32,12 @@ IlluminaMethylationAnnotation(objectNames, annotation = "",
     \code{getAnnotation(what = "everything")}.}
   \item{objectNames}{a \code{character} with object names used in the
     package.}
-  \item{PackageName}{The name of the package this object will be
+  \item{packageName}{The name of the package this object will be
     contained in.}
+}
+
+\value{
+  An object of class \code{IlluminaMethylationAnnotation}.
 }
 
 \section{Utilitues}{

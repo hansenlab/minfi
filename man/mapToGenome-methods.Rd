@@ -27,6 +27,9 @@
   \item{\dots}{Passed to the method for \code{MethylSet}.}
 }
 
+\value{
+  An object of class \code{GenomicMethylSet} or \code{GenomicRatioSet}.
+}
 \details{
   FIXME: details on the MethylSet method.
   
@@ -48,4 +51,10 @@
 }
 
 \keyword{methods}
-
+\examples{
+if (require(minfiData)) {
+  ## MsetEx.sub is a small subset of MsetEx; 
+  ## only used for computational speed.
+  GMsetEx.sub <- mapToGenome(MsetEx.sub)
+}
+}

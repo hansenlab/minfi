@@ -38,6 +38,11 @@ preprocessNoob(rgSet, offset = 15, dyeCorr = TRUE, verbose = TRUE,
   \code{\link{preprocessRaw}} and \code{\link{preprocessQuantile}} are other preprocessing functions.
 }
 \examples{
+if (require(minfiData)) {
+  ## RGsetEx.sub is a small subset of RGsetEx; 
+  ## only used for computational speed.
+  MsetEx.sub.noob <- preprocessNoob(RGsetEx.sub)
+}
 \dontrun{
 if (require(minfiData)) {
   dyeMethods <- c(ssNoob="single", refNoob="reference")

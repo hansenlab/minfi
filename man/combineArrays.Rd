@@ -64,11 +64,9 @@ will be like (for example) an EPIC array with many probes missing.
 }
 \examples{
 if(require(minfiData) && require(minfiDataEPIC)) {
-  library(minfiData)
-  library(minfiDataEPIC)
-  data(RGsetEx)
+  data(RGsetEx.sub)
   data(RGsetEPIC)
-  rgSet <- combineArrays(RGsetEPIC, RGsetEx)
+  rgSet <- combineArrays(RGsetEPIC, RGsetEx.sub)
   rgSet
 }
 }

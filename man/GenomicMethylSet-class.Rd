@@ -68,6 +68,10 @@ GenomicMethylSet(gr = GRanges(), Meth = new("matrix"),
     \code{getBeta}. For \code{mapToGenome}, this is ignored.} 
 }
 
+\value{
+  An object of class \code{GenomicMethylSet} for the constructor.
+}
+
 \details{
   For a detailed discussion of \code{getBeta} and \code{getM} see the
   deatils section of \code{\link{MethylSet}}.
@@ -104,8 +108,8 @@ arguments outlined above.
 \section{Utilities}{
   \describe{
     \item{\code{mapToGenome(object)}}{ Since \code{object} is already
- 	mapped to the genome, this method simply returns \code{object}
-	unchanged.}
+      mapped to the genome, this method simply returns \code{object}
+      unchanged.}
     \item{\code{combine}:}{Combines two different \code{GenomicMethylSet},
       eventually using the \code{cbind} method for \code{SummarizedExperiment}.}
   }

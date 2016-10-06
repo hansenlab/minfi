@@ -1,9 +1,9 @@
 gaphunter <- function(object, threshold = 0.05, keepOutliers = FALSE,
                       outCutoff = 0.01, verbose = TRUE) {
     if ((threshold <= 0) || (threshold >= 1))
-	stop("[gaphunter] 'threshold' must be between 0 and 1.") 
+        stop("[gaphunter] 'threshold' must be between 0 and 1.") 
     if ((outCutoff <= 0) || (outCutoff >= 0.5))
-	stop("[gaphunter] 'outCutoff' must be between 0 and 0.5.") 
+        stop("[gaphunter] 'outCutoff' must be between 0 and 0.5.") 
     if (is(object, "GenomicRatioSet") || is(object, "GenomicMethylSet") ||
         is(object, "MethylSet") || is(object,"RatioSet")) {
         if(verbose)
@@ -20,15 +20,15 @@ gaphunter <- function(object, threshold = 0.05, keepOutliers = FALSE,
     }
     nacheck <- rowSums(is.na(Beta))
     if (sum(nacheck > 0) > 0) {
-	if(verbose)
+        if(verbose)
             message("[gaphunter] Removing probes containing missing beta values.")
-	Beta <- Beta[which(nacheck == 0),]
+        Beta <- Beta[which(nacheck == 0),]
     }
 
     if (verbose) {
-	message("[gaphunter] Using ",prettyNum(nrow(Beta),big.mark = ",",scientific = FALSE),
+        message("[gaphunter] Using ",prettyNum(nrow(Beta),big.mark = ",",scientific = FALSE),
                 " probes and ",prettyNum(ncol(Beta),big.mark = ",",scientific = FALSE)," samples.")
-	message("[gaphunter] Searching for gap signals.")
+        message("[gaphunter] Searching for gap signals.")
     }
 
     sorting <- t(apply(Beta, 1, sort.int, method = "quick", index.return = TRUE))
@@ -45,24 +45,31 @@ gaphunter <- function(object, threshold = 0.05, keepOutliers = FALSE,
     breakpoints <- apply(diffs,1,function(x) { return(which(x > threshold)) })
     
     returngroups <- function(x,y) {
-	template <- rep(1, ncol(sortedbeta))
-	count <- 2
-	for (j in x) {
+        template <- rep(1, ncol(sortedbeta))
+        count <- 2
+        for (j in x) {
             template[y[(j+1):length(y)]] <- count
             count <- count+1
-	}
-	return(template)
-    }	
+        }
+        return(template)
+    }
     
     groupanno <- t(mapply(returngroups, breakpoints, sortedindices))
-    gapanno <- apply(groupanno, 1, function(k) {
-	tempgap <- rep(0, length(unique(k))+1)
-	tempgap[1] <- length(unique(k))
-	tempgap[2:length(tempgap)] <- table(k)
-	return(tempgap)
-    })
-    gapanno <- do.call("rbind", lapply(gapanno,function(x) { length(x) <- (max(gapind)+2); return(x) })) 
-    rownames(gapanno) <- rownames(sortedbeta) ##
+    maxGroups <- max(groupanno)
+    gapanno <- matrix(0, nrow = nrow(groupanno), ncol = maxGroups + 1)
+    gapanno[,1] <- rowMaxs(groupanno)
+    for(ii in 1:maxGroups) {
+        gapanno[, ii + 1] <- rowCounts(groupanno, value = ii)
+    }
+    ## gapanno <- apply(groupanno, 1, function(k) {
+    ##     tempgap <- rep(0, max(gapind) + 2)
+    ##     kl <- length(unique(k))
+    ##     tempgap[1] <- kl 
+    ##     tempgap[1 + 1:kl] <- table(k)
+    ##     return(tempgap)
+    ## })
+    ## gapanno <- t(gapanno)
+    rownames(gapanno) <- rownames(sortedbeta)
     rownames(groupanno) <- rownames(sortedbeta)
     
     if(verbose)
@@ -70,28 +77,28 @@ gaphunter <- function(object, threshold = 0.05, keepOutliers = FALSE,
                 prettyNum(nrow(gapanno),big.mark = ",",scientific = FALSE), " gap signals.")
     
     if (keepOutliers == FALSE) {
-	if (verbose)
+        if (verbose)
             message("[gaphunter] Filtering out gap signals driven by outliers.")
         markme <- unlist(lapply(1:nrow(gapanno), function(blah) {
             analyze <- gapanno[blah, -1]
             maxgroup <- which(analyze == max(analyze,na.rm=TRUE))
-            if (length(maxgroup) == 1) {	
+            if (length(maxgroup) == 1) {
                 if(sum(analyze[-maxgroup],na.rm=TRUE) < outCutoff*ncol(Beta)) {
                     return(blah)
                 }
             }
         }))
-	if (length(markme) > 0) {
+        if (length(markme) > 0) {
             gapanno <- gapanno[-markme,]
             groupanno <- groupanno[-markme,]
         }
-	if (verbose)
+        if (verbose)
             message("[gaphunter] Removed ",prettyNum(length(markme),big.mark = ",",scientific = FALSE),
                     " gap signals driven by outliers from results.")
-    }	
+    }
     gapanno <- data.frame(gapanno)
     
-	colnames(gapanno) <- c("Groups", paste0("Group",1:(ncol(gapanno)-1)))
+    colnames(gapanno) <- c("Groups", paste0("Group",1:(ncol(gapanno)-1)))
 
     algorithm <- list("threshold" = threshold, "outCutoff" = outCutoff, "keepOutliers" = keepOutliers)
     

@@ -14,21 +14,21 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
     # Background correction and dye bias normalization:
     if (bgCorr){
         if(verbose && dyeCorr) {
-            message("[preprocessFunnorm] Background and dye bias correction with noob \n") 
+            message("[preprocessFunnorm] Background and dye bias correction with noob") 
         } else {
-            message("[preprocessFunnorm] Background correction with noob \n") 
+            message("[preprocessFunnorm] Background correction with noob") 
         }
         gmSet <- preprocessNoob(rgSet, dyeCorr = dyeCorr)
-        if(verbose) message("[preprocessFunnorm] Mapping to genome\n")
+        if(verbose) message("[preprocessFunnorm] Mapping to genome")
         gmSet <- mapToGenome(gmSet)
     } else {
-        if(verbose) message("[preprocessFunnorm] Mapping to genome\n")
+        if(verbose) message("[preprocessFunnorm] Mapping to genome")
         gmSet <- mapToGenome(rgSet)
     }
-  
+    
     subverbose <- max(as.integer(verbose) - 1L, 0)
     
-    if(verbose) message("[preprocessFunnorm] Quantile extraction\n")
+    if(verbose) message("[preprocessFunnorm] Quantile extraction")
     extractedData <- .extractFromRGSet450k(rgSet)
     rm(rgSet)
 
@@ -37,7 +37,7 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
         sex <- rep(1L, length(gmSet$predictedSex))
         sex[gmSet$predictedSex == "F"] <- 2L
     }
-    if(verbose) message("[preprocessFunnorm] Normalization\n")
+    if(verbose) message("[preprocessFunnorm] Normalization")
     CN <- getCN(gmSet)
     gmSet <- .normalizeFunnorm450k(object = gmSet, extractedData = extractedData,
                                    sex = sex, nPCs = nPCs, verbose = subverbose)
@@ -46,7 +46,7 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
     grSet@preprocessMethod <- c(preprocessMethod(gmSet),
                                 mu.norm = sprintf("Funnorm, nPCs=%s", nPCs))
     return(grSet)
- }	
+ }
 
  .getFunnormIndices <- function(object) {
      .isGenomicOrStop(object)
@@ -82,7 +82,7 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
         for (type in c("IGrn", "IRed", "II")) {
             indices <- indicesList[[type]]
             if(length(indices) > 0) {
-                if(verbose) message(sprintf("[normalizeFunnorm450k] Normalization of the %s probes\n", type))
+                if(verbose) message(sprintf("[normalizeFunnorm450k] Normalization of the %s probes", type))
                 Unmeth[indices,] <- normalizeQuantiles(Unmeth, indices = indices, sex = NULL)
                 Meth[indices,] <- normalizeQuantiles(Meth, indices = indices, sex = NULL)
             }

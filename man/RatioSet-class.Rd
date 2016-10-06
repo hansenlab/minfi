@@ -46,6 +46,10 @@ RatioSet(Beta = NULL, M = NULL, CN = NULL,  \dots)
   
 }
 
+\value{
+  An object of class \code{RatioSet} for the constructor.
+}
+
 \details{
   This class inherits from \code{eSet}.  Essentially the class
   is a representation of a \code{Beta} matrix and/or a \code{M} matrix

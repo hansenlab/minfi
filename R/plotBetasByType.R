@@ -27,7 +27,7 @@ plotBetasByType <- function(data, probeTypes = NULL, legendPos = "top", colors =
                         betas <- matrix(data,ncol=1,dimnames=list(rownames(data),colnames(data)))
                     }
                 }
-            }  		
+            }
         } else {
             stop("'data' needs to be either a 'MethylSet', 'vector', 'matrix' or 'data.frame'")
         } 
