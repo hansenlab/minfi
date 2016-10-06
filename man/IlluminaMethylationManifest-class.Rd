@@ -66,6 +66,10 @@ getControlTypes(object)
   component for each \code{controlType}.}
 }
 
+\value{
+  An object of class \code{IlluminaMethylationManifest} for the constructor.
+}
+
 \section{Details}{
   The \code{data} slot contains the following objects: \code{TypeI},
   \code{TypeII} and \code{TypeControl} which are all of class

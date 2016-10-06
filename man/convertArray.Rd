@@ -69,9 +69,8 @@ The output array is specified by the \code{outType} argument.
 }
 \examples{
 if(require(minfiData)) {
-  library(minfiData)
-  data(RGsetEx)
-  rgSet <- convertArray(RGsetEx, outType = "IlluminaHumanMethylationEPIC")
+  data(RGsetEx.sub)
+  rgSet <- convertArray(RGsetEx.sub, outType = "IlluminaHumanMethylationEPIC")
   rgSet
 }
 }

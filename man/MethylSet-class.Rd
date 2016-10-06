@@ -71,6 +71,10 @@ dropMethylationLoci(object, dropRS = TRUE, dropCH = TRUE)
   
 }
 
+\value{
+  An object of class \code{MethylSet} for the constructor.
+}
+
 \details{
   This class inherits from \code{eSet}.  Essentially the class is a representation of a
   \code{Meth} matrix and a \code{Unmeth} matrix linked to a \code{pData} data frame.

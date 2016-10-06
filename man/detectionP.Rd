@@ -35,11 +35,9 @@ Martin Aryee \email{aryee@jhu.edu}.
 }
 \examples{
 if (require(minfiData)) {
-
-detP <- detectionP(RGsetEx)
-failed <- detP>0.01
-colMeans(failed) # Fraction of failed positions per sample
-sum(rowMeans(failed)>0.5) # How many positions failed in >50% of samples?
-
+  detP <- detectionP(RGsetEx.sub)
+  failed <- detP>0.01
+  colMeans(failed) # Fraction of failed positions per sample
+  sum(rowMeans(failed)>0.5) # How many positions failed in >50% of samples?
 }
 }

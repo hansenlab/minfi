@@ -5,8 +5,8 @@ Cell Proportion Estimation
 }
 \description{
 Estimates the relative proportion of pure cell types within a sample. For example, 
-	given peripheral blood samples, this function will return the relative proportions
-	of lymphocytes, monocytes, B-cells, and neutrophils. 
+given peripheral blood samples, this function will return the relative proportions
+of lymphocytes, monocytes, B-cells, and neutrophils. 
 }
 \usage{
 estimateCellCounts(rgSet, compositeCellType = "Blood",
@@ -18,20 +18,20 @@ estimateCellCounts(rgSet, compositeCellType = "Blood",
 \arguments{
   \item{rgSet}{The input \code{RGChannelSet} for the procedure.}
   \item{compositeCellType}{Which composite cell type is being deconvoluted. Should
-	be one of "Blood", "CordBlood", or "DLPFC". See details. }
+    be one of "Blood", "CordBlood", or "DLPFC". See details. }
   \item{processMethod}{How should the user and reference data be processed together?
-	Default input "auto" will use \code{preprocessQuantile} for
-	Blood and DLPFC and \code{preprocessNoob} otherwise, in line
-	with the existing literature.  Set it to the name of a
-	preprocessing function as a character if you want to override
-	it, like \code{"preprocessFunnorm"}.}
+    Default input "auto" will use \code{preprocessQuantile} for
+    Blood and DLPFC and \code{preprocessNoob} otherwise, in line
+    with the existing literature.  Set it to the name of a
+    preprocessing function as a character if you want to override
+    it, like \code{"preprocessFunnorm"}.}
   \item{probeSelect}{How should probes be selected to distinguish cell types? Options include 
-	"both", which selects an equal number (50) of probes (with F-stat p-value < 1E-8) with the 
-	greatest magnitude of effect from the hyper- and hypo-methylated sides, and "any", which 
-	selects the 100 probes (with F-stat p-value < 1E-8) with the greatest magnitude of difference 
-	regardless of direction of effect. Default input "auto" will use "any" for cord blood and 
-	"both" otherwise, in line with previous versions of this function and/or our recommendations. 
-	Please see the references for more details.}
+    "both", which selects an equal number (50) of probes (with F-stat p-value < 1E-8) with the 
+    greatest magnitude of effect from the hyper- and hypo-methylated sides, and "any", which 
+    selects the 100 probes (with F-stat p-value < 1E-8) with the greatest magnitude of difference 
+    regardless of direction of effect. Default input "auto" will use "any" for cord blood and 
+    "both" otherwise, in line with previous versions of this function and/or our recommendations. 
+    Please see the references for more details.}
   \item{cellTypes}{Which cell types, from the reference object, should be
     we use for the deconvolution? See details. }
   \item{referencePlatform}{The platform for the reference dataset; if
@@ -41,8 +41,8 @@ estimateCellCounts(rgSet, compositeCellType = "Blood",
     supplied data be return?}
   \item{verbose}{Should the function be verbose?}
   \item{meanPlot}{
-	Whether to plots the average DNA methylation across the cell-type discrimating probes within
-		the mixed and sorted samples. 
+    Whether to plots the average DNA methylation across the cell-type discrimating probes within
+    the mixed and sorted samples. 
   }
   \item{\dots}{Passed to \code{preprocessQuantile}.}
 }

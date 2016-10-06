@@ -59,6 +59,11 @@ between the subset probes.}
 \code{\linkS4class{IlluminaMethylationManifest}}.}
 
 \examples{
+if (require(minfiData)) {
+  ## RGsetEx.sub is a small subset of RGsetEx; 
+  ## only used for computational speed.
+  MsetEx.sub.swan <- preprocessSWAN(RGsetEx.sub)
+}
 \dontrun{
 if (require(minfiData)) {
   dat <- preprocessRaw(RGsetEx)

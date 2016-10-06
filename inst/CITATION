@@ -92,7 +92,18 @@ c(bibentry(bibtype = "Article",
            journal = "bioRxiv",
            year = "2016",
            doi = "10.1101/059659",
-           header = "Gap hunting is described in:")
+           header = "Gap hunting is described in:"),
+
+    bibentry(bibtype = "Article",
+           key = "minfiEpic",
+           author = c(person(given = "Jean-Philippe", family = "Fortin"),
+                      person(given = c("Timothy",  "J."), family = "Triche"),
+                      person(given = c("Kasper", "D."), family = "Hansen")),
+           title = "Preprocessing, normalization and integration of the Illumina HumanMethylationEPIC array",
+           journal = "bioRxiv",
+           year = "2016",
+           doi = "10.1101/065490",
+           header = "Extending minfi to support EPIC arrays is described in:")
 
 )
 

@@ -45,6 +45,11 @@ getOOB(object)
 getSnpBeta(object)
 }
 
+\value{
+  An object of class \code{RGChannelSet} or \code{RGChannelSetExtended}
+  for the constructors.
+}
+
 \arguments{
   \item{object}{An \code{RGChannelSet} (or \code{RGChannelSetExtended}).}
   \item{Green}{A matrix of Green channel values (between zero and infinity)
