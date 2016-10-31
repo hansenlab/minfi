@@ -155,13 +155,13 @@ setMethod("getManifest", signature(object = "RGChannelSet"),
 setMethod("getBeta", signature(object = "RGChannelSet"),
           function(object, ...) {
               object <- preprocessRaw(object)
-              callGeneric(object)
+              callGeneric(object, ...)
           })
 
 setMethod("mapToGenome", signature(object = "RGChannelSet"),
           function(object, ...) {
               object <- preprocessRaw(object)
-              callGeneric(object)
+              callGeneric(object, ...)
           })
 
 subsetByLoci <- function(rgSet, includeLoci = NULL, excludeLoci = NULL, keepControls = TRUE, keepSnps = TRUE){
