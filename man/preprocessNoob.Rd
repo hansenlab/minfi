@@ -1,7 +1,7 @@
 \name{preprocessNoob}
 \alias{preprocessNoob}
 \title{
-  The Noob background correction for 450k arrays.
+  The Noob/ssNoob preprocessing method for Infinium methylation microarrays.
 }
 \description{
   Noob (normal-exponential out-of-band) is a background correction method 
@@ -9,15 +9,14 @@
 }
 \usage{
 preprocessNoob(rgSet, offset = 15, dyeCorr = TRUE, verbose = TRUE,
-               dyeMethod=c("reference", "single"))
+               dyeMethod=c("single", "reference"))
 }
 \arguments{
   \item{rgSet}{An object of class \code{RGChannelSet}.}
   \item{offset}{An offset for the normexp background correction.}
   \item{dyeCorr}{Should dye correction be done?}
   \item{verbose}{Should the function be verbose?}
-  \item{dyeMethod}{How should dye bias correction be done: use a
-    reference, or use a single sample approach?}
+  \item{dyeMethod}{How should dye bias correction be done: use a single sample approach (ssNoob), or a reference array?}
 }
 \value{
   An object of class \code{MethylSet}.
@@ -39,10 +38,17 @@ preprocessNoob(rgSet, offset = 15, dyeCorr = TRUE, verbose = TRUE,
   \code{\link{preprocessRaw}} and \code{\link{preprocessQuantile}} are other preprocessing functions.
 }
 \examples{
+if (require(minfiData)) {
+  ## RGsetEx.sub is a small subset of RGsetEx; 
+  ## only used for computational speed.
+  MsetEx.sub.noob <- preprocessNoob(RGsetEx.sub)
+}
 \dontrun{
 if (require(minfiData)) {
-  GRset.noob.ref <- preprocessNoob(RGsetEx, dyeMethod="reference")
-  GRset.noob.ss <- preprocessNoob(RGsetEx, dyeMethod="single") # single-sample norm
+  dyeMethods <- c(ssNoob="single", refNoob="reference")
+  GRsets <- lapply(dyeMethods, 
+                   function(m) preprocessNoob(RGsetEx, dyeMethod=m))
+  all.equal(getBeta(GRsets$refNoob), getBeta(GRsets$ssNoob)) # TRUE 
 }
 }
 }

@@ -17,8 +17,8 @@
 
 \usage{
 ## Constructor
-IlluminaMethylationAnnotation(listOfObjects, annotation = "",
-                              defaults = "")
+IlluminaMethylationAnnotation(objectNames, annotation = "",
+                              defaults = "", packageName = "")
 
 ## Data extraction
 \S4method{getManifest}{IlluminaMethylationAnnotation}(object)
@@ -30,13 +30,14 @@ IlluminaMethylationAnnotation(listOfObjects, annotation = "",
   \item{annotation}{An annotation \code{character}.}
   \item{defaults}{A vector of default choices for
     \code{getAnnotation(what = "everything")}.}
-  \item{listOfObjects}{A list of objects to be put into the data slot of
-    the annotation object.}
+  \item{objectNames}{a \code{character} with object names used in the
+    package.}
+  \item{packageName}{The name of the package this object will be
+    contained in.}
 }
 
-\section{Details}{
-  The \code{data} slot contains various objects that are
-  of type \code{data.frame}.  Details are still subject to change. 
+\value{
+  An object of class \code{IlluminaMethylationAnnotation}.
 }
 
 \section{Utilitues}{

@@ -221,16 +221,16 @@ extractAB <- function(gr, keep = TRUE, svdMethod = "qr"){
             H <- A %*% (crossprod(A, H))
         }
         ## We use a SVD to find an othogonal basis Q:
-        ## H = F %*% Omega %*% t(S)
+        ## H = FF %*% Omega %*% t(S)
         svd <- svd(crossprod(H))
-        F   <- svd$u # l x l
+        FF   <- svd$u # l x l
         omega <- diag(1/sqrt(svd$d)) # l x l
-        S <- H %*% F %*% omega # m x l 
+        S <- H %*% FF %*% omega # m x l 
         ## Define the orthogonal basis:
         Q <- S[,1:k,drop=FALSE] # m x k
-        ## T <- t(A) %*% Q # n x k 
-        ## T <- t(T)
-        T <- crossprod(Q, A)
+        ## TT <- t(A) %*% Q # n x k 
+        ## TT <- t(TT)
+        TT <- crossprod(Q, A)
     } 
     ## QR approach
     if (method == "qr"){
@@ -243,12 +243,12 @@ extractAB <- function(gr, keep = TRUE, svdMethod = "qr"){
         H <- do.call("cbind",h.list) # n x [(1+1)l] matrix
         ## QR algorithm
         Q <- qr.Q(qr(H,0))
-        ## T <- t(A)%*%Q # n x [(i+1)l]
-        ## T <- t(T)
-        T <- crossprod(Q, A)
+        ## TT <- t(A)%*%Q # n x [(i+1)l]
+        ## TT <- t(TT)
+        TT <- crossprod(Q, A)
     }
     if (method == "svd" | method == "qr"){
-        svd <- svd(T)
+        svd <- svd(TT)
         u <- Q %*% svd$u[,1:k,drop=FALSE]
         v <- svd$v[,1:k,drop=FALSE]
         d <- svd$d[1:k]

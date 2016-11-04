@@ -10,6 +10,7 @@
 \alias{preprocessMethod,RatioSet-method}
 \alias{show,RatioSet-method}
 \alias{initialize,RatioSet-method}
+\alias{combine,RatioSet,RatioSet-method}
 
 \title{RatioSet instances}
 
@@ -45,6 +46,10 @@ RatioSet(Beta = NULL, M = NULL, CN = NULL,  \dots)
   
 }
 
+\value{
+  An object of class \code{RatioSet} for the constructor.
+}
+
 \details{
   This class inherits from \code{eSet}.  Essentially the class
   is a representation of a \code{Beta} matrix and/or a \code{M} matrix
@@ -76,6 +81,16 @@ arguments outlined above.
       the object.}
     \item{\code{preprocessMethod(object)}}{Get the preprocess method \code{character}.}
       }
+}
+
+
+\section{Utilities}{
+  In the following code, \code{object} is a \code{RatioSet}.
+  
+  \describe{
+    \item{\code{combine}:}{Combines two different \code{MethylSet},
+      eventually using the \code{combine} method for \code{eSet}.}
+  }
 }
 
 \author{Kasper Daniel Hansen \email{khansen@jhsph.edu}}

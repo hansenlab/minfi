@@ -73,9 +73,9 @@ differences.
   \code{\link{preprocessNoob}}.
 }
 \examples{
-\dontrun{
 if (require(minfiData)) {
-  GRset.funnorm <- preprocessFunnorm(RGsetEx)
-}
+  ## RGsetEx.sub is a small subset of RGsetEx; 
+  ## only used for computational speed.
+  Mset.sub.funnorm <- preprocessFunnorm(RGsetEx.sub)
 }
 }

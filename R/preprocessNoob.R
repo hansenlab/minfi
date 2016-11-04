@@ -1,5 +1,5 @@
 preprocessNoob <- function(rgSet, offset=15, dyeCorr=TRUE, verbose = TRUE,
-                           dyeMethod = c("reference", "single")) {
+                           dyeMethod = c("single", "reference")) {
     .isRGOrStop(rgSet)
     subverbose <- max(as.integer(verbose) - 1L, 0)
     dyeMethod <- match.arg(dyeMethod)
@@ -43,7 +43,8 @@ preprocessNoob <- function(rgSet, offset=15, dyeCorr=TRUE, verbose = TRUE,
 
     estimates <- lapply(names(dat), function(nch) { 
         xf <- rbind(dat[[nch]][['M']], dat[[nch]][['U']], dat[[nch]][['D2']])
-        xs <- normexp.get.xs(xf = xf, controls = controls[[nch]], offset=offset, verbose = subverbose)
+        xs <- normexp.get.xs(xf = xf, controls = controls[[nch]],
+                             offset=offset, verbose = subverbose)
         names(xs[['params']]) <- paste(names(xs[['params']]), nch, sep='.')
         names(xs[['meta']]) <- paste(names(xs[['meta']]), nch, sep='.')
         xs
@@ -81,20 +82,20 @@ preprocessNoob <- function(rgSet, offset=15, dyeCorr=TRUE, verbose = TRUE,
 
     ## Performing dye bias normalization
     ## 
+    ## "single" = just reciprocate out the dye bias, don't use a reference.
+    ##            (similar to, but implemented differently from, unmaintained
+    ##             "asmn" package by Decker et al., doi:10.4161/epi.26037)
     ## "reference" = use the least-worst sample in the batch (previous default) 
-    ## "equalize" = all-sample mean norm (Decker et al., doi:10.4161/epi.26037)
     ## 
-    ## Equalize will become the default: it provides single-sample preprocessing
-    ## and thus decouples preprocessing from batch or condition normalization.
-    ## 
-    ## Decker's implementation was annoying and complicated, so I turned it into
-    ## a true single-sample approach by reciprocating the Cy5 bias directly.
+    ## "single" is now the default: it provides single-sample preprocessing
+    ## and betas/M-values produced by this method are identical to those from
+    ## the "reference" version used in (e.g.) the TCGA data processing pipeline.
     ## 
     ## --tjt, 2016-06-16
     ## 
     if (dyeCorr){
         ## Background correct the Illumina normalization controls:
-	ctrls <- getProbeInfo(rgSet, type = "Control")
+        ctrls <- getProbeInfo(rgSet, type = "Control")
         ctrls <- ctrls[ctrls$Address %in% featureNames(rgSet),]
         redControls <- getRed(rgSet)[ctrls$Address,,drop=FALSE]
         greenControls <- getGreen(rgSet)[ctrls$Address,,drop=FALSE]
@@ -122,40 +123,40 @@ preprocessNoob <- function(rgSet, offset=15, dyeCorr=TRUE, verbose = TRUE,
         Red.avg <- colMeans(internal.controls[["Cy5"]][AT.controls,, drop=FALSE])
         R.G.ratio <- Red.avg/Green.avg
 
-	if (dyeMethod == "single") {
+        if (dyeMethod == "single") {
           if(verbose) {
             cat('[preprocessNoob] Applying R/G ratio flip to fix dye bias...\n')
           }
-	  Red.factor <- 1 / R.G.ratio
+          Red.factor <- 1 / R.G.ratio
           Grn.factor <- 1
-	} else if(dyeMethod == "reference") {
+        } else if(dyeMethod == "reference") {
           reference <- which.min(abs(R.G.ratio-1) )
           if(verbose) {
             cat('[preprocessNoob] Using sample number', reference, 
-		'as reference level...\n')
-	  }
+                'as reference level...\n')
+          }
           ref <- (Green.avg + Red.avg)[reference]/2
           if(is.na(ref)) {
-	    stop("'reference' refers to an array that is not present")
-	  }
+              stop("'reference' refers to an array that is not present")
+          }
           Grn.factor <- ref/Green.avg
           Red.factor <- ref/Red.avg
-	} else { stop("unknown 'dyeMethod'") }
+        } else { stop("unknown 'dyeMethod'") }
 
         Grn <- list(M = as.matrix(meth[cy3.probes,]), 
-    		    U = as.matrix(unmeth[cy3.probes,]),
- 		    D2 = as.matrix(meth[d2.probes,]))
+                    U = as.matrix(unmeth[cy3.probes,]),
+                    D2 = as.matrix(meth[d2.probes,]))
         Red <- list(M = as.matrix(meth[cy5.probes,]), 
-	  	    U = as.matrix(unmeth[cy5.probes,]),
-		    D2 = as.matrix(unmeth[d2.probes,]))
+                    U = as.matrix(unmeth[cy5.probes,]),
+                    D2 = as.matrix(unmeth[d2.probes,]))
 
-        # do this regardless of reference or equalization approach
-	Red <- lapply(Red, function(y) sweep(y, 2, FUN="*", Red.factor))
+        ## do this regardless of reference or equalization approach
+        Red <- lapply(Red, function(y) sweep(y, 2, FUN="*", Red.factor))
         meth[cy5.probes,] <- Red$M
         unmeth[cy5.probes,] <- Red$U
         unmeth[d2.probes,] <- Red$D2
 
-	# but only adjust the green channel if using the older reference method
+        ## but only adjust the green channel if using the older reference method
         if (dyeMethod == "reference") {
           Grn <- lapply(Grn, function(y) sweep(y, 2, FUN="*", Grn.factor))
           meth[cy3.probes,] <- Grn$M
@@ -168,8 +169,8 @@ preprocessNoob <- function(rgSet, offset=15, dyeCorr=TRUE, verbose = TRUE,
     assayDataElement(mset, "Unmeth") <- unmeth
 
     mset@preprocessMethod <- c( mu.norm = 
-				sprintf("Noob, dyeCorr=%s, dyeMethod=%s", 
-					dyeCorr, dyeMethod))
+                                    sprintf("Noob, dyeCorr=%s, dyeMethod=%s", 
+                                            dyeCorr, dyeMethod))
     return(mset)
 }
 
@@ -196,11 +197,10 @@ normexp.get.xcs <- function(xcf, params){
     stopifnot(any(grepl("sigma", names(params))))
     stopifnot(any(grepl("alpha", names(params))))
     stopifnot(any(grepl("offset", names(params))))
-    pars <- data.frame(mu=params[[grep("mu", names(params), value=T)]],
-                       sigma = log(params[[grep("sigma", names(params), value=T)]]),
-                       alpha = log(params[[grep("alpha", names(params), value=T)]]))
+    pars <- data.frame(mu=params[[grep("mu", names(params), value=TRUE)]],
+                       sigma = log(params[[grep("sigma", names(params), value=TRUE)]]),
+                       alpha = log(params[[grep("alpha", names(params), value=TRUE)]]))
     for(i in 1:ncol(xcf))
         xcf[,i] <- normexp.signal(as.numeric((pars[i,])), xcf[,i] ) # from limma
-    return( xcf + params[[grep('offset', names(params), value=T)]][1] )
+    return( xcf + params[[grep('offset', names(params), value=TRUE)]][1] )
 }
-

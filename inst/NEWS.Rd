@@ -11,9 +11,36 @@
     \item Support for early access IDAT files form the EPIC array.
     \item message() is now used instead of cat().
     \item Some functions moved from deprecated to defunct.
+    \item Addressing a bug in preprocessQuantile which led to reduced
+    performance for Type I probes when run with default paramters
+    (stratified=TRUE).  Users are strongly encouraged to update to the
+    latest version (1.19.7 or greater) and rerun the function.
+    \item Extended combineArrayTypes to deal with control probes with
+    the same address, but different characteristics (Color, Type,
+    ExtendedType). Discussions with Illumina support reveals that, for
+    control probes, same address is same probe.
+    \item Extended combineArrayTypes to support
+    [Genomic](Methyl|Ratio)Set.
+    \item Fixed a bug that made detectionP fail with an error if used on
+    only 1 sample.
+    \item Fixed a bug in read.metharray where we assumed a certain
+    ordering is consistent in IDAT files from different samples. This is
+    no longer assumed, but as a consequence the function is a bit slower.
+    Bug (indirectly) observed by Giovanni Calice <giovcalice@gmail.com>.
+    \item Changing internals of MethylSet() to follow recent changes in
+    assayDataElement<- in Biobase 2.33.1.
+    \item Changing internals of MethylSet() (again) to follow recent
+    changes in assayDataElement<- in Biobase 2.33.2.
+    \item Fixing issues with combine() on various classes where pData
+    columns doesn't have the same class. This translates to fixes for
+    combineArrays and estimateCellType.
+    \item estimateCellCounts gets a referencePlatform array (defaulting to
+    450k) and now silently converts the input data to the desired platform
+    using convertArray.
+    \item Major refactoring of the annotation packages to reduce memory
+    consumption. 
   }
 }
-
 
 \section{Version 1.15}{
   \itemize{

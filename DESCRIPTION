@@ -1,5 +1,5 @@
 Package: minfi
-Version: 1.19.7
+Version: 1.19.16
 Title: Analyze Illumina Infinium DNA methylation arrays
 Description: Tools to analyze & visualize Illumina Infinium methylation arrays.
 Authors@R: c(person(c("Kasper", "Daniel"), "Hansen", role = c("cre", "aut"),
@@ -14,15 +14,14 @@ Authors@R: c(person(c("Kasper", "Daniel"), "Hansen", role = c("cre", "aut"),
              person(c("Shan", "V."), "Andrews", role = "ctb"))
 Depends:  methods,
 	  BiocGenerics (>= 0.15.3),
-	  Biobase (>= 2.17.8),
-	  lattice,
+	  Biobase (>= 2.33.2),
 	  GenomicRanges,
 	  SummarizedExperiment (>= 1.1.6),
 	  Biostrings,
 	  bumphunter (>= 1.1.9)
 Suggests: IlluminaHumanMethylation450kmanifest (>= 0.2.0),
 	  IlluminaHumanMethylation450kanno.ilmn12.hg19 (>= 0.2.1),
-	  minfiData (>= 0.4.1),
+	  minfiData (>= 0.18.0),
 	  minfiDataEPIC,
 	  FlowSorted.Blood.450k (>= 1.0.1),
 	  RUnit,
@@ -35,6 +34,7 @@ Imports:  S4Vectors,
 	  IRanges,
 	  beanplot,
 	  RColorBrewer,
+	  lattice,
 	  nor1mix,
 	  siggenes,
 	  limma,
@@ -82,10 +82,11 @@ Collate:  generics.R
 	  estimateCellCounts.R
 	  gaphunter.R
 	  compartments.R
-	  combineArrayTypes.R
+	  combineArrays.R
 VignetteBuilder: knitr
 License: Artistic-2.0
 URL: https://github.com/kasperdanielhansen/minfi
 BugReports: https://github.com/kasperdanielhansen/minfi/issues
 LazyData: yes
-biocViews: DNAMethylation, Microarray, TwoChannel, DataImport, Preprocessing, QualityControl
+biocViews: DNAMethylation, DifferentialMethylation, Epigenetics, Microarray, MethylationArray,
+	   MultiChannel, TwoChannel, DataImport, Normalization, Preprocessing, QualityControl

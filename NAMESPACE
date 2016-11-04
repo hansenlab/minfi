@@ -1,5 +1,5 @@
 import(methods)
-importFrom(matrixStats, rowVars, colMedians, colMads, colQuantiles, rowDiffs, colCummaxs)
+importFrom(matrixStats, rowVars, colMedians, colMads, colQuantiles, rowDiffs, colCummaxs, rowMaxs, rowCounts)
 import(BiocGenerics)
 importClassesFrom(Biobase, AnnotatedDataFrame, AssayData, eSet, MIAxE,
                   Versions)
@@ -19,6 +19,7 @@ import(S4Vectors)
 import(IRanges)
 importFrom(Biobase, assayDataElementNames, assayDataElementReplace,
            assayDataElement, "assayDataElement<-", validMsg, assayDataValidMembers)
+
 ## The following should not be necessary, but Hadley does not use S3export in reshape
 importFrom(reshape, melt, melt.array, melt.data.frame, melt.list, melt.matrix, melt.table)
 importFrom(mclust, Mclust)
@@ -77,7 +78,7 @@ export(getManifest, getProbeInfo, getManifestInfo,
        blockFinder, cpgCollapse,
        estimateCellCounts, gaphunter,
        compartments, createCorMatrix, extractAB,
-       combineArrayTypes)
+       convertArray, combineArrays)
 
 exportClasses(RGChannelSet, RGChannelSetExtended,
               MethylSet, RatioSet,
@@ -85,7 +86,7 @@ exportClasses(RGChannelSet, RGChannelSetExtended,
               IlluminaMethylationManifest, IlluminaMethylationAnnotation)
 
 exportMethods(show, initialize, getBeta, getM, getCN, getMeth, getUnmeth,
-              getManifest, annotation, preprocessMethod,
+              getManifest, annotation, preprocessMethod, combine,
               sampleNames, featureNames, pData, mapToGenome, ratioConvert,
               bumphunter)
 

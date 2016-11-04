@@ -15,6 +15,7 @@
 \alias{annotation,GenomicRatioSet-method}
 \alias{preprocessMethod,GenomicRatioSet-method}
 \alias{mapToGenome,GenomicRatioSet-method}
+\alias{combine,GenomicRatioSet,GenomicRatioSet-method}
 
 \title{GenomicRatioSet instances}
 
@@ -53,6 +54,10 @@ GenomicRatioSet(gr = GRanges(), Beta = NULL, M = NULL,
   \item{annotation}{An annotation character string.}
   \item{preprocessMethod}{A preprocess method character string.}
   \item{\dots}{For \code{mapToGenome}, this is ignored.}
+}
+
+\value{
+  An object of class \code{GenomicRatioSet} for the constructor.
 }
 
 \details{
@@ -94,8 +99,10 @@ arguments outlined above.
 \section{Utilities}{
   \describe{
     \item{\code{mapToGenome(object)}}{ Since \code{object} is already
- 	mapped to the genome, this method simply returns \code{object}
-	unchanged.}
+      mapped to the genome, this method simply returns \code{object}
+      unchanged.}
+    \item{\code{combine}:}{Combines two different \code{GenomicRatioSet},
+      eventually using the \code{cbind} method for \code{SummarizedExperiment}.}
   }
 }
 

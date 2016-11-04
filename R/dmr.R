@@ -18,21 +18,21 @@ dmpFinder <- function(dat, pheno, type = c("categorical", "continuous"),
         if (shrinkVar) {
             fit <- contrasts.fit(fit, contrasts(pheno))
             fit <- eBayes(fit)
-            tab <- data.frame(intercept=fit$coefficients[, 1], f=fit$F, pval=fit$F.p.value)
+            tab <- data.frame(intercept=fit$coefficients[, 1], f=fit[["F"]], pval=fit[["F.p.value"]])
         } else {
             fit1 <- lmFit(M)
             RSS1 <- rowSums((M - fitted(fit1))^2)
             RSS <- rowSums((M - fitted(fit))^2)
             df1 <- length(levels(pheno)) - 1
             df2 <- n - length(levels(pheno))
-            F <- ((RSS1 - RSS)/df1)/(RSS/df2)
+            Fstat <- ((RSS1 - RSS)/df1)/(RSS/df2)
             if (df2 > 1e+06) {
-                F.p.value <- pchisq(df1 * F, df1, lower.tail=FALSE)
+                F.p.value <- pchisq(df1 * Fstat, df1, lower.tail=FALSE)
             }
             else {
-                F.p.value <- pf(F, df1, df2, lower.tail=FALSE)
+                F.p.value <- pf(Fstat, df1, df2, lower.tail=FALSE)
             }
-            tab <- data.frame(intercept=fit$coefficients[, 1], f=F, pval=F.p.value)
+            tab <- data.frame(intercept=fit$coefficients[, 1], f=Fstat, pval=F.p.value)
         }
     }
     else if (type == "continuous") {
@@ -53,7 +53,7 @@ dmpFinder <- function(dat, pheno, type = c("categorical", "continuous"),
         if (is.vector(stdev)) 
             stdev <- matrix(stdev, ncol=2)
         t <- coef[, 2]/(stdev[, 2] * sigma)
-        pval <- 2 * pt(abs(t), df=df, lower.tail=F)
+        pval <- 2 * pt(abs(t), df=df, lower.tail=FALSE)
         tab <- data.frame(intercept=coef[, 1], beta=coef[, 2], t=t, pval=pval)
     }
     p0 <- pi0.est(tab$pval[!is.na(tab$pval)])$p0

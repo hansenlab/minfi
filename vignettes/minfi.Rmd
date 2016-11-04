@@ -30,6 +30,7 @@ The input data to this package are IDAT files, representing two different color 
 The MINFI package contains methods which are described across multiple manuscripts, by different non-overlapping authors.  This makes citing the package a bit difficult, so here is a guide.
 
 - If you are using MINFI in a publication, please cite [@minfi].  This publication includes details on sex estimation using `getSex()`, quality control using `getQC()`, quantile normalization using `preprocessQuantile()`, bump hunting using `bumphunter()` and block finding using `blockFinder()`.
+- If you are using MINFI to analyze EPIC or 27k arrays, please cite [@minfiEPIC]. The publication includes details on `convertArray()` and `combineArrays()`, extending NOOB to work in single-sample mode as well as using `estimateCellCounts()` with reference data from the 450k array to estimate cell type composition for EPIC data.
 - If you are using `preprocessQuantile()`, it would be considerate to also cite [@Touleimat:2012], since this publication describes a method essentially identical to `preprocessQuantile()`.
 - If you are using `bumphunter()`, you should also cite the original bump hunter publication [@bumphunter].
 - If you are using SWAN normalization as implemented in `preprocessSWAN()` please cite [@SWAN].

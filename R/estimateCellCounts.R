@@ -1,16 +1,22 @@
 estimateCellCounts <- function (rgSet, compositeCellType = "Blood", processMethod = "auto", probeSelect = "auto",
                                 cellTypes = c("CD8T","CD4T", "NK","Bcell","Mono","Gran"),
+                                referencePlatform = c("IlluminaHumanMethylation450k", "IlluminaHumanMethylationEPIC", "IlluminaHumanMethylation27k"),
                                 returnAll = FALSE, meanPlot = FALSE, verbose=TRUE, ...) {
-    platform <- sub("IlluminaHumanMethylation", "", annotation(rgSet)[which(names(annotation(rgSet))=="array")])
+    referencePlatform <- match.arg(referencePlatform)
+    rgPlatform <- sub("IlluminaHumanMethylation", "", annotation(rgSet)[which(names(annotation(rgSet))=="array")])
+    platform <- sub("IlluminaHumanMethylation", "", referencePlatform)
     if((compositeCellType == "CordBlood") && (!"nRBC" %in% cellTypes))
         message("[estimateCellCounts] Consider including 'nRBC' in argument 'cellTypes' for cord blood estimation.\n")   
     referencePkg <- sprintf("FlowSorted.%s.%s", compositeCellType, platform)
     subverbose <- max(as.integer(verbose) - 1L, 0L)
     if(!require(referencePkg, character.only = TRUE))
-        stop(sprintf("Could not find reference data package for compositeCellType '%s' and platform '%s' (inferred package name is '%s')",
+        stop(sprintf("Could not find reference data package for compositeCellType '%s' and referencePlatform '%s' (inferred package name is '%s')",
                      compositeCellType, platform, referencePkg))
     data(list = referencePkg) 
-    referenceRGset <- get(referencePkg) 
+    referenceRGset <- get(referencePkg)
+    if(rgPlatform != platform) {
+        rgSet <- convertArray(rgSet, outType = referencePlatform, verbose = subverbose)
+    }
     if(! "CellType" %in% names(pData(referenceRGset)))
         stop(sprintf("the reference sorted dataset (in this case '%s') needs to have a phenoData column called 'CellType'"),
              names(referencePkg))
@@ -19,8 +25,8 @@ estimateCellCounts <- function (rgSet, compositeCellType = "Blood", processMetho
     if(!all(cellTypes %in% referenceRGset$CellType))
         stop(sprintf("all elements of argument 'cellTypes' needs to be part of the reference phenoData columns 'CellType' (containg the following elements: '%s')",
                      paste(unique(referenceRGset$cellType), collapse = "', '")))
-	if(length(unique(cellTypes)) < 2)
-            stop("At least 2 cell types must be provided.")
+    if(length(unique(cellTypes)) < 2)
+        stop("At least 2 cell types must be provided.")
     if ((processMethod == "auto") && (compositeCellType %in% c("Blood", "DLPFC")))
         processMethod <- "preprocessQuantile"
     if ((processMethod == "auto") && (!compositeCellType %in% c("Blood", "DLPFC")))
@@ -29,7 +35,7 @@ estimateCellCounts <- function (rgSet, compositeCellType = "Blood", processMetho
     if ((probeSelect == "auto") && (compositeCellType == "CordBlood")){
         probeSelect <- "any"} 
     if ((probeSelect == "auto") && (compositeCellType != "CordBlood")){
-        probeSelect <- "both"} 	
+        probeSelect <- "both"}
     
     if(verbose) message("[estimateCellCounts] Combining user data with reference (flow sorted) data.\n")
     newpd <- data.frame(sampleNames = c(sampleNames(rgSet), sampleNames(referenceRGset)),
@@ -37,8 +43,7 @@ estimateCellCounts <- function (rgSet, compositeCellType = "Blood", processMetho
                                          times = c(ncol(rgSet), ncol(referenceRGset))),
                         stringsAsFactors = FALSE)
     referencePd <- pData(referenceRGset)
-    pData(referenceRGset) <- data.frame() #To avoid errors in the combine call
-    combinedRGset <- combine(rgSet, referenceRGset)
+    combinedRGset <- combineArrays(rgSet, referenceRGset, outType = "IlluminaHumanMethylation450k")
     pData(combinedRGset) <- newpd
     sampleNames(combinedRGset) <- newpd$sampleNames
     rm(referenceRGset)
@@ -49,8 +54,8 @@ estimateCellCounts <- function (rgSet, compositeCellType = "Blood", processMetho
         ## This is done by only using probes with names in the comptable.
         ## This is kind of ugly, and dataset dependent.
         combinedMset <- processMethod(combinedRGset, verbose=subverbose)
-	compTable <- get(paste0(referencePkg, ".compTable"))
-	combinedMset <- combinedMset[which(rownames(combinedMset) %in% rownames(compTable)),]
+        compTable <- get(paste0(referencePkg, ".compTable"))
+        combinedMset <- combinedMset[which(rownames(combinedMset) %in% rownames(compTable)),]
     } else {
         combinedMset <- processMethod(combinedRGset) 
     }
@@ -71,12 +76,12 @@ estimateCellCounts <- function (rgSet, compositeCellType = "Blood", processMetho
     if(verbose) message("[estimateCellCounts] Estimating composition.\n")
     counts <- projectCellType(getBeta(mSet)[rownames(coefs), ], coefs)
     rownames(counts) <- sampleNames(rgSet)
-
+    
     if (meanPlot) {
         smeans <- compData$sampleMeans
         smeans <- smeans[order(names(smeans))]
         sampleMeans <- c(colMeans(getBeta(mSet)[rownames(coefs), ]), smeans)
-
+        
         sampleColors <- c(rep(1, ncol(mSet)), 1 + as.numeric(factor(names(smeans))))
         plot(sampleMeans, pch = 21, bg = sampleColors)
         legend("bottomleft", c("blood", levels(factor(names(smeans)))),
@@ -126,7 +131,7 @@ pickCompProbes <- function(mSet, cellTypes = NULL, numProbes = 50, compositeCell
             c(rownames(yAny)[1:(numProbes*2)])
         })
     } else {
-	probeList <- lapply(tstatList, function(x) {
+        probeList <- lapply(tstatList, function(x) {
             y <- x[x[,"p.value"] < 1e-8,]
             yUp <- y[order(y[,"dm"], decreasing=TRUE),]
             yDown <- y[order(y[,"dm"], decreasing=FALSE),]
@@ -144,12 +149,12 @@ pickCompProbes <- function(mSet, cellTypes = NULL, numProbes = 50, compositeCell
     phenoDF <- as.data.frame(model.matrix(~pd$CellType-1))
     colnames(phenoDF) <- sub("^pd\\$CellType", "", colnames(phenoDF))
     if(ncol(phenoDF) == 2) { # two group solution
-		X <- as.matrix(phenoDF)
-		coefEsts <- t(solve(t(X) %*% X) %*% t(X) %*% t(p))
-	} else { # > 2 group solution
-		tmp <- validationCellType(Y = p, pheno = phenoDF, modelFix = form)
-		coefEsts <- tmp$coefEsts
-	}
+        X <- as.matrix(phenoDF)
+        coefEsts <- t(solve(t(X) %*% X) %*% t(X) %*% t(p))
+    } else { # > 2 group solution
+        tmp <- validationCellType(Y = p, pheno = phenoDF, modelFix = form)
+        coefEsts <- tmp$coefEsts
+    }
     
     out <- list(coefEsts = coefEsts, compTable = compTable,
                 sampleMeans = pMeans)
@@ -206,7 +211,7 @@ validationCellType <- function(Y, pheno, modelFix, modelBatch=NULL,
     xTest <- model.matrix(modelFix, pheno)
     sizeModel <- dim(xTest)[2]
     M <- dim(Y)[1]
-
+    
     if(is.null(L.forFstat)) {
         L.forFstat <- diag(sizeModel)[-1,] # All non-intercept coefficients
         colnames(L.forFstat) <- colnames(xTest) 
@@ -225,10 +230,10 @@ validationCellType <- function(Y, pheno, modelFix, modelBatch=NULL,
         ii <- !is.na(Y[j,])
         nObserved[j] <- sum(ii)
         pheno$y <- Y[j,]
-
+        
         if(j%%round(M/10)==0 && verbose)
             cat(".") # Report progress
-
+        
         try({ # Try to fit a mixed model to adjust for plate
             if(!is.null(modelBatch)) {
                 fit <- try(lme(modelFix, random=modelBatch, data=pheno[ii,]))

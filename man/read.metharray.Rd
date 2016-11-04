@@ -51,8 +51,7 @@ read.metharray(basenames, extended = FALSE, verbose = FALSE, force = FALSE)
 if(require(minfiData)) {
 
 baseDir <- system.file("extdata", package = "minfiData")
-RGSet <- read.metharray(file.path(baseDir, "5723646052",
-    c("5723646052_R02C02", "5723646052_R04C01")))
+RGset1 <- read.metharray(file.path(baseDir, "5723646052", "5723646052_R02C02"))
 
 }
 }

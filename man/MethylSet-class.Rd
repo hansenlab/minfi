@@ -19,6 +19,7 @@
 \alias{getManifest,MethylSet-method}
 \alias{show,MethylSet-method}
 \alias{initialize,MethylSet-method}
+\alias{combine,MethylSet,MethylSet-method}
 \alias{dropMethylationLoci}
 
 \title{MethylSet instances}
@@ -68,6 +69,10 @@ dropMethylationLoci(object, dropRS = TRUE, dropCH = TRUE)
     \code{eSet} constructor, particular a \code{phenoData} slot.  For
     \code{getM} these values gets passed onto \code{getBeta}.}
   
+}
+
+\value{
+  An object of class \code{MethylSet} for the constructor.
 }
 
 \details{
@@ -120,6 +125,8 @@ arguments outlined above.
     \item{\code{dropMethylationLoci}(object)}{A unifed interface to removing methylation loci.  You
       can drop SNP probes (probes that measure SNPs, not probes containing SNPs) or CH probes (non-CpG
       methylation).}
+    \item{\code{combine}:}{Combines two different \code{MethylSet},
+      eventually using the \code{combine} method for \code{eSet}.}
   }
 }
 
