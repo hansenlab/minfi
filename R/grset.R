@@ -20,7 +20,8 @@ setValidity("GenomicRatioSet", function(object) {
 GenomicRatioSet <- function(gr = GRanges(), Beta = NULL, M = NULL, CN = NULL,
                             pData = DataFrame(),
                             annotation = "",
-                            preprocessMethod = "") {
+                            preprocessMethod = "",
+                            metadata = list()) {
     msg <- "Need either 'Beta' or 'M' or both"
     if(is.null(Beta) && is.null(M))
         stop(msg)
@@ -30,7 +31,8 @@ GenomicRatioSet <- function(gr = GRanges(), Beta = NULL, M = NULL, CN = NULL,
         SummarizedExperiment(
             assays = assays,
             rowRanges = as(gr, "GRanges"),
-            colData = as(pData, "DataFrame")
+            colData = as(pData, "DataFrame"),
+            metadata = metadata
         ),
         annotation = annotation,
         preprocessMethod = preprocessMethod
