@@ -10,15 +10,13 @@ setValidity("GenomicMethylSet", function(object) {
 })
 
 GenomicMethylSet <- function(gr = GRanges(), Meth = new("matrix"), Unmeth = new("matrix"),
-                             pData = DataFrame(), annotation = "", preprocessMethod = "", metadata = list()) {
+                             annotation = "", preprocessMethod = "", ...) {
     assays <- SimpleList(Meth = Meth, Unmeth = Unmeth)
     new("GenomicMethylSet",
         SummarizedExperiment(
             assays = assays,
             rowRanges = as(gr, "GRanges"),
-            colData = as(pData, "DataFrame"),
-            metadata = metadata
-        ),
+            ...),
         annotation = annotation,
         preprocessMethod = preprocessMethod
         )

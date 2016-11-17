@@ -1,15 +1,10 @@
 import(methods)
 importFrom(matrixStats, rowVars, colMedians, colMads, colQuantiles, rowDiffs, colCummaxs, rowMaxs, rowCounts)
 import(BiocGenerics)
-importClassesFrom(Biobase, AnnotatedDataFrame, AssayData, eSet, MIAxE,
-                  Versions)
-importMethodsFrom(Biobase, channel,
-                  classVersion, experimentData, featureData,
-                  featureNames, "featureNames<-", isCurrent, pData, "pData<-",
-                  phenoData, protocolData, sampleNames, "sampleNames<-",
-                  storageMode, exprs, fData,
-                  varMetadata, "varMetadata<-", "featureData<-",
-                  AnnotatedDataFrame)
+importMethodsFrom(Biobase, 
+                  featureNames, "featureNames<-",
+                  pData, "pData<-",
+                  sampleNames, "sampleNames<-")
 import(Biostrings)
 importMethodsFrom(GenomeInfoDb, seqlevels, "seqlevels<-", genome, "genome<-", seqlengths, "seqlengths<-")
 importClassesFrom(GenomeInfoDb, Seqinfo)

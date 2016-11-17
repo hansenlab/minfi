@@ -8,17 +8,11 @@ setValidity("MethylSet", function(object) {
 })
 
 MethylSet <- function(Meth = new("matrix"), Unmeth = new("matrix"),
-                      pData = DataFrame(), annotation = "", preprocessMethod = "",
-                      rowData = NULL, metadata = list()) {
+                      annotation = "", preprocessMethod = "", ...) {
     ## Check rownames, colnames
     assays <- SimpleList(Meth = Meth, Unmeth = Unmeth)
     new("MethylSet",
-        SummarizedExperiment(
-            assays = assays,
-            colData = as(pData, "DataFrame"),
-            rowData = rowData,
-            metadata = metadata
-        ),
+        SummarizedExperiment(assays = assays, ...),
         annotation = annotation,
         preprocessMethod = preprocessMethod
         )

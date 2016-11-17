@@ -1,5 +1,5 @@
 Package: minfi
-Version: 1.21.1
+Version: 1.21.2
 Title: Analyze Illumina Infinium DNA methylation arrays
 Description: Tools to analyze & visualize Illumina Infinium methylation arrays.
 Authors@R: c(person(c("Kasper", "Daniel"), "Hansen", role = c("cre", "aut"),
@@ -14,7 +14,6 @@ Authors@R: c(person(c("Kasper", "Daniel"), "Hansen", role = c("cre", "aut"),
              person(c("Shan", "V."), "Andrews", role = "ctb"))
 Depends:  methods,
 	  BiocGenerics (>= 0.15.3),
-	  Biobase (>= 2.33.2),
 	  GenomicRanges,
 	  SummarizedExperiment (>= 1.1.6),
 	  Biostrings,
@@ -31,6 +30,7 @@ Suggests: IlluminaHumanMethylation450kmanifest (>= 0.2.0),
 	  rmarkdown
 Imports:  S4Vectors,
 	  GenomeInfoDb,
+	  Biobase (>= 2.33.2),
 	  IRanges,
 	  beanplot,
 	  RColorBrewer,

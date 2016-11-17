@@ -14,23 +14,16 @@ setValidity("RatioSet", function(object) {
 })
 
 RatioSet <- function(Beta = NULL, M = NULL, CN = NULL,
-                     pData = DataFrame(),
-                     annotation = "", preprocessMethod = "",
-                     rowData = NULL, metadata = list()) {
+                     annotation = "", preprocessMethod = "", ...) {
     msg <- "Need either 'Beta' or 'M' or both"
     if(is.null(Beta) && is.null(M))
         stop(msg)
     assays <- SimpleList(Beta = Beta, M = M, CN = CN)
     assays <- assays[!sapply(assays, is.null)]
     new("RatioSet",
-        SummarizedExperiment(
-            assays = assays,
-            colData = as(pData, "DataFrame")
-        ),
+        SummarizedExperiment(assays = assays, ...),
         annotation = annotation,
-        preprocessMethod = preprocessMethod,
-        rowData = rowData,
-        metadata = metadata
+        preprocessMethod = preprocessMethod
         )
 }
 
@@ -52,6 +45,26 @@ setReplaceMethod("pData", signature(object = "MethylSet", value = "DataFrame"),
     ## This one is easier
     colData(object) <- value
     object
+})
+
+setMethod("preprocessMethod", signature(object = "RatioSet"),
+          function(object) {
+    object@preprocessMethod
+})
+
+setMethod("annotation", signature(object = "RatioSet"),
+          function(object) {
+    object@annotation
+})
+
+setMethod("sampleNames", signature("RatioSet"),
+          function(object) {
+    colnames(object)
+})
+
+setMethod("featureNames", signature("RatioSet"),
+          function(object) {
+    rownames(object)
 })
 
 setMethod("getBeta", signature(object = "RatioSet"),
@@ -81,11 +94,6 @@ setMethod("getCN", signature(object = "RatioSet"),
         return(assay(object, "CN"))
     else
         return(NULL)
-})
-
-setMethod("preprocessMethod", signature(object = "RatioSet"),
-          function(object) {
-    object@preprocessMethod
 })
 
 setMethod("mapToGenome", signature(object = "RatioSet"),

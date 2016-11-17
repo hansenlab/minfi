@@ -10,15 +10,18 @@
 \alias{getM}
 \alias{preprocessMethod}
 %%methods
+\alias{preprocessMethod,MethylSet-method}
+\alias{annotation,MethylSet-method}
+\alias{sampleNames,MethylSet-method}
+\alias{featureNames,MethylSet-method}
+\alias{pData,MethylSet-method}
 \alias{getMeth,MethylSet-method}
 \alias{getUnmeth,MethylSet-method}
 \alias{getBeta,MethylSet-method}
 \alias{getM,MethylSet-method}
 \alias{getCN,MethylSet-method}
-\alias{preprocessMethod,MethylSet-method}
 \alias{getManifest,MethylSet-method}
 \alias{show,MethylSet-method}
-\alias{initialize,MethylSet-method}
 \alias{combine,MethylSet,MethylSet-method}
 \alias{dropMethylationLoci}
 
@@ -32,7 +35,8 @@
 \usage{
 ## Constructor
 
-MethylSet(Meth, Unmeth, phenoData, annotation = NULL)
+MethylSet(Meth = new("matrix"), Unmeth = new("matrix"),
+          annotation = "", preprocessMethod = "", ...)
 
 ## Data extraction / Accessors
 
@@ -43,6 +47,10 @@ MethylSet(Meth, Unmeth, phenoData, annotation = NULL)
 \S4method{getCN}{MethylSet}(object, \dots)
 \S4method{getManifest}{MethylSet}(object)
 \S4method{preprocessMethod}{MethylSet}(object)
+\S4method{annotation}{MethylSet}(object)
+\S4method{pData}{MethylSet}(object)
+\S4method{sampleNames}{MethylSet}(object)
+\S4method{featureNames}{MethylSet}(object)
 
 ## Utilities
 dropMethylationLoci(object, dropRS = TRUE, dropCH = TRUE)
@@ -53,8 +61,8 @@ dropMethylationLoci(object, dropRS = TRUE, dropCH = TRUE)
   \item{Meth}{A matrix of methylation values (between zero and infinity)
     with each row being a methylation loci and each column a sample.}
   \item{Unmeth}{See the \code{Meth} argument.}
-  \item{phenoData}{a \code{phenoData} object.}
   \item{annotation}{An annotation string, optional.}
+  \item{preprocessMethod}{A \code{character}, optional.}
   \item{type}{How are the values calculated?  For \code{getBeta} setting
     \code{type="Illumina"} sets \code{offset=100} as per Genome Studio.
     For \code{getM} setting \code{type=""} computes M-values as the
@@ -65,9 +73,11 @@ dropMethylationLoci(object, dropRS = TRUE, dropCH = TRUE)
     betwen \code{betaThreshold} and 1-\code{betaThreshold}.}  
   \item{dropRS}{Should SNP probes be dropped?}
   \item{dropCH}{Should CH probes be dropped}
-  \item{\dots}{For the constructor: additional objects passes to the
-    \code{eSet} constructor, particular a \code{phenoData} slot.  For
-    \code{getM} these values gets passed onto \code{getBeta}.}
+  \item{\dots}{For the constructor, additional arguments to be passed to
+    \code{SummarizedExperiment}; of particular interest are
+    \code{colData}, \code{rowData} and \code{metadata}.
+    For \code{getM} these values gets passed onto
+    \code{getBeta}.} 
   
 }
 

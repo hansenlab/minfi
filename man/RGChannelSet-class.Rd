@@ -7,8 +7,10 @@
 \alias{RGChannelSetExtended}
 %% methods
 \alias{show,RGChannelSet-method}
-\alias{initialize,RGChannelSet-method}
-\alias{initialize,RGChannelSetExtended-method}
+\alias{annotation,RGChannelSet-method}
+\alias{sampleNames,RGChannelSet-method}
+\alias{featureNames,RGChannelSet-method}
+\alias{pData,RGChannelSet-method}
 \alias{combine,RGChannelSet,RGChannelSet-method}
 \alias{getBeta,RGChannelSet-method}
 \alias{getManifest,RGChannelSet-method}
@@ -28,13 +30,19 @@
 \usage{
 ## Constructors
 
-RGChannelSet(Green = new("matrix"), Red = new("matrix"), \dots)
+RGChannelSet(Green = new("matrix"), Red = new("matrix"),
+             annotation = "", ...)
+
 RGChannelSetExtended(Green = new("matrix"), Red = new("matrix"),
-                     GreenSD = new("matrix"), RedSD = new("matrix"),
-                     NBeads = new("matrix"), \dots)
+                    GreenSD = new("matrix"), RedSD = new("matrix"),
+                    NBeads = new("matrix"), annotation = "", ...)
 
 ## Accessors
 
+\S4method{annotation}{RGChannelSet}(object)
+\S4method{pData}{RGChannelSet}(object)
+\S4method{sampleNames}{RGChannelSet}(object)
+\S4method{featureNames}{RGChannelSet}(object)
 \S4method{getBeta}{RGChannelSet}(object, \dots)
 getGreen(object)
 getRed(object)
@@ -61,8 +69,11 @@ getSnpBeta(object)
     Red channel summaries.} 
   \item{NBeads}{See the \code{Green} argument, but contains the number
     of beads used to summarize the Green and Red channels.}
-  \item{\dots}{Additional objects passes to the \code{eSet} constructor,
-    particular a \code{phenoData} slot.}
+  \item{annotation}{An annotation string, optional.}
+  \item{\dots}{For the constructor(s), additional arguments to be passed
+    to \code{SummarizedExperiment}; of particular interest are
+    \code{colData}, \code{rowData} and \code{metadata}.  For
+    \code{getBeta} these values gets passed onto \code{getBeta}.} 
 }
 
 \section{Constructors}{

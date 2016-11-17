@@ -12,15 +12,6 @@ ilogit2 <- function(x) { 2^(x) / (1+2^(x)) }
 .seqnames.order.all <- c(paste0("chr", c(1:22, "X", "Y")), "multi", "unmapped")
 .seqnames.order <- paste0("chr", c(1:22, "X", "Y"))
 
-
-.show.ExpressionSet <- function(object) {
-    cat(class(object), " (storageMode: ", storageMode(object), ")\n", sep = "")
-    cat("assayData:", paste(dim(object)[[1]], "features,", dim(object)[[2]], "samples"), "\n")
-    cat("  element names:",
-        paste(assayDataElementNames(object), collapse=", "), "\n")
-    show(phenoData(object))
-}
-    
 .show.annotation <- function(annotation, indent = "  ") {
     cat("Annotation\n")
     if(length(annotation) == 1) {

@@ -29,8 +29,8 @@
 ## Constructor
 
 GenomicMethylSet(gr = GRanges(), Meth = new("matrix"),
-                 Unmeth = new("matrix"), pData = DataFrame(),
-                 annotation = "", preprocessMethod = "")
+                 Unmeth = new("matrix"), annotation = "",
+                 preprocessMethod = "", ...)
 
 ## Data extraction / Accessors
 
@@ -50,7 +50,6 @@ GenomicMethylSet(gr = GRanges(), Meth = new("matrix"),
 \arguments{
   \item{object}{A \code{GenomicMethylSet}.}
   \item{gr}{A \code{GRanges} object.}
-  \item{pData}{A \code{DataFrame} or \code{data.frame} object.}
   \item{Meth}{A matrix of methylation values (between zero and infinity)
     with each row being a methylation loci and each column a sample.}
   \item{Unmeth}{See the \code{Meth} argument.}
@@ -64,8 +63,11 @@ GenomicMethylSet(gr = GRanges(), Meth = new("matrix"),
   \item{offset}{Offset in the beta ratio, see detail.}
   \item{betaThreshold}{Constrains the beta values to be in the inverval
     betwen \code{betaThreshold} and 1-\code{betaThreshold}.}  
-  \item{\dots}{ For \code{getM} these values gets passed onto
-    \code{getBeta}. For \code{mapToGenome}, this is ignored.} 
+  \item{\dots}{For the constructor, additional arguments to be passed to
+    \code{SummarizedExperiment}; of particular interest are
+    \code{colData} and \code{metadata}. For \code{getM} these values
+    gets passed onto \code{getBeta}. For \code{mapToGenome}, this is
+    ignored.}
 }
 
 \value{
