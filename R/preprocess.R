@@ -2,7 +2,7 @@ preprocessRaw <- function(rgSet) {
     .isRGOrStop(rgSet)
     locusNames <- getManifestInfo(rgSet, "locusNames")
     M <- matrix(NA_real_, ncol = ncol(rgSet), nrow = length(locusNames),
-                dimnames = list(locusNames, sampleNames(rgSet)))
+                dimnames = list(locusNames, colnames(rgSet)))
     U <- M
     TypeII.Name <- getProbeInfo(rgSet, type = "II")$Name
     M[TypeII.Name,] <- getGreen(rgSet)[getProbeInfo(rgSet, type = "II")$AddressA,]
@@ -103,7 +103,7 @@ detectionP <- function(rgSet, type = "m+u") {
     .isRGOrStop(rgSet)
     locusNames <- getManifestInfo(rgSet, "locusNames")
     detP <- matrix(NA_real_, ncol = ncol(rgSet), nrow = length(locusNames),
-                   dimnames = list(locusNames, sampleNames(rgSet)))
+                   dimnames = list(locusNames, colnames(rgSet)))
 
     controlIdx <- getControlAddress(rgSet, controlType = "NEGATIVE")   
     r <- getRed(rgSet)

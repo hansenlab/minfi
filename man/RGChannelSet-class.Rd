@@ -8,12 +8,17 @@
 %% methods
 \alias{show,RGChannelSet-method}
 \alias{annotation,RGChannelSet-method}
-\alias{sampleNames,RGChannelSet-method}
-\alias{featureNames,RGChannelSet-method}
-\alias{pData,RGChannelSet-method}
+\alias{annotation<-,RGChannelSet,ANY-method}
 \alias{combine,RGChannelSet,RGChannelSet-method}
 \alias{getBeta,RGChannelSet-method}
 \alias{getManifest,RGChannelSet-method}
+%% eSet-methods
+\alias{pData,RGChannelSet-method}
+\alias{pData<-,RGChannelSet,DataFrame-method}
+\alias{sampleNames,RGChannelSet-method}
+\alias{sampleNames<-,RGChannelSet,ANY-method}
+\alias{featureNames,RGChannelSet-method}
+\alias{featureNames<-,RGChannelSet-method}
 %% functions
 \alias{getGreen}
 \alias{getRed}

@@ -4,19 +4,24 @@
 \alias{GenomicMethylSet-class}
 \alias{GenomicMethylSet}
 %%methods
+\alias{show,GenomicMethylSet-method}
+\alias{annotation,GenomicMethylSet-method}
+\alias{annotation<-,GenomicMethylSet,ANY-method}
+\alias{preprocessMethod,GenomicMethylSet-method}
 \alias{getMeth,GenomicMethylSet-method}
 \alias{getUnmeth,GenomicMethylSet-method}
 \alias{getBeta,GenomicMethylSet-method}
 \alias{getM,GenomicMethylSet-method}
 \alias{getCN,GenomicMethylSet-method}
-\alias{show,GenomicMethylSet-method}
-\alias{pData,GenomicMethylSet-method}
-\alias{sampleNames,GenomicMethylSet-method}
-\alias{featureNames,GenomicMethylSet-method}
-\alias{annotation,GenomicMethylSet-method}
-\alias{preprocessMethod,GenomicMethylSet-method}
 \alias{mapToGenome,GenomicMethylSet-method}
 \alias{combine,GenomicMethylSet,GenomicMethylSet-method}
+%% eSet-methods
+\alias{pData,GenomicMethylSet-method}
+\alias{pData<-,GenomicMethylSet,DataFrame-method}
+\alias{sampleNames,GenomicMethylSet-method}
+\alias{sampleNames<-,GenomicMethylSet,ANY-method}
+\alias{featureNames,GenomicMethylSet-method}
+\alias{featureNames<-,GenomicMethylSet-method}
 
 \title{GenomicMethylSet instances}
 

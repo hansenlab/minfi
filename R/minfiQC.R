@@ -54,7 +54,7 @@ getQC <- function(object) {
     U.medians <- log2(matrixStats::colMedians(getUnmeth(object)))
     M.medians <- log2(matrixStats::colMedians(getMeth(object)))
     df <- DataFrame(mMed = M.medians, uMed = U.medians)
-    rownames(df) <- sampleNames(object)
+    rownames(df) <- colnames(object)
     df
 }
 

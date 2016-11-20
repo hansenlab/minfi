@@ -99,14 +99,14 @@ cpgCollapse <- function(object, what = c("Beta", "M"), maxGap = 500,
     if(what == "M") {
         ret <- GenomicRatioSet(gr = anno$anno,
                                Beta = NULL, M = yy, CN = aa,
-                               pData = pData(object),
+                               colData = colData(object),
                                annotation = annotation(object),
                                preprocessMethod = preproc) 
     }
     else {
         ret <- GenomicRatioSet(gr = anno$anno,
                                Beta = yy, M = NULL, CN = aa,
-                               pData = pData(object),
+                               colData = colData(object),
                                annotation = annotation(object),
                                preprocessMethod = preproc)
     }

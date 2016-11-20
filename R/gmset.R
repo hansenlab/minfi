@@ -77,28 +77,10 @@ setMethod("annotation", signature(object = "GenomicMethylSet"),
     object@annotation
 })
 
-setMethod("pData", signature("GenomicMethylSet"),
-          function(object) {
-    colData(object)
-})
-
-setReplaceMethod("pData", signature(object = "GenomicMethylSet", value = "DataFrame"),
-                 function(object, value) {
-    object <- BiocGenerics:::replaceSlots(object, colData=value)
-    msg <- SummarizedExperiment:::.valid.SummarizedExperiment.assays_ncol(object)
-    if (!is.null(msg))
-        stop(msg)
+setReplaceMethod("annotation", signature(object = "GenomicMethylSet"),
+          function(object, value) {
+    object@annotation <- value
     object
-})
-
-setMethod("sampleNames", signature("GenomicMethylSet"),
-          function(object) {
-    colnames(object)
-})
-
-setMethod("featureNames", signature("GenomicMethylSet"),
-          function(object) {
-    rownames(object)
 })
 
 setMethod("ratioConvert", signature(object = "GenomicMethylSet"),
@@ -123,7 +105,7 @@ setMethod("ratioConvert", signature(object = "GenomicMethylSet"),
     }
     GenomicRatioSet(Beta = Beta, M = M, CN = CN,
                     gr = granges(object),
-                    pData = pData(object),
+                    colData = colData(object),
                     annotation = annotation(object),
                     preprocessMethod = preprocessMethod(object),
                     metadata = metadata(object))
@@ -138,7 +120,10 @@ setMethod("updateObject", signature(object = "GenomicMethylSet"),
 
 setMethod("combine", signature(x = "GenomicMethylSet", y = "GenomicMethylSet"),
           function(x, y, ...) {
-    pData(x) <- .pDataFix(pData(x))
-    pData(y) <- .pDataFix(pData(y))
+    colDataFix <- .harmonizeDataFrames(.pDataFix(colData(x)),
+                                       .pDataFix(colData(y)))
+    colData(x) <- colDataFix$x
+    colData(y) <- colDataFix$y
     cbind(x,y)
 })
+

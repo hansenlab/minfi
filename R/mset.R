@@ -25,19 +25,6 @@ setMethod("show", signature(object = "MethylSet"),
     .show.preprocessMethod(preprocessMethod(object))
 })
 
-setMethod("pData", signature("MethylSet"),
-          function(object) {
-    colData(object)
-})
-
-setReplaceMethod("pData", signature(object = "MethylSet", value = "DataFrame"),
-                 function(object, value) {
-    ## FIXME: Different from the GenomicMethylSet function; which one is right?
-    ## This one is easier
-    colData(object) <- value
-    object
-})
-
 setMethod("getMeth", signature(object = "MethylSet"),
           function(object) {
     assay(object, "Meth")
@@ -81,14 +68,10 @@ setMethod("annotation", signature(object = "MethylSet"),
     object@annotation
 })
 
-setMethod("sampleNames", signature("MethylSet"),
-          function(object) {
-    colnames(object)
-})
-
-setMethod("featureNames", signature("MethylSet"),
-          function(object) {
-    rownames(object)
+setReplaceMethod("annotation", signature(object = "MethylSet"),
+          function(object, value) {
+    object@annotation <- value
+    object
 })
 
 setMethod("getManifest", signature(object = "MethylSet"),
@@ -102,11 +85,11 @@ setMethod("getManifest", signature(object = "MethylSet"),
 setMethod("mapToGenome", signature(object = "MethylSet"),
           function(object, mergeManifest = FALSE) {
     gr <- getLocations(object, mergeManifest = mergeManifest,
-                       orderByLocation = TRUE, lociNames = featureNames(object))
+                       orderByLocation = TRUE, lociNames = rownames(object))
     object <- object[names(gr),]
     GenomicMethylSet(gr = gr, Meth = getMeth(object),
                      Unmeth = getUnmeth(object),
-                     pData = pData(object),
+                     colData = colData(object),
                      preprocessMethod = preprocessMethod(object),
                      annotation = annotation(object),
                      metadata = metadata(object))
@@ -117,13 +100,13 @@ setMethod("updateObject", signature(object = "MethylSet"),
     if (verbose) message("updateObject(object = 'MethylSet')")
     if("assayData" %in% names(getObjectSlots(object))) {
         ## This is an ExpressionSet based object
-        newObject <- MethylSet(Meth = getObjectSlots(object)[["assayData"]][["Meth"]],
-                               Unmeth = getObjectSlots(object)[["assayData"]][["Unmeth"]],
-                               pData = getObjectSlots(getObjectSlots(object)[["phenoData"]])[["data"]],
-                               annotation = getObjectSlots(object)[["annotation"]],
-                               preprocessMethod = getObjectSlots(object)[["preprocessMethod"]])
+        object <- MethylSet(Meth = getObjectSlots(object)[["assayData"]][["Meth"]],
+                            Unmeth = getObjectSlots(object)[["assayData"]][["Unmeth"]],
+                            colData = getObjectSlots(getObjectSlots(object)[["phenoData"]])[["data"]],
+                            annotation = getObjectSlots(object)[["annotation"]],
+                            preprocessMethod = getObjectSlots(object)[["preprocessMethod"]])
     }
-    newObject
+    object
 })
 
 
@@ -148,7 +131,7 @@ setMethod("ratioConvert", signature(object = "MethylSet"),
         CN <- NULL
     }
     RatioSet(Beta = Beta, M = M, CN = CN,
-             pData = colData(object),
+             colData = colData(object),
              annotation = annotation(object),
              preprocessMethod = preprocessMethod(object),
              rowData = rowData(object),
@@ -165,7 +148,7 @@ dropMethylationLoci <- function(object, dropRS = TRUE, dropCH = TRUE) {
     dropRegEx <- dropRegEx[nchar(dropRegEx) > 0]
     if(length(dropRegEx) == 0) return(object)
     dropRegEx <- sprintf("(%s)", paste(dropRegEx, collapse = "|"))
-    whDrop <- grep(dropRegEx, featureNames(object))
+    whDrop <- grep(dropRegEx, rownames(object))
     if(length(whDrop) == 0)
         return(object)
     object[-whDrop, ]
@@ -173,7 +156,9 @@ dropMethylationLoci <- function(object, dropRS = TRUE, dropCH = TRUE) {
 
 setMethod("combine", signature(x = "MethylSet", y = "MethylSet"),
           function(x, y, ...) {
-    pData(x) <- .pDataFix(pData(x))
-    pData(y) <- .pDataFix(pData(y))
-    callNextMethod()
+    colDataFix <- .harmonizeDataFrames(.pDataFix(colData(x)),
+                                       .pDataFix(colData(y)))
+    colData(x) <- colDataFix$x
+    colData(y) <- colDataFix$y
+    cbind(x,y)
 })

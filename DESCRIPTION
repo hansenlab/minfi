@@ -59,6 +59,7 @@ Collate:  generics.R
 	  rgset.R
 	  gmset.R
 	  grset.R
+	  eSet_methods.R
 	  utils.R
 	  manifest.R
 	  anno.R

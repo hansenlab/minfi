@@ -34,19 +34,6 @@ setMethod("show", signature(object = "RatioSet"),
     .show.preprocessMethod(preprocessMethod(object))
 })
 
-setMethod("pData", signature("RatioSet"),
-          function(object) {
-    colData(object)
-})
-
-setReplaceMethod("pData", signature(object = "MethylSet", value = "DataFrame"),
-                 function(object, value) {
-    ## FIXME: Different from the GenomicMethylSet function; which one is right?
-    ## This one is easier
-    colData(object) <- value
-    object
-})
-
 setMethod("preprocessMethod", signature(object = "RatioSet"),
           function(object) {
     object@preprocessMethod
@@ -57,14 +44,10 @@ setMethod("annotation", signature(object = "RatioSet"),
     object@annotation
 })
 
-setMethod("sampleNames", signature("RatioSet"),
-          function(object) {
-    colnames(object)
-})
-
-setMethod("featureNames", signature("RatioSet"),
-          function(object) {
-    rownames(object)
+setReplaceMethod("annotation", signature(object = "RatioSet"),
+          function(object, value) {
+    object@annotation <- value
+    object
 })
 
 setMethod("getBeta", signature(object = "RatioSet"),
@@ -103,29 +86,31 @@ setMethod("mapToGenome", signature(object = "RatioSet"),
     object <- object[names(gr),]
     GenomicRatioSet(gr = gr, Beta = getBeta(object),
                     M = getM(object), CN = getCN(object),
-                    pData = pData(object),
+                    colData = colData(object),
                     preprocessMethod = preprocessMethod(object),
                     annotation = annotation(object))
 })
 
 setMethod("updateObject", signature(object = "RatioSet"),
           function(object, ..., verbose=FALSE) {
-              if (verbose) message("updateObject(object = 'RatioSet')")
-              if("assayData" %in% names(getObjectSlots(object))) {
-                  ## This is an ExpressionSet based object
-                  newObject <- RatioSet(Beta = getObjectSlots(object)[["assayData"]][["Beta"]],
-                                        M = getObjectSlots(object)[["assayData"]][["M"]],
-                                        CN = getObjectSlots(object)[["assayData"]][["CN"]],
-                                        pData = getObjectSlots(getObjectSlots(object)[["phenoData"]])[["data"]],
-                                        annotation = getObjectSlots(object)[["annotation"]],
-                                        preprocessMethod = getObjectSlots(object)[["preprocessMethod"]])
-              }
-              newObject
+    if (verbose) message("updateObject(object = 'RatioSet')")
+    if("assayData" %in% names(getObjectSlots(object))) {
+        ## This is an ExpressionSet based object
+        object <- RatioSet(Beta = getObjectSlots(object)[["assayData"]][["Beta"]],
+                           M = getObjectSlots(object)[["assayData"]][["M"]],
+                           CN = getObjectSlots(object)[["assayData"]][["CN"]],
+                           colData = getObjectSlots(getObjectSlots(object)[["phenoData"]])[["data"]],
+                           annotation = getObjectSlots(object)[["annotation"]],
+                           preprocessMethod = getObjectSlots(object)[["preprocessMethod"]])
+    }
+    object
 })
 
 setMethod("combine", signature(x = "RatioSet", y = "RatioSet"),
           function(x, y, ...) {
-    pData(x) <- .pDataFix(pData(x))
-    pData(y) <- .pDataFix(pData(y))
-    callNextMethod()
+    colDataFix <- .harmonizeDataFrames(.pDataFix(colData(x)),
+                                       .pDataFix(colData(y)))
+    colData(x) <- colDataFix$x
+    colData(y) <- colDataFix$y
+    cbind(x,y)
 })

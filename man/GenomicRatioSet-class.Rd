@@ -5,17 +5,24 @@
 \alias{GenomicRatioSet}
 \alias{getCN}
 %%methods
+\alias{show,GenomicRatioSet-method}
+\alias{annotation,GenomicRatioSet-method}
+\alias{annotation<-,GenomicRatioSet,ANY-method}
+\alias{preprocessMethod,GenomicRatioSet-method}
 \alias{getBeta,GenomicRatioSet-method}
 \alias{getM,GenomicRatioSet-method}
 \alias{getCN,GenomicRatioSet-method}
-\alias{show,GenomicRatioSet-method}
-\alias{pData,GenomicRatioSet-method}
-\alias{sampleNames,GenomicRatioSet-method}
-\alias{featureNames,GenomicRatioSet-method}
-\alias{annotation,GenomicRatioSet-method}
-\alias{preprocessMethod,GenomicRatioSet-method}
 \alias{mapToGenome,GenomicRatioSet-method}
 \alias{combine,GenomicRatioSet,GenomicRatioSet-method}
+%% eSet-methods
+\alias{pData,GenomicRatioSet-method}
+\alias{pData<-,GenomicRatioSet,DataFrame-method}
+\alias{sampleNames,GenomicRatioSet-method}
+\alias{sampleNames<-,GenomicRatioSet,ANY-method}
+\alias{featureNames,GenomicRatioSet-method}
+\alias{featureNames<-,GenomicRatioSet-method}
+
+
 
 \title{GenomicRatioSet instances}
 

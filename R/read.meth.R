@@ -174,7 +174,7 @@ read.metharray.exp <- function(base = NULL, targets = NULL, extended = FALSE,
         rgSet <- read.metharray(files, extended = extended, verbose = verbose, force = force)
         pD <- targets
         pD$filenames <- files
-        rownames(pD) <- sampleNames(rgSet)
+        rownames(pD) <- colnames(rgSet)
         colData(rgSet) <- as(pD, "DataFrame")
         return(rgSet)
     }

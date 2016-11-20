@@ -2,7 +2,7 @@ qcReport <- function(rgSet, sampNames=NULL, sampGroups=NULL, pdf="qcReport.pdf",
         controls=c("BISULFITE CONVERSION I", "BISULFITE CONVERSION II", "EXTENSION", "HYBRIDIZATION", 
         "NON-POLYMORPHIC", "SPECIFICITY I", "SPECIFICITY II", "TARGET REMOVAL")) {
     .isRGOrStop(rgSet)
-    if (is.null(sampNames)) sampNames <- sampleNames(rgSet)
+    if (is.null(sampNames)) sampNames <- colnames(rgSet)
     n <- ncol(rgSet)
     o <- rev(order(sampNames))
     rgSet <- rgSet[,o]

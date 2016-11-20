@@ -23,32 +23,15 @@ setMethod("show", signature(object = "RGChannelSet"),
     .show.annotation(annotation(object))
 })
 
-setMethod("pData", signature("RGChannelSet"),
-          function(object) {
-    colData(object)
-})
-
-setReplaceMethod("pData", signature(object = "RGChannelSet", value = "DataFrame"),
-                 function(object, value) {
-    ## FIXME: Different from the GenomicMethylSet function; which one is right?
-    ## This one is easier
-    colData(object) <- value
-    object
-})
-
 setMethod("annotation", signature(object = "RGChannelSet"),
           function(object) {
     object@annotation
 })
 
-setMethod("sampleNames", signature("RGChannelSet"),
-          function(object) {
-    colnames(object)
-})
-
-setMethod("featureNames", signature("RGChannelSet"),
-          function(object) {
-    rownames(object)
+setReplaceMethod("annotation", signature(object = "RGChannelSet"),
+          function(object, value) {
+    object@annotation <- value
+    object
 })
 
 setClass("RGChannelSetExtended",
@@ -79,12 +62,12 @@ setMethod("updateObject", signature(object = "RGChannelSet"),
     if (verbose) message("updateObject(object = 'RGChannelSet')")
     if("assayData" %in% names(getObjectSlots(object))) {
         ## This is an ExpressionSet based object
-        newObject <- RGChannelSet(Green = getObjectSlots(object)[["assayData"]][["Green"]],
-                                  Red = getObjectSlots(object)[["assayData"]][["Red"]],
-                                  pData = getObjectSlots(getObjectSlots(object)[["phenoData"]])[["data"]],
-                                  annotation = getObjectSlots(object)[["annotation"]])
+        object <- RGChannelSet(Green = getObjectSlots(object)[["assayData"]][["Green"]],
+                               Red = getObjectSlots(object)[["assayData"]][["Red"]],
+                               colData = getObjectSlots(getObjectSlots(object)[["phenoData"]])[["data"]],
+                               annotation = getObjectSlots(object)[["annotation"]])
     }
-    newObject
+    object
 })
 
 setMethod("updateObject", signature(object = "RGChannelSetExtended"),
@@ -92,15 +75,15 @@ setMethod("updateObject", signature(object = "RGChannelSetExtended"),
     if (verbose) message("updateObject(object = 'RGChannelSetExtended')")
     if("assayData" %in% names(getObjectSlots(object))) {
         ## This is an ExpressionSet based object
-        newObject <- RGChannelSetExtended(Green = getObjectSlots(object)[["assayData"]][["Green"]],
-                                          Red = getObjectSlots(object)[["assayData"]][["Red"]],
-                                          GreenSD = getObjectSlots(object)[["assayData"]][["GreenSD"]],
-                                          RedSD = getObjectSlots(object)[["assayData"]][["RedSD"]],
-                                          NBeads = getObjectSlots(object)[["assayData"]][["NBeads"]],
-                                          pData = getObjectSlots(getObjectSlots(object)[["phenoData"]])[["data"]],
-                                          annotation = getObjectSlots(object)[["annotation"]])
+        object <- RGChannelSetExtended(Green = getObjectSlots(object)[["assayData"]][["Green"]],
+                                       Red = getObjectSlots(object)[["assayData"]][["Red"]],
+                                       GreenSD = getObjectSlots(object)[["assayData"]][["GreenSD"]],
+                                       RedSD = getObjectSlots(object)[["assayData"]][["RedSD"]],
+                                       NBeads = getObjectSlots(object)[["assayData"]][["NBeads"]],
+                                       colData = getObjectSlots(getObjectSlots(object)[["phenoData"]])[["data"]],
+                                       annotation = getObjectSlots(object)[["annotation"]])
     }
-    newObject
+    object
 })
 
 
@@ -197,7 +180,9 @@ subsetByLoci <- function(rgSet, includeLoci = NULL, excludeLoci = NULL, keepCont
 
 setMethod("combine", signature(x = "RGChannelSet", y = "RGChannelSet"),
           function(x, y, ...) {
-    pData(x) <- .pDataFix(pData(x))
-    pData(y) <- .pDataFix(pData(y))
-    callNextMethod()
+    colDataFix <- .harmonizeDataFrames(.pDataFix(colData(x)),
+                                       .pDataFix(colData(y)))
+    colData(x) <- colDataFix$x
+    colData(y) <- colDataFix$y
+    cbind(x,y)
 })

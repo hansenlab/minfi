@@ -4,16 +4,21 @@
 \alias{RatioSet-class}
 \alias{RatioSet}
 %%methods
+\alias{show,RatioSet-method}
+\alias{preprocessMethod,RatioSet-method}
+\alias{annotation,RatioSet-method}
+\alias{annotation<-,RatioSet,ANY-method}
 \alias{getBeta,RatioSet-method}
 \alias{getM,RatioSet-method}
 \alias{getCN,RatioSet-method}
-\alias{preprocessMethod,RatioSet-method}
-\alias{annotation,RatioSet-method}
-\alias{sampleNames,RatioSet-method}
-\alias{featureNames,RatioSet-method}
-\alias{pData,RatioSet-method}
-\alias{show,RatioSet-method}
 \alias{combine,RatioSet,RatioSet-method}
+%% eSet-methods
+\alias{pData,RatioSet-method}
+\alias{pData<-,RatioSet,DataFrame-method}
+\alias{sampleNames,RatioSet-method}
+\alias{sampleNames<-,RatioSet,ANY-method}
+\alias{featureNames,RatioSet-method}
+\alias{featureNames<-,RatioSet-method}
 
 \title{RatioSet instances}
 

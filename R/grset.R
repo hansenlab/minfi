@@ -70,32 +70,9 @@ setMethod("getCN", signature(object = "GenomicRatioSet"),
               return(NULL)
           })
 
-setMethod("pData", signature("GenomicRatioSet"),
-          function(object) {
-              colData(object)
-          })
-
-setReplaceMethod("pData", c("GenomicRatioSet", "DataFrame"), function(object, value) {
-    object <- BiocGenerics:::replaceSlots(object, colData=value)
-    msg <- SummarizedExperiment:::.valid.SummarizedExperiment.assays_ncol(object)
-    if (!is.null(msg))
-        stop(msg)
-    object
-})
-
 setMethod("mapToGenome", signature(object = "GenomicRatioSet"),
           function(object, ...) {
               object
-          })
-
-setMethod("sampleNames", signature("GenomicRatioSet"),
-          function(object) {
-              colnames(object)
-          })
-
-setMethod("featureNames", signature("GenomicRatioSet"),
-          function(object) {
-              rownames(object)
           })
 
 setMethod("preprocessMethod", signature(object = "GenomicRatioSet"),
@@ -108,6 +85,12 @@ setMethod("annotation", signature(object = "GenomicRatioSet"),
               object@annotation
           })
 
+setReplaceMethod("annotation", signature(object = "GenomicRatioSet"),
+          function(object, value) {
+    object@annotation <- value
+    object
+})
+
 setMethod("updateObject", signature(object = "GenomicRatioSet"),
           function(object, ..., verbose = FALSE) {
               if(object@annotation["annotation"] == "ilmn.v1.2")
@@ -117,7 +100,9 @@ setMethod("updateObject", signature(object = "GenomicRatioSet"),
 
 setMethod("combine", signature(x = "GenomicRatioSet", y = "GenomicRatioSet"),
           function(x, y, ...) {
-    pData(x) <- .pDataFix(pData(x))
-    pData(y) <- .pDataFix(pData(y))
+    colDataFix <- .harmonizeDataFrames(.pDataFix(colData(x)),
+                                       .pDataFix(colData(y)))
+    colData(x) <- colDataFix$x
+    colData(y) <- colDataFix$y
     cbind(x,y)
 })

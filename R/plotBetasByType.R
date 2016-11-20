@@ -4,7 +4,8 @@ plotBetasByType <- function(data, probeTypes = NULL, legendPos = "top", colors =
         if(ncol(data) > 1){
             stop("'data' must only contain one sample")
         } else {
-            betas <- matrix(getBeta(data), ncol=1, dimnames=list(featureNames(data), sampleNames(data)))
+            betas <- matrix(getBeta(data), ncol=1,
+                            dimnames=list(rownames(data), colnames(data)))
         }
         if(is.null(probeTypes)) {
             typeI <- getProbeInfo(data, type = "I")[, c("Name", "nCpG")]

@@ -10,20 +10,25 @@
 \alias{getM}
 \alias{preprocessMethod}
 %%methods
+\alias{show,MethylSet-method}
 \alias{preprocessMethod,MethylSet-method}
 \alias{annotation,MethylSet-method}
-\alias{sampleNames,MethylSet-method}
-\alias{featureNames,MethylSet-method}
-\alias{pData,MethylSet-method}
+\alias{annotation<-,MethylSet,ANY-method}
 \alias{getMeth,MethylSet-method}
 \alias{getUnmeth,MethylSet-method}
 \alias{getBeta,MethylSet-method}
 \alias{getM,MethylSet-method}
 \alias{getCN,MethylSet-method}
 \alias{getManifest,MethylSet-method}
-\alias{show,MethylSet-method}
 \alias{combine,MethylSet,MethylSet-method}
 \alias{dropMethylationLoci}
+%% eSet-methods
+\alias{pData,MethylSet-method}
+\alias{pData<-,MethylSet,DataFrame-method}
+\alias{sampleNames,MethylSet-method}
+\alias{sampleNames<-,MethylSet,ANY-method}
+\alias{featureNames,MethylSet-method}
+\alias{featureNames<-,MethylSet-method}
 
 \title{MethylSet instances}
 

@@ -36,7 +36,7 @@ preprocessQuantile <- function(object, fixOutliers=TRUE,
 
     if (is.null(sex)) {
         object <- addSex(object)
-        sex <- pData(object)$predictedSex
+        sex <- colData(object)$predictedSex
     }
 
     xIndex <- which(seqnames(object) == "chrX")
@@ -63,7 +63,7 @@ preprocessQuantile <- function(object, fixOutliers=TRUE,
     }
     preprocessMethod <- c(mu.norm="preprocessQuantile", preprocessMethod(object))
     out <- GenomicRatioSet(gr=granges(object), Beta=NULL, M = log2(M/U),
-                           CN=log2(U+M), pData=pData(object),
+                           CN=log2(U+M), colData=colData(object),
                            annotation=annotation(object),
                            preprocessMethod=preprocessMethod)
     return(out)

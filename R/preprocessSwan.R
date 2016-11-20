@@ -22,7 +22,7 @@ preprocessSWAN <- function(rgSet, mSet = NULL, verbose = FALSE){
     CpG.counts$Name <- as.character(CpG.counts$Name)
     CpG.counts$Type <- rep(c("I", "II"), times = c(nrow(typeI), nrow(typeII)))
     names(CpG.counts)[2] <- "CpGs"
-    counts <- CpG.counts[CpG.counts$Name %in% featureNames(mSet),]
+    counts <- CpG.counts[CpG.counts$Name %in% rownames(mSet),]
     subset <- min(table(counts$CpGs[counts$Type == "I" & counts$CpGs %in% 1:3]),
                   table(counts$CpGs[counts$Type == "II" & counts$CpGs %in% 1:3]))
     bg <- bgIntensitySwan(rgSet)
@@ -32,7 +32,7 @@ preprocessSWAN <- function(rgSet, mSet = NULL, verbose = FALSE){
     xNormSet[[1]] <- getSubset(counts$CpGs[counts$Type=="I"], subset)
     xNormSet[[2]] <- getSubset(counts$CpGs[counts$Type=="II"], subset)
     normMethData <- matrix(NA_real_, ncol = ncol(methData), nrow = nrow(methData))
-    colnames(normMethData) <- sampleNames(mSet)
+    colnames(normMethData) <- colnames(mSet)
     normUnmethData <- normMethData
     normSet <- mSet
     for(i in 1:ncol(mSet)) {
