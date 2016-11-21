@@ -2,6 +2,20 @@
 \title{Minfi News}
 \encoding{UTF-8}
 
+\section{Version 1.21}{
+  \itemize{
+    \item Moving RGChannelSet, MethylSet and RatioSet from building on
+    eSet (from Biobase) to SummarizedExperiment (from
+    SummarizedExperiment). Most important changes are that the
+    constructor functions now uses the argument colData instead of
+    pData; some of them have more arguments.  The updateObject methods
+    have been extended to update to the new class backend.  While the
+    pData, sampleNames, featureNames methods still work, we recommend
+    (at least for package writers) to move to colData, colnames and
+    rownames.
+  }
+}
+
 \section{Version 1.19}{
   \itemize{
     \item preprocessNoob gets a dyeMethod argument which now allows for

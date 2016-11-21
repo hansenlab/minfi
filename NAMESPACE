@@ -1,7 +1,7 @@
 import(methods)
 importFrom(matrixStats, rowVars, colMedians, colMads, colQuantiles, rowDiffs, colCummaxs, rowMaxs, rowCounts)
 import(BiocGenerics)
-importMethodsFrom(Biobase, 
+importMethodsFrom(Biobase, exprs, fData,
                   featureNames, "featureNames<-",
                   pData, "pData<-",
                   sampleNames, "sampleNames<-")
