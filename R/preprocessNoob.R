@@ -72,12 +72,12 @@ preprocessNoob <- function(rgSet, offset=15, dyeCorr=TRUE, verbose = TRUE,
         unmeth[d2.probes,] <- estimates[['Cy5']][['xs']][d2.U,]
     }
     ## This next code block does nothing because the rgSet is not returned
-    ## and pData(rgSet) is not referenced below
+    ## and colData(rgSet) is not referenced below
+    ## FIXME: either remove or modify the return value
     for(ch in names(estimates)) { 
         chnames <- names(estimates[[ch]][['params']])
         for(nm in chnames)
-            pData(rgSet)[,nm] <- estimates[[ch]][['params']][[nm]]
-        varMetadata(rgSet)[chnames,] <- paste(ch, estimates[[ch]][['meta']]) 
+            colData(rgSet)[,nm] <- estimates[[ch]][['params']][[nm]]
     } 
 
     ## Performing dye bias normalization
@@ -96,7 +96,7 @@ preprocessNoob <- function(rgSet, offset=15, dyeCorr=TRUE, verbose = TRUE,
     if (dyeCorr){
         ## Background correct the Illumina normalization controls:
         ctrls <- getProbeInfo(rgSet, type = "Control")
-        ctrls <- ctrls[ctrls$Address %in% featureNames(rgSet),]
+        ctrls <- ctrls[ctrls$Address %in% rownames(rgSet),]
         redControls <- getRed(rgSet)[ctrls$Address,,drop=FALSE]
         greenControls <- getGreen(rgSet)[ctrls$Address,,drop=FALSE]
         rownames(redControls) <- rownames(greenControls) <- ctrls$Type
@@ -165,8 +165,8 @@ preprocessNoob <- function(rgSet, offset=15, dyeCorr=TRUE, verbose = TRUE,
         }
     }
 
-    assayDataElement(mset, "Meth") <- meth
-    assayDataElement(mset, "Unmeth") <- unmeth
+    assay(mset, "Meth") <- meth
+    assay(mset, "Unmeth") <- unmeth
 
     mset@preprocessMethod <- c( mu.norm = 
                                     sprintf("Noob, dyeCorr=%s, dyeMethod=%s", 

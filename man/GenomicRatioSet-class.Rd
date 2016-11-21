@@ -5,17 +5,24 @@
 \alias{GenomicRatioSet}
 \alias{getCN}
 %%methods
+\alias{show,GenomicRatioSet-method}
+\alias{annotation,GenomicRatioSet-method}
+\alias{annotation<-,GenomicRatioSet,ANY-method}
+\alias{preprocessMethod,GenomicRatioSet-method}
 \alias{getBeta,GenomicRatioSet-method}
 \alias{getM,GenomicRatioSet-method}
 \alias{getCN,GenomicRatioSet-method}
-\alias{show,GenomicRatioSet-method}
-\alias{pData,GenomicRatioSet-method}
-\alias{sampleNames,GenomicRatioSet-method}
-\alias{featureNames,GenomicRatioSet-method}
-\alias{annotation,GenomicRatioSet-method}
-\alias{preprocessMethod,GenomicRatioSet-method}
 \alias{mapToGenome,GenomicRatioSet-method}
 \alias{combine,GenomicRatioSet,GenomicRatioSet-method}
+%% eSet-methods
+\alias{pData,GenomicRatioSet-method}
+\alias{pData<-,GenomicRatioSet,DataFrame-method}
+\alias{sampleNames,GenomicRatioSet-method}
+\alias{sampleNames<-,GenomicRatioSet,ANY-method}
+\alias{featureNames,GenomicRatioSet-method}
+\alias{featureNames<-,GenomicRatioSet-method}
+
+
 
 \title{GenomicRatioSet instances}
 
@@ -28,8 +35,8 @@
 ## Constructor
 
 GenomicRatioSet(gr = GRanges(), Beta = NULL, M = NULL,
-                CN = NULL, pData = DataFrame(),
-                annotation = "", preprocessMethod = "")
+                CN = NULL, annotation = "",
+                preprocessMethod = "", ...)
 
 ## Data extraction / Accessors
 
@@ -50,10 +57,12 @@ GenomicRatioSet(gr = GRanges(), Beta = NULL, M = NULL,
   \item{Beta}{A matrix of beta values (optional, see details).}
   \item{M}{A matrix of M values (optional, see details).}
   \item{CN}{A matrix of copy number values.}
-  \item{pData}{A \code{DataFrame} or \code{data.frame} object.}
   \item{annotation}{An annotation character string.}
   \item{preprocessMethod}{A preprocess method character string.}
-  \item{\dots}{For \code{mapToGenome}, this is ignored.}
+  \item{\dots}{For the constructor, additional arguments to be passed to
+    \code{SummarizedExperiment}; of particular interest are
+    \code{colData} and \code{metadata}. For \code{mapToGenome}, this is
+    ignored.} 
 }
 
 \value{

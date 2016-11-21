@@ -1,3 +1,5 @@
+utils::globalVariables(c("channel"))
+
 logit2 <- function(x) { log2(x) - log2(1-x) }
 
 ilogit2 <- function(x) { 2^(x) / (1+2^(x)) }
@@ -12,15 +14,6 @@ ilogit2 <- function(x) { 2^(x) / (1+2^(x)) }
 .seqnames.order.all <- c(paste0("chr", c(1:22, "X", "Y")), "multi", "unmapped")
 .seqnames.order <- paste0("chr", c(1:22, "X", "Y"))
 
-
-.show.ExpressionSet <- function(object) {
-    cat(class(object), " (storageMode: ", storageMode(object), ")\n", sep = "")
-    cat("assayData:", paste(dim(object)[[1]], "features,", dim(object)[[2]], "samples"), "\n")
-    cat("  element names:",
-        paste(assayDataElementNames(object), collapse=", "), "\n")
-    show(phenoData(object))
-}
-    
 .show.annotation <- function(annotation, indent = "  ") {
     cat("Annotation\n")
     if(length(annotation) == 1) {
@@ -180,7 +173,24 @@ ilogit2 <- function(x) { 2^(x) / (1+2^(x)) }
     vector
 }
 
-
+.harmonizeDataFrames <- function(x, y) {
+    stopifnot(is(x, "DataFrame"))
+    stopifnot(is(y, "DataFrame"))
+    x.only <- setdiff(names(x), names(y))
+    y.only <- setdiff(names(y), names(x))
+    if(length(x.only) > 0) {
+        df.add <- x[1,x.only]
+        is.na(df.add[1,]) <- TRUE
+        y <- cbind(y, df.add)
+    }
+    if(length(y.only) > 0) {
+        df.add <- y[1,y.only]
+        is.na(df.add[1,]) <- TRUE
+        x <- cbind(x, df.add)
+    }
+    list(x = x, y = y[, names(x)])
+}
+    
 getMethSignal <- function(object, what = c("Beta", "M"), ...) {
     what <- match.arg(what)
     switch(what,
@@ -191,10 +201,10 @@ getMethSignal <- function(object, what = c("Beta", "M"), ...) {
 
 .pDataAdd <- function(object, df) {
     stopifnot(is(df, "data.frame") || is(df, "DataFrame"))
-    pD <- pData(object)
+    pD <- colData(object)
     if(any(names(df) %in% names(pD))) {
         alreadyPresent <- intersect(names(df), names(pD))
-        warning(sprintf("replacing the following columns in pData(object): %s",
+        warning(sprintf("replacing the following columns in colData(object): %s",
                         paste(alreadyPresent, collapse = ", ")))
         pD[, alreadyPresent] <- df[, alreadyPresent]
         df <- df[, ! names(df) %in% alreadyPresent]
@@ -205,7 +215,7 @@ getMethSignal <- function(object, what = c("Beta", "M"), ...) {
         pD <- cbind(pD, df)
         rownames(pD) <- rownam
     }
-    pData(object) <- pD
+    colData(object) <- pD
     object
 }
 

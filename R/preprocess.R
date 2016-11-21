@@ -2,7 +2,7 @@ preprocessRaw <- function(rgSet) {
     .isRGOrStop(rgSet)
     locusNames <- getManifestInfo(rgSet, "locusNames")
     M <- matrix(NA_real_, ncol = ncol(rgSet), nrow = length(locusNames),
-                dimnames = list(locusNames, sampleNames(rgSet)))
+                dimnames = list(locusNames, colnames(rgSet)))
     U <- M
     TypeII.Name <- getProbeInfo(rgSet, type = "II")$Name
     M[TypeII.Name,] <- getGreen(rgSet)[getProbeInfo(rgSet, type = "II")$AddressA,]
@@ -13,8 +13,8 @@ preprocessRaw <- function(rgSet) {
     M[TypeI.Green$Name,] <- getGreen(rgSet)[TypeI.Green$AddressB,]
     U[TypeI.Red$Name,] <- getRed(rgSet)[TypeI.Red$AddressA,]
     U[TypeI.Green$Name,] <- getGreen(rgSet)[TypeI.Green$AddressA,]
-    out <- MethylSet(Meth = M, Unmeth = U, phenoData = phenoData(rgSet),
-                     annotation = annotation(rgSet))
+    out <- MethylSet(Meth = M, Unmeth = U, colData = colData(rgSet),
+                     annotation = annotation(rgSet), metadata = metadata(rgSet))
     ## TODO:
     ## The manifest package version is currently not updated since 'packageVersion(getManifest(rgSet))' fails.          
     ## packageVersion expects a string
@@ -49,8 +49,8 @@ normalize.illumina.control <- function(rgSet, reference=1) {
     Red.factor <- ref/Red.avg
     Green <- sweep(Green, 2, FUN = "*", Green.factor)
     Red <- sweep(Red, 2, FUN = "*", Red.factor)
-    assayDataElement(rgSet, "Green") <- Green
-    assayDataElement(rgSet, "Red") <- Red
+    assay(rgSet, "Green") <- Green
+    assay(rgSet, "Red") <- Red
     rgSet
 }
 
@@ -68,8 +68,8 @@ bgcorrect.illumina <- function(rgSet) {
     Red.bg <- apply(Red[NegControls, , drop = FALSE], 2, function(xx) sort(xx)[31])
     Green <- pmax(sweep(Green, 2, Green.bg), 0)
     Red <- pmax(sweep(Red, 2, Red.bg), 0)
-    assayDataElement(rgSet, "Green") <- Green
-    assayDataElement(rgSet, "Red") <- Red
+    assay(rgSet, "Green") <- Green
+    assay(rgSet, "Red") <- Red
     rgSet
 }
 
@@ -103,7 +103,7 @@ detectionP <- function(rgSet, type = "m+u") {
     .isRGOrStop(rgSet)
     locusNames <- getManifestInfo(rgSet, "locusNames")
     detP <- matrix(NA_real_, ncol = ncol(rgSet), nrow = length(locusNames),
-                   dimnames = list(locusNames, sampleNames(rgSet)))
+                   dimnames = list(locusNames, colnames(rgSet)))
 
     controlIdx <- getControlAddress(rgSet, controlType = "NEGATIVE")   
     r <- getRed(rgSet)

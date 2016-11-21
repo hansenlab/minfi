@@ -60,37 +60,27 @@ read.metharray <- function(basenames, extended = FALSE, verbose = FALSE, force =
     if(!sameLength && sameArray && !force) {
         stop("[read.metharray] Trying to parse IDAT files with different array size but seemingly all of the same type.\n  You can force this by 'force=TRUE', see the man page ?read.metharray")
     }
-    ## if(sameLength) {
-    ##     GreenMean <- do.call(cbind, lapply(G.idats, function(xx) xx$Quants[, "Mean"]))
-    ##     RedMean <- do.call(cbind, lapply(R.idats, function(xx) xx$Quants[, "Mean"]))
-    ##     if(extended) {
-    ##         GreenSD <- do.call(cbind, lapply(G.idats, function(xx) xx$Quants[, "SD"]))
-    ##         RedSD <- do.call(cbind, lapply(R.idats, function(xx) xx$Quants[, "SD"]))
-    ##         NBeads <- do.call(cbind, lapply(G.idats, function(xx) xx$Quants[, "NBeads"]))
-    ##     }
-    ## } else {
-        commonAddresses <- as.character(Reduce("intersect", lapply(G.idats, function(xx) rownames(xx$Quants))))
-        GreenMean <- do.call(cbind, lapply(G.idats, function(xx) xx$Quants[commonAddresses, "Mean"]))
-        RedMean <- do.call(cbind, lapply(R.idats, function(xx) xx$Quants[commonAddresses, "Mean"]))
-        if(extended) {
-            GreenSD <- do.call(cbind, lapply(G.idats, function(xx) xx$Quants[commonAddresses, "SD"]))
-            RedSD <- do.call(cbind, lapply(R.idats, function(xx) xx$Quants[commonAddresses, "SD"]))
-            NBeads <- do.call(cbind, lapply(G.idats, function(xx) xx$Quants[commonAddresses, "NBeads"]))
-        }
-    ## }
+    commonAddresses <- as.character(Reduce("intersect", lapply(G.idats, function(xx) rownames(xx$Quants))))
+    GreenMean <- do.call(cbind, lapply(G.idats, function(xx) xx$Quants[commonAddresses, "Mean"]))
+    RedMean <- do.call(cbind, lapply(R.idats, function(xx) xx$Quants[commonAddresses, "Mean"]))
+    if(extended) {
+        GreenSD <- do.call(cbind, lapply(G.idats, function(xx) xx$Quants[commonAddresses, "SD"]))
+        RedSD <- do.call(cbind, lapply(R.idats, function(xx) xx$Quants[commonAddresses, "SD"]))
+        NBeads <- do.call(cbind, lapply(G.idats, function(xx) xx$Quants[commonAddresses, "NBeads"]))
+    }
     ptime2 <- proc.time()
     stime <- (ptime2 - ptime1)[3]
     if(verbose) message("done in", stime, "seconds\n")
     if(verbose) message("[read.metharray] Instantiating final object ... ")
     ptime1 <- proc.time()
     if(extended) {
-        out <- new("RGChannelSetExtended", Red = RedMean, Green = GreenMean,
-                   RedSD = RedSD, GreenSD = GreenSD, NBeads = NBeads)
+        out <- RGChannelSetExtended(Red = RedMean, Green = GreenMean,
+                                    RedSD = RedSD, GreenSD = GreenSD, NBeads = NBeads)
     } else {
-        out <- new("RGChannelSet", Red = RedMean, Green = GreenMean)
+        out <- RGChannelSet(Red = RedMean, Green = GreenMean)
     }
-    featureNames(out) <- rownames(G.idats[[1]]$Quants)
-    annotation(out) <- c(array = arrayTypes[1,1], annotation = arrayTypes[1,2])
+    rownames(out) <- rownames(G.idats[[1]]$Quants)
+    out@annotation <- c(array = arrayTypes[1,1], annotation = arrayTypes[1,2])
     ptime2 <- proc.time()
     stime <- (ptime2 - ptime1)[3]
     if(verbose) message("done in", stime, "seconds\n")
@@ -184,8 +174,8 @@ read.metharray.exp <- function(base = NULL, targets = NULL, extended = FALSE,
         rgSet <- read.metharray(files, extended = extended, verbose = verbose, force = force)
         pD <- targets
         pD$filenames <- files
-        rownames(pD) <- sampleNames(rgSet)
-        pData(rgSet) <- pD
+        rownames(pD) <- colnames(rgSet)
+        colData(rgSet) <- as(pD, "DataFrame")
         return(rgSet)
     }
     ## Now we just read all files in the directory

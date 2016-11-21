@@ -120,11 +120,11 @@ getAnnotation <- function(object, what = "everything", lociNames = NULL,
     }
     if(is(object, "MethylSet") || is(object, "RatioSet") ||
        is(object, "GenomicMethylSet") || is(object, "GenomicRatioSet")) {
-        fNames <- featureNames(object)
+        rNames <- rownames(object)
         if(is.null(lociNames))
-            lociNames <- fNames[fNames %in% rownames(out)]
+            lociNames <- rNames[rNames %in% rownames(out)]
         else
-            lociNames <- fNames[fNames %in% lociNames]
+            lociNames <- rNames[rNames %in% lociNames]
     }
     if(!is.null(lociNames))
         out <- out[match(lociNames, rownames(out)),]

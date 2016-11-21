@@ -4,13 +4,21 @@
 \alias{RatioSet-class}
 \alias{RatioSet}
 %%methods
+\alias{show,RatioSet-method}
+\alias{preprocessMethod,RatioSet-method}
+\alias{annotation,RatioSet-method}
+\alias{annotation<-,RatioSet,ANY-method}
 \alias{getBeta,RatioSet-method}
 \alias{getM,RatioSet-method}
 \alias{getCN,RatioSet-method}
-\alias{preprocessMethod,RatioSet-method}
-\alias{show,RatioSet-method}
-\alias{initialize,RatioSet-method}
 \alias{combine,RatioSet,RatioSet-method}
+%% eSet-methods
+\alias{pData,RatioSet-method}
+\alias{pData<-,RatioSet,DataFrame-method}
+\alias{sampleNames,RatioSet-method}
+\alias{sampleNames<-,RatioSet,ANY-method}
+\alias{featureNames,RatioSet-method}
+\alias{featureNames<-,RatioSet-method}
 
 \title{RatioSet instances}
 
@@ -22,7 +30,8 @@
 \usage{
 ## Constructor
 
-RatioSet(Beta = NULL, M = NULL, CN = NULL,  \dots)
+RatioSet(Beta = NULL, M = NULL, CN = NULL,
+        annotation = "", preprocessMethod = "", ...)
 
 ## Data extraction / Accessors
 
@@ -30,6 +39,10 @@ RatioSet(Beta = NULL, M = NULL, CN = NULL,  \dots)
 \S4method{getM}{RatioSet}(object)
 \S4method{getCN}{RatioSet}(object)
 \S4method{preprocessMethod}{RatioSet}(object)
+\S4method{annotation}{RatioSet}(object)
+\S4method{pData}{RatioSet}(object)
+\S4method{sampleNames}{RatioSet}(object)
+\S4method{featureNames}{RatioSet}(object)
 }
 
 \arguments{
@@ -40,10 +53,13 @@ RatioSet(Beta = NULL, M = NULL, CN = NULL,  \dots)
     with each row being a methylation loci and each column a sample.}
   \item{CN}{An optional matrix of copy number estimates
     with each row being a methylation loci and each column a sample.}
-  \item{\dots}{For the constructor: additional objects passes to the
-    \code{eSet} constructor, particular a \code{phenoData} slot.  For
-    \code{getM} these values gets passed onto \code{getBeta}.}
-  
+    \item{annotation}{An annotation string, optional.}
+  \item{preprocessMethod}{A \code{character}, optional.}
+  \item{\dots}{For the constructor, additional arguments to be passed to
+    \code{SummarizedExperiment}; of particular interest are
+    \code{colData}, \code{rowData} and \code{metadata}.
+    For \code{getM} these values gets passed onto
+    \code{getBeta}.} 
 }
 
 \value{
@@ -88,7 +104,7 @@ arguments outlined above.
   In the following code, \code{object} is a \code{RatioSet}.
   
   \describe{
-    \item{\code{combine}:}{Combines two different \code{MethylSet},
+    \item{\code{combine}:}{Combines two different \code{RatioSet},
       eventually using the \code{combine} method for \code{eSet}.}
   }
 }

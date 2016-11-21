@@ -79,7 +79,7 @@ makeGenomicRatioSetFromMatrix <- function(mat,rownames=NULL,
                                Beta=mat[ind1,,drop=FALSE],
                                M =NULL,
                                CN=NULL,
-                               pData=pData,
+                               colData=pData,
                                annotation=c(array=array,annotation=annotation),
                                preprocessMethod=preprocessing)
     } else {
@@ -87,7 +87,7 @@ makeGenomicRatioSetFromMatrix <- function(mat,rownames=NULL,
                                Beta=NULL,
                                M=mat[ind1,,drop=FALSE],
                                CN=NULL,
-                               pData=pData,
+                               colData=pData,
                                annotation=c(array=array,annotation=annotation),
                                preprocessMethod=preprocessing)
     }
@@ -137,7 +137,7 @@ getGenomicRatioSetFromGEO <- function(GSE=NULL,path=NULL,
         
     ##we could call makeGenomicRatioSetFromMatrix but rewrite to
     ##avoide  a copy of exprs(gset)
-    common <- intersect(locusNames,fData(gset)$Name)
+    common <- intersect(locusNames, fData(gset)$Name)
     if(length(common)==0)
         stop("No rowname matches. 'rownames' need to match IlluminaHumanMethylation450k probe names.")
     ##Note we give no warning if some rownames have no match
