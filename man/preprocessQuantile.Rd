@@ -16,7 +16,7 @@
 preprocessQuantile(object, fixOutliers = TRUE, removeBadSamples = FALSE,
                    badSampleCutoff = 10.5, quantileNormalize = TRUE,
                    stratified = TRUE, mergeManifest = FALSE, sex = NULL,
-                   verbose = TRUE)
+                   method = c("v1", "v2"), verbose = TRUE)
 }
 \arguments{
   \item{object}{An object of class \code{RGChannelSet} or
@@ -32,6 +32,7 @@ preprocessQuantile(object, fixOutliers = TRUE, removeBadSamples = FALSE,
   \item{mergeManifest}{Should the information in the associated manifest
     package be merged into the output object?}
   \item{sex}{Gender}
+  \item{method}{Which variant of preprocessQuantile should be used?}
   \item{verbose}{Should the function be verbose?}
 }
 \details{

@@ -13,6 +13,9 @@
     pData, sampleNames, featureNames methods still work, we recommend
     (at least for package writers) to move to colData, colnames and
     rownames.
+    \item Added method argument to preprocessQuantile, defaulting to the
+    old method, as per discussion on Bioc support.  This effectively
+    reverts the behaviour of preprocessQuantile.
   }
 }
 
