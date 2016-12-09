@@ -47,7 +47,7 @@ test_preprocessQuantile <- function() {
     stopifnot(require(minfiData))
     stopifnot(require(digest))
     load(file.path(path.package("minfi"), "unitTests", "digest_preprocessQuantile.rda"))
-    GRset <- preprocessQuantile(MsetEx)
+    GRset <- preprocessQuantile(MsetEx, method = "v2")
     checkEquals(digest_preprocessQuantile$M,
                 minfi:::.digestMatrix(getM(GRset)))
     checkEquals(digest_preprocessQuantile$CN,
