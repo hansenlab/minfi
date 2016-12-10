@@ -1,8 +1,7 @@
 preprocessQuantile <- function(object, fixOutliers=TRUE,
                                removeBadSamples=FALSE, badSampleCutoff=10.5,
                                quantileNormalize=TRUE, stratified=TRUE,
-                               mergeManifest=FALSE, sex=NULL,
-                               method = c("v1", "v2"), verbose=TRUE){
+                               mergeManifest=FALSE, sex=NULL, verbose=TRUE){
     ## We could use [Genomic]MethylSet if the object has been processed with preprocessRaw()
     if(! (is(object, "RGChannelSet") || is(object, "MethylSet") ||
           is(object, "GenomicMethylSet") ))
@@ -12,9 +11,8 @@ preprocessQuantile <- function(object, fixOutliers=TRUE,
         warning("preprocessQuantile has only been tested with 'preprocessRaw'")
     if (!is.null(sex))
         sex <- .checkSex(sex)
-    method <- match.arg(method)
     
-    if(verbose) message("[preprocessQuantile] Mapping to genome.\n")
+    if(verbose) message("[preprocessQuantile] Mapping to genome.")
     object <- mapToGenome(object, mergeManifest = mergeManifest)
     
     if (.is27k(object) && stratified) {
@@ -23,7 +21,7 @@ preprocessQuantile <- function(object, fixOutliers=TRUE,
     }
     
     if(fixOutliers){
-        if(verbose) message("[preprocessQuantile] Fixing outliers.\n")
+        if(verbose) message("[preprocessQuantile] Fixing outliers.")
         object <- fixMethOutliers(object)
     }
     qc <- getQC(object)
@@ -31,7 +29,7 @@ preprocessQuantile <- function(object, fixOutliers=TRUE,
     keepIndex <- which(meds > badSampleCutoff)
     if(length(keepIndex) == 0 && removeBadSamples) stop("All samples found to be bad")
     if(length(keepIndex) < ncol(object) && removeBadSamples) {
-        if(verbose) message(sprintf("[preprocessQuantile] Found and removed %s bad samples.\n",
+        if(verbose) message(sprintf("[preprocessQuantile] Found and removed %s bad samples.",
                                 ncol(object) - length(keepIndex)))
         object <- object[, keepIndex]
     }
@@ -46,18 +44,22 @@ preprocessQuantile <- function(object, fixOutliers=TRUE,
     auIndex <- which(seqnames(object) %in% paste0("chr", 1:22))
 
     if(quantileNormalize){
-        if(verbose) message("[preprocessQuantile] Quantile normalizing.\n")
+        if(verbose) message("[preprocessQuantile] Quantile normalizing.")
         if (!stratified) {
-            U <- .qnormNotStratified(getUnmeth(object), auIndex, xIndex, yIndex, sex)
-            M <- .qnormNotStratified(getMeth(object), auIndex, xIndex, yIndex, sex)
+            U <- .qnormNotStratified(mat = getUnmeth(object), auIndex = auIndex,
+                                     xIndex = xIndex, yIndex = yIndex, sex = sex)
+            M <- .qnormNotStratified(mat = getMeth(object), auIndex = auIndex,
+                                     xIndex = xIndex, yIndex = yIndex, sex = sex)
         } else {
             probeType <- getProbeType(object)
             regionType <- getIslandStatus(object)
             regionType[regionType %in% c("Shelf", "OpenSea")] <- "Far"
-            U <- .qnormStratified(getUnmeth(object), auIndex,
-                                  xIndex, yIndex, sex, probeType, regionType, method = method)
-            M <- .qnormStratified(getMeth(object), auIndex,
-                                  xIndex, yIndex, sex, probeType, regionType, method = method)
+            U <- .qnormStratified(mat = getUnmeth(object), auIndex = auIndex,
+                                  xIndex = xIndex, yIndex = yIndex, sex = sex,
+                                  probeType = probeType, regionType = regionType)
+            M <- .qnormStratified(mat = getMeth(object), auIndex = auIndex,
+                                  xIndex = xIndex, yIndex = yIndex, sex = sex,
+                                  probeType = probeType, regionType = regionType)
         }
     } else {
         U <- getUnmeth(object)
@@ -92,8 +94,9 @@ preprocessQuantile <- function(object, fixOutliers=TRUE,
     return(mat)
 }
 
-.qnormStratified <- function(mat, auIndex, xIndex, yIndex, sex=NULL, probeType, regionType, method){
-    mat[auIndex,] <- .qnormStratifiedHelper(mat[auIndex,], probeType[auIndex], regionType[auIndex])
+.qnormStratified <- function(mat, auIndex, xIndex, yIndex, sex=NULL, probeType, regionType){
+    mat[auIndex,] <- .qnormStratifiedHelper(mat = mat[auIndex,], probeType = probeType[auIndex],
+                                            regionType = regionType[auIndex])
     if(!is.null(sex)) {
         sexIndexes <- split(1:ncol(mat), sex)
     } else {
@@ -103,38 +106,37 @@ preprocessQuantile <- function(object, fixOutliers=TRUE,
     sexIndexes <- sexIndexes[sapply(sexIndexes, length) > 1]
     for(idxes in sexIndexes) {
         mat[c(xIndex, yIndex), idxes] <- .qnormStratifiedHelper(
-            mat[c(xIndex, yIndex), idxes, drop=FALSE],
-            probeType[c(xIndex, yIndex)],
-            regionType[c(xIndex, yIndex)], method = method)
+            mat = mat[c(xIndex, yIndex), idxes, drop=FALSE],
+            probeType = probeType[c(xIndex, yIndex)],
+            regionType = regionType[c(xIndex, yIndex)])
     }
     return(mat)
 }
 
-.qnormStratifiedHelper <- function(mat, probeType, regionType, method = "v1") {
+.qnormStratifiedHelper <- function(mat, probeType, regionType) {
     if(ncol(mat) == 1)
         return(mat)
     if(length(probeType) != length(regionType))
         stop("length of 'probeType' and 'regionType' needs to be the same.")
     if(nrow(mat) != length(probeType))
         stop("'mat' needs to have as many rows as entries in 'probeType'")
-    stopifnot(method %in% c("v1", "v2"))
     regionTypes <- unique(regionType)
     for(i in seq(along=regionTypes)){
         inRegion <- (regionType == regionTypes[i])
         Index1 <- which(inRegion & probeType == "I")
         Index2 <- which(inRegion & probeType == "II")
         mat[Index2,] <- preprocessCore::normalize.quantiles(mat[Index2,])
-        if(method == "v1") {
-            target <- approx(seq(along=Index2), sort(mat[Index2,1]),
-                             seq(1,length(Index2), length.out=length(Index1)))$y
-        }
-        if(method == "v2") {
-            target <- approx(seq(along=Index2), sort(mat[Index2,1]),
-                             seq(from = min(mat[Index2,1]), to = max(mat[Index2,1]),
-                                 length.out=length(Index1)))$y
-        }
-        mat[Index1,] <- preprocessCore::normalize.quantiles.use.target(mat[Index1,,drop=FALSE],
-                                                                       target)
+        ## The following code is easy to understand, but we are not using it
+        ##   because we want the results to stay stable.  It gives almost the
+        ##   same results as the code below.
+        ##
+        ## mat[Index1,] <- preprocessCore::normalize.quantiles.use.target(
+        ##                                     mat[Index1,,drop=FALSE],
+        ##                                     mat[Index2,1,drop=TRUE])
+        target <- approx(seq(along = Index2), sort(mat[Index2, 1]),
+                         seq(1, length(Index2), length.out = length(Index1)))$y
+        mat[Index1, ] <- preprocessCore::normalize.quantiles.use.target(
+                                             mat[Index1, ,drop = FALSE], target)
     }
     return(mat)
 }
