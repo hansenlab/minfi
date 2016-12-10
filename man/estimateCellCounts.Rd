@@ -12,7 +12,9 @@ of lymphocytes, monocytes, B-cells, and neutrophils.
 estimateCellCounts(rgSet, compositeCellType = "Blood",
                    processMethod = "auto", probeSelect = "auto",
                    cellTypes = c("CD8T","CD4T", "NK","Bcell","Mono","Gran"),
-                   referencePlatform = c("IlluminaHumanMethylation450k", "IlluminaHumanMethylationEPIC", "IlluminaHumanMethylation27k"),
+                   referencePlatform = c("IlluminaHumanMethylation450k",
+                                         "IlluminaHumanMethylationEPIC",
+                                         "IlluminaHumanMethylation27k"),
                    returnAll = FALSE, meanPlot = FALSE, verbose = TRUE, \dots)
 }
 \arguments{
