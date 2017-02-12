@@ -41,12 +41,12 @@ controlStripPlot <- function(rgSet, controls=c("BISULFITE CONVERSION I", "BISULF
         ctrlAddress <- getControlAddress(rgSet, controlType = controlType)
         
         ## Red channel
-        ctlWide <- log2(r[ctrlAddress,])
+        ctlWide <- log2(r[ctrlAddress,,drop=FALSE])
         if (!is.null(sampNames)) colnames(ctlWide) <- sampNames
         ctlR <- melt(ctlWide, varnames=c("address", "sample"))
         
         ## Green channel
-        ctlWide <- log2(g[ctrlAddress,])
+        ctlWide <- log2(g[ctrlAddress,,drop=FALSE])
         if (!is.null(sampNames)) colnames(ctlWide) <- sampNames
         ctlG<- melt(ctlWide, varnames=c("address", "sample"))
         

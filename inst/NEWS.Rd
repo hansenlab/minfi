@@ -17,6 +17,8 @@
     for version 1.19. Our fix was wrong; the original code did not have
     a bug. Thanks to users who reported issues with the function
     (Frederic Fournier and David Martino).
+    \item bugfix for getSnpBeta for subsetted (and combined)
+    RGChannelSets (reported and diagnosed by Warren Cheung).
   }
 }
 
