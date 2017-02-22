@@ -210,7 +210,6 @@ noobPipeline <- function(rgSet, pCutoff=0.01) {
   pval <- detectionP(rgSet)
   grSet <- mapToGenome(ratioConvert(preprocessNoob(rgSet)))
   is.na(assays(grSet)$Beta) <- pval[rownames(grSet),] >= pCutoff 
-  grSet$predictedSex <- getSex(grSet)$predictedSex
   metadata(grSet)$SNPs <- getSnpBeta(rgSet)
   return(grSet)
 }
