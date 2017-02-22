@@ -1,5 +1,6 @@
 \name{preprocessNoob}
 \alias{preprocessNoob}
+\alias{noobPipeline}
 \title{
   The Noob/ssNoob preprocessing method for Infinium methylation microarrays.
 }
@@ -10,6 +11,8 @@
 \usage{
 preprocessNoob(rgSet, offset = 15, dyeCorr = TRUE, verbose = TRUE,
                dyeMethod=c("single", "reference"))
+
+noobPipeline(rgSet, pCutoff = 0.01)
 }
 \arguments{
   \item{rgSet}{An object of class \code{RGChannelSet}.}
@@ -17,9 +20,11 @@ preprocessNoob(rgSet, offset = 15, dyeCorr = TRUE, verbose = TRUE,
   \item{dyeCorr}{Should dye correction be done?}
   \item{verbose}{Should the function be verbose?}
   \item{dyeMethod}{How should dye bias correction be done: use a single sample approach (ssNoob), or a reference array?}
+  \item{pCutoff}{(for noobPipeline) Above what detection pvalue should probes be marked NA? (0.01)}
 }
 \value{
-  An object of class \code{MethylSet}.
+  For preprocessNoob, an object of class \code{MethylSet}.
+  For noobPipeline, an object of class \code{GenomicRatioSet} with SNP metadata.
 }
 \references{
   TJ Triche, DJ Weisenberger, D Van Den Berg, PW Laird and KD Siegmund
@@ -42,6 +47,7 @@ if (require(minfiData)) {
   ## RGsetEx.sub is a small subset of RGsetEx; 
   ## only used for computational speed.
   MsetEx.sub.noob <- preprocessNoob(RGsetEx.sub)
+  grSet.sub.noob <- noobPipeline(RGsetEx.sub)
 }
 \dontrun{
 if (require(minfiData)) {
