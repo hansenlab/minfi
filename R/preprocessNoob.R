@@ -207,7 +207,7 @@ normexp.get.xcs <- function(xcf, params){
 
 # a "best practices" baseline for reading IDATs
 noobPipeline <- function(rgSet, pCutoff=0.01) {
-  pvals <- detectionP(rgSet)
+  pval <- detectionP(rgSet)
   grSet <- mapToGenome(ratioConvert(preprocessNoob(rgSet)))
   is.na(assays(grSet)$Beta) <- pval[rownames(grSet),] >= pCutoff 
   grSet$predictedSex <- getSex(grSet)$predictedSex
