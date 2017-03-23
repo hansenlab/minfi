@@ -58,9 +58,10 @@
   \item{algorithm}{A list detailing the arguments supplied to the function.}
 }
 \references{
-  SV Andrews, C Ladd-Acosta, KD Hansen, AP Feinberg, MD Fallin.
+  SV Andrews, C Ladd-Acosta, AP Feinberg, KD Hansen, MD Fallin.
   \emph{\sQuote{Gap hunting} to identify multimodal distributions of DNA methylation.}
-  bioRxiv (2016). doi:\href{http://dx.doi.org/10.1101/059659}{10.1101/059659}.
+  Epigenetics & Chromatin (2016) 9:56.
+  doi:\href{http://dx.doi.org/10.1186/s13072-016-0107-z}.
 }
 \author{
   Shan V. Andrews \email{sandre17@jhu.edu}.
