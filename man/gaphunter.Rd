@@ -61,7 +61,7 @@
   SV Andrews, C Ladd-Acosta, AP Feinberg, KD Hansen, MD Fallin.
   \emph{\sQuote{Gap hunting} to characterize clustered probe signals in Illumina methylation array data.}
   Epigenetics & Chromatin (2016) 9:56.
-  doi:\href{http://dx.doi.org/10.1186/s13072-016-0107-z}.
+  doi:\href{http://dx.doi.org/10.1186/s13072-016-0107-z}{10.1186/s13072-016-0107-z}.
 }
 \author{
   Shan V. Andrews \email{sandre17@jhu.edu}.
