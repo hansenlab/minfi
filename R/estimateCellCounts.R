@@ -44,7 +44,7 @@ estimateCellCounts <- function (rgSet, compositeCellType = "Blood", processMetho
                         stringsAsFactors = FALSE)
     referencePd <- colData(referenceRGset)
     combinedRGset <- combineArrays(rgSet, referenceRGset, outType = "IlluminaHumanMethylation450k")
-    colData(combinedRGset) <- newpd
+    colData(combinedRGset) <- DataFrame(newpd)
     colnames(combinedRGset) <- newpd$sampleNames
     rm(referenceRGset)
     
@@ -75,7 +75,7 @@ estimateCellCounts <- function (rgSet, compositeCellType = "Blood", processMetho
     
     if(verbose) message("[estimateCellCounts] Estimating composition.\n")
     counts <- projectCellType(getBeta(mSet)[rownames(coefs), ], coefs)
-    rownames(counts) <- rownames(rgSet)
+    rownames(counts) <- colnames(rgSet)
     
     if (meanPlot) {
         smeans <- compData$sampleMeans
