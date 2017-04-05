@@ -38,13 +38,13 @@ estimateCellCounts <- function (rgSet, compositeCellType = "Blood", processMetho
         probeSelect <- "both"}
     
     if(verbose) message("[estimateCellCounts] Combining user data with reference (flow sorted) data.\n")
-    newpd <- data.frame(sampleNames = c(colnames(rgSet), colnames(referenceRGset)),
-                        studyIndex = rep(c("user", "reference"),
-                                         times = c(ncol(rgSet), ncol(referenceRGset))),
-                        stringsAsFactors = FALSE)
+    newpd <- DataFrame(sampleNames = c(colnames(rgSet), colnames(referenceRGset)),
+                       studyIndex = rep(c("user", "reference"),
+                                        times = c(ncol(rgSet), ncol(referenceRGset))),
+                       stringsAsFactors = FALSE)
     referencePd <- colData(referenceRGset)
     combinedRGset <- combineArrays(rgSet, referenceRGset, outType = "IlluminaHumanMethylation450k")
-    colData(combinedRGset) <- DataFrame(newpd)
+    colData(combinedRGset) <- newpd
     colnames(combinedRGset) <- newpd$sampleNames
     rm(referenceRGset)
     
