@@ -101,7 +101,8 @@ batch effects.
   KM Bakulski, JI Feinberg, SV Andrews, J Yang, S Brown, S McKenney, 
   F Witter, J Walston, AP Feinberg, and MD Fallin. 
   \emph{DNA methylation of cord blood cell types: Applications for mixed cell birth studies.}
-  Manuscript in review.
+  Epigenetics (2016) 11:5.
+  doi:\href{http://dx.doi.org/10.1080/15592294.2016.1161875}{10.1080/15592294.2016.1161875}.
 }
 
 \author{
