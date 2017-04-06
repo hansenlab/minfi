@@ -127,6 +127,18 @@ getSnpBeta <- function(object){
     return(beta)                               
 }
 
+getControls <- function(object){
+  .isRG(object)
+  manifest <- getManifest(object)
+  probeInfo=getProbeInfo(manifest, type = "Control")
+  # Next line allow to remove the probes of the manifest but absent from the chip
+  probeInfo=probeInfo[probeInfo$Address %in% rownames(getRed(object)),] 
+  out <- list(info=probeInfo,
+              red=getRed(object)[probeInfo$Address,],
+              grn=getGreen(object)[probeInfo$Address,] )
+  return(out)                             
+}
+
 setMethod("getManifest", signature(object = "RGChannelSet"),
           function(object) {
               maniString <- .getManifestString(object@annotation)
