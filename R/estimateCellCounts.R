@@ -2,6 +2,9 @@ estimateCellCounts <- function (rgSet, compositeCellType = "Blood", processMetho
                                 cellTypes = c("CD8T","CD4T", "NK","Bcell","Mono","Gran"),
                                 referencePlatform = c("IlluminaHumanMethylation450k", "IlluminaHumanMethylationEPIC", "IlluminaHumanMethylation27k"),
                                 returnAll = FALSE, meanPlot = FALSE, verbose=TRUE, ...) {
+    
+    .isRGOrStop(rgSet)
+    rgSet <- as(rgSet, "RGChannelSet")
     referencePlatform <- match.arg(referencePlatform)
     rgPlatform <- sub("IlluminaHumanMethylation", "", annotation(rgSet)[which(names(annotation(rgSet))=="array")])
     platform <- sub("IlluminaHumanMethylation", "", referencePlatform)
