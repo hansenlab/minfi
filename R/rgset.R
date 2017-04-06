@@ -186,3 +186,10 @@ setMethod("combine", signature(x = "RGChannelSet", y = "RGChannelSet"),
     colData(y) <- colDataFix$y
     cbind(x,y)
 })
+                   
+setMethod("coerce", signature(from = "RGChannelSetExtended", to = "RGChannelSet"),
+         function(from, to){
+    assays(from) <- assays(from)[c("Green", "Red")]
+    class(from) <- "RGChannelSet"
+    from
+})
