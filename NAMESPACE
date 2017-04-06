@@ -84,5 +84,5 @@ exportMethods(show, initialize, getBeta, getM, getCN, getMeth, getUnmeth,
               getManifest, annotation, "annotation<-", preprocessMethod,
               combine, mapToGenome, ratioConvert, bumphunter,
               pData, "pData<-", sampleNames, "sampleNames<-",
-              featureNames, "featureNames<-")
+              featureNames, "featureNames<-", coerce)
 
