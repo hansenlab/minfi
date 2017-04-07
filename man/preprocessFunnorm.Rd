@@ -12,7 +12,7 @@
 \usage{
 preprocessFunnorm(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE,
                   dyeCorr = TRUE, keepCN = TRUE, ratioConvert = TRUE,
-                  rbose = TRUE)
+                  verbose = TRUE)
 }
 \arguments{
   \item{rgSet}{An object of class \code{RGChannelSet}.}
