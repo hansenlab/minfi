@@ -29,10 +29,10 @@ Martin Aryee \email{aryee@jhu.edu}.
 \code{\link{qcReport}}, \code{\link{mdsPlot}}, \code{\link{densityPlot}}, \code{\link{densityBeanPlot}}
 }
 \examples{
-## if (require(minfiData)) {
+if (require(minfiData)) {
 
-## names <- pData(RGsetEx)$Sample_Name
-## controlStripPlot(RGsetEx, controls=c("BISULFITE CONVERSION I"), sampNames=names)
+names <- pData(RGsetEx)$Sample_Name
+controlStripPlot(RGsetEx, controls=c("BISULFITE CONVERSION I"), sampNames=names)
 
-## }
+}
 }
