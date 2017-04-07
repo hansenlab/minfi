@@ -25,6 +25,7 @@
 \alias{getRed}
 \alias{getOOB}
 \alias{getSnpBeta}
+\alias{getNBeads}
 
 \title{Class \code{"RGChannelSet"}}
 
@@ -52,6 +53,7 @@ RGChannelSetExtended(Green = new("matrix"), Red = new("matrix"),
 \S4method{getBeta}{RGChannelSet}(object, \dots)
 getGreen(object)
 getRed(object)
+getNBeads(object)
 \S4method{getManifest}{RGChannelSet}(object)
 
 ## Convenience functions
@@ -95,6 +97,8 @@ getSnpBeta(object)
   \describe{
     \item{\code{getGreen}:}{Gets the Green channel as a matrix.}
     \item{\code{getRed}:}{Gets the Red channel as a matrix.}
+    \item{\code{getNBeads}:}{Gets the number of beads as a matrix, this
+      requires an \code{RGChannelSetExtended}.}
     \item{\code{getManifest}:}{Gets the manifest object itself
       associated with the array type}
   }

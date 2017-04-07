@@ -106,6 +106,13 @@ getOOB <- function(object) {
     return(list(Grn = oob.green, Red = oob.red))
 }
 
+getNBeads <- function(object) {
+    if(!is(object, "RGChannelSetExtended"))
+        stop(sprintf("object is of class '%s', but needs to be of class 'RGChannelSetExtended'", class(object)))
+    assay(object, "NBeads")
+}
+
+
 getSnpBeta <- function(object){
     .isRGOrStop(object)
 
