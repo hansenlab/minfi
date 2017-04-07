@@ -19,6 +19,9 @@
     (Frederic Fournier and David Martino).
     \item bugfix for getSnpBeta for subsetted (and combined)
     RGChannelSets (reported and diagnosed by Warren Cheung).
+    \item Accessing the manifest or annotation now fails for an
+    'unknown' array.
+    \item We now support gzipped IDAT files.
   }
 }
 

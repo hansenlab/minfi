@@ -1,7 +1,7 @@
 .guessArrayTypes <- function(nProbes) {
     if(nProbes >= 622000 && nProbes <= 623000) {
         arrayAnnotation <- c(array = "IlluminaHumanMethylation450k", annotation = .default.450k.annotation)
-    } else if(nProbes >= 1052000 && nProbes <= 1053000) {
+    } else if(nProbes >= 1050000 && nProbes <= 1053000) {
         ## "Current EPIC scan type"
         arrayAnnotation <- c(array = "IlluminaHumanMethylationEPIC", annotation = .default.epic.annotation)
     } else if(nProbes >= 1032000 && nProbes <= 1033000) {
@@ -15,19 +15,25 @@
     arrayAnnotation
 }
 
-
-
 read.metharray <- function(basenames, extended = FALSE, verbose = FALSE, force = FALSE) {
-    basenames <- sub("_Grn\\.idat$", "", basenames)
-    basenames <- sub("_Red\\.idat$", "", basenames)
+    basenames <- sub("_Grn\\.idat.*", "", basenames)
+    basenames <- sub("_Red\\.idat.*", "", basenames)
+    stopifnot(!anyDuplicated(basenames))
+    
     G.files <- paste(basenames, "_Grn.idat", sep = "")
     names(G.files) <- basename(basenames)
+    these.dont.exists <- !file.exists(G.files)
+    if(any(these.dont.exists))
+        G.files[these.dont.exists] <- paste0(G.files[these.dont.exists], ".gz")
     if(!all(file.exists(G.files))) {
-        noexits <- G.files[!file.exists(G.files)]
+        noexits <- sub("\\.gz", "", G.files[!file.exists(G.files)])
         stop("The following specified files do not exist:", paste(noexits, collapse = ", "))
     }
     R.files <- paste(basenames, "_Red.idat", sep = "")
     names(R.files) <- basename(basenames)
+    these.dont.exists <- !file.exists(R.files)
+    if(any(these.dont.exists))
+        R.files[these.dont.exists] <- paste0(R.files[these.dont.exists], ".gz")
     if(!all(file.exists(R.files))) {
         noexits <- R.files[!file.exists(G.files)]
         stop("The following specified files do not exist:", paste(noexits, collapse = ", "))
@@ -131,7 +137,7 @@ read.metharray.sheet <- function(base, pattern = "csv$", ignore.case = TRUE,
             allfiles <- list.files(dirname(file), recursive = recursive, full.names = TRUE)
             basenames <- sapply(patterns, function(xx) grep(xx, allfiles, value = TRUE))
             names(basenames) <- NULL
-            basenames <- sub("_Grn\\.idat", "", basenames, ignore.case = TRUE)
+            basenames <- sub("_Grn\\.idat.*", "", basenames, ignore.case = TRUE)
             df$Basename <- basenames
         }
         df

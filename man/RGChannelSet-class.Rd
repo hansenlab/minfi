@@ -12,6 +12,7 @@
 \alias{combine,RGChannelSet,RGChannelSet-method}
 \alias{getBeta,RGChannelSet-method}
 \alias{getManifest,RGChannelSet-method}
+\alias{coerce,RGChannelSetExtended,RGChannelSet-method}
 %% eSet-methods
 \alias{pData,RGChannelSet-method}
 \alias{pData<-,RGChannelSet,DataFrame-method}
@@ -85,6 +86,9 @@ getSnpBeta(object)
   Instances are constructed using the
   \code{RGChannelSet} or \code{RGChannelSetExtended} functions with the
   arguments outlined above.
+
+  \code{as(object, "RGChannelSet")} coerces a
+  \code{RGChannelSetExtended} object into a \code{RGChannelSet}.
 }
 
 \section{Accessors}{
