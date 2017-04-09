@@ -70,6 +70,23 @@ setMethod("getCN", signature(object = "GenomicRatioSet"),
               return(NULL)
           })
 
+# FIXME: enforce something a bit less lackadaisical?
+setMethod("getSNPs", signature(object = "GenomicRatioSet"),
+          function (object) {
+              if (!all(colnames(object) %in% colnames(metadata(object)$SNPs))) {
+                missed <- setdiff(colnames(object), 
+                                  colnames(metadata(object)$SNPs))
+                stop("Error: columns for ", paste(missed, sep=", "),
+                     " are missing from metadata(object)$SNPs.")
+              }
+              if ("SNPs" %in% names(metadata(object))) { 
+                return(metadata(object)$SNPs[, colnames(object)])
+              } else {
+                message("No SNPs found in your GenomicRatioSet's metadata.")
+                return(NULL)
+              }
+          })
+
 setMethod("mapToGenome", signature(object = "GenomicRatioSet"),
           function(object, ...) {
               object
