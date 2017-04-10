@@ -47,7 +47,7 @@ importFrom("stats", "approx", "as.formula", "cmdscale", "contrasts",
 export(getManifest, getProbeInfo, getManifestInfo,
        IlluminaMethylationManifest, IlluminaMethylationAnnotation,
        getControlAddress, 
-       getRed, getGreen, getMeth, getUnmeth,
+       getRed, getGreen, getNBeads, getMeth, getUnmeth,
        getBeta, getM, getCN, getMethSignal,
        getOOB, getSnpBeta,
        dropMethylationLoci, getLocations, getAnnotation,
@@ -84,5 +84,5 @@ exportMethods(show, initialize, getBeta, getM, getCN, getMeth, getUnmeth,
               getManifest, annotation, "annotation<-", preprocessMethod,
               combine, mapToGenome, ratioConvert, bumphunter,
               pData, "pData<-", sampleNames, "sampleNames<-",
-              featureNames, "featureNames<-")
+              featureNames, "featureNames<-", coerce)
 

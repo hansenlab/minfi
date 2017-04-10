@@ -12,6 +12,7 @@
 \alias{combine,RGChannelSet,RGChannelSet-method}
 \alias{getBeta,RGChannelSet-method}
 \alias{getManifest,RGChannelSet-method}
+\alias{coerce,RGChannelSetExtended,RGChannelSet-method}
 %% eSet-methods
 \alias{pData,RGChannelSet-method}
 \alias{pData<-,RGChannelSet,DataFrame-method}
@@ -24,6 +25,7 @@
 \alias{getRed}
 \alias{getOOB}
 \alias{getSnpBeta}
+\alias{getNBeads}
 
 \title{Class \code{"RGChannelSet"}}
 
@@ -51,6 +53,7 @@ RGChannelSetExtended(Green = new("matrix"), Red = new("matrix"),
 \S4method{getBeta}{RGChannelSet}(object, \dots)
 getGreen(object)
 getRed(object)
+getNBeads(object)
 \S4method{getManifest}{RGChannelSet}(object)
 
 ## Convenience functions
@@ -85,12 +88,17 @@ getSnpBeta(object)
   Instances are constructed using the
   \code{RGChannelSet} or \code{RGChannelSetExtended} functions with the
   arguments outlined above.
+
+  \code{as(object, "RGChannelSet")} coerces a
+  \code{RGChannelSetExtended} object into a \code{RGChannelSet}.
 }
 
 \section{Accessors}{
   \describe{
     \item{\code{getGreen}:}{Gets the Green channel as a matrix.}
     \item{\code{getRed}:}{Gets the Red channel as a matrix.}
+    \item{\code{getNBeads}:}{Gets the number of beads as a matrix, this
+      requires an \code{RGChannelSetExtended}.}
     \item{\code{getManifest}:}{Gets the manifest object itself
       associated with the array type}
   }

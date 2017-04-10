@@ -2,6 +2,9 @@ estimateCellCounts <- function (rgSet, compositeCellType = "Blood", processMetho
                                 cellTypes = c("CD8T","CD4T", "NK","Bcell","Mono","Gran"),
                                 referencePlatform = c("IlluminaHumanMethylation450k", "IlluminaHumanMethylationEPIC", "IlluminaHumanMethylation27k"),
                                 returnAll = FALSE, meanPlot = FALSE, verbose=TRUE, ...) {
+    
+    .isRGOrStop(rgSet)
+    rgSet <- as(rgSet, "RGChannelSet")
     referencePlatform <- match.arg(referencePlatform)
     rgPlatform <- sub("IlluminaHumanMethylation", "", annotation(rgSet)[which(names(annotation(rgSet))=="array")])
     platform <- sub("IlluminaHumanMethylation", "", referencePlatform)
@@ -38,10 +41,10 @@ estimateCellCounts <- function (rgSet, compositeCellType = "Blood", processMetho
         probeSelect <- "both"}
     
     if(verbose) message("[estimateCellCounts] Combining user data with reference (flow sorted) data.\n")
-    newpd <- data.frame(sampleNames = c(colnames(rgSet), colnames(referenceRGset)),
-                        studyIndex = rep(c("user", "reference"),
-                                         times = c(ncol(rgSet), ncol(referenceRGset))),
-                        stringsAsFactors = FALSE)
+    newpd <- DataFrame(sampleNames = c(colnames(rgSet), colnames(referenceRGset)),
+                       studyIndex = rep(c("user", "reference"),
+                                        times = c(ncol(rgSet), ncol(referenceRGset))),
+                       stringsAsFactors = FALSE)
     referencePd <- colData(referenceRGset)
     combinedRGset <- combineArrays(rgSet, referenceRGset, outType = "IlluminaHumanMethylation450k")
     colData(combinedRGset) <- newpd
@@ -75,7 +78,7 @@ estimateCellCounts <- function (rgSet, compositeCellType = "Blood", processMetho
     
     if(verbose) message("[estimateCellCounts] Estimating composition.\n")
     counts <- projectCellType(getBeta(mSet)[rownames(coefs), ], coefs)
-    rownames(counts) <- rownames(rgSet)
+    rownames(counts) <- colnames(rgSet)
     
     if (meanPlot) {
         smeans <- compData$sampleMeans
