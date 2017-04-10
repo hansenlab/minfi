@@ -79,10 +79,15 @@ setMethod("getSNPs", signature(object = "GenomicRatioSet"),
                 stop("Error: columns for ", paste(missed, sep=", "),
                      " are missing from metadata(object)$SNPs.")
               }
-              if ("SNPs" %in% names(metadata(object))) { 
+              if ("SNPs" %in% names(metadata(object))) {
+                if (!identical(colnames(object), 
+                               colnames(metadata(object)$SNPs))) {
+                  message("colnames(metadata(object)$SNPs) != colnames(object)")
+                  message("You should probably fix this if you use these SNPs.")
+                }
                 return(metadata(object)$SNPs[, colnames(object)])
               } else {
-                message("No SNPs found in your GenomicRatioSet's metadata.")
+                message("No SNPs found in your GenomicRatioSet metadata().")
                 return(NULL)
               }
           })
