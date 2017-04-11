@@ -50,21 +50,32 @@ ilogit2 <- function(x) { 2^(x) / (1+2^(x)) }
 }
 
 .getManifestString <- function(annotation) {
-    if(length(annotation) == 1)
+    if(length(annotation) == 1) {
+        if(annotation == "Unknown")
+            stop("Cannot get Manifest object for an 'Unknown' array")
         return(paste0(annotation, "manifest"))
-    if("array" %in% names(annotation))
+    }
+    if("array" %in% names(annotation)) {
+        if(annotation["array"] == "Unknown")
+            stop("Cannot get Manifest object for an 'Unknown' array")
         return(paste0(annotation["array"], "manifest"))
+    }
     stop("unable to get the manifest string for this object")
 }
 
 .getAnnotationString <- function(annotation) {
-    if(length(annotation) == 1)
+    if(length(annotation) == 1) {
+        if(annotation == "Unknown")
+            stop("Cannot get Annotation object for an 'Unknown' array")
         return(sprintf("%sanno", annotation))
-    if(all(c("array", "annotation") %in% names(annotation)))
+    }
+    if(all(c("array", "annotation") %in% names(annotation))) {
+        if(annotation["array"] == "Unknown")
+            stop("Cannot get Annotation object for an 'Unknown' array")
         return(sprintf("%sanno.%s", annotation["array"], annotation["annotation"]))
+    }
     stop("unable to get the annotation string for this object")
 }
-
 
 .betaFromMethUnmeth <- function(Meth, Unmeth, object, offset = 0,
                                 betaThreshold = 0, minZero = TRUE) {

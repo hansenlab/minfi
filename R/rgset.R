@@ -106,6 +106,13 @@ getOOB <- function(object) {
     return(list(Grn = oob.green, Red = oob.red))
 }
 
+getNBeads <- function(object) {
+    if(!is(object, "RGChannelSetExtended"))
+        stop(sprintf("object is of class '%s', but needs to be of class 'RGChannelSetExtended'", class(object)))
+    assay(object, "NBeads")
+}
+
+
 getSnpBeta <- function(object){
     .isRGOrStop(object)
 
@@ -185,4 +192,11 @@ setMethod("combine", signature(x = "RGChannelSet", y = "RGChannelSet"),
     colData(x) <- colDataFix$x
     colData(y) <- colDataFix$y
     cbind(x,y)
+})
+                   
+setMethod("coerce", signature(from = "RGChannelSetExtended", to = "RGChannelSet"),
+         function(from, to){
+    assays(from) <- assays(from)[c("Green", "Red")]
+    class(from) <- "RGChannelSet"
+    from
 })
