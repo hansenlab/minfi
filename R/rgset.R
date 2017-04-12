@@ -148,6 +148,12 @@ setMethod("getBeta", signature(object = "RGChannelSet"),
               callGeneric(object, ...)
           })
 
+# wrap getSnpBeta function, for RGChannelSet objects 
+setMethod("getSNPs", signature(object = "RGChannelSet"),
+          function (object) {
+              getSnpBeta(object)
+          })
+
 setMethod("mapToGenome", signature(object = "RGChannelSet"),
           function(object, ...) {
               object <- preprocessRaw(object)

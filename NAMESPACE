@@ -80,8 +80,9 @@ exportClasses(RGChannelSet, RGChannelSetExtended,
               GenomicMethylSet, GenomicRatioSet,
               IlluminaMethylationManifest, IlluminaMethylationAnnotation)
 
-exportMethods(show, initialize, getBeta, getM, getCN, getMeth, getUnmeth,
-              getManifest, annotation, "annotation<-", preprocessMethod,
+exportMethods(show, initialize, 
+              getBeta, getM, getCN, getSNPs, getMeth, getUnmeth, getManifest, 
+              annotation, "annotation<-", preprocessMethod,
               combine, mapToGenome, ratioConvert, bumphunter,
               pData, "pData<-", sampleNames, "sampleNames<-",
               featureNames, "featureNames<-", coerce)
