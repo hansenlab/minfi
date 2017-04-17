@@ -204,12 +204,3 @@ normexp.get.xcs <- function(xcf, params){
         xcf[,i] <- normexp.signal(as.numeric((pars[i,])), xcf[,i] ) # from limma
     return( xcf + params[[grep('offset', names(params), value=TRUE)]][1] )
 }
-
-# a "best practices" baseline for reading IDATs
-noobPipeline <- function(rgSet, pCutoff=0.01) {
-  pval <- detectionP(rgSet)
-  grSet <- mapToGenome(ratioConvert(preprocessNoob(rgSet)))
-  is.na(assays(grSet)$Beta) <- pval[rownames(grSet),] >= pCutoff 
-  metadata(grSet)$SNPs <- getSnpBeta(rgSet)
-  return(grSet)
-}

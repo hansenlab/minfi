@@ -74,6 +74,7 @@ Collate: generics.R
 	  preprocessQuantile.R
 	  preprocessNoob.R
 	  preprocessFunnorm.R
+	  noobPipeline.R
 	  qc.R
 	  read.450k.R
 	  read.meth.R
