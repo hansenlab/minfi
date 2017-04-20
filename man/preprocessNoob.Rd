@@ -1,6 +1,5 @@
 \name{preprocessNoob}
 \alias{preprocessNoob}
-\alias{noobPipeline}
 \title{
   The Noob/ssNoob preprocessing method for Infinium methylation microarrays.
 }
@@ -41,6 +40,7 @@ noobPipeline(rgSet, pCutoff = 0.01)
   as well as \code{\linkS4class{IlluminaMethylationManifest}} for the
   basic classes involved in these functions.
   \code{\link{preprocessRaw}} and \code{\link{preprocessQuantile}} are other preprocessing functions.
+  \code{\link{noobPipeline}} for an end-to-end processing pipeline with results directly comparable to the Cancer Genome Atlas (TCGA) DNA methylation data. 
 }
 \examples{
 if (require(minfiData)) {

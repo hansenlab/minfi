@@ -1,5 +1,5 @@
 # a "best practices" baseline for most studies
-noobPipeline <- function(rgSet, pCutoff=0.01) {
+noobPipeline <- function(rgSet, pCutoff=0.05) {
   pval <- detectionP(rgSet)
   message("Running TCGA-style noob pipeline on ", ncol(rgSet), " samples...")
   grSet <- mapToGenome(ratioConvert(preprocessNoob(rgSet)))
