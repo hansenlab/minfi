@@ -22,6 +22,10 @@
     \item Accessing the manifest or annotation now fails for an
     'unknown' array.
     \item We now support gzipped IDAT files.
+    \item Fixed a bug in read.metharray() which resulted in an error in
+    some situations when running the function with argument force=TRUE to
+    read IDAT files of different length.  Reported by Maria Calleja
+    Cervantes <mcalleja@idibell.cat>.
   }
 }
 
