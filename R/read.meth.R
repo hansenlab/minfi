@@ -85,7 +85,7 @@ read.metharray <- function(basenames, extended = FALSE, verbose = FALSE, force =
     } else {
         out <- RGChannelSet(Red = RedMean, Green = GreenMean)
     }
-    rownames(out) <- rownames(G.idats[[1]]$Quants)
+    rownames(out) <- commonAddresses
     out@annotation <- c(array = arrayTypes[1,1], annotation = arrayTypes[1,2])
     ptime2 <- proc.time()
     stime <- (ptime2 - ptime1)[3]
