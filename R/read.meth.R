@@ -1,7 +1,7 @@
 .guessArrayTypes <- function(nProbes) {
     if(nProbes >= 622000 && nProbes <= 623000) {
         arrayAnnotation <- c(array = "IlluminaHumanMethylation450k", annotation = .default.450k.annotation)
-    } else if(nProbes >= 1052000 && nProbes <= 1053000) {
+    } else if(nProbes >= 1050000 && nProbes <= 1053000) {
         ## "Current EPIC scan type"
         arrayAnnotation <- c(array = "IlluminaHumanMethylationEPIC", annotation = .default.epic.annotation)
     } else if(nProbes >= 1032000 && nProbes <= 1033000) {
@@ -15,19 +15,25 @@
     arrayAnnotation
 }
 
-
-
 read.metharray <- function(basenames, extended = FALSE, verbose = FALSE, force = FALSE) {
-    basenames <- sub("_Grn\\.idat$", "", basenames)
-    basenames <- sub("_Red\\.idat$", "", basenames)
+    basenames <- sub("_Grn\\.idat.*", "", basenames)
+    basenames <- sub("_Red\\.idat.*", "", basenames)
+    stopifnot(!anyDuplicated(basenames))
+    
     G.files <- paste(basenames, "_Grn.idat", sep = "")
     names(G.files) <- basename(basenames)
+    these.dont.exists <- !file.exists(G.files)
+    if(any(these.dont.exists))
+        G.files[these.dont.exists] <- paste0(G.files[these.dont.exists], ".gz")
     if(!all(file.exists(G.files))) {
-        noexits <- G.files[!file.exists(G.files)]
+        noexits <- sub("\\.gz", "", G.files[!file.exists(G.files)])
         stop("The following specified files do not exist:", paste(noexits, collapse = ", "))
     }
     R.files <- paste(basenames, "_Red.idat", sep = "")
     names(R.files) <- basename(basenames)
+    these.dont.exists <- !file.exists(R.files)
+    if(any(these.dont.exists))
+        R.files[these.dont.exists] <- paste0(R.files[these.dont.exists], ".gz")
     if(!all(file.exists(R.files))) {
         noexits <- R.files[!file.exists(G.files)]
         stop("The following specified files do not exist:", paste(noexits, collapse = ", "))
@@ -60,37 +66,27 @@ read.metharray <- function(basenames, extended = FALSE, verbose = FALSE, force =
     if(!sameLength && sameArray && !force) {
         stop("[read.metharray] Trying to parse IDAT files with different array size but seemingly all of the same type.\n  You can force this by 'force=TRUE', see the man page ?read.metharray")
     }
-    ## if(sameLength) {
-    ##     GreenMean <- do.call(cbind, lapply(G.idats, function(xx) xx$Quants[, "Mean"]))
-    ##     RedMean <- do.call(cbind, lapply(R.idats, function(xx) xx$Quants[, "Mean"]))
-    ##     if(extended) {
-    ##         GreenSD <- do.call(cbind, lapply(G.idats, function(xx) xx$Quants[, "SD"]))
-    ##         RedSD <- do.call(cbind, lapply(R.idats, function(xx) xx$Quants[, "SD"]))
-    ##         NBeads <- do.call(cbind, lapply(G.idats, function(xx) xx$Quants[, "NBeads"]))
-    ##     }
-    ## } else {
-        commonAddresses <- as.character(Reduce("intersect", lapply(G.idats, function(xx) rownames(xx$Quants))))
-        GreenMean <- do.call(cbind, lapply(G.idats, function(xx) xx$Quants[commonAddresses, "Mean"]))
-        RedMean <- do.call(cbind, lapply(R.idats, function(xx) xx$Quants[commonAddresses, "Mean"]))
-        if(extended) {
-            GreenSD <- do.call(cbind, lapply(G.idats, function(xx) xx$Quants[commonAddresses, "SD"]))
-            RedSD <- do.call(cbind, lapply(R.idats, function(xx) xx$Quants[commonAddresses, "SD"]))
-            NBeads <- do.call(cbind, lapply(G.idats, function(xx) xx$Quants[commonAddresses, "NBeads"]))
-        }
-    ## }
+    commonAddresses <- as.character(Reduce("intersect", lapply(G.idats, function(xx) rownames(xx$Quants))))
+    GreenMean <- do.call(cbind, lapply(G.idats, function(xx) xx$Quants[commonAddresses, "Mean"]))
+    RedMean <- do.call(cbind, lapply(R.idats, function(xx) xx$Quants[commonAddresses, "Mean"]))
+    if(extended) {
+        GreenSD <- do.call(cbind, lapply(G.idats, function(xx) xx$Quants[commonAddresses, "SD"]))
+        RedSD <- do.call(cbind, lapply(R.idats, function(xx) xx$Quants[commonAddresses, "SD"]))
+        NBeads <- do.call(cbind, lapply(G.idats, function(xx) xx$Quants[commonAddresses, "NBeads"]))
+    }
     ptime2 <- proc.time()
     stime <- (ptime2 - ptime1)[3]
     if(verbose) message("done in", stime, "seconds\n")
     if(verbose) message("[read.metharray] Instantiating final object ... ")
     ptime1 <- proc.time()
     if(extended) {
-        out <- new("RGChannelSetExtended", Red = RedMean, Green = GreenMean,
-                   RedSD = RedSD, GreenSD = GreenSD, NBeads = NBeads)
+        out <- RGChannelSetExtended(Red = RedMean, Green = GreenMean,
+                                    RedSD = RedSD, GreenSD = GreenSD, NBeads = NBeads)
     } else {
-        out <- new("RGChannelSet", Red = RedMean, Green = GreenMean)
+        out <- RGChannelSet(Red = RedMean, Green = GreenMean)
     }
-    featureNames(out) <- rownames(G.idats[[1]]$Quants)
-    annotation(out) <- c(array = arrayTypes[1,1], annotation = arrayTypes[1,2])
+    rownames(out) <- commonAddresses
+    out@annotation <- c(array = arrayTypes[1,1], annotation = arrayTypes[1,2])
     ptime2 <- proc.time()
     stime <- (ptime2 - ptime1)[3]
     if(verbose) message("done in", stime, "seconds\n")
@@ -141,7 +137,7 @@ read.metharray.sheet <- function(base, pattern = "csv$", ignore.case = TRUE,
             allfiles <- list.files(dirname(file), recursive = recursive, full.names = TRUE)
             basenames <- sapply(patterns, function(xx) grep(xx, allfiles, value = TRUE))
             names(basenames) <- NULL
-            basenames <- sub("_Grn\\.idat", "", basenames, ignore.case = TRUE)
+            basenames <- sub("_Grn\\.idat.*", "", basenames, ignore.case = TRUE)
             df$Basename <- basenames
         }
         df
@@ -184,8 +180,8 @@ read.metharray.exp <- function(base = NULL, targets = NULL, extended = FALSE,
         rgSet <- read.metharray(files, extended = extended, verbose = verbose, force = force)
         pD <- targets
         pD$filenames <- files
-        rownames(pD) <- sampleNames(rgSet)
-        pData(rgSet) <- pD
+        rownames(pD) <- colnames(rgSet)
+        colData(rgSet) <- as(pD, "DataFrame")
         return(rgSet)
     }
     ## Now we just read all files in the directory

@@ -18,16 +18,10 @@
 fixMethOutliers <- function(object, K=-3, verbose = FALSE){
     .isMethylOrStop(object)
     if(verbose) message("[fixMethOutliers] fixing Meth channel\n")
-    if(is(object, "GenomicMethylSet"))
-        assay(object, "Meth") <- .fixMethOutliers(getMeth(object), K=K, verbose = verbose)$mat
-    else
-        assayDataElement(object, "Meth") <- .fixMethOutliers(getMeth(object), K=K, verbose = verbose)$mat
+    assay(object, "Meth") <- .fixMethOutliers(getMeth(object), K=K, verbose = verbose)$mat
     if(verbose) message("[fixMethOutliers] fixing Unmeth channel\n")
-    if(is(object, "GenomicMethylSet"))
-        assay(object, "Unmeth") <- .fixMethOutliers(getUnmeth(object), K=K, verbose = verbose)$mat
-    else
-        assayDataElement(object, "Unmeth") <- .fixMethOutliers(getUnmeth(object), K=K, verbose = verbose)$mat
-      return(object)
+    assay(object, "Unmeth") <- .fixMethOutliers(getUnmeth(object), K=K, verbose = verbose)$mat
+    return(object)
 }
 
 addQC <- function(object, qc) {
@@ -60,7 +54,7 @@ getQC <- function(object) {
     U.medians <- log2(matrixStats::colMedians(getUnmeth(object)))
     M.medians <- log2(matrixStats::colMedians(getMeth(object)))
     df <- DataFrame(mMed = M.medians, uMed = U.medians)
-    rownames(df) <- sampleNames(object)
+    rownames(df) <- colnames(object)
     df
 }
 

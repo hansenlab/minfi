@@ -11,7 +11,8 @@
 }
 \usage{
 preprocessFunnorm(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE,
-                  dyeCorr = TRUE, verbose = TRUE)
+                  dyeCorr = TRUE, keepCN = TRUE, ratioConvert = TRUE,
+                  verbose = TRUE)
 }
 \arguments{
   \item{rgSet}{An object of class \code{RGChannelSet}.}
@@ -22,6 +23,11 @@ preprocessFunnorm(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE,
     functional normalization (see \code{preprocessNoob})}
   \item{dyeCorr}{Should dye normalization be done as part of the NOOB
     background correction (see \code{preprocessNoob})?}
+  \item{keepCN}{Should copy number estimates be kept around? Setting to
+    \code{FALSE} will decrease the size of the output object significantly.}
+  \item{ratioConvert}{Should we run \code{ratioConvert}, ie. should the
+    output be a \code{GenomicRatioSet} or should it be kept as a
+    \code{GenomicMethylSet}; the latter is for experts.}
   \item{verbose}{Should the function be verbose?}
 }
 \details{
@@ -49,7 +55,10 @@ changes are expected such as in cancer-normal comparisons or tissue
 differences.
 
 }
-\value{an object of class \code{GenomicRatioSet}}
+
+\value{an object of class \code{GenomicRatioSet}, unless
+  \code{ratioConvert=FALSE} in which case an object of class
+  \code{GenomicMethylSet}.} 
 
 \references{
   JP Fortin, A Labbe, M Lemire, BW Zanke, TJ Hudson, EJ Fertig, CMT

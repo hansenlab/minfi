@@ -1,107 +1,116 @@
 setClass("RatioSet",
-         representation(preprocessMethod = "character"),
-         contains = "eSet",
-         prototype = prototype(new("VersionedBiobase",
-         versions = c(classVersion("eSet"), RatioSet = "1.0.0"))))
+         representation(preprocessMethod = "character", annotation = "character"),
+         contains = "SummarizedExperiment")
 
 setValidity("RatioSet", function(object) {
-    slotsPresent <- intersect(c("Beta", "M", "CN"), assayDataElementNames(object))
-    msg <- NULL
-    if(! any(c("Beta", "M") %in% slotsPresent))
-        msg <- validMsg(msg, sprintf("objects of class '%s' needs to have assayData elements either 'Beta' or 'M' or both"),
-                        class(object))
-    msg <- validMsg(msg, assayDataValidMembers(assayData(object), slotsPresent))
+    ## It is intentional I do not check for the presence of 'CN'; it is optional
+    msg <- validMsg(NULL, NULL)
+    msgBeta <- .checkAssayNames(object, c("Beta"))
+    msgM <- .checkAssayNames(object, c("M"))
+    if(!is.null(msgBeta) && !is.null(msgM))
+        msg <- validMsg(msg, sprintf("objects of class '%s needs to have assays slots either 'Beta' or 'M' or both",
+                                     class(object)))
     if (is.null(msg)) TRUE else msg
 })
 
-RatioSet <- function(Beta = NULL, M = NULL, CN=NULL, ...) {
-    if(is.null(Beta) && is.null(M)) {
-        Beta <- new("matrix")
-    }
-    if(!is.null(Beta) && is.null(M) && is.null(CN))
-        Rset <- new("RatioSet", Beta = Beta, ...)
-    if(!is.null(Beta) && is.null(M) && !is.null(CN))
-        Rset <- new("RatioSet", Beta = Beta, CN = CN, ...)
-    if(!is.null(Beta) && !is.null(M) && is.null(CN))
-        Rset <- new("RatioSet", Beta = Beta, M = M, ...)
-    if(!is.null(Beta) && !is.null(M) && !is.null(CN))
-        Rset <- new("RatioSet", Beta = Beta, M = M, CN = CN, ...)
-    if(is.null(Beta) && !is.null(M) && is.null(CN))
-        Rset <- new("RatioSet", M = M, ...)
-    if(is.null(Beta) && !is.null(M) && !is.null(CN))
-        Rset <- new("RatioSet", M = M, CN = CN, ...)
-    Rset
+RatioSet <- function(Beta = NULL, M = NULL, CN = NULL,
+                     annotation = "", preprocessMethod = "", ...) {
+    msg <- "Need either 'Beta' or 'M' or both"
+    if(is.null(Beta) && is.null(M))
+        stop(msg)
+    assays <- SimpleList(Beta = Beta, M = M, CN = CN)
+    assays <- assays[!sapply(assays, is.null)]
+    new("RatioSet",
+        SummarizedExperiment(assays = assays, ...),
+        annotation = annotation,
+        preprocessMethod = preprocessMethod
+        )
 }
 
-setMethod("show", "RatioSet", function(object) {
-    .show.ExpressionSet(object)
+setMethod("show", signature(object = "RatioSet"),
+          function(object) {
+    callNextMethod()
     .show.annotation(annotation(object))
     .show.preprocessMethod(preprocessMethod(object))
 })
 
-setReplaceMethod("pData", signature(object = "RatioSet", value = "DataFrame"),
-                 function(object, value) {
-                     df <- as.data.frame(value)
-                     pData(object) <- df
-                     object
-                 })
+setMethod("preprocessMethod", signature(object = "RatioSet"),
+          function(object) {
+    object@preprocessMethod
+})
+
+setMethod("annotation", signature(object = "RatioSet"),
+          function(object) {
+    object@annotation
+})
+
+setReplaceMethod("annotation", signature(object = "RatioSet"),
+          function(object, value) {
+    object@annotation <- value
+    object
+})
 
 setMethod("getBeta", signature(object = "RatioSet"),
           function (object) {
-              nms <- assayDataElementNames(object)
-              if("Beta" %in% nms)
-                  return(assayDataElement(object, "Beta"))
-              if("M" %in% nms)
-                  return(ilogit2(assayDataElement(object, "M")))
-              stop("object does not contain either 'M' nor 'Beta' amongst assay slots")
-          })
+    nms <- names(assays(object, withDimnames = FALSE))
+    if("Beta" %in% nms)
+        return(assay(object, "Beta"))
+    if("M" %in% nms)
+        return(ilogit2(assay(object, "M")))
+    stop("object does not contain either 'M' nor 'Beta' amongst assay slots")
+})
 
 setMethod("getM", signature(object = "RatioSet"),
           function (object) {
-              nms <- assayDataElementNames(object)
-              if("M" %in% nms)
-                  return(assayDataElement(object, "M"))
-              if("Beta" %in% nms)
-                  return(logit2(assayDataElement(object, "Beta")))
-              stop("object does not contain either 'M' nor 'Beta' amongst assay slots")
-          })
+    nms <- names(assays(object, withDimnames = FALSE))
+    if("M" %in% nms)
+        return(assay(object, "M"))
+    if("Beta" %in% nms)
+        return(logit2(assay(object, "Beta")))
+    stop("object does not contain either 'M' nor 'Beta' amongst assay slots")
+})
 
 setMethod("getCN", signature(object = "RatioSet"),
           function (object) {
-              nms <- assayDataElementNames(object)
-              if("CN" %in% nms)
-                  return(assayDataElement(object, "CN"))
-              else
-                  return(NULL)
-          })
-
-setMethod("preprocessMethod", signature(object = "RatioSet"),
-          function(object) {
-              object@preprocessMethod
-          })
+    nms <- names(assays(object, withDimnames = FALSE))
+    if("CN" %in% nms)
+        return(assay(object, "CN"))
+    else
+        return(NULL)
+})
 
 setMethod("mapToGenome", signature(object = "RatioSet"),
           function(object, drop = TRUE, mergeManifest = FALSE) {
-              gr <- getLocations(object, mergeManifest = mergeManifest,
-                                 orderByLocation = TRUE)
-              object <- object[names(gr),]
-              GenomicRatioSet(gr = gr, Beta = getBeta(object),
-                              M = getM(object), CN = getCN(object),
-                              pData = pData(object),
-                              preprocessMethod = preprocessMethod(object),
-                              annotation = annotation(object))
-          })
+    gr <- getLocations(object, mergeManifest = mergeManifest,
+                       orderByLocation = TRUE)
+    object <- object[names(gr),]
+    GenomicRatioSet(gr = gr, Beta = getBeta(object),
+                    M = getM(object), CN = getCN(object),
+                    colData = colData(object),
+                    preprocessMethod = preprocessMethod(object),
+                    annotation = annotation(object))
+})
 
 setMethod("updateObject", signature(object = "RatioSet"),
-          function(object, ..., verbose = FALSE) {
-              if(object@annotation["annotation"] == "ilmn.v1.2")
-                  object@annotation["annotation"] <- .default.450k.annotation
-              object
-          })
+          function(object, ..., verbose=FALSE) {
+    if (verbose) message("updateObject(object = 'RatioSet')")
+    if("assayData" %in% names(getObjectSlots(object))) {
+        ## This is an ExpressionSet based object
+        object <- RatioSet(Beta = getObjectSlots(object)[["assayData"]][["Beta"]],
+                           M = getObjectSlots(object)[["assayData"]][["M"]],
+                           CN = getObjectSlots(object)[["assayData"]][["CN"]],
+                           colData = getObjectSlots(getObjectSlots(object)[["phenoData"]])[["data"]],
+                           annotation = getObjectSlots(object)[["annotation"]],
+                           preprocessMethod = getObjectSlots(object)[["preprocessMethod"]])
+    }
+    object
+})
 
 setMethod("combine", signature(x = "RatioSet", y = "RatioSet"),
           function(x, y, ...) {
-    pData(x) <- .pDataFix(pData(x))
-    pData(y) <- .pDataFix(pData(y))
-    callNextMethod()
+    colDataFix <- .harmonizeDataFrames(.pDataFix(colData(x)),
+                                       .pDataFix(colData(y)))
+    colData(x) <- colDataFix$x
+    colData(y) <- colDataFix$y
+    cbind(x,y)
 })

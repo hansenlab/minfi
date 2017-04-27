@@ -2,6 +2,33 @@
 \title{Minfi News}
 \encoding{UTF-8}
 
+\section{Version 1.21}{
+  \itemize{
+    \item Moving RGChannelSet, MethylSet and RatioSet from building on
+    eSet (from Biobase) to SummarizedExperiment (from
+    SummarizedExperiment). Most important changes are that the
+    constructor functions now uses the argument colData instead of
+    pData; some of them have more arguments.  The updateObject methods
+    have been extended to update to the new class backend.  While the
+    pData, sampleNames, featureNames methods still work, we recommend
+    (at least for package writers) to move to colData, colnames and
+    rownames.
+    \item Reverted the bugfix to preprocessQuantile mentioned under news
+    for version 1.19. Our fix was wrong; the original code did not have
+    a bug. Thanks to users who reported issues with the function
+    (Frederic Fournier and David Martino).
+    \item bugfix for getSnpBeta for subsetted (and combined)
+    RGChannelSets (reported and diagnosed by Warren Cheung).
+    \item Accessing the manifest or annotation now fails for an
+    'unknown' array.
+    \item We now support gzipped IDAT files.
+    \item Fixed a bug in read.metharray() which resulted in an error in
+    some situations when running the function with argument force=TRUE to
+    read IDAT files of different length.  Reported by Maria Calleja
+    Cervantes <mcalleja@idibell.cat>.
+  }
+}
+
 \section{Version 1.19}{
   \itemize{
     \item preprocessNoob gets a dyeMethod argument which now allows for

@@ -2,7 +2,7 @@ qcReport <- function(rgSet, sampNames=NULL, sampGroups=NULL, pdf="qcReport.pdf",
         controls=c("BISULFITE CONVERSION I", "BISULFITE CONVERSION II", "EXTENSION", "HYBRIDIZATION", 
         "NON-POLYMORPHIC", "SPECIFICITY I", "SPECIFICITY II", "TARGET REMOVAL")) {
     .isRGOrStop(rgSet)
-    if (is.null(sampNames)) sampNames <- sampleNames(rgSet)
+    if (is.null(sampNames)) sampNames <- colnames(rgSet)
     n <- ncol(rgSet)
     o <- rev(order(sampNames))
     rgSet <- rgSet[,o]
@@ -41,12 +41,12 @@ controlStripPlot <- function(rgSet, controls=c("BISULFITE CONVERSION I", "BISULF
         ctrlAddress <- getControlAddress(rgSet, controlType = controlType)
         
         ## Red channel
-        ctlWide <- log2(r[ctrlAddress,])
+        ctlWide <- log2(r[ctrlAddress,,drop=FALSE])
         if (!is.null(sampNames)) colnames(ctlWide) <- sampNames
         ctlR <- melt(ctlWide, varnames=c("address", "sample"))
         
         ## Green channel
-        ctlWide <- log2(g[ctrlAddress,])
+        ctlWide <- log2(g[ctrlAddress,,drop=FALSE])
         if (!is.null(sampNames)) colnames(ctlWide) <- sampNames
         ctlG<- melt(ctlWide, varnames=c("address", "sample"))
         

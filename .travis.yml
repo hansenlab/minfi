@@ -1,15 +1,9 @@
 language: r
-sudo: false # NOTE: This uses container-based builds and caching
-            # (https://docs.travis-ci.com/user/languages/r#Basic-configuration)
-            # Container-based builds supposely give us more memory
-            # (https://github.com/travis-ci/travis-ci/issues/3416#issuecomment-84364212)
-            # although https://docs.travis-ci.com/user/ci-environment/#Virtualization-environments
-            # suggests otherwise
+r: bioc-devel
 cache: packages
 warnings_are_errors: false
-r: bioc-devel
 r_github_packages:
   - jimhester/covr
 after_success:
   - Rscript -e 'covr::codecov()'
-
+r_check_args: --no-examples

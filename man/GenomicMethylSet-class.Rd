@@ -4,19 +4,24 @@
 \alias{GenomicMethylSet-class}
 \alias{GenomicMethylSet}
 %%methods
+\alias{show,GenomicMethylSet-method}
+\alias{annotation,GenomicMethylSet-method}
+\alias{annotation<-,GenomicMethylSet,ANY-method}
+\alias{preprocessMethod,GenomicMethylSet-method}
 \alias{getMeth,GenomicMethylSet-method}
 \alias{getUnmeth,GenomicMethylSet-method}
 \alias{getBeta,GenomicMethylSet-method}
 \alias{getM,GenomicMethylSet-method}
 \alias{getCN,GenomicMethylSet-method}
-\alias{show,GenomicMethylSet-method}
-\alias{pData,GenomicMethylSet-method}
-\alias{sampleNames,GenomicMethylSet-method}
-\alias{featureNames,GenomicMethylSet-method}
-\alias{annotation,GenomicMethylSet-method}
-\alias{preprocessMethod,GenomicMethylSet-method}
 \alias{mapToGenome,GenomicMethylSet-method}
 \alias{combine,GenomicMethylSet,GenomicMethylSet-method}
+%% eSet-methods
+\alias{pData,GenomicMethylSet-method}
+\alias{pData<-,GenomicMethylSet,DataFrame-method}
+\alias{sampleNames,GenomicMethylSet-method}
+\alias{sampleNames<-,GenomicMethylSet,ANY-method}
+\alias{featureNames,GenomicMethylSet-method}
+\alias{featureNames<-,GenomicMethylSet-method}
 
 \title{GenomicMethylSet instances}
 
@@ -29,8 +34,8 @@
 ## Constructor
 
 GenomicMethylSet(gr = GRanges(), Meth = new("matrix"),
-                 Unmeth = new("matrix"), pData = DataFrame(),
-                 annotation = "", preprocessMethod = "")
+                 Unmeth = new("matrix"), annotation = "",
+                 preprocessMethod = "", ...)
 
 ## Data extraction / Accessors
 
@@ -50,7 +55,6 @@ GenomicMethylSet(gr = GRanges(), Meth = new("matrix"),
 \arguments{
   \item{object}{A \code{GenomicMethylSet}.}
   \item{gr}{A \code{GRanges} object.}
-  \item{pData}{A \code{DataFrame} or \code{data.frame} object.}
   \item{Meth}{A matrix of methylation values (between zero and infinity)
     with each row being a methylation loci and each column a sample.}
   \item{Unmeth}{See the \code{Meth} argument.}
@@ -64,8 +68,11 @@ GenomicMethylSet(gr = GRanges(), Meth = new("matrix"),
   \item{offset}{Offset in the beta ratio, see detail.}
   \item{betaThreshold}{Constrains the beta values to be in the inverval
     betwen \code{betaThreshold} and 1-\code{betaThreshold}.}  
-  \item{\dots}{ For \code{getM} these values gets passed onto
-    \code{getBeta}. For \code{mapToGenome}, this is ignored.} 
+  \item{\dots}{For the constructor, additional arguments to be passed to
+    \code{SummarizedExperiment}; of particular interest are
+    \code{colData} and \code{metadata}. For \code{getM} these values
+    gets passed onto \code{getBeta}. For \code{mapToGenome}, this is
+    ignored.}
 }
 
 \value{

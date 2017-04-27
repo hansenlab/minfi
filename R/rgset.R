@@ -1,117 +1,100 @@
 setClass("RGChannelSet",
-         contains = "eSet",
-         prototype = prototype(new("VersionedBiobase",
-         versions = c(classVersion("eSet"), RGChannelSet = "1.0.0"))))
-
+         representation(annotation = "character"),
+         contains = "SummarizedExperiment")
 
 setValidity("RGChannelSet", function(object) {
-    msg <- validMsg(NULL, assayDataValidMembers(assayData(object),
-                                                c("Red", "Green")))
-    if (is.null(msg)) TRUE else msg
+    msg <- validMsg(NULL, .checkAssayNames(object, c("Red", "Green")))
+    if(is.null(msg)) TRUE else msg
 })
 
-setMethod("initialize", "RGChannelSet",
-          function(.Object, Red = new("matrix"), Green = new("matrix"), ...) {
-              callNextMethod(.Object, Red = Red, Green = Green, ...)
-})
-
-RGChannelSet <- function(Green = new("matrix"), Red = new("matrix"), ...){
-    rgSet <- new("RGChannelSet", Green = Green, Red = Red, ...)
-    rgSet
+RGChannelSet <- function(Green = new("matrix"), Red = new("matrix"),
+                         annotation = "", ...) {
+    ## Check rownames, colnames
+    assays <- SimpleList(Green = Green, Red = Red)
+    new("RGChannelSet",
+        SummarizedExperiment(assays = assays, ...),
+        annotation = annotation
+        )
 }
 
-setMethod("show", "RGChannelSet", function(object) {
-    .show.ExpressionSet(object)
+setMethod("show", signature(object = "RGChannelSet"),
+          function(object) {
+    callNextMethod()
     .show.annotation(annotation(object))
 })
 
-setReplaceMethod("pData", signature(object = "RGChannelSet", value = "DataFrame"),
-                 function(object, value) {
-                     df <- as.data.frame(value)
-                     pData(object) <- df
-                     object
-                 })
+setMethod("annotation", signature(object = "RGChannelSet"),
+          function(object) {
+    object@annotation
+})
+
+setReplaceMethod("annotation", signature(object = "RGChannelSet"),
+          function(object, value) {
+    object@annotation <- value
+    object
+})
 
 setClass("RGChannelSetExtended",
          contains = "RGChannelSet")
 
 setValidity("RGChannelSetExtended", function(object) {
-    msg <- validMsg(NULL, assayDataValidMembers(assayData(object),
-                                                c("Red", "Green", "RedSD", "GreenSD", "NBeads")))
+    msg <- validMsg(NULL, .checkAssayNames(object,
+                                           c("Red", "Green", "RedSD", "GreenSD", "NBeads")))
     if (is.null(msg)) TRUE else msg
-})
-
-setMethod("initialize", "RGChannelSetExtended",
-          function(.Object, Red = new("matrix"), Green = new("matrix"), RedSD = new("matrix"),
-                   GreenSD = new("matrix"), NBeads = new("matrix"), ...) {
-              callNextMethod(.Object, Red = Red, Green = Green, RedSD = RedSD,
-                             GreenSD = GreenSD, NBeads = NBeads, ...)
 })
 
 RGChannelSetExtended <- function(Green = new("matrix"), Red = new("matrix"),
                                  GreenSD = new("matrix"), RedSD = new("matrix"),
-                                 NBeads = new("matrix"), ...){
-    rgSetEx <- new("RGChannelSet", Green = Green, Red = Red,
-                   GreenSD = GreenSD, RedSD = RedSD, NBeads = NBeads, ...)
-    rgSetEx
+                                 NBeads = new("matrix"), annotation = "",
+                                 ...) {
+    ## Check rownames, colnames
+    assays <- SimpleList(Green = Green, Red = Red,
+                         GreenSD = GreenSD, RedSD = RedSD,
+                         NBeads = NBeads)
+    new("RGChannelSetExtended",
+        SummarizedExperiment(assays = assays, ...),
+        annotation = annotation
+        )
 }
 
-setMethod("updateObject", signature(object="RGChannelSet"),
+setMethod("updateObject", signature(object = "RGChannelSet"),
           function(object, ..., verbose=FALSE) {
-              if (verbose) message("updateObject(object = 'RGChannelSet')")
-              ## object <- callNextMethod()
-              if(object@annotation["annotation"] == "ilmn.v1.2")
-                  object@annotation["annotation"] <- .default.450k.annotation
-              if (isCurrent(object)["RGChannelSet"]) {
-                  return(object)
-              }
-              if (! "RGChannelSet" %in% names(classVersion(object)))
-                  newObject <- RGChannelSet(Red = assayDataElement(object, "Red"),
-                                            Green = assayDataElement(object, "Green"),
-                                            phenoData = updateObject(phenoData(object), ..., verbose=verbose),
-                                            featureData = updateObject(featureData(object), ..., verbose=verbose),
-                                            experimentData = updateObject(experimentData(object), ..., verbose=verbose),
-                                            annotation = updateObject(annotation(object), ..., verbose=verbose),
-                                            protocolData = updateObject(protocolData(object), ..., verbose=verbose))
-              else
-                  stop("unknown version update")
-              newObject
-          })
+    if (verbose) message("updateObject(object = 'RGChannelSet')")
+    if("assayData" %in% names(getObjectSlots(object))) {
+        ## This is an ExpressionSet based object
+        object <- RGChannelSet(Green = getObjectSlots(object)[["assayData"]][["Green"]],
+                               Red = getObjectSlots(object)[["assayData"]][["Red"]],
+                               colData = getObjectSlots(getObjectSlots(object)[["phenoData"]])[["data"]],
+                               annotation = getObjectSlots(object)[["annotation"]])
+    }
+    object
+})
 
-setMethod("updateObject", signature(object="RGChannelSetExtended"),
+setMethod("updateObject", signature(object = "RGChannelSetExtended"),
           function(object, ..., verbose=FALSE) {
-              if (verbose) message("updateObject(object = 'RGChannelSetExtended')")
-              ## object <- callNextMethod()
-              if(object@annotation["annotation"] == "ilmn.v1.2")
-                  object@annotation["annotation"] <- .default.450k.annotation
-              if (isCurrent(object)["RGChannelSet"]) {
-                  return(object)
-              }
-              if (! "RGChannelSet" %in% names(classVersion(object)))
-                  newObject <- RGChannelSet(Red = assayDataElement(object, "Red"),
-                                            Green = assayDataElement(object, "Green"),
-                                            RedSD = assayDataElement(object, "RedSD"),
-                                            GreenSD = assayDataElement(object, "GreenSD"),
-                                            NBeads = assayDataElement(object, "NBeads"),
-                                            phenoData = updateObject(phenoData(object), ..., verbose=verbose),
-                                            featureData = updateObject(featureData(object), ..., verbose=verbose),
-                                            experimentData = updateObject(experimentData(object), ..., verbose=verbose),
-                                            annotation = updateObject(annotation(object), ..., verbose=verbose),
-                                            protocolData = updateObject(protocolData(object), ..., verbose=verbose))
-              else
-                  stop("unknown version update")
-              newObject
-          })
+    if (verbose) message("updateObject(object = 'RGChannelSetExtended')")
+    if("assayData" %in% names(getObjectSlots(object))) {
+        ## This is an ExpressionSet based object
+        object <- RGChannelSetExtended(Green = getObjectSlots(object)[["assayData"]][["Green"]],
+                                       Red = getObjectSlots(object)[["assayData"]][["Red"]],
+                                       GreenSD = getObjectSlots(object)[["assayData"]][["GreenSD"]],
+                                       RedSD = getObjectSlots(object)[["assayData"]][["RedSD"]],
+                                       NBeads = getObjectSlots(object)[["assayData"]][["NBeads"]],
+                                       colData = getObjectSlots(getObjectSlots(object)[["phenoData"]])[["data"]],
+                                       annotation = getObjectSlots(object)[["annotation"]])
+    }
+    object
+})
 
 
 getRed <- function(object) {
     .isRGOrStop(object)
-    assayDataElement(object, "Red")
+    assay(object, "Red")
 }
 
 getGreen <- function(object) {
     .isRGOrStop(object)
-    assayDataElement(object, "Green")
+    assay(object, "Green")
 }
 
 getOOB <- function(object) {
@@ -123,17 +106,24 @@ getOOB <- function(object) {
     return(list(Grn = oob.green, Red = oob.red))
 }
 
+getNBeads <- function(object) {
+    if(!is(object, "RGChannelSetExtended"))
+        stop(sprintf("object is of class '%s', but needs to be of class 'RGChannelSetExtended'", class(object)))
+    assay(object, "NBeads")
+}
+
+
 getSnpBeta <- function(object){
     .isRGOrStop(object)
-    manifest <- getManifest(object)
-    snpProbesII <- getProbeInfo(manifest, type = "SnpII")$Name
+
+    snpProbesII <- getProbeInfo(object, type = "SnpII")$Name
     M.II <- getGreen(object)[getProbeInfo(object, type = "SnpII")$AddressA,,drop=FALSE]
     U.II <- getRed(object)[getProbeInfo(object, type = "SnpII")$AddressA,,drop=FALSE]
-    snpProbesI.Green <- getProbeInfo(manifest, type = "SnpI")[getProbeInfo(manifest, type = "SnpI")$Color=="Grn",]
-    snpProbesI.Red <- getProbeInfo(manifest, type = "SnpI")[getProbeInfo(manifest, type = "SnpI")$Color=="Red",]
 
-    M.I.Red <- getRed(object)[snpProbesI.Red $AddressB,,drop=FALSE]
-    U.I.Red <- getRed(object)[snpProbesI.Red $AddressA,,drop=FALSE]
+    snpProbesI.Green <- getProbeInfo(object, type = "SnpI")[getProbeInfo(object, type = "SnpI")$Color=="Grn",,drop=FALSE]
+    snpProbesI.Red <- getProbeInfo(object, type = "SnpI")[getProbeInfo(object, type = "SnpI")$Color=="Red",,drop=FALSE]
+    M.I.Red <- getRed(object)[snpProbesI.Red$AddressB,,drop=FALSE]
+    U.I.Red <- getRed(object)[snpProbesI.Red$AddressA,,drop=FALSE]
     M.I.Green <- getGreen(object)[snpProbesI.Green$AddressB,,drop=FALSE]
     U.I.Green <- getGreen(object)[snpProbesI.Green$AddressA,,drop=FALSE]
     
@@ -197,7 +187,16 @@ subsetByLoci <- function(rgSet, includeLoci = NULL, excludeLoci = NULL, keepCont
 
 setMethod("combine", signature(x = "RGChannelSet", y = "RGChannelSet"),
           function(x, y, ...) {
-    pData(x) <- .pDataFix(pData(x))
-    pData(y) <- .pDataFix(pData(y))
-    callNextMethod()
+    colDataFix <- .harmonizeDataFrames(.pDataFix(colData(x)),
+                                       .pDataFix(colData(y)))
+    colData(x) <- colDataFix$x
+    colData(y) <- colDataFix$y
+    cbind(x,y)
+})
+                   
+setMethod("coerce", signature(from = "RGChannelSetExtended", to = "RGChannelSet"),
+         function(from, to){
+    assays(from) <- assays(from)[c("Green", "Red")]
+    class(from) <- "RGChannelSet"
+    from
 })

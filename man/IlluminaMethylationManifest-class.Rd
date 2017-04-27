@@ -10,7 +10,6 @@
 \alias{getProbeInfo}
 \alias{getManifestInfo}
 \alias{getControlAddress}
-\alias{getControlTypes}
 
 \title{Class \code{"IlluminaMethylationManifest"}}
 
@@ -39,7 +38,6 @@ getManifestInfo(object, type = c("nLoci", "locusNames"))
 getControlAddress(object, controlType = c("NORM_A", "NORM_C",
                                           "NORM_G", "NORM_T"),
                   asList = FALSE)
-getControlTypes(object)
 }
 
 \arguments{

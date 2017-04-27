@@ -7,16 +7,25 @@
 \alias{RGChannelSetExtended}
 %% methods
 \alias{show,RGChannelSet-method}
-\alias{initialize,RGChannelSet-method}
-\alias{initialize,RGChannelSetExtended-method}
+\alias{annotation,RGChannelSet-method}
+\alias{annotation<-,RGChannelSet,ANY-method}
 \alias{combine,RGChannelSet,RGChannelSet-method}
 \alias{getBeta,RGChannelSet-method}
 \alias{getManifest,RGChannelSet-method}
+\alias{coerce,RGChannelSetExtended,RGChannelSet-method}
+%% eSet-methods
+\alias{pData,RGChannelSet-method}
+\alias{pData<-,RGChannelSet,DataFrame-method}
+\alias{sampleNames,RGChannelSet-method}
+\alias{sampleNames<-,RGChannelSet,ANY-method}
+\alias{featureNames,RGChannelSet-method}
+\alias{featureNames<-,RGChannelSet-method}
 %% functions
 \alias{getGreen}
 \alias{getRed}
 \alias{getOOB}
 \alias{getSnpBeta}
+\alias{getNBeads}
 
 \title{Class \code{"RGChannelSet"}}
 
@@ -28,16 +37,23 @@
 \usage{
 ## Constructors
 
-RGChannelSet(Green = new("matrix"), Red = new("matrix"), \dots)
+RGChannelSet(Green = new("matrix"), Red = new("matrix"),
+             annotation = "", ...)
+
 RGChannelSetExtended(Green = new("matrix"), Red = new("matrix"),
-                     GreenSD = new("matrix"), RedSD = new("matrix"),
-                     NBeads = new("matrix"), \dots)
+                    GreenSD = new("matrix"), RedSD = new("matrix"),
+                    NBeads = new("matrix"), annotation = "", ...)
 
 ## Accessors
 
+\S4method{annotation}{RGChannelSet}(object)
+\S4method{pData}{RGChannelSet}(object)
+\S4method{sampleNames}{RGChannelSet}(object)
+\S4method{featureNames}{RGChannelSet}(object)
 \S4method{getBeta}{RGChannelSet}(object, \dots)
 getGreen(object)
 getRed(object)
+getNBeads(object)
 \S4method{getManifest}{RGChannelSet}(object)
 
 ## Convenience functions
@@ -61,20 +77,28 @@ getSnpBeta(object)
     Red channel summaries.} 
   \item{NBeads}{See the \code{Green} argument, but contains the number
     of beads used to summarize the Green and Red channels.}
-  \item{\dots}{Additional objects passes to the \code{eSet} constructor,
-    particular a \code{phenoData} slot.}
+  \item{annotation}{An annotation string, optional.}
+  \item{\dots}{For the constructor(s), additional arguments to be passed
+    to \code{SummarizedExperiment}; of particular interest are
+    \code{colData}, \code{rowData} and \code{metadata}.  For
+    \code{getBeta} these values gets passed onto \code{getBeta}.} 
 }
 
 \section{Constructors}{
   Instances are constructed using the
   \code{RGChannelSet} or \code{RGChannelSetExtended} functions with the
   arguments outlined above.
+
+  \code{as(object, "RGChannelSet")} coerces a
+  \code{RGChannelSetExtended} object into a \code{RGChannelSet}.
 }
 
 \section{Accessors}{
   \describe{
     \item{\code{getGreen}:}{Gets the Green channel as a matrix.}
     \item{\code{getRed}:}{Gets the Red channel as a matrix.}
+    \item{\code{getNBeads}:}{Gets the number of beads as a matrix, this
+      requires an \code{RGChannelSetExtended}.}
     \item{\code{getManifest}:}{Gets the manifest object itself
       associated with the array type}
   }

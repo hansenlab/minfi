@@ -7,7 +7,7 @@
 ## Return a normalized beta matrix
 ##
 ## need stuff from gmodels.  Where?
-preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr = TRUE, verbose = TRUE) {
+preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr = TRUE, keepCN = TRUE, ratioConvert = TRUE, verbose = TRUE) {
     .isRGOrStop(rgSet)
     rgSet <- updateObject(rgSet) ## FIXM: might not KDH: technically, this should not be needed, but might be nice
 
@@ -38,14 +38,24 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
         sex[gmSet$predictedSex == "F"] <- 2L
     }
     if(verbose) message("[preprocessFunnorm] Normalization")
-    CN <- getCN(gmSet)
+    if(keepCN) {
+        CN <- getCN(gmSet)
+    }
     gmSet <- .normalizeFunnorm450k(object = gmSet, extractedData = extractedData,
                                    sex = sex, nPCs = nPCs, verbose = subverbose)
-    grSet <- ratioConvert(gmSet, type = "Illumina")
-    assay(grSet, "CN") <- CN
-    grSet@preprocessMethod <- c(preprocessMethod(gmSet),
-                                mu.norm = sprintf("Funnorm, nPCs=%s", nPCs))
-    return(grSet)
+    preprocessMethod <- c(preprocessMethod(gmSet),
+                          mu.norm = sprintf("Funnorm, nPCs=%s", nPCs))
+    if(ratioConvert) {
+        grSet <- ratioConvert(gmSet, type = "Illumina", keepCN = keepCN)
+        if(keepCN) {
+            assay(grSet, "CN") <- CN
+        }
+        grSet@preprocessMethod <- preprocessMethod
+        return(grSet)
+    } else {
+        gmSet@preprocessMethod <- preprocessMethod
+        return(gmSet)
+    }
  }
 
  .getFunnormIndices <- function(object) {
@@ -401,7 +411,7 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
         target <- sapply(1:(n-1), function(j) {
             start <- newQuantiles[j,i]
             end <- newQuantiles[j+1,i]
-            if (start!=end){
+            if (!isTRUE(all.equal(start,end))){
                 sequence <- seq(start, end,( end-start)/n)[-(n+1)]
             } else {
                 sequence <- rep(start, n)

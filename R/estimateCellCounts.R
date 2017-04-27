@@ -2,6 +2,9 @@ estimateCellCounts <- function (rgSet, compositeCellType = "Blood", processMetho
                                 cellTypes = c("CD8T","CD4T", "NK","Bcell","Mono","Gran"),
                                 referencePlatform = c("IlluminaHumanMethylation450k", "IlluminaHumanMethylationEPIC", "IlluminaHumanMethylation27k"),
                                 returnAll = FALSE, meanPlot = FALSE, verbose=TRUE, ...) {
+    
+    .isRGOrStop(rgSet)
+    rgSet <- as(rgSet, "RGChannelSet")
     referencePlatform <- match.arg(referencePlatform)
     rgPlatform <- sub("IlluminaHumanMethylation", "", annotation(rgSet)[which(names(annotation(rgSet))=="array")])
     platform <- sub("IlluminaHumanMethylation", "", referencePlatform)
@@ -17,7 +20,7 @@ estimateCellCounts <- function (rgSet, compositeCellType = "Blood", processMetho
     if(rgPlatform != platform) {
         rgSet <- convertArray(rgSet, outType = referencePlatform, verbose = subverbose)
     }
-    if(! "CellType" %in% names(pData(referenceRGset)))
+    if(! "CellType" %in% names(colData(referenceRGset)))
         stop(sprintf("the reference sorted dataset (in this case '%s') needs to have a phenoData column called 'CellType'"),
              names(referencePkg))
     if(sum(colnames(rgSet) %in% colnames(referenceRGset)) > 0)
@@ -38,14 +41,14 @@ estimateCellCounts <- function (rgSet, compositeCellType = "Blood", processMetho
         probeSelect <- "both"}
     
     if(verbose) message("[estimateCellCounts] Combining user data with reference (flow sorted) data.\n")
-    newpd <- data.frame(sampleNames = c(sampleNames(rgSet), sampleNames(referenceRGset)),
-                        studyIndex = rep(c("user", "reference"),
-                                         times = c(ncol(rgSet), ncol(referenceRGset))),
-                        stringsAsFactors = FALSE)
-    referencePd <- pData(referenceRGset)
+    newpd <- DataFrame(sampleNames = c(colnames(rgSet), colnames(referenceRGset)),
+                       studyIndex = rep(c("user", "reference"),
+                                        times = c(ncol(rgSet), ncol(referenceRGset))),
+                       stringsAsFactors = FALSE)
+    referencePd <- colData(referenceRGset)
     combinedRGset <- combineArrays(rgSet, referenceRGset, outType = "IlluminaHumanMethylation450k")
-    pData(combinedRGset) <- newpd
-    sampleNames(combinedRGset) <- newpd$sampleNames
+    colData(combinedRGset) <- newpd
+    colnames(combinedRGset) <- newpd$sampleNames
     rm(referenceRGset)
     
     if(verbose) message("[estimateCellCounts] Processing user and reference data together.\n")
@@ -63,9 +66,9 @@ estimateCellCounts <- function (rgSet, compositeCellType = "Blood", processMetho
     
     ## Extracts normalized reference data 
     referenceMset <- combinedMset[, combinedMset$studyIndex == "reference"]
-    pData(referenceMset) <- as(referencePd, "DataFrame")
+    colData(referenceMset) <- as(referencePd, "DataFrame")
     mSet <- combinedMset[, combinedMset$studyIndex == "user"]
-    pData(mSet) <- as(pData(rgSet), "DataFrame")
+    colData(mSet) <- as(colData(rgSet), "DataFrame")
     rm(combinedMset)
     
     if(verbose) message("[estimateCellCounts] Picking probes for composition estimation.\n")
@@ -75,7 +78,7 @@ estimateCellCounts <- function (rgSet, compositeCellType = "Blood", processMetho
     
     if(verbose) message("[estimateCellCounts] Estimating composition.\n")
     counts <- projectCellType(getBeta(mSet)[rownames(coefs), ], coefs)
-    rownames(counts) <- sampleNames(rgSet)
+    rownames(counts) <- colnames(rgSet)
     
     if (meanPlot) {
         smeans <- compData$sampleMeans
@@ -101,7 +104,7 @@ pickCompProbes <- function(mSet, cellTypes = NULL, numProbes = 50, compositeCell
     }
     
     p <- getBeta(mSet)
-    pd <- as.data.frame(pData(mSet))
+    pd <- as.data.frame(colData(mSet))
     if(!is.null(cellTypes)) {
         if(!all(cellTypes %in% pd$CellType))
             stop("elements of argument 'cellTypes' is not part of 'mSet$CellType'")
