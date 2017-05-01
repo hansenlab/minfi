@@ -14,6 +14,8 @@
     <swmorris@exseed.ed.ac.uk>.
     \item Improved (made prettier) the printing of messages in
     read.metharray() and friends.
+    \item Changed seqlevels(..., force = TRUE) to seqlevel(...,
+    pruning.mode = "coarse").  
   }
 }
 
