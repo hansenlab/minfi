@@ -134,6 +134,42 @@ getSnpBeta <- function(object){
     return(beta)                               
 }
 
+subsetByCpG <- function(rgSet, loci, keepControls = TRUE){
+    TypeII <- getProbeInfo(rgSet, type = "II")
+    TypeII <- TypeII[TypeII$Name %in% loci, ]
+    TypeI.Red <- getProbeInfo(rgSet, type = "I-Red")
+    TypeI.Red <- TypeI.Red[TypeI.Red$Name %in% loci, ]
+    TypeI.Green <- getProbeInfo(rgSet, type = "I-Green")
+    TypeI.Green <- TypeI.Green[TypeI.Green$Name %in% loci, ]
+    addresses <- c(TypeII$AddressA, 
+        TypeI.Red$AddressA, TypeI.Red$AddressB,
+        TypeI.Green$AddressA, TypeI.Green$AddressB)
+    if (keepControls){
+        addresses <- c(addresses, getProbeInfo(rgSet, type = "Control")$Address)
+    }
+    indices <- match(addresses, rownames(rgSet@assayData$Green))
+    rgSet@assayData$Green <- rgSet@assayData$Green[indices,]
+    rgSet@assayData$Red   <- rgSet@assayData$Red[indices,]
+    rgSet
+}
+
+
+getCpGNamesFromRGSet <- function(rgSet){
+    TypeII <- getProbeInfo(rgSet, type = "II")
+    TypeI.Red <- getProbeInfo(rgSet, type = "I-Red")
+    TypeI.Green <- getProbeInfo(rgSet, type = "I-Green")
+    addresses <- rownames(rgSet@assayData$Green)
+    probesII <- TypeII$Name[na.omit(match(addresses, TypeII$AddressA))]
+    probesI.Red.A <- TypeI.Red$Name[na.omit(match(addresses, TypeI.Red$AddressA))]
+    probesI.Red.B <- TypeI.Red$Name[na.omit(match(addresses, TypeI.Red$AddressB))]
+    probesI.Green.A <- TypeI.Green$Name[na.omit(match(addresses, TypeI.Green$AddressA))]
+    probesI.Green.B <- TypeI.Green$Name[na.omit(match(addresses, TypeI.Green$AddressB))]
+    probes <- unique(c(probesII, probesI.Red.A, probesI.Red.B, probesI.Green.A, probesI.Green.B))
+    probes
+}
+
+
+
 setMethod("getManifest", signature(object = "RGChannelSet"),
           function(object) {
               maniString <- .getManifestString(object@annotation)
