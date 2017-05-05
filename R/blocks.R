@@ -146,7 +146,7 @@ cpgCollapseAnnotation <- function(gr, relationToIsland, islandName,
                     type = as.vector(tapply(as.character(blocktab$type), blocktab$pns, function(x) x[1])))
     res <- list(anno = anno, indexes = groupIndexes)
     seql <- seqlevels(res$anno)
-    seqlevels(res$anno, force = TRUE) <- .seqnames.order[.seqnames.order %in% seql]
+    seqlevels(res$anno, pruning.mode = "coarse") <- .seqnames.order[.seqnames.order %in% seql]
     
     if(verbose) message("[cpgCollapseAnnotation] Defining blocks.\n")
     ind <- (res$anno$type == "OpenSea")

@@ -195,8 +195,9 @@ setMethod("combine", signature(x = "RGChannelSet", y = "RGChannelSet"),
 })
                    
 setMethod("coerce", signature(from = "RGChannelSetExtended", to = "RGChannelSet"),
-         function(from, to){
-    assays(from) <- assays(from)[c("Green", "Red")]
+          function(from, to){
+    if(nrow(from) > 0 || ncol(from) > 0)
+        assays(from) <- assays(from)[c("Green", "Red")]
     class(from) <- "RGChannelSet"
     from
 })

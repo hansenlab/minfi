@@ -40,16 +40,16 @@ read.metharray <- function(basenames, extended = FALSE, verbose = FALSE, force =
     }
     stime <- system.time({
         G.idats <- lapply(G.files, function(xx) {
-            if(verbose) message("[read.metharray] Reading", basename(xx), "\n")
+            if(verbose) message("[read.metharray] Reading", basename(xx))
             readIDAT(xx)
         })
         R.idats <- lapply(R.files, function(xx) {
-            if(verbose) message("[read.metharray] Reading", basename(xx), "\n")
+            if(verbose) message("[read.metharray] Reading", basename(xx))
             readIDAT(xx)
         })
     })[3]
-    if(verbose) message("[read.metharray] Read idat files in ", stime, "seconds\n")
-    if(verbose) message("[read.metharray] Creating data matrices ... ")
+    if(verbose) message(sprintf("[read.metharray] Read idat files in %.1f seconds", stime))
+    if(verbose) message("[read.metharray] Creating data matrices ... ", appendLF = FALSE)
     ptime1 <- proc.time()
     allNProbes <- sapply(G.idats, function(xx) nrow(xx$Quants))
     arrayTypes <- cbind(do.call(rbind, lapply(allNProbes, .guessArrayTypes)),
@@ -76,8 +76,8 @@ read.metharray <- function(basenames, extended = FALSE, verbose = FALSE, force =
     }
     ptime2 <- proc.time()
     stime <- (ptime2 - ptime1)[3]
-    if(verbose) message("done in", stime, "seconds\n")
-    if(verbose) message("[read.metharray] Instantiating final object ... ")
+    if(verbose) message(sprintf("done in %.1f seconds", stime))
+    if(verbose) message("[read.metharray] Instantiating final object ... ", appendLF = FALSE)
     ptime1 <- proc.time()
     if(extended) {
         out <- RGChannelSetExtended(Red = RedMean, Green = GreenMean,
@@ -89,7 +89,7 @@ read.metharray <- function(basenames, extended = FALSE, verbose = FALSE, force =
     out@annotation <- c(array = arrayTypes[1,1], annotation = arrayTypes[1,2])
     ptime2 <- proc.time()
     stime <- (ptime2 - ptime1)[3]
-    if(verbose) message("done in", stime, "seconds\n")
+    if(verbose) message(sprintf("done in %.1f seconds", stime))
     out
 }
 
@@ -151,7 +151,7 @@ read.metharray.sheet <- function(base, pattern = "csv$", ignore.case = TRUE,
         csvfiles <- list.files(base, recursive = recursive, pattern = pattern,
                                ignore.case = ignore.case, full.names = TRUE)
         if(verbose) {
-            message("[read.metharray.sheet] Found the following CSV files:\n")
+            message("[read.metharray.sheet] Found the following CSV files:")
             print(csvfiles)
         }
     } else

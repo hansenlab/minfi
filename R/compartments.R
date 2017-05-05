@@ -39,7 +39,7 @@ createCorMatrix <- function(object, resolution = 100*1000, what = "OpenSea",
         object <- ratioConvert(object, what = "M", keepCN = FALSE)
     assay(object, "M") <- .imputeMatrix(getM(object))
     ## Next we subset to a chromosome, keep OpenSea probes and remove SNPs
-    seqlevels(object, force = TRUE) <- chr
+    seqlevels(object, pruning.mode = "coarse") <- chr
     object <- object[getIslandStatus(object) %in% what,]
     object <- dropLociWithSnps(object, snps = c("CpG", "SBE"), maf = 0.01)
 
