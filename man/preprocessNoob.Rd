@@ -10,8 +10,6 @@
 \usage{
 preprocessNoob(rgSet, offset = 15, dyeCorr = TRUE, verbose = TRUE,
                dyeMethod=c("single", "reference"))
-
-noobPipeline(rgSet, pCutoff = 0.01)
 }
 \arguments{
   \item{rgSet}{An object of class \code{RGChannelSet}.}
@@ -19,11 +17,9 @@ noobPipeline(rgSet, pCutoff = 0.01)
   \item{dyeCorr}{Should dye correction be done?}
   \item{verbose}{Should the function be verbose?}
   \item{dyeMethod}{How should dye bias correction be done: use a single sample approach (ssNoob), or a reference array?}
-  \item{pCutoff}{(for noobPipeline) Above what detection pvalue should probes be marked NA? (0.01)}
 }
 \value{
   For preprocessNoob, an object of class \code{MethylSet}.
-  For noobPipeline, an object of class \code{GenomicRatioSet} with SNP metadata.
 }
 \references{
   TJ Triche, DJ Weisenberger, D Van Den Berg, PW Laird and KD Siegmund
@@ -40,14 +36,14 @@ noobPipeline(rgSet, pCutoff = 0.01)
   as well as \code{\linkS4class{IlluminaMethylationManifest}} for the
   basic classes involved in these functions.
   \code{\link{preprocessRaw}} and \code{\link{preprocessQuantile}} are other preprocessing functions.
-  \code{\link{noobPipeline}} for an end-to-end processing pipeline with results directly comparable to the Cancer Genome Atlas (TCGA) DNA methylation data. 
+  \code{\link{tcgaPipeline}} for an end-to-end processing pipeline with results directly comparable to the Cancer Genome Atlas (TCGA) DNA methylation data. 
 }
 \examples{
 if (require(minfiData)) {
   ## RGsetEx.sub is a small subset of RGsetEx; 
   ## only used for computational speed.
   MsetEx.sub.noob <- preprocessNoob(RGsetEx.sub)
-  grSet.sub.noob <- noobPipeline(RGsetEx.sub)
+  grSet.sub.noob <- tcgaPipeline(RGsetEx.sub)
 }
 \dontrun{
 if (require(minfiData)) {
