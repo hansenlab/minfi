@@ -112,27 +112,32 @@ getNBeads <- function(object) {
     assay(object, "NBeads")
 }
 
+setMethod("getSnpBeta", signature(object = "RGChannelSet"),
+          function (object) {
 
-getSnpBeta <- function(object){
-    .isRGOrStop(object)
+              .isRGOrStop(object)
 
-    snpProbesII <- getProbeInfo(object, type = "SnpII")$Name
-    M.II <- getGreen(object)[getProbeInfo(object, type = "SnpII")$AddressA,,drop=FALSE]
-    U.II <- getRed(object)[getProbeInfo(object, type = "SnpII")$AddressA,,drop=FALSE]
+              snpInfoII <- getProbeInfo(object, type="SnpII")
+              snpProbesII <- snpInfoII$Name
+              M.II <- getGreen(object)[snpInfoII$AddressA, , drop=FALSE]
+              U.II <- getRed(object)[snpInfoII$AddressA, , drop=FALSE]
 
-    snpProbesI.Green <- getProbeInfo(object, type = "SnpI")[getProbeInfo(object, type = "SnpI")$Color=="Grn",,drop=FALSE]
-    snpProbesI.Red <- getProbeInfo(object, type = "SnpI")[getProbeInfo(object, type = "SnpI")$Color=="Red",,drop=FALSE]
-    M.I.Red <- getRed(object)[snpProbesI.Red$AddressB,,drop=FALSE]
-    U.I.Red <- getRed(object)[snpProbesI.Red$AddressA,,drop=FALSE]
-    M.I.Green <- getGreen(object)[snpProbesI.Green$AddressB,,drop=FALSE]
-    U.I.Green <- getGreen(object)[snpProbesI.Green$AddressA,,drop=FALSE]
-    
-    M <- rbind(M.II, M.I.Red, M.I.Green)
-    U <- rbind(U.II, U.I.Red, U.I.Green)
-    rownames(M) <- rownames(U) <- c(snpProbesII, snpProbesI.Red$Name, snpProbesI.Green$Name)
-    beta <- M/(U+M+100)
-    return(beta)                               
-}
+              snpInfoI <- getProbeInfo(object, type="SnpI")
+              snpProbesI.Green <- snpInfoI[snpInfoI$Color=="Grn", , drop=FALSE]
+              M.I.Green <- getGreen(object)[snpProbesI.Green$AddressB, , drop=F]
+              U.I.Green <- getGreen(object)[snpProbesI.Green$AddressA, , drop=F]
+              snpProbesI.Red <- snpInfoI[snpInfoI$Color=="Red", , drop=FALSE]
+              M.I.Red <- getRed(object)[snpProbesI.Red$AddressB, , drop=FALSE]
+              U.I.Red <- getRed(object)[snpProbesI.Red$AddressA, , drop=FALSE]
+
+              M <- rbind(M.II, M.I.Red, M.I.Green)
+              U <- rbind(U.II, U.I.Red, U.I.Green)
+              rsID <- c(snpProbesII, snpProbesI.Red$Name, snpProbesI.Green$Name)
+              rownames(M) <- rownames(U) <- rsID
+              beta <- M/(U+M+100) # I hate this.
+              return(beta)                               
+
+          })
 
 setMethod("getManifest", signature(object = "RGChannelSet"),
           function(object) {
@@ -146,12 +151,6 @@ setMethod("getBeta", signature(object = "RGChannelSet"),
           function(object, ...) {
               object <- preprocessRaw(object)
               callGeneric(object, ...)
-          })
-
-# wrap getSnpBeta function, for RGChannelSet objects 
-setMethod("getSNPs", signature(object = "RGChannelSet"),
-          function (object) {
-              getSnpBeta(object)
           })
 
 setMethod("mapToGenome", signature(object = "RGChannelSet"),

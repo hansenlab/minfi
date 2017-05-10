@@ -71,7 +71,7 @@ setMethod("getCN", signature(object = "GenomicRatioSet"),
           })
 
 # FIXME: enforce something a bit less lackadaisical?
-setMethod("getSNPs", signature(object = "GenomicRatioSet"),
+setMethod("getSnpBeta", signature(object = "GenomicRatioSet"),
           function (object) {
               if (!all(colnames(object) %in% colnames(metadata(object)$SNPs))) {
                 missed <- setdiff(colnames(object), 
