@@ -36,7 +36,7 @@ ilogit2 <- function(x) { 2^(x) / (1+2^(x)) }
         cat(sprintf("%s%s\n", indent, xx))
     })
 }
-           
+
 
 .show.preprocessMethod <- function(preprocessMethod) {
     if(length(preprocessMethod) == 3 && is.null(names(preprocessMethod)))
@@ -82,12 +82,12 @@ ilogit2 <- function(x) { 2^(x) / (1+2^(x)) }
     stopifnot(offset >= 0)
     stopifnot(betaThreshold >= 0 & betaThreshold <= 0.5)
     if(minZero) {
-        Meth <- pmax(Meth, 0)
-        Unmeth <- pmax(Unmeth, 0)
+        Meth <- pmax2(Meth, 0)
+        Unmeth <- pmax2(Unmeth, 0)
     }
     beta <- Meth / (Meth + Unmeth + offset)
     if(betaThreshold > 0) {
-        beta <- pmin(pmax(beta, betaThreshold), 1-betaThreshold)
+        beta <- pmin2(pmax2(beta, betaThreshold), 1-betaThreshold)
     }
     beta
 }
@@ -201,7 +201,7 @@ ilogit2 <- function(x) { 2^(x) / (1+2^(x)) }
     }
     list(x = x, y = y[, names(x)])
 }
-    
+
 getMethSignal <- function(object, what = c("Beta", "M"), ...) {
     what <- match.arg(what)
     switch(what,
