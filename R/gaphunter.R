@@ -1,9 +1,11 @@
+# HDF5: This works with DelayedArray-backed objects but with no attempt at
+#       optimization
 gaphunter <- function(object, threshold = 0.05, keepOutliers = FALSE,
                       outCutoff = 0.01, verbose = TRUE) {
     if ((threshold <= 0) || (threshold >= 1))
-        stop("[gaphunter] 'threshold' must be between 0 and 1.") 
+        stop("[gaphunter] 'threshold' must be between 0 and 1.")
     if ((outCutoff <= 0) || (outCutoff >= 0.5))
-        stop("[gaphunter] 'outCutoff' must be between 0 and 0.5.") 
+        stop("[gaphunter] 'outCutoff' must be between 0 and 0.5.")
     if (is(object, "GenomicRatioSet") || is(object, "GenomicMethylSet") ||
         is(object, "MethylSet") || is(object,"RatioSet")) {
         if(verbose)
@@ -24,6 +26,9 @@ gaphunter <- function(object, threshold = 0.05, keepOutliers = FALSE,
             message("[gaphunter] Removing probes containing missing beta values.")
         Beta <- Beta[which(nacheck == 0),]
     }
+    # HDF5: Need to realize Beta in memory as an ordinary matrix in order to
+    #       run the rest of the routine
+    Beta <- as.matrix(Beta)
 
     if (verbose) {
         message("[gaphunter] Using ",prettyNum(nrow(Beta),big.mark = ",",scientific = FALSE),
@@ -34,16 +39,16 @@ gaphunter <- function(object, threshold = 0.05, keepOutliers = FALSE,
     sorting <- t(apply(Beta, 1, sort.int, method = "quick", index.return = TRUE))
     sortedindices <- lapply(sorting, function(n) { return(n$ix) })
     sortedbeta <- do.call("rbind", lapply(sorting, function(n) {return(n$x)} ))
-    rownames(sortedbeta) <- rownames(Beta) 
-    diffs <- rowDiffs(sortedbeta) 
+    rownames(sortedbeta) <- rownames(Beta)
+    diffs <- rowDiffs(sortedbeta)
     gapind <- rowSums(diffs > threshold)
     sortedindices <- lapply(which(gapind > 0), function(h) { return(sortedindices[[h]]) })
     sortedbeta <- sortedbeta[which(gapind > 0),]
     diffs <- diffs[which(gapind > 0),]
     gapind <- gapind[which(gapind > 0)]
-    
+
     breakpoints <- apply(diffs,1,function(x) { return(which(x > threshold)) })
-    
+
     returngroups <- function(x,y) {
         template <- rep(1, ncol(sortedbeta))
         count <- 2
@@ -53,7 +58,7 @@ gaphunter <- function(object, threshold = 0.05, keepOutliers = FALSE,
         }
         return(template)
     }
-    
+
     groupanno <- t(mapply(returngroups, breakpoints, sortedindices))
     maxGroups <- max(groupanno)
     gapanno <- matrix(0, nrow = nrow(groupanno), ncol = maxGroups + 1)
@@ -64,18 +69,18 @@ gaphunter <- function(object, threshold = 0.05, keepOutliers = FALSE,
     ## gapanno <- apply(groupanno, 1, function(k) {
     ##     tempgap <- rep(0, max(gapind) + 2)
     ##     kl <- length(unique(k))
-    ##     tempgap[1] <- kl 
+    ##     tempgap[1] <- kl
     ##     tempgap[1 + 1:kl] <- table(k)
     ##     return(tempgap)
     ## })
     ## gapanno <- t(gapanno)
     rownames(gapanno) <- rownames(sortedbeta)
     rownames(groupanno) <- rownames(sortedbeta)
-    
+
     if(verbose)
         message("[gaphunter] Found ",
                 prettyNum(nrow(gapanno),big.mark = ",",scientific = FALSE), " gap signals.")
-    
+
     if (keepOutliers == FALSE) {
         if (verbose)
             message("[gaphunter] Filtering out gap signals driven by outliers.")
