@@ -1,3 +1,5 @@
+# TODO: No explicit support/requirement that M and Beta are DelayedArray (or
+#       indeed anything)
 setClass("GenomicRatioSet",
          representation(preprocessMethod = "character",
                         annotation = "character"),
@@ -91,6 +93,7 @@ setReplaceMethod("annotation", signature(object = "GenomicRatioSet"),
     object
 })
 
+# TODO: If enforce DelayedArray, need to update matrix-based objects
 setMethod("updateObject", signature(object = "GenomicRatioSet"),
           function(object, ..., verbose = FALSE) {
               if(object@annotation["annotation"] == "ilmn.v1.2")
