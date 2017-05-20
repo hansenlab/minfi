@@ -44,10 +44,11 @@ importFrom("stats", "approx", "as.formula", "cmdscale", "contrasts",
            "pchisq", "pf", "pnorm", "prcomp", "pt", "rnorm", "runif",
            "vcov")
 importClassesFrom(DelayedArray, DelayedMatrix)
+importFrom(DelayedArray, realize, seed)
 
 export(getManifest, getProbeInfo, getManifestInfo,
        IlluminaMethylationManifest, IlluminaMethylationAnnotation,
-       getControlAddress, 
+       getControlAddress,
        getRed, getGreen, getNBeads, getMeth, getUnmeth,
        getBeta, getM, getCN, getMethSignal,
        getOOB, getSnpBeta,
