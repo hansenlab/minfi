@@ -15,128 +15,145 @@ MethylSet <- function(Meth = new("DelayedMatrix"), Unmeth = new("DelayedMatrix")
         SummarizedExperiment(assays = assays, ...),
         annotation = annotation,
         preprocessMethod = preprocessMethod
-        )
+    )
 }
 
 setMethod("show", signature(object = "MethylSet"),
           function(object) {
-    callNextMethod()
-    .show.annotation(annotation(object))
-    .show.preprocessMethod(preprocessMethod(object))
-})
+              callNextMethod()
+              .show.annotation(annotation(object))
+              .show.preprocessMethod(preprocessMethod(object))
+          })
 
 setMethod("getMeth", signature(object = "MethylSet"),
           function(object) {
-    assay(object, "Meth")
-})
+              assay(object, "Meth")
+          })
 
 setMethod("getUnmeth", signature(object = "MethylSet"),
           function(object) {
-    assay(object, "Unmeth")
-})
+              assay(object, "Unmeth")
+          })
 
 setMethod("getBeta", signature(object = "MethylSet"),
           function(object, type = "", offset = 0, betaThreshold = 0) {
-    if(type == "Illumina") {
-        offset <- 100
-    }
-    .betaFromMethUnmeth(Meth = getMeth(object), Unmeth = getUnmeth(object),
-                        offset = offset, betaThreshold = betaThreshold)
-})
+              if(type == "Illumina") {
+                  offset <- 100
+              }
+              .betaFromMethUnmeth(Meth = getMeth(object),
+                                  Unmeth = getUnmeth(object),
+                                  offset = offset,
+                                  betaThreshold = betaThreshold)
+          })
 
 setMethod("getM", signature(object = "MethylSet"),
           function (object, type = "", ...) {
-    if(type == "")
-        return(log2(getMeth(object) / getUnmeth(object)))
-    if(type == "beta" || type == "Beta")
-        return(logit2(getBeta(object, ...)))
-})
+              if(type == "")
+                  return(log2(getMeth(object) / getUnmeth(object)))
+              if(type == "beta" || type == "Beta")
+                  return(logit2(getBeta(object, ...)))
+          })
 
 setMethod("getCN", signature(object = "MethylSet"),
           function(object, ...) {
-    CN <- log2(getMeth(object) + getUnmeth(object))
-    CN
-})
+              CN <- log2(getMeth(object) + getUnmeth(object))
+              CN
+          })
 
 setMethod("preprocessMethod", signature(object = "MethylSet"),
           function(object) {
-    object@preprocessMethod
-})
+              object@preprocessMethod
+          })
 
 setMethod("annotation", signature(object = "MethylSet"),
           function(object) {
-    object@annotation
-})
+              object@annotation
+          })
 
 setReplaceMethod("annotation", signature(object = "MethylSet"),
-          function(object, value) {
-    object@annotation <- value
-    object
-})
+                 function(object, value) {
+                     object@annotation <- value
+                     object
+                 })
 
 setMethod("getManifest", signature(object = "MethylSet"),
           function(object) {
-    maniString <- .getManifestString(object@annotation)
-    if(!require(maniString, character.only = TRUE))
-        stop(sprintf("cannot load manifest package %s", maniString))
-    get(maniString)
-})
+              maniString <- .getManifestString(object@annotation)
+              if(!require(maniString, character.only = TRUE))
+                  stop(sprintf("cannot load manifest package %s", maniString))
+              get(maniString)
+          })
 
 setMethod("mapToGenome", signature(object = "MethylSet"),
           function(object, mergeManifest = FALSE) {
-    gr <- getLocations(object, mergeManifest = mergeManifest,
-                       orderByLocation = TRUE, lociNames = rownames(object))
-    object <- object[names(gr),]
-    GenomicMethylSet(gr = gr, Meth = getMeth(object),
-                     Unmeth = getUnmeth(object),
-                     colData = colData(object),
-                     preprocessMethod = preprocessMethod(object),
-                     annotation = annotation(object),
-                     metadata = metadata(object))
-})
+              gr <- getLocations(object, mergeManifest = mergeManifest,
+                                 orderByLocation = TRUE, lociNames = rownames(object))
+              object <- object[names(gr),]
+              GenomicMethylSet(gr = gr, Meth = getMeth(object),
+                               Unmeth = getUnmeth(object),
+                               colData = colData(object),
+                               preprocessMethod = preprocessMethod(object),
+                               annotation = annotation(object),
+                               metadata = metadata(object))
+          })
 
 setMethod("updateObject", signature(object = "MethylSet"),
           function(object, ..., verbose=FALSE) {
-    if (verbose) message("updateObject(object = 'MethylSet')")
-    if("assayData" %in% names(getObjectSlots(object))) {
-        ## This is an ExpressionSet based object
-        object <- MethylSet(Meth = getObjectSlots(object)[["assayData"]][["Meth"]],
-                            Unmeth = getObjectSlots(object)[["assayData"]][["Unmeth"]],
-                            colData = getObjectSlots(getObjectSlots(object)[["phenoData"]])[["data"]],
-                            annotation = getObjectSlots(object)[["annotation"]],
-                            preprocessMethod = getObjectSlots(object)[["preprocessMethod"]])
-    }
-    object
-})
+              if (verbose) {
+                  message("updateObject(object = 'MethylSet')")
+              }
+              if ("assayData" %in% names(getObjectSlots(object))) {
+                  ## This is an ExpressionSet based object
+                  Meth <- getObjectSlots(object)[["assayData"]][["Meth"]]
+                  Unmeth <- getObjectSlots(object)[["assayData"]][["Unmeth"]]
+                  colData <- getObjectSlots(
+                      getObjectSlots(object)[["phenoData"]])[["data"]]
+                  annotation <- getObjectSlots(object)[["annotation"]]
+                  preprocessMethod <- getObjectSlots(
+                      object)[["preprocessMethod"]]
+              }
+              # This is a matrix-based object
+              if (is.matrix(Meth)) {
+                  Meth <- DelayedArray(Meth)
+              }
+              if (is.matrix(Unmeth)) {
+                  Unmeth <- DelayedArray(Unmeth)
+              }
+              MethylSet(Meth = Meth,
+                        Unmeth = Unmeth,
+                        annotation = annotaiton,
+                        preprocessMethod = preprocessMethod,
+                        colData = colData)
+          })
 
 
 setMethod("ratioConvert", signature(object = "MethylSet"),
           function(object, what = c("beta", "M", "both"), keepCN = TRUE, ...) {
-    what <- match.arg(what)
-    if(what == "beta") {
-        Beta <- getBeta(object, ...)
-        M <- NULL
-    }
-    if(what == "M") {
-        Beta <- NULL
-        M <- getM(object, ...)
-    }
-    if(what == "both") {
-        Beta <- getBeta(object, ...)
-        M <- getM(object, ...)
-    }
-    if(keepCN) {
-        CN <- getCN(object)
-    } else {
-        CN <- NULL
-    }
-    RatioSet(Beta = Beta, M = M, CN = CN,
-             colData = colData(object),
-             annotation = annotation(object),
-             preprocessMethod = preprocessMethod(object),
-             rowData = rowData(object),
-             metadata = metadata(object))
-})
+              what <- match.arg(what)
+              if(what == "beta") {
+                  Beta <- getBeta(object, ...)
+                  M <- NULL
+              }
+              if(what == "M") {
+                  Beta <- NULL
+                  M <- getM(object, ...)
+              }
+              if(what == "both") {
+                  Beta <- getBeta(object, ...)
+                  M <- getM(object, ...)
+              }
+              if(keepCN) {
+                  CN <- getCN(object)
+              } else {
+                  CN <- NULL
+              }
+              RatioSet(Beta = Beta, M = M, CN = CN,
+                       colData = colData(object),
+                       annotation = annotation(object),
+                       preprocessMethod = preprocessMethod(object),
+                       rowData = rowData(object),
+                       metadata = metadata(object))
+          })
 
 dropMethylationLoci <- function(object, dropRS = TRUE, dropCH = TRUE) {
     stopifnot(class(object) %in% c("MethylSet", "GenomicMethylSet", "RatioSet", "GenomicRatioSet"))
@@ -156,9 +173,9 @@ dropMethylationLoci <- function(object, dropRS = TRUE, dropCH = TRUE) {
 
 setMethod("combine", signature(x = "MethylSet", y = "MethylSet"),
           function(x, y, ...) {
-    colDataFix <- .harmonizeDataFrames(.pDataFix(colData(x)),
-                                       .pDataFix(colData(y)))
-    colData(x) <- colDataFix$x
-    colData(y) <- colDataFix$y
-    cbind(x,y)
-})
+              colDataFix <- .harmonizeDataFrames(.pDataFix(colData(x)),
+                                                 .pDataFix(colData(y)))
+              colData(x) <- colDataFix$x
+              colData(y) <- colDataFix$y
+              cbind(x,y)
+          })
