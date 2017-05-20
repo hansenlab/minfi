@@ -6,7 +6,7 @@
         arrayAnnotation <- c(array = "IlluminaHumanMethylationEPIC", annotation = .default.epic.annotation)
     } else if(nProbes >= 1032000 && nProbes <= 1033000) {
         ## "Old EPIC scan type"
-        arrayAnnotation <- c(array = "IlluminaHumanMethylationEPIC", annotation = .default.epic.annotation) 
+        arrayAnnotation <- c(array = "IlluminaHumanMethylationEPIC", annotation = .default.epic.annotation)
     } else if(nProbes >= 54000 && nProbes <= 56000) {
         arrayAnnotation <- c(array = "IlluminaHumanMethylation27k", annotation = .default.27k.annotation)
     } else {
@@ -15,11 +15,12 @@
     arrayAnnotation
 }
 
-read.metharray <- function(basenames, extended = FALSE, verbose = FALSE, force = FALSE) {
+# TODO: mc.cores?
+read.metharray <- function(basenames, extended = FALSE, verbose = FALSE, force = FALSE, BACKEND = NULL) {
     basenames <- sub("_Grn\\.idat.*", "", basenames)
     basenames <- sub("_Red\\.idat.*", "", basenames)
     stopifnot(!anyDuplicated(basenames))
-    
+
     G.files <- paste(basenames, "_Grn.idat", sep = "")
     names(G.files) <- basename(basenames)
     these.dont.exists <- !file.exists(G.files)
@@ -38,14 +39,19 @@ read.metharray <- function(basenames, extended = FALSE, verbose = FALSE, force =
         noexits <- R.files[!file.exists(G.files)]
         stop("The following specified files do not exist:", paste(noexits, collapse = ", "))
     }
+    # TODO: Only `Quants` is being realize()-d; other elements too?
     stime <- system.time({
         G.idats <- lapply(G.files, function(xx) {
             if(verbose) message("[read.metharray] Reading", basename(xx))
-            readIDAT(xx)
+            val <- readIDAT(xx)
+            val[["Quants"]] <- realize(val[["Quants"]], BACKEND = BACKEND)
+            val
         })
         R.idats <- lapply(R.files, function(xx) {
             if(verbose) message("[read.metharray] Reading", basename(xx))
-            readIDAT(xx)
+            val <- readIDAT(xx)
+            val[["Quants"]] <- realize(val[["Quants"]], BACKEND = BACKEND)
+            val
         })
     })[3]
     if(verbose) message(sprintf("[read.metharray] Read idat files in %.1f seconds", stime))
@@ -56,7 +62,7 @@ read.metharray <- function(basenames, extended = FALSE, verbose = FALSE, force =
                         size = allNProbes)
     sameLength <- (length(unique(arrayTypes[, "size"])) == 1)
     sameArray <- (length(unique(arrayTypes[, "array"])) == 1)
-    
+
     if(!sameLength && !sameArray) {
         cat("[read.metharray] Trying to parse IDAT files from different arrays.\n")
         cat("  Inferred Array sizes and types:\n")
@@ -68,11 +74,21 @@ read.metharray <- function(basenames, extended = FALSE, verbose = FALSE, force =
     }
     commonAddresses <- as.character(Reduce("intersect", lapply(G.idats, function(xx) rownames(xx$Quants))))
     GreenMean <- do.call(cbind, lapply(G.idats, function(xx) xx$Quants[commonAddresses, "Mean"]))
+    colnames(GreenMean) <- names(G.idats)
+    GreenMean <- realize(GreenMean, BACKEND = BACKEND)
     RedMean <- do.call(cbind, lapply(R.idats, function(xx) xx$Quants[commonAddresses, "Mean"]))
+    colnames(RedMean) <- names(R.idats)
+    RedMean <- realize(RedMean, BACKEND = BACKEND)
     if(extended) {
         GreenSD <- do.call(cbind, lapply(G.idats, function(xx) xx$Quants[commonAddresses, "SD"]))
+        colnames(GreenSD) <- names(G.idats)
+        GreenSd <- realize(GreenSD, BACKEND = BACKEND)
         RedSD <- do.call(cbind, lapply(R.idats, function(xx) xx$Quants[commonAddresses, "SD"]))
+        colnames(RedSd) <- names(R.idats)
+        RedSd <- realize(RedSD, BACKEND = BACKEND)
         NBeads <- do.call(cbind, lapply(G.idats, function(xx) xx$Quants[commonAddresses, "NBeads"]))
+        colnames(NBeads) <- names(G.idats)
+        NBeads <- realize(NBeads, BACKEND = BACKEND)
     }
     ptime2 <- proc.time()
     stime <- (ptime2 - ptime1)[3]
@@ -85,6 +101,8 @@ read.metharray <- function(basenames, extended = FALSE, verbose = FALSE, force =
     } else {
         out <- RGChannelSet(Red = RedMean, Green = GreenMean)
     }
+    # TODO: Do assays really need dimnames? Can get them via
+    #       withDimnames = TRUE and inflates object size
     rownames(out) <- commonAddresses
     out@annotation <- c(array = arrayTypes[1,1], annotation = arrayTypes[1,2])
     ptime2 <- proc.time()
@@ -94,7 +112,8 @@ read.metharray <- function(basenames, extended = FALSE, verbose = FALSE, force =
 }
 
 read.metharray.sheet <- function(base, pattern = "csv$", ignore.case = TRUE,
-                                 recursive = TRUE, verbose = TRUE) {
+                                 recursive = TRUE, verbose = TRUE,
+                                 BACKEND = NULL) {
     readSheet <- function(file) {
         dataheader <- grep("^\\[DATA\\]", readLines(file), ignore.case = TRUE)
         if(length(dataheader) == 0)
@@ -131,7 +150,7 @@ read.metharray.sheet <- function(base, pattern = "csv$", ignore.case = TRUE,
                 df[[nam]] <- as.character(df[[nam]])
             }
         }
-            
+
         if(!is.null(df$Array)) {
             patterns <- sprintf("%s_%s_Grn.idat", df$Slide, df$Array)
             allfiles <- list.files(dirname(file), recursive = recursive, full.names = TRUE)
@@ -165,10 +184,11 @@ read.metharray.sheet <- function(base, pattern = "csv$", ignore.case = TRUE,
     }))
     df
 }
-    
 
-read.metharray.exp <- function(base = NULL, targets = NULL, extended = FALSE, 
-                               recursive = FALSE, verbose = FALSE, force = FALSE) {
+
+read.metharray.exp <- function(base = NULL, targets = NULL, extended = FALSE,
+                               recursive = FALSE, verbose = FALSE,
+                               force = FALSE, BACKEND = NULL) {
     if(!is.null(targets)) {
         if(! "Basename" %in% names(targets))
             stop("Need 'Basename' amongst the column names of 'targets'")
@@ -177,7 +197,8 @@ read.metharray.exp <- function(base = NULL, targets = NULL, extended = FALSE,
         } else {
             files <- targets$Basename
         }
-        rgSet <- read.metharray(files, extended = extended, verbose = verbose, force = force)
+        rgSet <- read.metharray(files, extended = extended, verbose = verbose,
+                                force = force, BACKEND = BACKEND)
         pD <- targets
         pD$filenames <- files
         rownames(pD) <- colnames(rgSet)
@@ -202,6 +223,7 @@ read.metharray.exp <- function(base = NULL, targets = NULL, extended = FALSE,
     if(!setequal(commonFiles.Red, Red.files))
         warning(sprintf("the following files only exists for the red channel: %s",
                         paste(setdiff(Red.files, commonFiles.Red), collapse = ", ")))
-    rgSet <- read.metharray(basenames = commonFiles, extended = extended, verbose = verbose, force = force)
+    rgSet <- read.metharray(basenames = commonFiles, extended = extended,
+                            verbose = verbose, force = force, BACKEND = BACKEND)
     rgSet
 }
