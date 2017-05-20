@@ -44,7 +44,7 @@ importFrom("stats", "approx", "as.formula", "cmdscale", "contrasts",
            "pchisq", "pf", "pnorm", "prcomp", "pt", "rnorm", "runif",
            "vcov")
 importClassesFrom(DelayedArray, DelayedMatrix)
-importFrom(DelayedArray, realize, seed)
+importFrom(DelayedArray, DelayedArray, pmax2, pmin2, realize, seed, type)
 
 export(getManifest, getProbeInfo, getManifestInfo,
        IlluminaMethylationManifest, IlluminaMethylationAnnotation,
