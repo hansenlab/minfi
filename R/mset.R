@@ -7,7 +7,7 @@ setValidity("MethylSet", function(object) {
     if(is.null(msg)) TRUE else msg
 })
 
-MethylSet <- function(Meth = new("matrix"), Unmeth = new("matrix"),
+MethylSet <- function(Meth = new("DelayedMatrix"), Unmeth = new("DelayedMatrix"),
                       annotation = "", preprocessMethod = "", ...) {
     ## Check rownames, colnames
     assays <- SimpleList(Meth = Meth, Unmeth = Unmeth)

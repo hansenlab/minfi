@@ -9,7 +9,7 @@ setValidity("GenomicMethylSet", function(object) {
     if (is.null(msg)) TRUE else msg
 })
 
-GenomicMethylSet <- function(gr = GRanges(), Meth = new("matrix"), Unmeth = new("matrix"),
+GenomicMethylSet <- function(gr = GRanges(), Meth = new("DelayedMatrix"), Unmeth = new("DelayedMatrix"),
                              annotation = "", preprocessMethod = "", ...) {
     assays <- SimpleList(Meth = Meth, Unmeth = Unmeth)
     new("GenomicMethylSet",

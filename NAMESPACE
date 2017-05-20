@@ -43,6 +43,7 @@ importFrom("stats", "approx", "as.formula", "cmdscale", "contrasts",
            "dist", "fitted", "kmeans", "lm", "lm.fit", "model.matrix",
            "pchisq", "pf", "pnorm", "prcomp", "pt", "rnorm", "runif",
            "vcov")
+importClassesFrom(DelayedArray, DelayedMatrix)
 
 export(getManifest, getProbeInfo, getManifestInfo,
        IlluminaMethylationManifest, IlluminaMethylationAnnotation,

@@ -52,7 +52,9 @@ Imports:  S4Vectors,
           stats,
           grDevices,
           graphics,
-          utils
+          utils,
+    DelayedArray,
+    HDF5Array
 Collate:  generics.R
 	  mset.R
 	  rset.R

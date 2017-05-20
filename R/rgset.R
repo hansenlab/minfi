@@ -7,8 +7,9 @@ setValidity("RGChannelSet", function(object) {
     if(is.null(msg)) TRUE else msg
 })
 
-RGChannelSet <- function(Green = new("matrix"), Red = new("matrix"),
+RGChannelSet <- function(Green = new("DelayedMatrix"), Red = new("DelayedMatrix"),
                          annotation = "", ...) {
+    stopifnot(is(Green, "DelayedMatrix") && is(Red, "DelayedMatrix"))
     ## Check rownames, colnames
     assays <- SimpleList(Green = Green, Red = Red)
     new("RGChannelSet",
@@ -43,9 +44,9 @@ setValidity("RGChannelSetExtended", function(object) {
     if (is.null(msg)) TRUE else msg
 })
 
-RGChannelSetExtended <- function(Green = new("matrix"), Red = new("matrix"),
-                                 GreenSD = new("matrix"), RedSD = new("matrix"),
-                                 NBeads = new("matrix"), annotation = "",
+RGChannelSetExtended <- function(Green = new("DelayedMatrix"), Red = new("DelayedMatrix"),
+                                 GreenSD = new("DelayedMatrix"), RedSD = new("DelayedMatrix"),
+                                 NBeads = new("DelayedMatrix"), annotation = "",
                                  ...) {
     ## Check rownames, colnames
     assays <- SimpleList(Green = Green, Red = Red,
@@ -126,12 +127,12 @@ getSnpBeta <- function(object){
     U.I.Red <- getRed(object)[snpProbesI.Red$AddressA,,drop=FALSE]
     M.I.Green <- getGreen(object)[snpProbesI.Green$AddressB,,drop=FALSE]
     U.I.Green <- getGreen(object)[snpProbesI.Green$AddressA,,drop=FALSE]
-    
+
     M <- rbind(M.II, M.I.Red, M.I.Green)
     U <- rbind(U.II, U.I.Red, U.I.Green)
     rownames(M) <- rownames(U) <- c(snpProbesII, snpProbesI.Red$Name, snpProbesI.Green$Name)
     beta <- M/(U+M+100)
-    return(beta)                               
+    return(beta)
 }
 
 setMethod("getManifest", signature(object = "RGChannelSet"),
@@ -169,7 +170,7 @@ subsetByLoci <- function(rgSet, includeLoci = NULL, excludeLoci = NULL, keepCont
         TypeI.Red <- TypeI.Red[! TypeI.Red$Name %in% excludeLoci, ]
         TypeI.Green <- TypeI.Green[! TypeI.Green$Name %in% excludeLoci, ]
     }
-    addresses <- c(TypeII$AddressA, 
+    addresses <- c(TypeII$AddressA,
                    TypeI.Red$AddressA, TypeI.Red$AddressB,
                    TypeI.Green$AddressA, TypeI.Green$AddressB)
     if (keepControls){
@@ -193,7 +194,7 @@ setMethod("combine", signature(x = "RGChannelSet", y = "RGChannelSet"),
     colData(y) <- colDataFix$y
     cbind(x,y)
 })
-                   
+
 setMethod("coerce", signature(from = "RGChannelSetExtended", to = "RGChannelSet"),
           function(from, to){
     if(nrow(from) > 0 || ncol(from) > 0)
