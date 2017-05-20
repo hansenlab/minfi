@@ -1,3 +1,5 @@
 ^\.travis\.yml$
 .DS_Store
 
+^.*\.Rproj$
+^\.Rproj\.user$
