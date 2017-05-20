@@ -23,8 +23,8 @@ preprocessRaw <- function(rgSet) {
         U <- M
         green <- as.matrix(getGreen(rgSet)[, this_sample])
         red <- as.matrix(getRed(rgSet)[, this_sample])
-        M[TypeII.Name, ] <- green[TypeII$AddressA, ]
-        U[TypeII.Name, ] <- red[TypeII$AddressA, ]
+        M[TypeII$Name, ] <- green[TypeII$AddressA, ]
+        U[TypeII$Name, ] <- red[TypeII$AddressA, ]
         M[TypeI.Red$Name,] <- red[TypeI.Red$AddressB, ]
         M[TypeI.Green$Name,] <- green[TypeI.Green$AddressB, ]
         U[TypeI.Red$Name,] <- red[TypeI.Red$AddressA, ]
