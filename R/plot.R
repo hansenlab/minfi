@@ -1,6 +1,7 @@
+# HDF5: Currently loads `getBeta(dat)` into memory
 mdsPlot <- function(dat, numPositions=1000, sampNames=NULL, sampGroups=NULL, xlim, ylim, pch=1, pal=brewer.pal(8, "Dark2"), legendPos="bottomleft", legendNCol, main=NULL) {
     if (is(dat, "MethylSet") || is(dat, "RGChannelSet")) {
-        b <- getBeta(dat)
+        b <- as.matrix(getBeta(dat))
         if(is.null(main)) main <- sprintf("Beta MDS\n%d most variable positions", numPositions)
     } else if (is(dat, "matrix")) {
         b <- dat
@@ -29,24 +30,25 @@ mdsPlot <- function(dat, numPositions=1000, sampNames=NULL, sampGroups=NULL, xli
     }
 }
 
+# HDF5: Currently loads `getBeta(dat[cpg, ])` OR `getM(dat[cpg, ])` into memory
 plotCpg <- function(dat, cpg, pheno, type=c("categorical", "continuous"), measure=c("beta", "M"), ylim=NULL, ylab = NULL, xlab="", fitLine=TRUE, mainPrefix=NULL, mainSuffix=NULL) {
     if (is.numeric(cpg)) cpg <- rownames(dat)[cpg]
     type <- match.arg(type)
     measure <- match.arg(measure)
     if (is(dat, "MethylSet") || is(dat, "RGChannelSet")) {
         if (measure=="beta") {
-            x <- getBeta(dat[cpg,])
+            x <- as.matrix(getBeta(dat[cpg,]))
             if(is.null(ylab)) ylab <- "Beta"
             if (is.null(ylim)) ylim <- c(0,1)
         } else if (measure=="M") {
-            x <- getM(dat[cpg,])
+            x <- as.matrix(getM(dat[cpg,]))
             if(is.null(ylab)) ylab <- "M"
             if (is.null(ylim)) ylim <- range(x)
         }
     } else {
         if(is.null(ylab)) ylab <- "unknown"
         x <- dat
-        if (is.vector(x)) 
+        if (is.vector(x))
             x <- matrix(x, ncol = 1)
     }
     main <- paste(mainPrefix, cpg, mainSuffix)

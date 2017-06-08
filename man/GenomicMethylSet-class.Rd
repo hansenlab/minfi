@@ -33,8 +33,8 @@
 \usage{
 ## Constructor
 
-GenomicMethylSet(gr = GRanges(), Meth = new("matrix"),
-                 Unmeth = new("matrix"), annotation = "",
+GenomicMethylSet(gr = GRanges(), Meth = new("DelayedMatrix"),
+                 Unmeth = new("DelayedMatrix"), annotation = "",
                  preprocessMethod = "", ...)
 
 ## Data extraction / Accessors
@@ -67,7 +67,7 @@ GenomicMethylSet(gr = GRanges(), Meth = new("matrix"),
   the logit of \code{getBeta(object)}.}
   \item{offset}{Offset in the beta ratio, see detail.}
   \item{betaThreshold}{Constrains the beta values to be in the inverval
-    betwen \code{betaThreshold} and 1-\code{betaThreshold}.}  
+    betwen \code{betaThreshold} and 1-\code{betaThreshold}.}
   \item{\dots}{For the constructor, additional arguments to be passed to
     \code{SummarizedExperiment}; of particular interest are
     \code{colData} and \code{metadata}. For \code{getM} these values
@@ -92,9 +92,9 @@ arguments outlined above.
 \section{Accessors}{
   A number of useful accessors are inherited from
   \code{RangedSummarizedExperiment}.
-  
+
   In the following code, \code{object} is a \code{GenomicMethylSet}.
-  
+
   \describe{
     \item{\code{getMeth(object)}, \code{getUnmeth(object)}}{Get the
       Meth or Unmeth matrix.}

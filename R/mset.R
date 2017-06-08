@@ -4,6 +4,7 @@ setClass("MethylSet",
 
 setValidity("MethylSet", function(object) {
     msg <- validMsg(NULL, .checkAssayNames(object, c("Meth", "Unmeth")))
+    # TODO: Add check that assays are DelayedMatrix objects
     if(is.null(msg)) TRUE else msg
 })
 
@@ -111,6 +112,13 @@ setMethod("updateObject", signature(object = "MethylSet"),
                   annotation <- getObjectSlots(object)[["annotation"]]
                   preprocessMethod <- getObjectSlots(
                       object)[["preprocessMethod"]]
+              } else {
+                  ## This is a SummarizedExperiment based object
+                  Meth <- assay(object, "Meth")
+                  Unmeth <- assay(object, "Unmeth")
+                  colData <- colData(object)
+                  annotation <- annotation(object)
+                  preprocessMethod <- preprocessMethod(object)
               }
               # This is a matrix-based object
               if (is.matrix(Meth)) {
@@ -121,7 +129,7 @@ setMethod("updateObject", signature(object = "MethylSet"),
               }
               MethylSet(Meth = Meth,
                         Unmeth = Unmeth,
-                        annotation = annotaiton,
+                        annotation = annotation,
                         preprocessMethod = preprocessMethod,
                         colData = colData)
           })

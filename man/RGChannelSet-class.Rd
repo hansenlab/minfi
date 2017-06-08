@@ -37,12 +37,13 @@
 \usage{
 ## Constructors
 
-RGChannelSet(Green = new("matrix"), Red = new("matrix"),
+RGChannelSet(Green = new("DelayedMatrix"), Red = new("DelayedMatrix"),
              annotation = "", ...)
 
-RGChannelSetExtended(Green = new("matrix"), Red = new("matrix"),
-                    GreenSD = new("matrix"), RedSD = new("matrix"),
-                    NBeads = new("matrix"), annotation = "", ...)
+RGChannelSetExtended(Green = new("DelayedMatrix"), Red = new("DelayedMatrix"),
+                    GreenSD = new("DelayedMatrix"),
+                    RedSD = new("DelayedMatrix"),
+                    NBeads = new("DelayedMatrix"), annotation = "", ...)
 
 ## Accessors
 
@@ -72,16 +73,16 @@ getSnpBeta(object)
     with each row being a methylation loci and each column a sample.}
   \item{Red}{See the \code{Green} argument, but for the Green channel.}
   \item{GreenSD}{See the \code{Green} argument, but for standard
-    deviations of the Green channel summaries.}  
+    deviations of the Green channel summaries.}
   \item{RedSD}{See the \code{Green}, but for standard deviations of the
-    Red channel summaries.} 
+    Red channel summaries.}
   \item{NBeads}{See the \code{Green} argument, but contains the number
     of beads used to summarize the Green and Red channels.}
   \item{annotation}{An annotation string, optional.}
   \item{\dots}{For the constructor(s), additional arguments to be passed
     to \code{SummarizedExperiment}; of particular interest are
     \code{colData}, \code{rowData} and \code{metadata}.  For
-    \code{getBeta} these values gets passed onto \code{getBeta}.} 
+    \code{getBeta} these values gets passed onto \code{getBeta}.}
 }
 
 \section{Constructors}{
@@ -134,14 +135,14 @@ getSnpBeta(object)
     of the array.}
   }
 }
-  
+
 \author{Kasper Daniel Hansen \email{khansen@jhsph.edu}}
 
 \seealso{
   See \code{\linkS4class{eSet}} for the basic class that is used as a
   building block for \code{"RGChannelSet(Extended)"}.  See
   \code{\link{IlluminaMethylationManifest}} for a class representing the
-  design of the array. 
+  design of the array.
 }
 
 \examples{

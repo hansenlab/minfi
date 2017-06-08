@@ -3,7 +3,7 @@
 \alias{addQC}
 \alias{plotQC}
 \title{
-  Estimate sample-specific quality control (QC) for methylation data 
+  Estimate sample-specific quality control (QC) for methylation data
 }
 \description{
   Estimate sample-specific quality control (QC) for methylation data.

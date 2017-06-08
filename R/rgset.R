@@ -4,6 +4,7 @@ setClass("RGChannelSet",
 
 setValidity("RGChannelSet", function(object) {
     msg <- validMsg(NULL, .checkAssayNames(object, c("Red", "Green")))
+    # TODO: Add check that assays are DelayedMatrix objects
     if(is.null(msg)) TRUE else msg
 })
 
@@ -15,25 +16,25 @@ RGChannelSet <- function(Green = new("DelayedMatrix"), Red = new("DelayedMatrix"
     new("RGChannelSet",
         SummarizedExperiment(assays = assays, ...),
         annotation = annotation
-        )
+    )
 }
 
 setMethod("show", signature(object = "RGChannelSet"),
           function(object) {
-    callNextMethod()
-    .show.annotation(annotation(object))
-})
+              callNextMethod()
+              .show.annotation(annotation(object))
+          })
 
 setMethod("annotation", signature(object = "RGChannelSet"),
           function(object) {
-    object@annotation
-})
+              object@annotation
+          })
 
 setReplaceMethod("annotation", signature(object = "RGChannelSet"),
-          function(object, value) {
-    object@annotation <- value
-    object
-})
+                 function(object, value) {
+                     object@annotation <- value
+                     object
+                 })
 
 setClass("RGChannelSetExtended",
          contains = "RGChannelSet")
@@ -55,37 +56,67 @@ RGChannelSetExtended <- function(Green = new("DelayedMatrix"), Red = new("Delaye
     new("RGChannelSetExtended",
         SummarizedExperiment(assays = assays, ...),
         annotation = annotation
-        )
+    )
 }
 
 setMethod("updateObject", signature(object = "RGChannelSet"),
           function(object, ..., verbose=FALSE) {
-    if (verbose) message("updateObject(object = 'RGChannelSet')")
-    if("assayData" %in% names(getObjectSlots(object))) {
-        ## This is an ExpressionSet based object
-        object <- RGChannelSet(Green = getObjectSlots(object)[["assayData"]][["Green"]],
-                               Red = getObjectSlots(object)[["assayData"]][["Red"]],
-                               colData = getObjectSlots(getObjectSlots(object)[["phenoData"]])[["data"]],
-                               annotation = getObjectSlots(object)[["annotation"]])
-    }
-    object
-})
+              if (verbose) message("updateObject(object = 'RGChannelSet')")
+              if ("assayData" %in% names(getObjectSlots(object))) {
+                  ## This is an ExpressionSet based object
+                  Green <- getObjectSlots(object)[["assayData"]][["Green"]]
+                  Red <- getObjectSlots(object)[["assayData"]][["Red"]]
+                  colData <- getObjectSlots(getObjectSlots(object)[["phenoData"]])[["data"]]
+                  annotation <- getObjectSlots(object)[["annotation"]]
+              }  else {
+                  ## This is a SummarizedExperiment based object
+                  Red <- assay(object, "Red")
+                  Green <- assay(object, "Green")
+                  colData <- colData(object)
+                  annotation <- annotation(object)
+              }
+              Red <- DelayedArray(Red)
+              Green <- DelayedArray(Green)
+
+              RGChannelSet(Green = Green,
+                           Red = Red,
+                           colData = colData,
+                           annotation = annotation)
+          })
 
 setMethod("updateObject", signature(object = "RGChannelSetExtended"),
           function(object, ..., verbose=FALSE) {
-    if (verbose) message("updateObject(object = 'RGChannelSetExtended')")
-    if("assayData" %in% names(getObjectSlots(object))) {
-        ## This is an ExpressionSet based object
-        object <- RGChannelSetExtended(Green = getObjectSlots(object)[["assayData"]][["Green"]],
-                                       Red = getObjectSlots(object)[["assayData"]][["Red"]],
-                                       GreenSD = getObjectSlots(object)[["assayData"]][["GreenSD"]],
-                                       RedSD = getObjectSlots(object)[["assayData"]][["RedSD"]],
-                                       NBeads = getObjectSlots(object)[["assayData"]][["NBeads"]],
-                                       colData = getObjectSlots(getObjectSlots(object)[["phenoData"]])[["data"]],
-                                       annotation = getObjectSlots(object)[["annotation"]])
-    }
-    object
-})
+              if (verbose) message("updateObject(object = 'RGChannelSetExtended')")
+              if("assayData" %in% names(getObjectSlots(object))) {
+                  ## This is an ExpressionSet based object
+                  Green <- getObjectSlots(object)[["assayData"]][["Green"]]
+                  Red <- getObjectSlots(object)[["assayData"]][["Red"]]
+                  GreenSD <- getObjectSlots(object)[["assayData"]][["GreenSD"]]
+                  RedSD <- getObjectSlots(object)[["assayData"]][["RedSD"]]
+                  NBeads <- getObjectSlots(object)[["assayData"]][["NBeads"]]
+                  colData <- getObjectSlots(getObjectSlots(object)[["phenoData"]])[["data"]]
+                  annotation <- getObjectSlots(object)[["annotation"]]
+              } else {
+                  Green <- assay(object, "Green")
+                  Red <- assay(object, "Red")
+                  GreenSD <- assay(object, "GreenSD")
+                  RedSD <- assay(object, "RedSD")
+                  NBeads <- assay(object, "NBeads")
+              }
+              Green <- DelayedArray(Green)
+              Red <- DelayedArray(Red)
+              GreenSD <- DelayedArray(GreenSD)
+              RedSD <- DelayedArray(RedSD)
+              NBeads <- DelayedArray(NBeads)
+
+              RGChannelSetExtended(Green = Green,
+                                   Red = Red,
+                                   GreenSD = GreenSD,
+                                   RedSD = RedSD,
+                                   NBeads = NBeads,
+                                   colData = colData,
+                                   annotation = annotation)
+          })
 
 
 getRed <- function(object) {
@@ -188,17 +219,17 @@ subsetByLoci <- function(rgSet, includeLoci = NULL, excludeLoci = NULL, keepCont
 
 setMethod("combine", signature(x = "RGChannelSet", y = "RGChannelSet"),
           function(x, y, ...) {
-    colDataFix <- .harmonizeDataFrames(.pDataFix(colData(x)),
-                                       .pDataFix(colData(y)))
-    colData(x) <- colDataFix$x
-    colData(y) <- colDataFix$y
-    cbind(x,y)
-})
+              colDataFix <- .harmonizeDataFrames(.pDataFix(colData(x)),
+                                                 .pDataFix(colData(y)))
+              colData(x) <- colDataFix$x
+              colData(y) <- colDataFix$y
+              cbind(x,y)
+          })
 
 setMethod("coerce", signature(from = "RGChannelSetExtended", to = "RGChannelSet"),
           function(from, to){
-    if(nrow(from) > 0 || ncol(from) > 0)
-        assays(from) <- assays(from)[c("Green", "Red")]
-    class(from) <- "RGChannelSet"
-    from
-})
+              if(nrow(from) > 0 || ncol(from) > 0)
+                  assays(from) <- assays(from)[c("Green", "Red")]
+              class(from) <- "RGChannelSet"
+              from
+          })

@@ -35,13 +35,15 @@ plotSex <- function(object, id = NULL) {
     legend("bottomleft", c("M","F"), col = c("deepskyblue", "deeppink3"), pch = 16)
 }
 
+# HDF5: Currently loads `CN[xIndex, ]` and `CN[yIndex, ]` into memory
 .getSex <- function(CN = NULL, xIndex = NULL, yIndex = NULL, cutoff=-2) {
     if(is.null(CN) | is.null(xIndex) | is.null(yIndex))
         stop("must provide CN, xIndex, and yIndex")
     ## FIXME: does not handle only females or only males
     ## this ought to be handled by the 'centers' (see below) being too close together
-    xMed <- matrixStats::colMedians(CN, rows = xIndex, na.rm=TRUE)
-    yMed <- matrixStats::colMedians(CN, rows = yIndex, na.rm=TRUE)
+    # TODO: Need a colMedians for DelayedArray
+    xMed <- matrixStats::colMedians(as.matrix(CN[xIndex, ]), na.rm=TRUE)
+    yMed <- matrixStats::colMedians(as.matrix(CN[yIndex, ]), na.rm=TRUE)
     dd <- yMed - xMed
     k <- kmeans(dd, centers = c(min(dd), max(dd)))
 

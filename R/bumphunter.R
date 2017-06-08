@@ -1,7 +1,8 @@
+# HDF5: Currently loads `getMethSignal(object, type)` into memory
 setMethod("bumphunter", signature(object = "GenomicRatioSet"),
           function(object, design, cluster=NULL,
                    coef = 2,
-                   cutoff=NULL, pickCutoff=FALSE, pickCutoffQ=0.99, 
+                   cutoff=NULL, pickCutoff=FALSE, pickCutoffQ=0.99,
                    maxGap = 500,
                    nullMethod=c("permutation","bootstrap"),
                    smooth = FALSE,
@@ -10,9 +11,9 @@ setMethod("bumphunter", signature(object = "GenomicRatioSet"),
                    B=ncol(permutations), permutations=NULL,
                    verbose = TRUE,
                    type = c("Beta","M"), ...){
-              
+
               type <- match.arg(type)
-              bumphunterEngine(getMethSignal(object, type),
+              bumphunterEngine(as.matrix(getMethSignal(object, type)),
                                design = design,
                                chr = as.factor(seqnames(object)),
                                pos = start(object),
@@ -20,7 +21,7 @@ setMethod("bumphunter", signature(object = "GenomicRatioSet"),
                                coef = coef,
                                cutoff=cutoff,
                                pickCutoff=pickCutoff,
-                               pickCutoffQ=pickCutoffQ, 
+                               pickCutoffQ=pickCutoffQ,
                                maxGap = maxGap,
                                nullMethod=nullMethod,
                                smooth = smooth,

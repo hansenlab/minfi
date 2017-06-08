@@ -4,8 +4,7 @@ plotBetasByType <- function(data, probeTypes = NULL, legendPos = "top", colors =
         if(ncol(data) > 1){
             stop("'data' must only contain one sample")
         } else {
-            betas <- matrix(getBeta(data), ncol=1,
-                            dimnames=list(rownames(data), colnames(data)))
+            betas <- as.matrix(getBeta(data))
         }
         if(is.null(probeTypes)) {
             typeI <- getProbeInfo(data, type = "I")[, c("Name", "nCpG")]
@@ -31,7 +30,7 @@ plotBetasByType <- function(data, probeTypes = NULL, legendPos = "top", colors =
             }
         } else {
             stop("'data' needs to be either a 'MethylSet', 'vector', 'matrix' or 'data.frame'")
-        } 
+        }
     }
     if(!all(c("Name","Type") %in% colnames(probeTypes))) {
         stop("'probeTypes' must be a data.frame with a column 'Name' of probe IDs and a column 'Type' indicating their design type")

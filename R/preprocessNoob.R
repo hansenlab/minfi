@@ -1,3 +1,4 @@
+# HDF5: Currently loads several DelayedMatrix objects into memory
 preprocessNoob <- function(rgSet, offset=15, dyeCorr=TRUE, verbose = TRUE,
                            dyeMethod = c("single", "reference")) {
     .isRGOrStop(rgSet)
@@ -8,8 +9,8 @@ preprocessNoob <- function(rgSet, offset=15, dyeCorr=TRUE, verbose = TRUE,
     controls <- getOOB(rgSet)
     names(controls) <- c("Cy3", "Cy5")
     mset <- preprocessRaw(rgSet)
-    meth <- getMeth(mset)
-    unmeth <- getUnmeth(mset)
+    meth <- as.matrix(getMeth(mset))
+    unmeth <- as.matrix(getUnmeth(mset))
 
     if (any(meth<=0)){
         meth[which(meth<=0)] <- 1
@@ -23,10 +24,10 @@ preprocessNoob <- function(rgSet, offset=15, dyeCorr=TRUE, verbose = TRUE,
     cy5.probes <- which(probe.type=="IRed")
     d2.probes <- which(probe.type=="II")
 
-    dat <- list(Cy3 = list(M =  as.matrix(meth[cy3.probes,]), 
+    dat <- list(Cy3 = list(M =  as.matrix(meth[cy3.probes,]),
                            U =  as.matrix(unmeth[cy3.probes,]),
-                           D2 = as.matrix(meth[d2.probes,])), 
-                Cy5 = list(M =  as.matrix(meth[cy5.probes,]), 
+                           D2 = as.matrix(meth[d2.probes,])),
+                Cy5 = list(M =  as.matrix(meth[cy5.probes,]),
                            U =  as.matrix(unmeth[cy5.probes,]),
                            D2 = as.matrix(unmeth[d2.probes,])))
 
@@ -41,9 +42,9 @@ preprocessNoob <- function(rgSet, offset=15, dyeCorr=TRUE, verbose = TRUE,
     })
     names(first) <- names(last)
 
-    estimates <- lapply(names(dat), function(nch) { 
+    estimates <- lapply(names(dat), function(nch) {
         xf <- rbind(dat[[nch]][['M']], dat[[nch]][['U']], dat[[nch]][['D2']])
-        xs <- normexp.get.xs(xf = xf, controls = controls[[nch]],
+        xs <- normexp.get.xs(xf = xf, controls = as.matrix(controls[[nch]]),
                              offset=offset, verbose = subverbose)
         names(xs[['params']]) <- paste(names(xs[['params']]), nch, sep='.')
         names(xs[['meta']]) <- paste(names(xs[['meta']]), nch, sep='.')
@@ -74,31 +75,31 @@ preprocessNoob <- function(rgSet, offset=15, dyeCorr=TRUE, verbose = TRUE,
     ## This next code block does nothing because the rgSet is not returned
     ## and colData(rgSet) is not referenced below
     ## FIXME: either remove or modify the return value
-    for(ch in names(estimates)) { 
+    for(ch in names(estimates)) {
         chnames <- names(estimates[[ch]][['params']])
         for(nm in chnames)
             colData(rgSet)[,nm] <- estimates[[ch]][['params']][[nm]]
-    } 
+    }
 
     ## Performing dye bias normalization
-    ## 
+    ##
     ## "single" = just reciprocate out the dye bias, don't use a reference.
     ##            (similar to, but implemented differently from, unmaintained
     ##             "asmn" package by Decker et al., doi:10.4161/epi.26037)
-    ## "reference" = use the least-worst sample in the batch (previous default) 
-    ## 
+    ## "reference" = use the least-worst sample in the batch (previous default)
+    ##
     ## "single" is now the default: it provides single-sample preprocessing
     ## and betas/M-values produced by this method are identical to those from
     ## the "reference" version used in (e.g.) the TCGA data processing pipeline.
-    ## 
+    ##
     ## --tjt, 2016-06-16
-    ## 
+    ##
     if (dyeCorr){
         ## Background correct the Illumina normalization controls:
         ctrls <- getProbeInfo(rgSet, type = "Control")
         ctrls <- ctrls[ctrls$Address %in% rownames(rgSet),]
-        redControls <- getRed(rgSet)[ctrls$Address,,drop=FALSE]
-        greenControls <- getGreen(rgSet)[ctrls$Address,,drop=FALSE]
+        redControls <- as.matrix(getRed(rgSet)[ctrls$Address,,drop=FALSE])
+        greenControls <- as.matrix(getGreen(rgSet)[ctrls$Address,,drop=FALSE])
         rownames(redControls) <- rownames(greenControls) <- ctrls$Type
         internal.controls <- list(Cy3 = greenControls, Cy5 = redControls)
         xcs <- lapply(names(internal.controls), function(nch) {
@@ -109,7 +110,7 @@ preprocessNoob <- function(rgSet, offset=15, dyeCorr=TRUE, verbose = TRUE,
         internal.controls[['Cy3']] <- xcs[["Cy3"]]
         internal.controls[['Cy5']] <- xcs[["Cy5"]]
 
-        if (rgSet@annotation[["array"]]=="IlluminaHumanMethylation450k" || 
+        if (rgSet@annotation[["array"]]=="IlluminaHumanMethylation450k" ||
                 rgSet@annotation[["array"]]=="IlluminaHumanMethylationEPIC"){
             CG.controls <- rownames(internal.controls[[1]]) %in% c("NORM_C", "NORM_G")
             AT.controls <- rownames(internal.controls[[1]]) %in% c("NORM_A", "NORM_T")
@@ -132,7 +133,7 @@ preprocessNoob <- function(rgSet, offset=15, dyeCorr=TRUE, verbose = TRUE,
         } else if(dyeMethod == "reference") {
           reference <- which.min(abs(R.G.ratio-1) )
           if(verbose) {
-            cat('[preprocessNoob] Using sample number', reference, 
+            cat('[preprocessNoob] Using sample number', reference,
                 'as reference level...\n')
           }
           ref <- (Green.avg + Red.avg)[reference]/2
@@ -143,10 +144,10 @@ preprocessNoob <- function(rgSet, offset=15, dyeCorr=TRUE, verbose = TRUE,
           Red.factor <- ref/Red.avg
         } else { stop("unknown 'dyeMethod'") }
 
-        Grn <- list(M = as.matrix(meth[cy3.probes,]), 
+        Grn <- list(M = as.matrix(meth[cy3.probes,]),
                     U = as.matrix(unmeth[cy3.probes,]),
                     D2 = as.matrix(meth[d2.probes,]))
-        Red <- list(M = as.matrix(meth[cy5.probes,]), 
+        Red <- list(M = as.matrix(meth[cy5.probes,]),
                     U = as.matrix(unmeth[cy5.probes,]),
                     D2 = as.matrix(unmeth[d2.probes,]))
 
@@ -165,11 +166,11 @@ preprocessNoob <- function(rgSet, offset=15, dyeCorr=TRUE, verbose = TRUE,
         }
     }
 
-    assay(mset, "Meth") <- meth
-    assay(mset, "Unmeth") <- unmeth
+    assay(mset, "Meth") <- DelayedArray::DelayedArray(meth)
+    assay(mset, "Unmeth") <- DelayedArray::DelayedArray(unmeth)
 
-    mset@preprocessMethod <- c( mu.norm = 
-                                    sprintf("Noob, dyeCorr=%s, dyeMethod=%s", 
+    mset@preprocessMethod <- c( mu.norm =
+                                    sprintf("Noob, dyeCorr=%s, dyeMethod=%s",
                                             dyeCorr, dyeMethod))
     return(mset)
 }
@@ -187,7 +188,7 @@ normexp.get.xs <- function(xf, controls, offset=50, verbose = FALSE){
     pars <- data.frame(mu=mu, lsigma=log(sigma), lalpha=log(alpha))
     for(i in 1:ncol(xf))
         xf[,i] <- normexp.signal(as.numeric(pars[i,]), xf[,i]) # from limma
-    return(list(xs=xf+offset, 
+    return(list(xs=xf+offset,
                 params=data.frame(mu=mu, sigma=sigma, alpha=alpha, offset=offset),
                 meta=c('background mean','background SD','signal mean','offset')))
 }

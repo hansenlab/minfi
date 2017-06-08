@@ -1,6 +1,6 @@
 ######################################################
 ## Functional normalization of the 450k array
-## Jean-Philippe Fortin 
+## Jean-Philippe Fortin
 ## Sept 24 2013
 #####################################################
 
@@ -14,9 +14,9 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
     # Background correction and dye bias normalization:
     if (bgCorr){
         if(verbose && dyeCorr) {
-            message("[preprocessFunnorm] Background and dye bias correction with noob") 
+            message("[preprocessFunnorm] Background and dye bias correction with noob")
         } else {
-            message("[preprocessFunnorm] Background correction with noob") 
+            message("[preprocessFunnorm] Background correction with noob")
         }
         gmSet <- preprocessNoob(rgSet, dyeCorr = dyeCorr)
         if(verbose) message("[preprocessFunnorm] Mapping to genome")
@@ -25,9 +25,9 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
         if(verbose) message("[preprocessFunnorm] Mapping to genome")
         gmSet <- mapToGenome(rgSet)
     }
-    
+
     subverbose <- max(as.integer(verbose) - 1L, 0)
-    
+
     if(verbose) message("[preprocessFunnorm] Quantile extraction")
     extractedData <- .extractFromRGSet450k(rgSet)
     rm(rgSet)
@@ -56,38 +56,39 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
         gmSet@preprocessMethod <- preprocessMethod
         return(gmSet)
     }
- }
+}
 
- .getFunnormIndices <- function(object) {
-     .isGenomicOrStop(object)
-     probeType <- getProbeType(object, withColor = TRUE)
-     autosomal <- (seqnames(object) %in% paste0("chr", 1:22))
-     indices <- list(IGrn = which(probeType == "IGrn" & autosomal),
-                     IRed = which(probeType == "IRed" & autosomal),
-                     II = which(probeType == "II" & autosomal),
-                     X = which(seqnames(object) == "chrX"),
-                     Y = which(seqnames(object) == "chrY"))
-     indices
- }
+.getFunnormIndices <- function(object) {
+    .isGenomicOrStop(object)
+    probeType <- getProbeType(object, withColor = TRUE)
+    autosomal <- (seqnames(object) %in% paste0("chr", 1:22))
+    indices <- list(IGrn = which(probeType == "IGrn" & autosomal),
+                    IRed = which(probeType == "IRed" & autosomal),
+                    II = which(probeType == "II" & autosomal),
+                    X = which(seqnames(object) == "chrX"),
+                    Y = which(seqnames(object) == "chrY"))
+    indices
+}
 
- .normalizeFunnorm450k <- function(object, extractedData, nPCs, sex, verbose = TRUE) {
-     normalizeQuantiles <- function(matrix, indices, sex = NULL) {
-         matrix <- matrix[indices,,drop=FALSE]
-         ## uses probs, model.matrix, nPCS, through scoping)
-         oldQuantiles <- t(matrixStats::colQuantiles(matrix, probs = probs))
-         if(is.null(sex)) {
-             newQuantiles <- .returnFit(controlMatrix = model.matrix, quantiles = oldQuantiles, nPCs = nPCs)
-         } else {
-             newQuantiles <- .returnFitBySex(controlMatrix = model.matrix, quantiles = oldQuantiles, nPCs = nPCs, sex = sex)
-         }
-         .normalizeMatrix(matrix, newQuantiles)
-     }
+# HDF5: Currently loads `getMeth(object)` and `getUnmeth(object)` into memory
+.normalizeFunnorm450k <- function(object, extractedData, nPCs, sex, verbose = TRUE) {
+    normalizeQuantiles <- function(matrix, indices, sex = NULL) {
+        matrix <- matrix[indices,,drop=FALSE]
+        ## uses probs, model.matrix, nPCS, through scoping)
+        oldQuantiles <- t(matrixStats::colQuantiles(matrix, probs = probs))
+        if(is.null(sex)) {
+            newQuantiles <- .returnFit(controlMatrix = model.matrix, quantiles = oldQuantiles, nPCs = nPCs)
+        } else {
+            newQuantiles <- .returnFitBySex(controlMatrix = model.matrix, quantiles = oldQuantiles, nPCs = nPCs, sex = sex)
+        }
+        .normalizeMatrix(matrix, newQuantiles)
+    }
 
-    indicesList <- .getFunnormIndices(object) 
+    indicesList <- .getFunnormIndices(object)
     model.matrix <- .buildControlMatrix450k(extractedData)
     probs <- seq(from = 0, to = 1, length.out = 500)
-    Meth <- getMeth(object)
-    Unmeth <- getUnmeth(object)
+    Meth <- as.matrix(getMeth(object))
+    Unmeth <- as.matrix(getUnmeth(object))
     if (nPCs > 0){
         for (type in c("IGrn", "IRed", "II")) {
             indices <- indicesList[[type]]
@@ -97,13 +98,13 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
                 Meth[indices,] <- normalizeQuantiles(Meth, indices = indices, sex = NULL)
             }
         }
-    
+
         indices <- indicesList[["X"]]
         if(length(indices) > 0) {
             if(verbose) message("[normalizeFunnorm450k] Normalization of the X-chromosome")
             Unmeth[indices,] <- normalizeQuantiles(Unmeth, indices = indices, sex = sex)
             Meth[indices,] <- normalizeQuantiles(Meth, indices = indices, sex = sex)
-        }    
+        }
     }
 
     indices <- indicesList[["Y"]]
@@ -130,13 +131,14 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
             Unmeth[indices,] <- preprocessCore::normalize.quantiles(Unmeth[indices,])
         }
     }
-    assay(object, "Meth") <- Meth
-    assay(object, "Unmeth") <- Unmeth
+    assay(object, "Meth") <- DelayedArray::DelayedArray(Meth)
+    assay(object, "Unmeth") <- DelayedArray::DelayedArray(Unmeth)
     return(object)
 }
 
 
-
+# HDF5: Currenly loads (row) subsets of `getRed(rgSet)` and `getGreen(rgSet)`
+#       into memory as well as `oobRaw$Red` and `oobRaw$Green`
 ### To extract quantiles and control probes from rgSet
 .extractFromRGSet450k <- function(rgSet) {
     rgSet <- updateObject(rgSet)
@@ -161,19 +163,21 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
     if(!all(controlType %in% ctrls$Type))
         stop("The `rgSet` does not contain all necessary control probes")
     ctrlsList <- split(ctrls, ctrls$Type)[controlType]
-    
-    redControls <- getRed(rgSet)[ctrls$Address,,drop=FALSE]
+
+    redControls <- as.matrix(getRed(rgSet)[ctrls$Address,,drop=FALSE])
     redControls <- lapply(ctrlsList, function(ctl) redControls[ctl$Address,,drop=FALSE])
-    greenControls <- getGreen(rgSet)[ctrls$Address,,drop=FALSE]
+    greenControls <- as.matrix(getGreen(rgSet)[ctrls$Address,,drop=FALSE])
     greenControls <- lapply(ctrlsList, function(ctl) greenControls[ctl$Address,,drop=FALSE])
-    
+
     ## Extraction of the undefined negative control probes
     oobRaw <- getOOB(rgSet)
     probs <- c(0.01, 0.50, 0.99)
-    greenOOB <- t(matrixStats::colQuantiles(oobRaw$Grn, na.rm = TRUE, probs = probs))
-    redOOB   <- t(matrixStats::colQuantiles(oobRaw$Red, na.rm=TRUE,  probs = probs))
-    oob      <- list(greenOOB = greenOOB, redOOB = redOOB)                       
-    
+    # TODO: Need a colQuantiles,DelayedMatrix-method
+    greenOOB <- t(matrixStats::colQuantiles(as.matrix(oobRaw$Grn),
+                                            na.rm = TRUE, probs = probs))
+    redOOB   <- t(matrixStats::colQuantiles(as.matrix(oobRaw$Red), na.rm=TRUE,  probs = probs))
+    oob      <- list(greenOOB = greenOOB, redOOB = redOOB)
+
     return(list(
         greenControls = greenControls,
         redControls = redControls,
@@ -190,18 +194,18 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
         names(addr) <- ctrls$ExtendedType
         na.omit(addr[exType])
     }
-    
+
     array <- extractedData$array
     greenControls <- extractedData$greenControls
     redControls <- extractedData$redControls
     controlNames <- names(greenControls)
     ctrlsList <- extractedData$ctrlsList
-        
+
     ## Bisulfite conversion extraction for probe type II:
     index <- match("BISULFITE CONVERSION II", controlNames)
     redControls.current <- redControls[[ index ]]
     bisulfite2 <- colMeans(redControls.current, na.rm = TRUE)
-    
+
     ## Bisulfite conversion extraction for probe type I:
     index <- match("BISULFITE CONVERSION I", controlNames)
     if (array=="IlluminaHumanMethylation450k"){
@@ -209,7 +213,7 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
     } else {
         addr <- getCtrlsAddr(exType = sprintf("BS Conversion I%sC%s", c("-", "-"), 1:2), index = index)
     }
-    greenControls.current <- greenControls[[ index ]][addr,,drop=FALSE] 
+    greenControls.current <- greenControls[[ index ]][addr,,drop=FALSE]
     if (array=="IlluminaHumanMethylation450k"){
         addr <- getCtrlsAddr(exType = sprintf("BS Conversion I-C%s", 4:6), index = index)
     } else {
@@ -221,15 +225,15 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
     } else {
         bisulfite1 <- colMeans(redControls.current, na.rm=TRUE) + colMeans(greenControls.current, na.rm = TRUE)
     }
-    
-    
+
+
     ## Staining
     index <- match("STAINING", controlNames)
     addr <- getCtrlsAddr(exType = "Biotin (High)", index = index)
     stain.green <- t(greenControls[[ index ]][addr,,drop=FALSE])
     addr <- getCtrlsAddr(exType = "DNP (High)", index = index)
     stain.red <- t(redControls[[ index ]][addr,, drop=FALSE ])
-    
+
     ## Extension
     index <-    match("EXTENSION", controlNames)
     addr <- getCtrlsAddr(exType = sprintf("Extension (%s)", c("A", "T")), index = index)
@@ -238,17 +242,17 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
     addr <- getCtrlsAddr(exType = sprintf("Extension (%s)", c("C", "G")), index = index)
     extension.green <- t(greenControls[[index]][addr,,drop=FALSE])
     colnames(extension.green) <- paste0("extGrn", 1:ncol(extension.green))
-    
+
     ## Hybridization should be monitored only in the green channel
     index <- match("HYBRIDIZATION", controlNames)
     hybe <- t(greenControls[[index]])
     colnames(hybe) <- paste0("hybe", 1:ncol(hybe))
-    
+
     ## Target removal should be low compared to hybridization probes
     index <- match("TARGET REMOVAL", controlNames)
     targetrem <- t(greenControls[[index]])
     colnames(targetrem) <- paste0("targetrem", 1:ncol(targetrem))
-    
+
     ## Non-polymorphic probes
     index <- match("NON-POLYMORPHIC", controlNames)
     addr <- getCtrlsAddr(exType = sprintf("NP (%s)", c("A", "T")), index = index)
@@ -257,7 +261,7 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
     addr <- getCtrlsAddr(exType = sprintf("NP (%s)", c("C", "G")), index = index)
     nonpoly.green <- t(greenControls[[index]][addr, ,drop=FALSE])
     colnames(nonpoly.green) <- paste0("nonpolyGrn", 1:ncol(nonpoly.green))
-    
+
     ## Specificity II
     index <- match("SPECIFICITY II", controlNames)
     greenControls.current <- greenControls[[index]]
@@ -268,27 +272,27 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
     colnames(spec2.red) <- paste0("spec2Red", 1:ncol(spec2.red))
     spec2.ratio <- colMeans(greenControls.current, na.rm = TRUE) /
         colMeans(redControls.current, na.rm = TRUE)
-    
+
     ## Specificity I
     index <- match("SPECIFICITY I", controlNames)
     addr <- getCtrlsAddr(exType = sprintf("GT Mismatch %s (PM)", 1:3), index = index)
-    greenControls.current <- greenControls[[index]][addr,,drop=FALSE] 
-    redControls.current <- redControls[[index]][addr,,drop=FALSE] 
+    greenControls.current <- greenControls[[index]][addr,,drop=FALSE]
+    redControls.current <- redControls[[index]][addr,,drop=FALSE]
     spec1.green <- t(greenControls.current)
     colnames(spec1.green) <- paste0("spec1Grn", 1:ncol(spec1.green))
     spec1.ratio1 <- colMeans(redControls.current, na.rm = TRUE) /
         colMeans(greenControls.current, na.rm = TRUE)
-    
+
     index <- match("SPECIFICITY I", controlNames) # Added that line
     addr <- getCtrlsAddr(exType = sprintf("GT Mismatch %s (PM)", 4:6), index = index)
     greenControls.current <- greenControls[[index]][addr,,drop=FALSE]
     redControls.current <- redControls[[index]][addr,,drop=FALSE]
     spec1.red <- t(redControls.current)
     colnames(spec1.red) <- paste0("spec1Red", 1:ncol(spec1.red))
-    spec1.ratio2 <- colMeans(greenControls.current, na.rm = TRUE) / 
+    spec1.ratio2 <- colMeans(greenControls.current, na.rm = TRUE) /
         colMeans(redControls.current, na.rm = TRUE)
     spec1.ratio <- (spec1.ratio1 + spec1.ratio2) / 2
-    
+
     ## Normalization probes:
     index <- match(c("NORM_A"), controlNames)
     normA <- colMeans(redControls[[index]], na.rm = TRUE)
@@ -298,7 +302,7 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
     normC <- colMeans(greenControls[[index]], na.rm = TRUE)
     index <- match(c("NORM_G"), controlNames)
     normG <- colMeans(greenControls[[index]], na.rm = TRUE)
-    
+
     dyebias <- (normC + normG)/(normA + normT)
 
     oobG <- extractedData$oob$greenOOB
@@ -306,14 +310,14 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
     oob.ratio <- oobG[2,]/oobR[2,]
     oobG <- t(oobG)
     colnames(oobG) <- paste0("oob", c(1,50,99))
-    
+
     model.matrix <- cbind(
         bisulfite1, bisulfite2, extension.green, extension.red, hybe,
         stain.green, stain.red, nonpoly.green, nonpoly.red,
         targetrem, spec1.green, spec1.red, spec2.green, spec2.red, spec1.ratio1,
         spec1.ratio, spec2.ratio, spec1.ratio2, normA, normC, normT, normG, dyebias,
         oobG, oob.ratio)
-    
+
 
     ## Imputation
     for (colindex in 1:ncol(model.matrix)) {
@@ -323,17 +327,17 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
             model.matrix[ , colindex] <- column
         }
     }
-    
-    ## Scaling   
-    model.matrix <- scale(model.matrix)   
-    
-    ## Fixing outliers 
+
+    ## Scaling
+    model.matrix <- scale(model.matrix)
+
+    ## Fixing outliers
     model.matrix[model.matrix > 3] <- 3
-    model.matrix[model.matrix < (-3)] <- -3   
-    
+    model.matrix[model.matrix < (-3)] <- -3
+
     ## Rescaling
-    model.matrix <- scale(model.matrix) 
-    
+    model.matrix <- scale(model.matrix)
+
     return(model.matrix)
 }
 
@@ -366,43 +370,43 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
     if (nSexes == 2) {
         sex1 <- sum(sex == levels[1])
         sex2 <- sum(sex == levels[2])
-        
+
     } else {
         sex1 <- sum(sex == levels[1])
         sex2 <- 0
     }
-    
+
     ## When normalization should not be performed by sex separately:
     if ((sex1 <= 10) | (sex2 <= 10)) {
         newQuantiles <- .returnFit(controlMatrix = controlMatrix,
-                                  quantiles = quantiles, 
-                                  nPCs = nPCs)
+                                   quantiles = quantiles,
+                                   nPCs = nPCs)
     } else {
         quantiles1 <- quantiles[, sex == levels[1]]
         controlMatrix1 <- controlMatrix[sex == levels[1], ]
-        
+
         newQuantiles1 <- .returnFit(controlMatrix = controlMatrix1,
-                                   quantiles = quantiles1, 
-                                   nPCs = nPCs)
-        
+                                    quantiles = quantiles1,
+                                    nPCs = nPCs)
+
         quantiles2 <- quantiles[, sex == levels[2]]
         controlMatrix2 <- controlMatrix[sex == levels[2], ]
-        
+
         newQuantiles2 <- .returnFit(controlMatrix = controlMatrix2,
-                                   quantiles = quantiles2, 
-                                   nPCs = nPCs)
-        
+                                    quantiles = quantiles2,
+                                    nPCs = nPCs)
+
         newQuantiles <- quantiles
         newQuantiles[, sex == levels[1]] <- newQuantiles1
         newQuantiles[, sex == levels[2]] <- newQuantiles2
     }
-    
+
     return(newQuantiles)
 }
 
-### Normalize a matrix of intensities  
+### Normalize a matrix of intensities
 .normalizeMatrix <- function(intMatrix, newQuantiles) {
-    ## normMatrix <- matrix(NA, nrow(intMatrix), ncol(intMatrix)) 
+    ## normMatrix <- matrix(NA, nrow(intMatrix), ncol(intMatrix))
     n <- nrow(newQuantiles)
     normMatrix <- sapply(1:ncol(intMatrix), function(i) {
         crtColumn <- intMatrix[ , i]

@@ -4,7 +4,7 @@
   Detection p-values for all probed genomic positions.
 }
 \description{
-  This function identifies failed positions defined as both the methylated and unmethylated channel reporting background signal levels. 
+  This function identifies failed positions defined as both the methylated and unmethylated channel reporting background signal levels.
 }
 \usage{
 detectionP(rgSet, type = "m+u")
@@ -14,7 +14,7 @@ detectionP(rgSet, type = "m+u")
   \item{type}{How to calculate p-values. Only \code{m+u} is currently implemented (See details).}
 }
 \details{
-  
+
   A detection p-value is returned for every genomic position in every sample. Small
   p-values indicate a good position. Positions with non-significant p-values
   (typically >0.01) should not be trusted.

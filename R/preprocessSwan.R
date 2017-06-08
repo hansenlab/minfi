@@ -6,12 +6,18 @@ getSubset <- function(counts, subset){
     return(seq(1, length(counts)) %in% x)
 }
 
+# HDF5: Currently loads a (row) subset of getGreen(rgSet) and getRed(rgSet)
+#       into memory
 bgIntensitySwan <- function(rgSet){
-    grnMed <- colMedians(getGreen(rgSet)[getControlAddress(rgSet, controlType = "NEGATIVE"),])
-    redMed <- colMedians(getRed(rgSet)[getControlAddress(rgSet, controlType = "NEGATIVE"),])
+    # TODO: Need colMedians,DelayedArray-method
+    grnMed <- colMedians(as.matrix(
+        getGreen(rgSet)[getControlAddress(rgSet, controlType = "NEGATIVE"),]))
+    redMed <- colMedians(as.matrix(
+        getRed(rgSet)[getControlAddress(rgSet, controlType = "NEGATIVE"),]))
     return(rowMeans(cbind(grnMed, redMed)))
 }
 
+# HDF5: Currently constructs a dim(rgSet) matrix in memory
 preprocessSWAN <- function(rgSet, mSet = NULL, verbose = FALSE){
     if(is.null(mSet))
         mSet <- preprocessRaw(rgSet)
@@ -35,21 +41,29 @@ preprocessSWAN <- function(rgSet, mSet = NULL, verbose = FALSE){
     colnames(normMethData) <- colnames(mSet)
     normUnmethData <- normMethData
     normSet <- mSet
+    # TODO: Could be done column-wise, one DelayedMatrix per column that are
+    #       cbind()-ed together at the end of the loop
     for(i in 1:ncol(mSet)) {
         if(verbose) message(sprintf("[preprocessSwan] Normalizing array %d of %d\n", i, ncol(mSet)))
-        normMeth <- normaliseChannel(methData[rownames(methData) %in% counts$Name[counts$Type=="I"], i],
-                                     methData[rownames(methData) %in% counts$Name[counts$Type=="II"], i],
-                                     xNormSet, bg[i])
+        normMeth <- normaliseChannel(
+            as.matrix(methData[rownames(methData) %in%
+                                   counts$Name[counts$Type == "I"], i]),
+            as.matrix(methData[rownames(methData) %in%
+                                   counts$Name[counts$Type == "II"], i]),
+            xNormSet, bg[i])
         normMethData[, i] <- normMeth
-        normUnmeth <- normaliseChannel(unmethData[rownames(unmethData) %in% counts$Name[counts$Type=="I"], i],
-                                       unmethData[rownames(unmethData) %in% counts$Name[counts$Type=="II"], i],
+        normUnmeth <- normaliseChannel(
+            as.matrix(unmethData[rownames(unmethData) %in%
+                                     counts$Name[counts$Type=="I"], i]),
+            as.matrix(unmethData[rownames(unmethData) %in%
+                                     counts$Name[counts$Type=="II"], i]),
                                        xNormSet, bg[i])
         normUnmethData[, i] <- normUnmeth
     }
     rownames(normMethData) <- names(normMeth)
     rownames(normUnmethData) <- names(normUnmeth)
-    assay(normSet, "Meth") <- normMethData
-    assay(normSet, "Unmeth") <- normUnmethData
+    assay(normSet, "Meth") <- DelayedArray::DelayedArray(normMethData)
+    assay(normSet, "Unmeth") <- DelayedArray::DelayedArray(normUnmethData)
     normSet@preprocessMethod <- c(rg.norm = sprintf("SWAN (based on a MethylSet preprocesses as '%s'",
                                           preprocessMethod(mSet)[1]),
                                   minfi = as.character(packageVersion("minfi")),
@@ -98,7 +112,7 @@ subsetQuantileNorm <- function(x, xNormSet, xTarget, bg) {
         n <- length(x[[i]])
         nTarget <- length(xTarget)
         nNormSet <- sum(xNormSet[[i]])
-        
+
         if(nNormSet != nTarget){
             targetQuantiles <- (0:(nTarget - 1))/(nTarget - 1)
             r <- rank(x[xNormSet[,i], i])
@@ -108,22 +122,22 @@ subsetQuantileNorm <- function(x, xNormSet, xTarget, bg) {
         } else {
             xNorm<-xTarget
         }
-        
+
         r <- rank(x[[i]])
         xNew <-(r - 1)/(n - 1)
         quantiles <- xNew[xNormSet[[i]]]
         quantiles <- quantiles[order(quantiles)]
         xmin <- min(x[[i]][xNormSet[[i]]]) #get min value from subset
         xmax <- max(x[[i]][xNormSet[[i]]]) #get max value from subset
-        kmax <- which(xNew > max(quantiles)) 
+        kmax <- which(xNew > max(quantiles))
         kmin<- which(xNew < min(quantiles))
         offsets.max <- x[[i]][kmax]-xmax
         offsets.min <- x[[i]][kmin]-xmin
         x[[i]] <- approx(x = quantiles, y = xNorm, xout = xNew, ties = "ordered")$y #interpolate
         x[[i]][kmax]<- max(xNorm) + offsets.max
         x[[i]][kmin]<- min(xNorm) + offsets.min
-        x[[i]] = ifelse(x[[i]] <= 0, bg, x[[i]])    
-    }  
+        x[[i]] = ifelse(x[[i]] <= 0, bg, x[[i]])
+    }
     x
 }
 

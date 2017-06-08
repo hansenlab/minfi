@@ -29,6 +29,7 @@ compartments <- function(object, resolution = 100*1000, what="OpenSea",
     gr
 }
 
+# HDF5: Currently loads t(getM(object)) into memory
 createCorMatrix <- function(object, resolution = 100*1000, what = "OpenSea",
                              chr = "chr22", method = c("pearson", "spearman")) {
     .isGenomicOrStop(object)
@@ -44,16 +45,26 @@ createCorMatrix <- function(object, resolution = 100*1000, what = "OpenSea",
     object <- dropLociWithSnps(object, snps = c("CpG", "SBE"), maf = 0.01)
 
     gr.unbinnedCor <- granges(object)
-    gr.unbinnedCor$cor.matrix <- cor(t(getM(object)), method = method)
+    # TODO: Need a cor,DelayedMatrix-method
+    gr.unbinnedCor$cor.matrix <- cor(as.matrix(t(getM(object))),
+                                     method = method)
     gr.cor <- .returnBinnedMatrix(gr.unbinnedCor, resolution = resolution)
     gr.cor <- .removeBadBins(gr.cor)
     gr.cor
 }
 
+# HDF5: Currently loads matrix into memory
+# NOTE: Returns a DelayedMatrix
 .imputeMatrix <- function(matrix){
+    if (.isHDF5ArrayBacked(matrix)) {
+        BACKEND <- "HDF5Array"
+    } else {
+        BACKEND <- NULL
+    }
+    matrix <- as.matrix(matrix)
     matrix[is.infinite(matrix) & matrix >0] <- max(matrix[is.finite(matrix)])
     matrix[is.infinite(matrix) & matrix <0] <- min(matrix[is.finite(matrix)])
-    
+
     ## Imputation of the missing values:
     missing <- which(is.na(matrix), arr.ind=TRUE)
     if (length(missing)!=0){
@@ -62,11 +73,11 @@ createCorMatrix <- function(object, resolution = 100*1000, what = "OpenSea",
             matrix[missing[j,1],missing[j,2]] <- mean
         }
     }
-    matrix
+    realize(DelayedArray(matrix), BACKEND = BACKEND)
 }
 
 .returnBinnedMatrix <- function(gr.unbinnedCor, resolution){
-    
+
     bin2D <- function(matrix, ids, n){
         unique.ids <- sort(unique(ids))
         bin.matrix <- matrix(0,n,n)
@@ -79,19 +90,19 @@ createCorMatrix <- function(object, resolution = 100*1000, what = "OpenSea",
                 bin.matrix[unique.ids[i],unique.ids[j]] <- median(matrix[indices1,indices2],na.rm=TRUE)
             }
         }
-        bin.matrix[is.na(bin.matrix)] <- 1 # Should not be necessary... 
+        bin.matrix[is.na(bin.matrix)] <- 1 # Should not be necessary...
         return(bin.matrix)
     }
 
     ## FIXME
-    chr.lengths <- structure(c(249250621L, 243199373L, 198022430L, 191154276L, 180915260L, 
-                               171115067L, 159138663L, 146364022L, 141213431L, 135534747L, 135006516L, 
-                               133851895L, 115169878L, 107349540L, 102531392L, 90354753L, 81195210L, 
-                               78077248L, 59128983L, 63025520L, 48129895L, 51304566L, 155270560L, 
+    chr.lengths <- structure(c(249250621L, 243199373L, 198022430L, 191154276L, 180915260L,
+                               171115067L, 159138663L, 146364022L, 141213431L, 135534747L, 135006516L,
+                               133851895L, 115169878L, 107349540L, 102531392L, 90354753L, 81195210L,
+                               78077248L, 59128983L, 63025520L, 48129895L, 51304566L, 155270560L,
                                59373566L),
-                             .Names = c("chr1", "chr2", "chr3", "chr4", "chr5", 
-                             "chr6", "chr7", "chr8", "chr9", "chr10", "chr11", "chr12", "chr13", 
-                             "chr14", "chr15", "chr16", "chr17", "chr18", "chr19", "chr20", 
+                             .Names = c("chr1", "chr2", "chr3", "chr4", "chr5",
+                             "chr6", "chr7", "chr8", "chr9", "chr10", "chr11", "chr12", "chr13",
+                             "chr14", "chr15", "chr16", "chr17", "chr18", "chr19", "chr20",
                              "chr21", "chr22", "chrX", "chrY"))
     seqlengths(gr.unbinnedCor) <- chr.lengths[seqlevels(gr.unbinnedCor)]
 
@@ -128,7 +139,7 @@ extractAB <- function(gr, keep = TRUE, svdMethod = "qr"){
     }
     pc <- pc*sqrt(length(pc))
     gr$pc <- pc
-    
+
     if (!keep) {
         gr$cor.matrix <- NULL
     }
@@ -155,15 +166,15 @@ extractAB <- function(gr, keep = TRUE, svdMethod = "qr"){
     meanSmoother.internal <- function(x, k=1, na.rm=TRUE){
         n <- length(x)
         y <- rep(NA,n)
-        
+
         window.mean <- function(x, j, k, na.rm=na.rm){
             if (k>=1){
                 return(mean(x[(j-(k+1)):(j+k)], na.rm=na.rm))
             } else {
                 return(x[j])
-            }    
+            }
         }
-        
+
         for (i in (k+1):(n-k)){
             y[i] <- window.mean(x,i,k, na.rm)
         }
@@ -175,7 +186,7 @@ extractAB <- function(gr, keep = TRUE, svdMethod = "qr"){
         }
         y
     }
-    
+
     for (i in 1:iter){
         x <- meanSmoother.internal(x, k=k, na.rm=na.rm)
     }
@@ -197,7 +208,7 @@ extractAB <- function(gr, keep = TRUE, svdMethod = "qr"){
 
 .fsvd <- function(A, k, i = 1, p = 2, method = c("qr", "svd", "exact")){
     method <- match.arg(method)
-    l <- k + p 
+    l <- k + p
     n <- ncol(A)
     m <- nrow(A)
     tall <- TRUE
@@ -215,7 +226,7 @@ extractAB <- function(gr, keep = TRUE, svdMethod = "qr"){
     G <- matrix(rnorm(n*l,0,1), nrow=n, ncol=l)
     ## SVD approach
     if (method == "svd"){
-        ## Power method: 
+        ## Power method:
         H <- A %*% G # m x l matrix
         for (j in 1:i){
             H <- A %*% (crossprod(A, H))
@@ -225,18 +236,18 @@ extractAB <- function(gr, keep = TRUE, svdMethod = "qr"){
         svd <- svd(crossprod(H))
         FF   <- svd$u # l x l
         omega <- diag(1/sqrt(svd$d)) # l x l
-        S <- H %*% FF %*% omega # m x l 
+        S <- H %*% FF %*% omega # m x l
         ## Define the orthogonal basis:
         Q <- S[,1:k,drop=FALSE] # m x k
-        ## TT <- t(A) %*% Q # n x k 
+        ## TT <- t(A) %*% Q # n x k
         ## TT <- t(TT)
         TT <- crossprod(Q, A)
-    } 
+    }
     ## QR approach
     if (method == "qr"){
         ## Need to create a list of H matrices
         h.list <- vector("list", i+1)
-        h.list[[1]] <- A %*% G 
+        h.list[[1]] <- A %*% G
         for (j in 2:(i+1)){
             h.list[[j]] <- A %*% (crossprod(A, h.list[[j-1]]))
         }
@@ -262,6 +273,6 @@ extractAB <- function(gr, keep = TRUE, svdMethod = "qr"){
         uu <- v
         v <- u
         u <- uu
-    } 
+    }
     list(u=u, v=v, d=d)
 }

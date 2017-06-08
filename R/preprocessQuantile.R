@@ -11,15 +11,15 @@ preprocessQuantile <- function(object, fixOutliers=TRUE,
         warning("preprocessQuantile has only been tested with 'preprocessRaw'")
     if (!is.null(sex))
         sex <- .checkSex(sex)
-    
+
     if(verbose) message("[preprocessQuantile] Mapping to genome.")
     object <- mapToGenome(object, mergeManifest = mergeManifest)
-    
+
     if (.is27k(object) && stratified) {
         stratified <- FALSE
-        warning("The stratification option is not available for 27k arrays.")        
+        warning("The stratification option is not available for 27k arrays.")
     }
-    
+
     if(fixOutliers){
         if(verbose) message("[preprocessQuantile] Fixing outliers.")
         object <- fixMethOutliers(object)
@@ -66,6 +66,7 @@ preprocessQuantile <- function(object, fixOutliers=TRUE,
         M <- getMeth(object)
     }
     preprocessMethod <- c(mu.norm="preprocessQuantile", preprocessMethod(object))
+    # TODO: Should M and CN be realize()-d at this point?
     out <- GenomicRatioSet(gr=granges(object), Beta=NULL, M = log2(M/U),
                            CN=log2(U+M), colData=colData(object),
                            annotation=annotation(object),
@@ -73,9 +74,11 @@ preprocessQuantile <- function(object, fixOutliers=TRUE,
     return(out)
 }
 
-
+# HDF5: Currently loads `mat` into memory
+# NOTE: Returns a DelayedMatrix with a matrix seed
 ##quantile normalize but X and Y chromsome by sex
 .qnormNotStratified <- function(mat, auIndex, xIndex, yIndex, sex=NULL){
+    mat <- as.matrix(mat)
     mat[auIndex,] <- preprocessCore::normalize.quantiles(mat[auIndex,])
     if(!is.null(sex)) {
         sexIndexes <- split(1:ncol(mat),sex)
@@ -91,10 +94,13 @@ preprocessQuantile <- function(object, fixOutliers=TRUE,
                             names(sexIndexes)[i]))
         }
     }
-    return(mat)
+    DelayedArray::DelayedArray(mat)
 }
 
+# HDF5: Currently loads entire mat into memory
+# NOTE: Returns a DelayedMatrix with a matrix seed
 .qnormStratified <- function(mat, auIndex, xIndex, yIndex, sex=NULL, probeType, regionType){
+    mat <- as.matrix(mat)
     mat[auIndex,] <- .qnormStratifiedHelper(mat = mat[auIndex,], probeType = probeType[auIndex],
                                             regionType = regionType[auIndex])
     if(!is.null(sex)) {
@@ -110,9 +116,11 @@ preprocessQuantile <- function(object, fixOutliers=TRUE,
             probeType = probeType[c(xIndex, yIndex)],
             regionType = regionType[c(xIndex, yIndex)])
     }
-    return(mat)
+    DelayedArray::DelayedArray(mat)
 }
 
+# HDF5: Currently loads entire mat into memory
+# NOTE: Returns an ordinary matrix not a DelayedMatrix
 .qnormStratifiedHelper <- function(mat, probeType, regionType) {
     if(ncol(mat) == 1)
         return(mat)
@@ -121,11 +129,13 @@ preprocessQuantile <- function(object, fixOutliers=TRUE,
     if(nrow(mat) != length(probeType))
         stop("'mat' needs to have as many rows as entries in 'probeType'")
     regionTypes <- unique(regionType)
+    mat <- as.matrix(mat)
     for(i in seq(along=regionTypes)){
         inRegion <- (regionType == regionTypes[i])
         Index1 <- which(inRegion & probeType == "I")
         Index2 <- which(inRegion & probeType == "II")
-        mat[Index2,] <- preprocessCore::normalize.quantiles(mat[Index2,])
+        mat[Index2,] <-
+            preprocessCore::normalize.quantiles(as.matrix(mat[Index2,]))
         ## The following code is easy to understand, but we are not using it
         ##   because we want the results to stay stable.  It gives almost the
         ##   same results as the code below.
@@ -138,5 +148,5 @@ preprocessQuantile <- function(object, fixOutliers=TRUE,
         mat[Index1, ] <- preprocessCore::normalize.quantiles.use.target(
                                              mat[Index1, ,drop = FALSE], target)
     }
-    return(mat)
+    mat
 }

@@ -8,7 +8,7 @@ read.GenomeStudio <- function(filename) {
     colClasses[grep("Signal_B", colnames)] <- "numeric"
     colClasses <- c(colClasses, dummy = "NULL") # File has trailing tab...
     mat <- read.table(filename, header = TRUE, sep = "\t",
-                      comment.char = "", quote = "", 
+                      comment.char = "", quote = "",
                       skip = 8, colClasses = colClasses)
     sampleNames <- sub("\\.AVG_Beta", "", grep("AVG_Beta", colnames(mat), value = TRUE))
     beta <- mat[, grep("AVG_Beta", colnames(mat))]
@@ -50,7 +50,7 @@ makeGenomicRatioSetFromMatrix <- function(mat,rownames=NULL,
 
     if(class(pData)!="DataFrame")
         stop(sprintf("'pData' must be DataFrame or data.frame. It is a %s.",class(pData)))
-    
+
     ##Create granges
     ann <- .getAnnotationString(c(array=array,annotation=annotation))
     if(!require(ann, character.only = TRUE))
@@ -58,10 +58,10 @@ makeGenomicRatioSetFromMatrix <- function(mat,rownames=NULL,
     object <- get(ann)
 
     gr <- getLocations(object, mergeManifest = mergeManifest,
-                                 orderByLocation = TRUE)
+                       orderByLocation = TRUE)
 
     locusNames <- names(gr)
-     
+
     ##this might return NAs but it's ok
     ###fix this. return only what is sent
     common <- intersect(locusNames,rownames(mat))
@@ -73,37 +73,39 @@ makeGenomicRatioSetFromMatrix <- function(mat,rownames=NULL,
     ind2 <- match(common,locusNames)
 
     preprocessing <- c(rg.norm='Matrix converted with makeGenomicRatioSetFromMatrix')
-    
+
     if(what=="Beta"){
-        out <- GenomicRatioSet(gr=gr[ind2,],
-                               Beta=mat[ind1,,drop=FALSE],
-                               M =NULL,
-                               CN=NULL,
-                               colData=pData,
-                               annotation=c(array=array,annotation=annotation),
-                               preprocessMethod=preprocessing)
+        out <- GenomicRatioSet(
+            gr=gr[ind2,],
+            Beta = DelayedArray::DelayedArray(mat[ind1,,drop=FALSE]),
+            M =NULL,
+            CN=NULL,
+            colData=pData,
+            annotation=c(array=array,annotation=annotation),
+            preprocessMethod=preprocessing)
     } else {
-        out <- GenomicRatioSet(gr=gr[ind2,],
-                               Beta=NULL,
-                               M=mat[ind1,,drop=FALSE],
-                               CN=NULL,
-                               colData=pData,
-                               annotation=c(array=array,annotation=annotation),
-                               preprocessMethod=preprocessing)
+        out <- GenomicRatioSet(
+            gr=gr[ind2,],
+            Beta=NULL,
+            M = DelayedArray::DelayedArray(mat[ind1,,drop=FALSE]),
+            CN=NULL,
+            colData=pData,
+            annotation=c(array=array,annotation=annotation),
+            preprocessMethod=preprocessing)
     }
     return(out)
 }
 
-    
+
 getGenomicRatioSetFromGEO <- function(GSE=NULL,path=NULL,
                                       array = "IlluminaHumanMethylation450k",
                                       annotation=  .default.450k.annotation,
                                       what=c("Beta","M"),
                                       mergeManifest=FALSE,
-                                      i=1) { 
-    
+                                      i=1) {
+
     what <- match.arg(what)
-    
+
     if(is.null(GSE) && is.null(path))
         stop("Either GSE or path must be supplied.")
 
@@ -129,40 +131,42 @@ getGenomicRatioSetFromGEO <- function(GSE=NULL,path=NULL,
     object <- get(ann)
 
     gr <- getLocations(object, mergeManifest = mergeManifest,
-                                 orderByLocation = TRUE)
-    
+                       orderByLocation = TRUE)
+
     locusNames <- names(gr)
-     
+
     sampleNames(gset) <- gset$title
-        
+
     ##we could call makeGenomicRatioSetFromMatrix but rewrite to
     ##avoide  a copy of exprs(gset)
     common <- intersect(locusNames, fData(gset)$Name)
     if(length(common)==0)
         stop("No rowname matches. 'rownames' need to match IlluminaHumanMethylation450k probe names.")
     ##Note we give no warning if some rownames have no match
-    
+
     ind1 <- match(common,fData(gset)$Name)
     ind2 <- match(common,locusNames)
 
     preprocessing <- c(rg.norm=paste0('See GEO ',GSE,' for details'))
-    
+
     if(what=="Beta"){
-        out <- GenomicRatioSet(gr=gr[ind2,],
-                               Beta=exprs(gset)[ind1,,drop=FALSE],
-                               M =NULL,
-                               CN=NULL,
-                               pData=pData(gset),
-                               annotation=c(array=array,annotation=annotation),
-                               preprocessMethod=preprocessing)
+        out <- GenomicRatioSet(
+            gr = gr[ind2,],
+            Beta = DelayedArray::DelayedArray(exprs(gset)[ind1, ,drop = FALSE]),
+            M = NULL,
+            CN = NULL,
+            colData = pData(gset),
+            annotation = c(array = array, annotation = annotation),
+            preprocessMethod = preprocessing)
     } else {
-        out <- GenomicRatioSet(gr=gr[ind2,],
-                               Beta=NULL,
-                               M=exprs(gset)[ind1,,drop=FALSE],
-                               CN=NULL,
-                               pData=pData(gset),
-                               annotation=c(array=array,annotation=annotation),
-                               preprocessMethod=preprocessing)
+        out <- GenomicRatioSet(
+            gr = gr[ind2,],
+            Beta = NULL,
+            M = DelayedArray::DelayedArray(exprs(gset)[ind1, , drop = FALSE]),
+            CN = NULL,
+            colData = pData(gset),
+            annotation = c(array = array, annotation = annotation),
+            preprocessMethod = preprocessing)
 
     }
 
@@ -170,19 +174,19 @@ getGenomicRatioSetFromGEO <- function(GSE=NULL,path=NULL,
 }
 
 readTCGA <- function(filename,sep="\t",
-                      keyName="Composite Element REF",
-                      Betaname="Beta_value",
-                      pData=NULL,
-                      array = "IlluminaHumanMethylation450k",
-                      annotation=.default.450k.annotation,
-                      mergeManifest = FALSE,
-                      showProgress=TRUE){
+                     keyName="Composite Element REF",
+                     Betaname="Beta_value",
+                     pData=NULL,
+                     array = "IlluminaHumanMethylation450k",
+                     annotation=.default.450k.annotation,
+                     mergeManifest = FALSE,
+                     showProgress=TRUE){
     ##we assume first column are sample names
     ## and second column are the value identifiers
     colnames <- strsplit(readLines(filename, n = 2), sep)
-    
+
     select <- sort(c(grep(keyName, colnames[[2]]), grep(Betaname,colnames[[2]])))
-    
+
     mat <- fread(filename, header = FALSE, sep = sep, select=select,
                  showProgress=showProgress,skip=2)
     rowNames <- as.matrix(mat[, 1, with=FALSE])
@@ -198,21 +202,21 @@ readTCGA <- function(filename,sep="\t",
 
 
 readGEORawFile <- function(filename,sep=",",
-                            Uname="Unmethylated signal",
-                            Mname="Methylated signal",
-                            row.names=1,
-                            pData=NULL,
-                            array = "IlluminaHumanMethylation450k",
-                            annotation=.default.450k.annotation,
-                            mergeManifest = FALSE,
-                            showProgress=TRUE){
+                           Uname="Unmethylated signal",
+                           Mname="Methylated signal",
+                           row.names=1,
+                           pData=NULL,
+                           array = "IlluminaHumanMethylation450k",
+                           annotation=.default.450k.annotation,
+                           mergeManifest = FALSE,
+                           showProgress=TRUE){
     colnames <- strsplit(readLines(filename, n = 1), sep)[[1]]
 
     if(all(!grepl(Uname,colnames)))
         stop("No columns contain Uname. Use readLines or look at file header to see column names.")
 
     if(all(!grepl(Mname,colnames)))
-        stop("No columns contain Mname. Use readLines or look at file header to see column names.")   
+        stop("No columns contain Mname. Use readLines or look at file header to see column names.")
 
     select <- sort(c(row.names, grep(Uname,colnames),grep(Mname,colnames)))
 
@@ -223,27 +227,27 @@ readGEORawFile <- function(filename,sep=",",
     mat <- as.matrix(mat[,-1,with=FALSE])
     rownames(mat) <- rowNames
     rm(rowNames)
-    
+
     uindex <- grep(Uname,colnames(mat))
     mindex <- grep(Mname,colnames(mat))
-  
+
     trim <- function (x){
         x<-gsub("^\\s+|\\s+$", "", x)
         x<-gsub("^\\.+|\\.+$", "", x)
         x<-gsub("^\\_+|\\_$", "", x)
         return(x)
     }
-    
+
     UsampleNames <- trim(sub(Uname, "", colnames(mat)[uindex]))
     MsampleNames <- trim(sub(Mname, "", colnames(mat)[mindex]))
 
     index <- match(UsampleNames,MsampleNames)
     MsampleNames <- MsampleNames[index]
     mindex <- mindex[index]
-    
+
     if(!identical(UsampleNames,MsampleNames))
         stop("Sample names do not match for Meth and Unmeth channels.")
-    
+
     if(is.data.frame(pData)) pData <- as(pData,"DataFrame")
 
     if(is.null(pData))  pData <- DataFrame(
@@ -256,10 +260,10 @@ readGEORawFile <- function(filename,sep=",",
     object <- get(ann)
 
     gr <- getLocations(object, mergeManifest = mergeManifest,
-                                 orderByLocation = TRUE)
+                       orderByLocation = TRUE)
 
     locusNames <- names(gr)
-     
+
     ##this might return NAs but it's ok
     ###fix this. return only what is sent
     common <- intersect(locusNames,rownames(mat))
@@ -271,11 +275,12 @@ readGEORawFile <- function(filename,sep=",",
     ind2 <- match(common,locusNames)
 
     preprocessing <- c(rg.norm=paste0("Data read from file ",filename,"."))
-    
-    return(GenomicMethylSet(gr =  gr[ind2,],
-                            Meth = mat[ind1,mindex],
-                            Unmeth = mat[ind1,uindex],
-                            pData = pData,
-                            preprocessMethod = preprocessing,
-                            annotation = c(array=array,annotation=annotation)))
+
+    return(GenomicMethylSet(
+        gr =  gr[ind2,],
+        Meth = DelayedArray::DelayedArray(unname(mat[ind1,mindex])),
+        Unmeth = DelayedArray::DelayedArray(unname(mat[ind1,uindex])),
+        colData = pData,
+        preprocessMethod = preprocessing,
+        annotation = c(array=array,annotation=annotation)))
 }

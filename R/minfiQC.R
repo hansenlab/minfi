@@ -1,26 +1,44 @@
+# HDF5: Currently loads entire mat into memory
 .fixMethOutliers <- function(mat, K=-3, verbose = FALSE) {
-    logMat <- log2(mat + 0.5)
+    if (.isHDF5ArrayBacked(mat)) {
+        BACKEND <- "HDF5Array"
+    } else {
+        BACKEND <- NULL
+    }
+    mat_dimnames <- dimnames(mat)
+    logMat <- as.matrix(log2(mat + 0.5))
+    # TODO: Need a colMedians for DelayedArray
     mu <- matrixStats::colMedians(logMat)
     sd <- matrixStats::colMads(logMat)
     cutoff <- K*sd + mu
     nFixes <- integer(ncol(mat))
-    for(jj in 1:ncol(mat)) {
-        wh <- which(logMat[, jj] < cutoff[jj])
-        mat[wh, jj] <- 2^cutoff[jj]
-        nFixes[jj] <- length(wh)
-        if(verbose)
+    mat <- do.call(cbind, lapply(seq_len(ncol(mat)), function(j) {
+        wh <- which(logMat[, j] < cutoff[j])
+        mat_j <- as.array(mat[, j])
+        mat_j[wh] <- 2 ^ cutoff[j]
+        nFixes[j] <- length(wh)
+        if(verbose) {
             message(sprintf("[.fixMethOutliers] for sample %s, fixing %s outliers with 2^cutoff=%s\n",
-                        jj, nFixes[jj], round(2^cutoff[jj],0)))
-    }
+                            j, nFixes[j], round(2^cutoff[j],0)))
+        }
+        # NOTE: Don't store dimnames in DelayedArray (these get added back
+        #       below once samples are cbind()-ed)
+        realize(unname(mat_j), BACKEND = BACKEND)
+    }))
+    dimnames(mat) <- mat_dimnames
     return(list(mat = mat, cutoff = cutoff, nFixes = nFixes))
 }
 
 fixMethOutliers <- function(object, K=-3, verbose = FALSE){
     .isMethylOrStop(object)
     if(verbose) message("[fixMethOutliers] fixing Meth channel\n")
-    assay(object, "Meth") <- .fixMethOutliers(getMeth(object), K=K, verbose = verbose)$mat
+    assay(object, "Meth") <- .fixMethOutliers(getMeth(object),
+                                              K = K,
+                                              verbose = verbose)$mat
     if(verbose) message("[fixMethOutliers] fixing Unmeth channel\n")
-    assay(object, "Unmeth") <- .fixMethOutliers(getUnmeth(object), K=K, verbose = verbose)$mat
+    assay(object, "Unmeth") <- .fixMethOutliers(getUnmeth(object),
+                                                K = K,
+                                                verbose = verbose)$mat
     return(object)
 }
 
@@ -49,10 +67,12 @@ plotQC <- function(qc, badSampleCutoff = 10.5) {
     invisible(NULL)
 }
 
+# HDF5: Currently loads entire U and M into memory
 getQC <- function(object) {
     .isMethylOrStop(object)
-    U.medians <- log2(matrixStats::colMedians(getUnmeth(object)))
-    M.medians <- log2(matrixStats::colMedians(getMeth(object)))
+    # TODO: Need a colMedians for DelayedArray
+    U.medians <- log2(matrixStats::colMedians(as.matrix(getUnmeth(object))))
+    M.medians <- log2(matrixStats::colMedians(as.matrix(getMeth(object))))
     df <- DataFrame(mMed = M.medians, uMed = U.medians)
     rownames(df) <- colnames(object)
     df
@@ -63,6 +83,7 @@ minfiQC <- function(object, fixOutliers=TRUE, verbose = FALSE){
     subverbose <- max(as.integer(verbose) - 1L, 0L)
     if(fixOutliers){
         if(verbose) message("[minfiQC] fixing outliers\n")
+        # TODO: The result is never assigned; why?
         fixMethOutliers(object, verbose = subverbose)
     }
     qc <- getQC(object)

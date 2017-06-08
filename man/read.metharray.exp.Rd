@@ -9,7 +9,7 @@
 }
 \usage{
 read.metharray.exp(base = NULL, targets = NULL, extended = FALSE,
-    recursive = FALSE, verbose = FALSE, force = FALSE)
+    recursive = FALSE, verbose = FALSE, force = FALSE, BACKEND = NULL)
 }
 \arguments{
   \item{base}{The base directory.}
@@ -20,6 +20,11 @@ read.metharray.exp(base = NULL, targets = NULL, extended = FALSE,
   \item{verbose}{Should the function be verbose?}
   \item{force}{Should reading different size IDAT files be forced? See
     the documentation for \code{\link{read.metharray}}}
+  \item{BACKEND}{The backend used for the assay \linkS4class{DelayedMatrix}
+    objects. The default, \code{NULL},
+    corresponds to using \link[base]{matrix} objects. See
+    \code{?DelayedArray::\link[DelayedArray]{setRealizationBackend}} for
+    alternative backends.}
 }
 \details{
   If the \code{targets} argument is \code{NULL}, the function finds all

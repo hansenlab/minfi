@@ -44,7 +44,9 @@ importFrom("stats", "approx", "as.formula", "cmdscale", "contrasts",
            "pchisq", "pf", "pnorm", "prcomp", "pt", "rnorm", "runif",
            "vcov")
 importClassesFrom(DelayedArray, DelayedMatrix)
-importFrom(DelayedArray, DelayedArray, pmax2, pmin2, realize, seed, type)
+# NOTE: Using but not importing DelayedArray::type() to avoid clash with
+#       Biostrings::type(). So remember to explicitly use double colon
+importFrom(DelayedArray, DelayedArray, pmax2, pmin2, realize, seed)
 
 export(getManifest, getProbeInfo, getManifestInfo,
        IlluminaMethylationManifest, IlluminaMethylationAnnotation,

@@ -9,7 +9,7 @@
 }
 \usage{
 read.metharray.sheet(base, pattern = "csv$", ignore.case = TRUE,
-    recursive = TRUE, verbose = TRUE)
+    recursive = TRUE, verbose = TRUE, BACKEND = NULL)
 }
 \arguments{
   \item{base}{The base directory from which the search is started.}
@@ -18,6 +18,11 @@ read.metharray.sheet(base, pattern = "csv$", ignore.case = TRUE,
   \item{ignore.case}{Should the file search be case sensitive?}
   \item{recursive}{Should the file search be recursive, see \code{list.files}?}
   \item{verbose}{Should the function be verbose?}
+  \item{BACKEND}{The backend used for the assay \linkS4class{DelayedMatrix}
+    objects. The default, \code{NULL},
+    corresponds to using \link[base]{matrix} objects. See
+    \code{?DelayedArray::\link[DelayedArray]{setRealizationBackend}} for
+    alternative backends.}
 }
 \details{
   This function search the directory \code{base} (possibly including
@@ -29,7 +34,7 @@ read.metharray.sheet(base, pattern = "csv$", ignore.case = TRUE,
 
   In case multiple sheet files are found, they are all read and the
   return object will contain the concatenation of the files.
-  
+
   A sample sheet file is essentially a CSV (comma-separated) file
   containing one line per sample, with a number of columns describing
   pheno-data or other important information about the sample.  The file

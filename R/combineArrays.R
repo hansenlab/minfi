@@ -1,5 +1,5 @@
-.getAnnotationFromOutType <- function(outType = c("IlluminaHumanMethylation450k", 
-        "IlluminaHumanMethylationEPIC", 
+.getAnnotationFromOutType <- function(outType = c("IlluminaHumanMethylation450k",
+        "IlluminaHumanMethylationEPIC",
         "IlluminaHumanMethylation27k")){
     outType <- match.arg(outType)
     if (outType=="IlluminaHumanMethylation450k"){
@@ -13,8 +13,8 @@
 }
 
 
-.getLociFromOutType <- function(outType = c("IlluminaHumanMethylation450k", 
-        "IlluminaHumanMethylationEPIC", 
+.getLociFromOutType <- function(outType = c("IlluminaHumanMethylation450k",
+        "IlluminaHumanMethylationEPIC",
         "IlluminaHumanMethylation27k")){
     outType <- match.arg(outType)
     manifest <- getManifest(outType)
@@ -167,8 +167,8 @@ setMethod("convertArray",
 
 setMethod("convertArray",
         signature(object = "MethylSet"),
-        function(object, outType = c("IlluminaHumanMethylation450k", 
-            "IlluminaHumanMethylationEPIC", 
+        function(object, outType = c("IlluminaHumanMethylation450k",
+            "IlluminaHumanMethylationEPIC",
             "IlluminaHumanMethylation27k"), verbose = TRUE){
     outType <- match.arg(outType)
     array <- annotation(object)[["array"]]
@@ -187,8 +187,8 @@ setMethod("convertArray",
 
 setMethod("convertArray",
         signature(object = "RatioSet"),
-        function(object, outType = c("IlluminaHumanMethylation450k", 
-            "IlluminaHumanMethylationEPIC", 
+        function(object, outType = c("IlluminaHumanMethylation450k",
+            "IlluminaHumanMethylationEPIC",
             "IlluminaHumanMethylation27k"), verbose = TRUE){
     outType <- match.arg(outType)
     array <- annotation(object)[["array"]]
@@ -207,8 +207,8 @@ setMethod("convertArray",
 
 setMethod("convertArray",
         signature(object = "GenomicMethylSet"),
-        function(object, outType = c("IlluminaHumanMethylation450k", 
-            "IlluminaHumanMethylationEPIC", 
+        function(object, outType = c("IlluminaHumanMethylation450k",
+            "IlluminaHumanMethylationEPIC",
             "IlluminaHumanMethylation27k"), verbose = TRUE){
     outType <- match.arg(outType)
     array <- annotation(object)[["array"]]
@@ -228,7 +228,7 @@ setMethod("convertArray",
 setMethod("convertArray",
         signature(object = "GenomicRatioSet"),
         function(object, outType = c("IlluminaHumanMethylation450k",
-         "IlluminaHumanMethylationEPIC", 
+         "IlluminaHumanMethylationEPIC",
          "IlluminaHumanMethylation27k"), verbose = TRUE){
     outType <- match.arg(outType)
     array <- annotation(object)[["array"]]
@@ -248,13 +248,13 @@ setMethod("convertArray",
 
 
 
-# Convert the rgSet into the outType array. 
+# Convert the rgSet into the outType array.
 .convertArray_450k_epic <- function(rgSet, outType=c("IlluminaHumanMethylation450k", "IlluminaHumanMethylationEPIC"),
                                          verbose = verbose) {
     outType <- match.arg(outType)
     .isRGOrStop(rgSet)
     stopifnot(.is450k(rgSet) | .isEPIC(rgSet))
-    
+
     array <- annotation(rgSet)["array"]
     if (array==outType){
         stop("'rgSet' already in the 'outType' array type.")
@@ -279,7 +279,7 @@ setMethod("convertArray",
     wh <- which(rownames(rgSet) %in% names(translate))
     rownames(rgSet)[wh] <- translate[rownames(rgSet)[wh]]
     keepAddresses$I <- unname(translate)
-        
+
     ## Probes of Type II
     probes1 <- getProbeInfo(manifest1, type = "II")
     probes2 <- getProbeInfo(manifest2, type = "II")
@@ -293,7 +293,7 @@ setMethod("convertArray",
     wh <- which(rownames(rgSet) %in% names(translate))
     rownames(rgSet)[wh] <- translate[rownames(rgSet)[wh]]
     keepAddresses$II <- unname(translate)
-    
+
     ## Probes of Type SnpII
     probes1 <- getProbeInfo(manifest1, type = "SnpI")
     probes2 <- getProbeInfo(manifest2, type = "SnpI")
@@ -322,7 +322,7 @@ setMethod("convertArray",
     wh <- which(rownames(rgSet) %in% names(translate))
     rownames(rgSet)[wh] <- translate[rownames(rgSet)[wh]]
     keepAddresses$SnpII <- unname(translate)
-    
+
     ## Probes of Type Control
     probes1 <- getProbeInfo(manifest1, type = "Control")
     probes2 <- getProbeInfo(manifest2, type = "Control")

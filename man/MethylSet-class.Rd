@@ -40,7 +40,7 @@
 \usage{
 ## Constructor
 
-MethylSet(Meth = new("matrix"), Unmeth = new("matrix"),
+MethylSet(Meth = new("DelayedMatrix"), Unmeth = new("DelayedMatrix"),
           annotation = "", preprocessMethod = "", ...)
 
 ## Data extraction / Accessors
@@ -75,15 +75,15 @@ dropMethylationLoci(object, dropRS = TRUE, dropCH = TRUE)
     the logit of \code{getBeta(object)}.}
   \item{offset}{Offset in the beta ratio, see detail.}
   \item{betaThreshold}{Constrains the beta values to be in the inverval
-    betwen \code{betaThreshold} and 1-\code{betaThreshold}.}  
+    betwen \code{betaThreshold} and 1-\code{betaThreshold}.}
   \item{dropRS}{Should SNP probes be dropped?}
   \item{dropCH}{Should CH probes be dropped}
   \item{\dots}{For the constructor, additional arguments to be passed to
     \code{SummarizedExperiment}; of particular interest are
     \code{colData}, \code{rowData} and \code{metadata}.
     For \code{getM} these values gets passed onto
-    \code{getBeta}.} 
-  
+    \code{getBeta}.}
+
 }
 
 \value{
@@ -135,7 +135,7 @@ arguments outlined above.
 
 \section{Utilities}{
   In the following code, \code{object} is a \code{MethylSet}.
-  
+
   \describe{
     \item{\code{dropMethylationLoci}(object)}{A unifed interface to removing methylation loci.  You
       can drop SNP probes (probes that measure SNPs, not probes containing SNPs) or CH probes (non-CpG

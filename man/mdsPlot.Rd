@@ -24,9 +24,9 @@ mdsPlot(dat, numPositions = 1000, sampNames = NULL, sampGroups = NULL, xlim, yli
   \item{pch}{Point type. See \code{\link[graphics]{par}} for details.}
   \item{pal}{Color palette.}
   \item{legendPos}{The legend position. See
-    \code{\link[graphics]{legend}} for details.} 
+    \code{\link[graphics]{legend}} for details.}
   \item{legendNCol}{The number of columns in the legend. See
-    \code{\link[graphics]{legend}} for details.} 
+    \code{\link[graphics]{legend}} for details.}
   \item{main}{Plot title.}
 }
 \details{
@@ -45,7 +45,7 @@ No return value. Plots are produced as a side-effect.
   \emph{Modern Multidimensional Scaling: theory and applications (2nd
     ed.)}
   New York: Springer-Verlag (2005) pp. 207-212. ISBN 0387948457.
-  
+
   \url{http://en.wikipedia.org/wiki/Multidimensional_scaling}
 }
 \author{
@@ -59,10 +59,8 @@ Martin Aryee \email{aryee@jhu.edu}.
 }
 \examples{
 if (require(minfiData)) {
-
 names <- pData(MsetEx)$Sample_Name
 groups <- pData(MsetEx)$Sample_Group
 mdsPlot(MsetEx, sampNames=names, sampGroups=groups)
-
 }
 }

@@ -38,8 +38,9 @@ minfiQC(object, fixOutliers = TRUE, verbose = FALSE)
 }
 \examples{
 if(require(minfiData)) {
+  # UP TO HERE: plotSex() fails
   out <- minfiQC(MsetEx)
   ## plotQC(out$qc)
-  ## plotSex(out$sex)
+  ## plotSex(out$qc)
 }
 }

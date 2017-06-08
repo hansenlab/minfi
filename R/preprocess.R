@@ -57,12 +57,12 @@ preprocessRaw <- function(rgSet) {
     out
 }
 
-# HDF5: Not yet supported
+# HDF5: Currently loads `getGreen(rgSet)` and `getRed(rgSet)` into memory
 normalize.illumina.control <- function(rgSet, reference=1) {
     ## This function returns an rgset, not a methylset
     ## code duplication
-    Green <- getGreen(rgSet)
-    Red <- getRed(rgSet)
+    Green <- as.matrix(getGreen(rgSet))
+    Red <- as.matrix(getRed(rgSet))
 
     if (.is450k(rgSet) || .isEPIC(rgSet)) {
         AT.controls <- getControlAddress(rgSet, controlType = c("NORM_A", "NORM_T"))
@@ -79,19 +79,19 @@ normalize.illumina.control <- function(rgSet, reference=1) {
         stop("perhaps 'reference' refer to an array that is not present.")
     Green.factor <- ref/Green.avg
     Red.factor <- ref/Red.avg
-    # TODO: Need a sweep() for DelayedArray
+    # TODO: Need a sweep,DelayedArray-method
     Green <- sweep(Green, 2, FUN = "*", Green.factor)
     Red <- sweep(Red, 2, FUN = "*", Red.factor)
-    assay(rgSet, "Green") <- Green
-    assay(rgSet, "Red") <- Red
+    assay(rgSet, "Green") <- DelayedArray::DelayedArray(Green)
+    assay(rgSet, "Red") <- DelayedArray::DelayedArray(Red)
     rgSet
 }
 
-# HDF5: Not yet supported
+# HDF5: Currently loads `getGreen(rgSet)` and `getRed(rgSet)` into memory
 bgcorrect.illumina <- function(rgSet) {
     .isRGOrStop(rgSet)
-    Green <- getGreen(rgSet)
-    Red <- getRed(rgSet)
+    Green <- as.matrix(getGreen(rgSet))
+    Red <- as.matrix(getRed(rgSet))
     if (.is450k(rgSet) || .isEPIC(rgSet)) {
         NegControls <- getControlAddress(rgSet, controlType = "NEGATIVE")
     }
@@ -106,7 +106,7 @@ bgcorrect.illumina <- function(rgSet) {
     Red.bg <- apply(Red[NegControls, , drop = FALSE], 2, function(xx) {
         sort(as.matrix(xx))[31]
     })
-    # TODO: Need a sweep() for DelayedArray
+    # TODO: Need a sweep,DelayedArray-method
     Green <- pmax(sweep(Green, 2, Green.bg), 0)
     Red <- pmax(sweep(Red, 2, Red.bg), 0)
     assay(rgSet, "Green") <- Green
@@ -164,20 +164,21 @@ detectionP <- function(rgSet, type = "m+u") {
         detP <- matrix(NA_real_, ncol = 1, nrow = length(locusNames),
                        dimnames = list(locusNames, this_sample))
 
-        r <- as.matrix(getRed(rgSet)[, j, drop = FALSE])
+        r <- as.matrix(getRed(rgSet)[, this_sample, drop = FALSE])
         rBg <- r[controlIdx, , drop = FALSE]
         # NOTE: matrixStats::colMedians() is overkill since this is a
         #       one-column matrix, but it's still faster than median()
         rMu <- matrixStats::colMedians(rBg)
         rSd <- matrixStats::colMads(rBg)
 
-        g <- as.matrix(getGreen(rgSet)[, j, drop = FALSE])
+        g <- as.matrix(getGreen(rgSet)[, this_sample, drop = FALSE])
         gBg <- g[controlIdx, , drop = FALSE]
         gMu <- matrixStats::colMedians(gBg)
         gSd <- matrixStats::colMads(gBg)
 
         ## Type I Red
-        intensity <- r[TypeI.Red$AddressA, j] + r[TypeI.Red$AddressB, j]
+        intensity <- r[TypeI.Red$AddressA, this_sample] +
+            r[TypeI.Red$AddressB, this_sample]
         detP[TypeI.Red$Name, ] <- 1 - pnorm(intensity,
                                             mean = rMu * 2,
                                             sd = rSd * 2)

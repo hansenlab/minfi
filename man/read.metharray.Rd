@@ -7,7 +7,8 @@
   Parsing IDAT files from Illumina methylation arrays.
 }
 \usage{
-read.metharray(basenames, extended = FALSE, verbose = FALSE, force = FALSE)
+read.metharray(basenames, extended = FALSE, verbose = FALSE, force = FALSE,
+               BACKEND = NULL)
 }
 \arguments{
   \item{basenames}{The basenames or filenames of the IDAT files.  By
@@ -20,6 +21,11 @@ read.metharray(basenames, extended = FALSE, verbose = FALSE, force = FALSE)
   \item{verbose}{Should the function be verbose?}
   \item{force}{Should reading different size IDAT files be forced? See
     Details.}
+  \item{BACKEND}{The backend used for the assay \linkS4class{DelayedMatrix}
+    objects. The default, \code{NULL},
+    corresponds to using \link[base]{matrix} objects. See
+    \code{?DelayedArray::\link[DelayedArray]{setRealizationBackend}} for
+    alternative backends.}
 }
 \details{
   The type of methylation array is guess by looking at the number of
@@ -36,7 +42,7 @@ read.metharray(basenames, extended = FALSE, verbose = FALSE, force = FALSE)
 }
 \value{
   An object of class \code{RGChannelSet} or
-  \code{RGChannelSetExtended}. 
+  \code{RGChannelSetExtended}.
 }
 \author{
   Kasper Daniel Hansen\email{khansen@jhsph.edu}.
@@ -45,7 +51,7 @@ read.metharray(basenames, extended = FALSE, verbose = FALSE, force = FALSE)
   \code{\link{read.metharray.exp}} for a convenience function for
   reading an experiment, \code{\link{read.metharray.sheet}} for
   reading a sample sheet and \code{\linkS4class{RGChannelSet}} for the
-  output class. 
+  output class.
 }
 \examples{
 if(require(minfiData)) {
