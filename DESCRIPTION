@@ -1,5 +1,5 @@
 Package: minfi
-Version: 1.23.2
+Version: 1.23.3
 Title: Analyze Illumina Infinium DNA methylation arrays
 Description: Tools to analyze & visualize Illumina Infinium methylation arrays.
 Authors@R: c(person(c("Kasper", "Daniel"), "Hansen", role = c("cre", "aut"),
