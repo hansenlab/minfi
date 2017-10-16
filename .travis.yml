@@ -1,9 +1,7 @@
 language: r
 r: bioc-devel
 cache: packages
+sudo: false
 warnings_are_errors: false
-r_github_packages:
-  - jimhester/covr
 after_success:
   - Rscript -e 'covr::codecov()'
-r_check_args: --no-examples
