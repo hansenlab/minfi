@@ -2,6 +2,16 @@
 \title{Minfi News}
 \encoding{UTF-8}
 
+\section{Version 1.25}{
+  \itemize{
+    \item Fixing bug in functions readGEORawFile() and
+    getGenomicRatioSetFromGEO(). These two functions did not work
+    (reported an error). They should work now. Thanks to users who
+    reported probles at GitHub issues.
+    \item Updated CITATION and citations in the vignette.
+  }
+}
+
 \section{Version 1.23}{
   \itemize{
     \item Fixed as() (coercion) from RGChannelSetExtended to
