@@ -122,15 +122,19 @@ getSnpBeta(object)
 }
 
 \section{Tips}{
-  The class inherits a number of useful methods from \code{eSet}.
-  Amongst these are
+  The class inherits a number of useful methods from \code{SummarizedExperiment}.  In earliers versions of minfi, this class inherited
+  from \code{eSet}, and we have kept of number of methods related to this, for example \code{pData}. 
+  
+  The best way to access phenotype data and sample names are \code{colData} and \code{colnames}.
+  
+  Amongst the useful methods are
 
   \describe{
     \item{\code{dim}, \code{nrow}, \code{ncol}}{The dimension (number of
     probes by number of samples) of the experiment.}
-    \item{\code{pData}, \code{sampleNames}}{Phenotype information and
+    \item{\code{colData}, \code{colnames}, \code{pData}, \code{sampleNames}}{Phenotype information and
     sample names.}
-    \item{\code{featureNames}}{This is the addresses (probe identifiers)
+    \item{\code{rownames}, \code{featureNames}}{This is the addresses (probe identifiers)
     of the array.}
   }
 }
@@ -138,7 +142,7 @@ getSnpBeta(object)
 \author{Kasper Daniel Hansen \email{khansen@jhsph.edu}}
 
 \seealso{
-  See \code{\linkS4class{eSet}} for the basic class that is used as a
+  See \code{\linkS4class{SummarizedExperiment}} for the basic class that is used as a
   building block for \code{"RGChannelSet(Extended)"}.  See
   \code{\link{IlluminaMethylationManifest}} for a class representing the
   design of the array. 
