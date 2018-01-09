@@ -1,9 +1,14 @@
 language: r
 r: bioc-devel
+sudo: false
 cache: packages
 warnings_are_errors: false
 r_github_packages:
   - jimhester/covr
 after_success:
   - Rscript -e 'covr::codecov()'
-r_check_args: --no-examples
+before_install:
+  - tlmgr install bera
+  - tlmgr install nowidow
+  - tlmgr install parnotes
+  - tlmgr install marginfix

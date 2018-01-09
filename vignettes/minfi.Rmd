@@ -1,8 +1,10 @@
 ---
 title: "The minfi User's Guide"
-author: "Kasper D. Hansen, Jean-Phillipe Fortin"
-date: "`r doc_date()`"
-package: "`r pkg_ver('minfi')`"
+shorttitle: "minfi guide"
+author: 
+  - Kasper D. Hansen
+  - Jean-Phillipe Fortin
+package: minfi
 bibliography: minfi.bib
 abstract: >
   A comprehensive guide to using the minfi package for analyzing
@@ -12,9 +14,8 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 output: 
-  BiocStyle::pdf_document:
-    keep_tex: true
-    number_sections: false
+  BiocStyle::html_document:
+    toc_float: true
 ---
 
 # Introduction

@@ -152,7 +152,7 @@ getGenomicRatioSetFromGEO <- function(GSE=NULL,path=NULL,
                                Beta=exprs(gset)[ind1,,drop=FALSE],
                                M =NULL,
                                CN=NULL,
-                               pData=pData(gset),
+                               colData=as(pData(gset), "DataFrame"),
                                annotation=c(array=array,annotation=annotation),
                                preprocessMethod=preprocessing)
     } else {
@@ -160,7 +160,7 @@ getGenomicRatioSetFromGEO <- function(GSE=NULL,path=NULL,
                                Beta=NULL,
                                M=exprs(gset)[ind1,,drop=FALSE],
                                CN=NULL,
-                               pData=pData(gset),
+                               colData=as(pData(gset), "DataFrame"),
                                annotation=c(array=array,annotation=annotation),
                                preprocessMethod=preprocessing)
 
@@ -208,13 +208,13 @@ readGEORawFile <- function(filename,sep=",",
                             showProgress=TRUE){
     colnames <- strsplit(readLines(filename, n = 1), sep)[[1]]
 
-    if(all(!grepl(Uname,colnames)))
+    if(all(!grepl(Uname, colnames)))
         stop("No columns contain Uname. Use readLines or look at file header to see column names.")
 
-    if(all(!grepl(Mname,colnames)))
+    if(all(!grepl(Mname, colnames)))
         stop("No columns contain Mname. Use readLines or look at file header to see column names.")   
 
-    select <- sort(c(row.names, grep(Uname,colnames),grep(Mname,colnames)))
+    select <- sort(c(row.names, grep(Uname,colnames), grep(Mname,colnames)))
 
     mat <- fread(filename, header = TRUE, sep = sep, select=select,
                  showProgress=showProgress)
@@ -271,11 +271,11 @@ readGEORawFile <- function(filename,sep=",",
     ind2 <- match(common,locusNames)
 
     preprocessing <- c(rg.norm=paste0("Data read from file ",filename,"."))
-    
+    colnames(mat) <- NULL
     return(GenomicMethylSet(gr =  gr[ind2,],
                             Meth = mat[ind1,mindex],
                             Unmeth = mat[ind1,uindex],
-                            pData = pData,
+                            colData = pData,
                             preprocessMethod = preprocessing,
                             annotation = c(array=array,annotation=annotation)))
 }
