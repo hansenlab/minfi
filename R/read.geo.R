@@ -205,7 +205,8 @@ readGEORawFile <- function(filename,sep=",",
                             array = "IlluminaHumanMethylation450k",
                             annotation=.default.450k.annotation,
                             mergeManifest = FALSE,
-                            showProgress=TRUE){
+                            showProgress=TRUE,
+                            ...){
     colnames <- strsplit(readLines(filename, n = 1), sep)[[1]]
 
     if(all(!grepl(Uname, colnames)))
@@ -217,7 +218,7 @@ readGEORawFile <- function(filename,sep=",",
     select <- sort(c(row.names, grep(Uname,colnames), grep(Mname,colnames)))
 
     mat <- fread(filename, header = TRUE, sep = sep, select=select,
-                 showProgress=showProgress)
+                 showProgress=showProgress, ...)
 
     rowNames <- as.matrix(mat[,1,with=FALSE])
     mat <- as.matrix(mat[,-1,with=FALSE])
