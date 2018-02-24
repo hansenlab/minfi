@@ -19,7 +19,7 @@
 \arguments{
   \item{object}{Either a \code{MethylSet}, or a \code{GenomicRatioSet}.}
   \item{what}{Which ratios should be computed and stored?}
-  \item{keepCN}{A logical, should compy number values be computed and stored in the
+  \item{keepCN}{A logical, should copy number values be computed and stored in the
     object?}
   \item{\dots}{Passed to \code{getBeta}, \code{getM} methods.}
 }
