@@ -12,7 +12,7 @@ Authors@R: c(person(c("Kasper", "Daniel"), "Hansen", role = c("cre", "aut"),
              person("Jean-Philippe", "Fortin", role = "ctb"),
              person("Tim", "Triche", role = "ctb"),
              person(c("Shan", "V."), "Andrews", role = "ctb"))
-Depends:  methods,
+Depends: methods,
 	  BiocGenerics (>= 0.15.3),
 	  GenomicRanges,
 	  SummarizedExperiment (>= 1.1.6),
@@ -28,7 +28,7 @@ Suggests: IlluminaHumanMethylation450kmanifest (>= 0.2.0),
 	  BiocStyle,
 	  knitr,
 	  rmarkdown
-Imports:  S4Vectors,
+Imports: S4Vectors,
 	  GenomeInfoDb,
 	  Biobase (>= 2.33.2),
 	  IRanges,
@@ -53,7 +53,7 @@ Imports:  S4Vectors,
           grDevices,
           graphics,
           utils
-Collate:  generics.R
+Collate: generics.R
 	  mset.R
 	  rset.R
 	  rgset.R
@@ -74,6 +74,7 @@ Collate:  generics.R
 	  preprocessQuantile.R
 	  preprocessNoob.R
 	  preprocessFunnorm.R
+	  tcgaPipeline.R
 	  qc.R
 	  read.450k.R
 	  read.meth.R
@@ -91,3 +92,4 @@ BugReports: https://github.com/kasperdanielhansen/minfi/issues
 LazyData: yes
 biocViews: DNAMethylation, DifferentialMethylation, Epigenetics, Microarray, MethylationArray,
 	   MultiChannel, TwoChannel, DataImport, Normalization, Preprocessing, QualityControl
+RoxygenNote: 6.0.1

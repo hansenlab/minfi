@@ -19,7 +19,7 @@ preprocessNoob(rgSet, offset = 15, dyeCorr = TRUE, verbose = TRUE,
   \item{dyeMethod}{How should dye bias correction be done: use a single sample approach (ssNoob), or a reference array?}
 }
 \value{
-  An object of class \code{MethylSet}.
+  For preprocessNoob, an object of class \code{MethylSet}.
 }
 \references{
   TJ Triche, DJ Weisenberger, D Van Den Berg, PW Laird and KD Siegmund
@@ -36,12 +36,14 @@ preprocessNoob(rgSet, offset = 15, dyeCorr = TRUE, verbose = TRUE,
   as well as \code{\linkS4class{IlluminaMethylationManifest}} for the
   basic classes involved in these functions.
   \code{\link{preprocessRaw}} and \code{\link{preprocessQuantile}} are other preprocessing functions.
+  \code{\link{tcgaPipeline}} for an end-to-end processing pipeline with results directly comparable to the Cancer Genome Atlas (TCGA) DNA methylation data. 
 }
 \examples{
 if (require(minfiData)) {
   ## RGsetEx.sub is a small subset of RGsetEx; 
   ## only used for computational speed.
   MsetEx.sub.noob <- preprocessNoob(RGsetEx.sub)
+  grSet.sub.noob <- tcgaPipeline(RGsetEx.sub)
 }
 \dontrun{
 if (require(minfiData)) {
