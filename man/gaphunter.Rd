@@ -74,4 +74,19 @@ if(require(minfiData)) {
   #In a typical EWAS setting with hundreds of samples, the default arguments should be
   #sufficient.
 }
+
+# ------------------------------------------------------------------------------
+# DelayedArray tests
+#
+
+library(DelayedArray)
+
+if(require(minfiData)) {
+  assays(MsetEx.sub) <- endoapply(assays(MsetEx.sub, DelayedArray))
+  gapres <- gaphunter(MsetEx.sub, threshold=0.3, keepOutliers=TRUE)
+  #Note: the threshold argument is increased from the default value in this small example
+  #dataset with 6 people to avoid the reporting of a large amount of probes as gap signals.
+  #In a typical EWAS setting with hundreds of samples, the default arguments should be
+  #sufficient.
+}
 }

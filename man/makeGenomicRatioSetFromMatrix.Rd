@@ -38,7 +38,7 @@ features thus depends on genome build.
 Should the Manifest be merged to the final object.
 }
 \item{what}{
-Are \code{Beta} or \code{M} values being downloaded.  
+Are \code{Beta} or \code{M} values being downloaded.
 }
 }
 \details{
@@ -61,4 +61,15 @@ can be supplied directly through \code{rownames}.
 mat <- matrix(10,5,2)
 rownames(mat) <- c( "cg13869341", "cg14008030","cg12045430", "cg20826792","cg00381604")
 grset <- makeGenomicRatioSetFromMatrix(mat)
+
+# ------------------------------------------------------------------------------
+# DelayedArray tests
+#
+
+library(DelayedArray)
+
+mat <- DelayedArray(matrix(10,5,2))
+rownames(mat) <- c( "cg13869341", "cg14008030","cg12045430", "cg20826792","cg00381604")
+grset <- makeGenomicRatioSetFromMatrix(mat)
+
 }

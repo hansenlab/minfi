@@ -57,4 +57,17 @@ if (require(minfiData)) {
   ## only used for computational speed.
   GMsetEx.sub <- mapToGenome(MsetEx.sub)
 }
+
+# ------------------------------------------------------------------------------
+# DelayedArray tests
+#
+
+library(DelayedArray)
+
+if (require(minfiData)) {
+  ## MsetEx.sub is a small subset of MsetEx;
+  ## only used for computational speed.
+  assays(MsetEx.sub) <- endoapply(assays(MsetEx.sub))
+  GMsetEx.sub <- mapToGenome(MsetEx.sub)
+}
 }

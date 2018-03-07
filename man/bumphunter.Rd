@@ -122,6 +122,20 @@ if(require(minfiData)) {
   bumps <- bumphunter(gmSet, design = design, B = 0,
                       type = "Beta", cutoff = 0.25)
 }
+
+# ------------------------------------------------------------------------------
+# DelayedArray tests
+#
+
+library(DelayedArray)
+
+if(require(minfiData)) {
+  assays(MsetEx) <- endoapply(assays(MsetEx), DelayedArray)
+  gmSet <- preprocessQuantile(MsetEx)
+  design <- model.matrix(~ gmSet$status)
+  bumps <- bumphunter(gmSet, design = design, B = 0,
+                      type = "Beta", cutoff = 0.25)
+}
 }
 
 

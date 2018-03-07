@@ -125,4 +125,26 @@ if(require(FlowSorted.Blood.450k)) {
   round(counts, 2)
 }
 }
+
+# ------------------------------------------------------------------------------
+# DelayedArray tests
+#
+
+library(DelayedArray)
+
+\dontrun{
+if(require(FlowSorted.Blood.450k)) {
+  assays(FlowSorted.Blood.450k) <- endoapply(assays(FlowSorted.Blood.450k), DelayedArray)
+  wh.WBC <- which(FlowSorted.Blood.450k$CellType == "WBC")
+  wh.PBMC <- which(FlowSorted.Blood.450k$CellType == "PBMC")
+  RGset <- FlowSorted.Blood.450k[, c(wh.WBC, wh.PBMC)]
+  ## The following line is purely to work around an issue with repeated
+  ## sampleNames and Biobase::combine()
+  sampleNames(RGset) <- paste(RGset$CellType,
+    c(seq(along = wh.WBC), seq(along = wh.PBMC)), sep = "_")
+  counts <- estimateCellCounts(RGset, meanPlot = FALSE)
+  round(counts, 2)
+}
+}
+
 }

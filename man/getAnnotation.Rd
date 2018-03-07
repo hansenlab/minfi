@@ -120,4 +120,18 @@ if(require(minfiData)) {
   table(getIslandStatus(MsetEx))
   getAnnotation(MsetEx, what = "Manifest")
 }
+
+# ------------------------------------------------------------------------------
+# DelayedArray tests
+#
+
+library(DelayedArray)
+
+if(require(minfiData)) {
+  assays(MsetEx) <- endoapply(assays(MsetEx), DelayedArray)
+  table(getIslandStatus(MsetEx))
+  getAnnotation(MsetEx, what = "Manifest")
+}
+
+
 }

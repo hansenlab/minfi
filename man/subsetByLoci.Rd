@@ -4,7 +4,7 @@
   Subset an RGChannelset by CpG loci.
 }
 \description{
-  Subset an RGChannelSet by CpG loci. 
+  Subset an RGChannelSet by CpG loci.
 }
 \usage{
 subsetByLoci(rgSet, includeLoci = NULL, excludeLoci = NULL,
@@ -12,11 +12,11 @@ subsetByLoci(rgSet, includeLoci = NULL, excludeLoci = NULL,
 }
 \arguments{
   \item{rgSet}{An object of class \code{RGChannelSet} (or
-    \code{RGChannelSetExtended}).} 
+    \code{RGChannelSetExtended}).}
   \item{includeLoci}{A character vector of CpG identifiers which should
-    be kept.} 
+    be kept.}
   \item{excludeLoci}{A character vector of CpG identifiers which should
-    be excluded.} 
+    be excluded.}
   \item{keepControls}{Should control probes be kept?}
   \item{keepSnps}{Should SNP probes be kept?}
 }
@@ -33,4 +33,20 @@ if(require(minfiData)) {
   subsetByLoci(RGsetEx.sub, includeLoci = loci)
   subsetByLoci(RGsetEx.sub, excludeLoci = loci)
 }
+
+# ------------------------------------------------------------------------------
+# DelayedArray tests
+#
+
+library(DelayedArray)
+
+if(require(minfiData)) {
+
+  assays(RGsetEx.sub) <- endoapply(assays(RGsetEx.sub), DelayedArray)
+
+  loci <- c("cg00050873", "cg00212031", "cg00213748", "cg00214611")
+  subsetByLoci(RGsetEx.sub, includeLoci = loci)
+  subsetByLoci(RGsetEx.sub, excludeLoci = loci)
+}
+
 }

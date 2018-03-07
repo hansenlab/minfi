@@ -73,4 +73,17 @@ if(require(minfiData)) {
   rgSet <- convertArray(RGsetEx.sub, outType = "IlluminaHumanMethylationEPIC")
   rgSet
 }
+
+# ------------------------------------------------------------------------------
+# DelayedArray tests
+#
+
+library(DelayedArray)
+
+if(require(minfiData)) {
+  data(RGsetEx.sub)
+  assays(RGsetEx.sub) <- endoapply(assays(RGsetEx.sub), DelayedArray)
+  rgSet <- convertArray(RGsetEx.sub, outType = "IlluminaHumanMethylationEPIC")
+  rgSet
+}
 }

@@ -45,4 +45,18 @@ if (require(minfiData)) {
   ## compartments at 1MB resolution; we recommend 100kb.  
   comps <- compartments(GMset, res = 10^6)
 }
+
+# ------------------------------------------------------------------------------
+# DelayedArray tests
+#
+
+library(DelayedArray)
+
+if (require(minfiData)) {
+  assays(MsetEx) <- endoapply(assays(MsetEx), DelayedArray)
+  GMset <- mapToGenome(MsetEx)
+  ## compartments at 1MB resolution; we recommend 100kb.
+  comps <- compartments(GMset, res = 10^6)
+}
+
 }

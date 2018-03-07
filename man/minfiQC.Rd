@@ -42,4 +42,17 @@ if(require(minfiData)) {
   ## plotQC(out$qc)
   ## plotSex(out$sex)
 }
+
+# ------------------------------------------------------------------------------
+# DelayedArray tests
+#
+
+library(DelayedArray)
+
+if(require(minfiData)) {
+  assays(MsetEx) <- endoapply(assays(MsetEx), DelayedArray)
+  out <- minfiQC(MsetEx)
+  ## plotQC(out$qc)
+  ## plotSex(out$sex)
+}
 }

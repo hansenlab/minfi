@@ -36,4 +36,20 @@ dat <- preprocessRaw(RGsetEx)
 slot(name="preprocessMethod", dat)[1]
 
 }
+
+# ------------------------------------------------------------------------------
+# DelayedArray tests
+#
+
+library(DelayedArray)
+
+if (require(minfiData)) {
+
+assays(RGsetEx) <- endoapply(assays(RGsetEx), DelayedArray)
+
+dat <- preprocessRaw(RGsetEx)
+slot(name="preprocessMethod", dat)[1]
+
+}
+
 }

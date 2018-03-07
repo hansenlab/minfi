@@ -65,4 +65,19 @@ slot(name="preprocessMethod", dat)[1]
 
 }
 
+# ------------------------------------------------------------------------------
+# DelayedArray tests
+#
+
+library(DelayedArray)
+
+if (require(minfiData)) {
+
+assays(RGsetEx) <- endoapply(assays(RGsetEx), DelayedArray)
+
+dat <- preprocessIllumina(RGsetEx, bg.correct=FALSE, normalize="controls")
+slot(name="preprocessMethod", dat)[1]
+
+}
+
 }

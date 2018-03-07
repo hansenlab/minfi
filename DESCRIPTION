@@ -27,7 +27,8 @@ Suggests: IlluminaHumanMethylation450kmanifest (>= 0.2.0),
 	  digest,
 	  BiocStyle,
 	  knitr,
-	  rmarkdown
+	  rmarkdown,
+	  DelayedArray
 Imports:  S4Vectors,
 	  GenomeInfoDb,
 	  Biobase (>= 2.33.2),

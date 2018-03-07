@@ -69,4 +69,19 @@ if(require(minfiData) && require(minfiDataEPIC)) {
   rgSet <- combineArrays(RGsetEPIC, RGsetEx.sub)
   rgSet
 }
+
+# ------------------------------------------------------------------------------
+# DelayedArray tests
+#
+
+library(DelayedArray)
+
+if(require(minfiData) && require(minfiDataEPIC)) {
+  data(RGsetEx.sub)
+  assays(RGsetEx.sub) <- endoapply(assays(RGsetEx.sub, DelayedArray))
+  data(RGsetEPIC)
+  assays(RGsetEPIC) <- endoaapply(assays(RGsetEPIC, DelayedArray))
+  rgSet <- combineArrays(RGsetEPIC, RGsetEx.sub)
+  rgSet
+}
 }

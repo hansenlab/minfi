@@ -41,9 +41,24 @@
 \keyword{methods}
 \examples{
 if (require(minfiData)) {
-  ## MsetEx.sub is a small subset of MsetEx; 
+  ## MsetEx.sub is a small subset of MsetEx;
   ## only used for computational speed.
   RsetEx.sub <- ratioConvert(MsetEx.sub, keepCN = TRUE)
   }
+
+# ------------------------------------------------------------------------------
+# DelayedArray tests
+#
+
+library(DelayedArray)
+
+if (require(minfiData)) {
+
+  assays(MsetEx.sub) <- endoapply(assays(MsetEx.sub), DelayedArray)
+  ## MsetEx.sub is a small subset of MsetEx;
+  ## only used for computational speed.
+  RsetEx.sub <- ratioConvert(MsetEx.sub, keepCN = TRUE)
+  }
+
 }
 

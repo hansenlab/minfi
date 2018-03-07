@@ -55,4 +55,21 @@ par(mar=c(5,6,4,2))
 densityBeanPlot(RGsetEx, sampNames=names, sampGroups=groups)
 
 }
+
+# ------------------------------------------------------------------------------
+# DelayedArray tests
+#
+
+library(DelayedArray)
+
+if (require(minfiData)) {
+
+assays(RGsetEx) <- endoapply(assays(RGsetEx), DelayedArray)
+
+names <- pData(RGsetEx)$Sample_Name
+groups <- pData(RGsetEx)$Sample_Group
+par(mar=c(5,6,4,2))
+densityBeanPlot(RGsetEx, sampNames=names, sampGroups=groups)
+
+}
 }

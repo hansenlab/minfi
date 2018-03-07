@@ -40,4 +40,19 @@ if (require(minfiData)) {
   colMeans(failed) # Fraction of failed positions per sample
   sum(rowMeans(failed)>0.5) # How many positions failed in >50% of samples?
 }
+
+# ------------------------------------------------------------------------------
+# DelayedArray tests
+#
+
+library(DelayedArray)
+
+if (require(minfiData)) {
+  assays(RGsetEx.sub) <- endoapply(assays(RGsetEx.sub), DelayedArray)
+
+  detP <- detectionP(RGsetEx.sub)
+  failed <- detP>0.01
+  colMeans(failed) # Fraction of failed positions per sample
+  sum(rowMeans(failed)>0.5) # How many positions failed in >50% of samples?
+}
 }

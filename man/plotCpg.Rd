@@ -9,7 +9,7 @@ Plot single-position (single CpG) methylation values as a function of a categori
 \usage{
 plotCpg(dat, cpg, pheno, type = c("categorical", "continuous"),
     measure = c("beta", "M"), ylim = NULL, ylab = NULL, xlab = "",
-    fitLine = TRUE, mainPrefix = NULL, mainSuffix = NULL) 
+    fitLine = TRUE, mainPrefix = NULL, mainSuffix = NULL)
 }
 \arguments{
     \item{dat}{An \code{RGChannelSet}, a \code{MethylSet} or a
@@ -50,5 +50,24 @@ par(mfrow=c(2,2))
 plotCpg(MsetEx, cpg=cpgs, pheno=grp, type="categorical")
 
 }
+
+# ------------------------------------------------------------------------------
+# DelayedArray tests
+#
+
+library(DelayedArray)
+
+if (require(minfiData)) {
+
+assays(MsetEx) <- endoapply(assays(MsetEx), DelayedArray)
+
+grp <- pData(MsetEx)$Sample_Group
+cpgs <- c("cg00050873", "cg00212031", "cg26684946", "cg00128718")
+par(mfrow=c(2,2))
+plotCpg(MsetEx, cpg=cpgs, pheno=grp, type="categorical")
+
+}
+
+
 }
 

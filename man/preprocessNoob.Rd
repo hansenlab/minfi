@@ -4,7 +4,7 @@
   The Noob/ssNoob preprocessing method for Infinium methylation microarrays.
 }
 \description{
-  Noob (normal-exponential out-of-band) is a background correction method 
+  Noob (normal-exponential out-of-band) is a background correction method
   with dye-bias normalization for Illumina Infinium methylation arrays.
 }
 \usage{
@@ -39,16 +39,42 @@ preprocessNoob(rgSet, offset = 15, dyeCorr = TRUE, verbose = TRUE,
 }
 \examples{
 if (require(minfiData)) {
-  ## RGsetEx.sub is a small subset of RGsetEx; 
+  ## RGsetEx.sub is a small subset of RGsetEx;
   ## only used for computational speed.
   MsetEx.sub.noob <- preprocessNoob(RGsetEx.sub)
 }
 \dontrun{
 if (require(minfiData)) {
   dyeMethods <- c(ssNoob="single", refNoob="reference")
-  GRsets <- lapply(dyeMethods, 
+  GRsets <- lapply(dyeMethods,
                    function(m) preprocessNoob(RGsetEx, dyeMethod=m))
-  all.equal(getBeta(GRsets$refNoob), getBeta(GRsets$ssNoob)) # TRUE 
+  all.equal(getBeta(GRsets$refNoob), getBeta(GRsets$ssNoob)) # TRUE
 }
 }
+
+# ------------------------------------------------------------------------------
+# DelayedArray tests
+#
+
+library(DelayedArray)
+
+if (require(minfiData)) {
+
+  assays(RGsetEx.sub) <- endoapply(assays(RGsetEx.sub), DelayedArray)
+
+  ## RGsetEx.sub is a small subset of RGsetEx;
+  ## only used for computational speed.
+  MsetEx.sub.noob <- preprocessNoob(RGsetEx.sub)
+}
+\dontrun{
+if (require(minfiData)) {
+  assays(RGsetEx) <- endoapply(assays(RGsetEx), DelayedArray)
+  dyeMethods <- c(ssNoob="single", refNoob="reference")
+  GRsets <- lapply(dyeMethods,
+                   function(m) preprocessNoob(RGsetEx, dyeMethod=m))
+  all.equal(getBeta(GRsets$refNoob), getBeta(GRsets$ssNoob)) # TRUE
+}
+}
+
+
 }

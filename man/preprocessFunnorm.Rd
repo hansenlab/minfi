@@ -7,7 +7,7 @@
   Functional normalization (FunNorm) is a between-array normalization
   method for the Illumina Infinium HumanMethylation450 platform. It
   removes unwanted variation by regressing out variability explained by
-  the control probes present on the array. 
+  the control probes present on the array.
 }
 \usage{
 preprocessFunnorm(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE,
@@ -31,7 +31,7 @@ preprocessFunnorm(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE,
   \item{verbose}{Should the function be verbose?}
 }
 \details{
-  
+
 This function implements functional normalization preprocessing for
 Illumina methylation microarrays. Functional normalization extends the
 idea of quantile normalization by adjusting for known covariates
@@ -58,11 +58,11 @@ differences.
 
 \value{an object of class \code{GenomicRatioSet}, unless
   \code{ratioConvert=FALSE} in which case an object of class
-  \code{GenomicMethylSet}.} 
+  \code{GenomicMethylSet}.}
 
 \references{
   JP Fortin, A Labbe, M Lemire, BW Zanke, TJ Hudson, EJ Fertig, CMT
-  Greenwood and KD Hansen. 
+  Greenwood and KD Hansen.
   \emph{Functional normalization of 450k methylation array data improves
     replication in large cancer studies}.
   (2014) Genome Biology (2014) 15:503.
@@ -83,8 +83,21 @@ differences.
 }
 \examples{
 if (require(minfiData)) {
-  ## RGsetEx.sub is a small subset of RGsetEx; 
+  ## RGsetEx.sub is a small subset of RGsetEx;
   ## only used for computational speed.
+  Mset.sub.funnorm <- preprocessFunnorm(RGsetEx.sub)
+}
+
+# ------------------------------------------------------------------------------
+# DelayedArray tests
+#
+
+library(DelayedArray)
+
+if (require(minfiData)) {
+  ## RGsetEx.sub is a small subset of RGsetEx;
+  ## only used for computational speed.
+  assays(RGsetEx.sub) <- assays(RGsetEx.sub, DelayedArray)
   Mset.sub.funnorm <- preprocessFunnorm(RGsetEx.sub)
 }
 }

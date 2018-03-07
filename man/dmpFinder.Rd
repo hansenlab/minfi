@@ -49,4 +49,24 @@ sum(dmp$qval < 0.05, na.rm=TRUE)
 head(dmp)
 
 }
+
+# ------------------------------------------------------------------------------
+# DelayedArray tests
+#
+
+library(DelayedArray)
+
+if (require(minfiData)) {
+
+assays(MsetEx) <- endoapply(assays(MsetEx), DelayedArray)
+
+grp <- pData(MsetEx)$Sample_Group
+MsetExSmall <- MsetEx[1:1e4,] # To speed up the example
+M <- getM(MsetExSmall, type = "beta", betaThreshold = 0.001)
+dmp <- dmpFinder(M, pheno=grp, type="categorical")
+sum(dmp$qval < 0.05, na.rm=TRUE)
+head(dmp)
+
+}
+
 }

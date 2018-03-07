@@ -39,4 +39,18 @@ if(require(minfiData)){
   MsetEx <- addQC(MsetEx, qc = qc)
   ## plotQC(qc)
 }
+
+# ------------------------------------------------------------------------------
+# DelayedArray tests
+#
+
+library(DelayedArray)
+
+if(require(minfiData)){
+  assays(MsetEx) <- endoapply(assays(MsetEx), DelayedArray)
+  qc <- getQC(MsetEx)
+  MsetEx <- addQC(MsetEx, qc = qc)
+  ## plotQC(qc)
+}
+
 }
