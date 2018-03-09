@@ -3,7 +3,7 @@
 \alias{addQC}
 \alias{plotQC}
 \title{
-  Estimate sample-specific quality control (QC) for methylation data 
+  Estimate sample-specific quality control (QC) for methylation data
 }
 \description{
   Estimate sample-specific quality control (QC) for methylation data.
@@ -39,18 +39,4 @@ if(require(minfiData)){
   MsetEx <- addQC(MsetEx, qc = qc)
   ## plotQC(qc)
 }
-
-# ------------------------------------------------------------------------------
-# DelayedArray tests
-#
-
-library(DelayedArray)
-
-if(require(minfiData)){
-  assays(MsetEx) <- endoapply(assays(MsetEx), DelayedArray)
-  qc <- getQC(MsetEx)
-  MsetEx <- addQC(MsetEx, qc = qc)
-  ## plotQC(qc)
-}
-
 }

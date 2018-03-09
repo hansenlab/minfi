@@ -50,25 +50,4 @@ qcReport(RGsetEx, sampNames=names, sampGroups=groups, pdf="qcReport.pdf")
 }
 
 }
-
-# ------------------------------------------------------------------------------
-# DelayedArray tests
-#
-
-library(DelayedArray)
-
-if (require(minfiData)) {
-
-assays(RGsetEx) <- endoapply(assays(RGsetEx), DelayedArray)
-
-names <- pData(RGsetEx)$Sample_Name
-groups <- pData(RGsetEx)$Sample_Group
-
-\dontrun{
-qcReport(RGsetEx, sampNames=names, sampGroups=groups, pdf="qcReport.pdf")
-}
-
-}
-
-
 }

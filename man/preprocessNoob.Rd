@@ -51,30 +51,4 @@ if (require(minfiData)) {
   all.equal(getBeta(GRsets$refNoob), getBeta(GRsets$ssNoob)) # TRUE
 }
 }
-
-# ------------------------------------------------------------------------------
-# DelayedArray tests
-#
-
-library(DelayedArray)
-
-if (require(minfiData)) {
-
-  assays(RGsetEx.sub) <- endoapply(assays(RGsetEx.sub), DelayedArray)
-
-  ## RGsetEx.sub is a small subset of RGsetEx;
-  ## only used for computational speed.
-  MsetEx.sub.noob <- preprocessNoob(RGsetEx.sub)
-}
-\dontrun{
-if (require(minfiData)) {
-  assays(RGsetEx) <- endoapply(assays(RGsetEx), DelayedArray)
-  dyeMethods <- c(ssNoob="single", refNoob="reference")
-  GRsets <- lapply(dyeMethods,
-                   function(m) preprocessNoob(RGsetEx, dyeMethod=m))
-  all.equal(getBeta(GRsets$refNoob), getBeta(GRsets$ssNoob)) # TRUE
-}
-}
-
-
 }

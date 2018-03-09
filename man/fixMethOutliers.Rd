@@ -46,16 +46,4 @@ fixMethOutliers(object, K = -3, verbose = FALSE)
 if(require(minfiData)) {
   MsetEx <- fixMethOutliers(MsetEx)
 }
-
-# ------------------------------------------------------------------------------
-# DelayedArray tests
-#
-
-library(DelayedArray)
-
-if(require(minfiData)) {
-  assays(MsetEx) <- endoapply(assays(MsetEx), DelayedArray)
-  MsetEx <- fixMethOutliers(MsetEx)
-}
-
 }

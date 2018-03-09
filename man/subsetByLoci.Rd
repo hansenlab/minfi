@@ -33,20 +33,4 @@ if(require(minfiData)) {
   subsetByLoci(RGsetEx.sub, includeLoci = loci)
   subsetByLoci(RGsetEx.sub, excludeLoci = loci)
 }
-
-# ------------------------------------------------------------------------------
-# DelayedArray tests
-#
-
-library(DelayedArray)
-
-if(require(minfiData)) {
-
-  assays(RGsetEx.sub) <- endoapply(assays(RGsetEx.sub), DelayedArray)
-
-  loci <- c("cg00050873", "cg00212031", "cg00213748", "cg00214611")
-  subsetByLoci(RGsetEx.sub, includeLoci = loci)
-  subsetByLoci(RGsetEx.sub, excludeLoci = loci)
-}
-
 }

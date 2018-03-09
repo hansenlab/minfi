@@ -45,17 +45,4 @@ if(require(minfiData)) {
   estSex <- getSex(GMsetEx)
   GMsetEx <- addSex(GMsetEx, sex = estSex)
 }
-
-# ------------------------------------------------------------------------------
-# DelayedArray tests
-#
-
-library(DelayedArray)
-
-if(require(minfiData)) {
-  assays(GMsetEx) <- endoapply(assays(GMsetEx), DelayedArray)
-  GMsetEx <- mapToGenome(MsetEx)
-  estSex <- getSex(GMsetEx)
-  GMsetEx <- addSex(GMsetEx, sex = estSex)
-}
 }

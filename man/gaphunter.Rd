@@ -16,7 +16,7 @@
 
 \arguments{
   \item{object}{An object of class (Genomic)RatioSet, (Genomic)MethylSet, or matrix.
-    If one of the first two, code{\link{getBeta}} is used to calculate beta values. If a 
+    If one of the first two, code{\link{getBeta}} is used to calculate beta values. If a
     matrix, must be one of beta values.}
   \item{threshold}{The difference in consecutive, ordered beta values
     that defines the presence of a gap signal. Defaults to 5 percent.}
@@ -31,20 +31,20 @@
    indicating progress. If \code{FALSE} nothing should be printed.}
 }
 \details{
-  
+
   The function can calculate a beta matrix or utilize a user-supplied matrix of
-  beta values. 
+  beta values.
 
   The function will idenfity probes with a gap in a beta signal greater than
   or equal to the defined \code{threshold}. These probes constitue an additional,
   dataset-specific subset of probes that merit special consideration due to their tendency
   to be driven by an underlying SNP or other genetic variant. In this manner, these probes
-  can serve as surrogates for underlying genetic signal locally and/or in a broader 
-  (i.e. haplotype) context. Please see our upcoming manuscript for a detailed description 
-  of the utility of these probes. 
-  
+  can serve as surrogates for underlying genetic signal locally and/or in a broader
+  (i.e. haplotype) context. Please see our upcoming manuscript for a detailed description
+  of the utility of these probes.
+
   Outlier-driven gap signals are those in which the sum of the smaller group(s) does
-  not exceed a certain percentage of the sample size, defined by the argument outCutoff. 
+  not exceed a certain percentage of the sample size, defined by the argument outCutoff.
 }
 \value{
   A list with three values,
@@ -68,21 +68,6 @@
 }
 \examples{
 if(require(minfiData)) {
-  gapres <- gaphunter(MsetEx.sub, threshold=0.3, keepOutliers=TRUE)
-  #Note: the threshold argument is increased from the default value in this small example
-  #dataset with 6 people to avoid the reporting of a large amount of probes as gap signals.
-  #In a typical EWAS setting with hundreds of samples, the default arguments should be
-  #sufficient.
-}
-
-# ------------------------------------------------------------------------------
-# DelayedArray tests
-#
-
-library(DelayedArray)
-
-if(require(minfiData)) {
-  assays(MsetEx.sub) <- endoapply(assays(MsetEx.sub, DelayedArray))
   gapres <- gaphunter(MsetEx.sub, threshold=0.3, keepOutliers=TRUE)
   #Note: the threshold argument is increased from the default value in this small example
   #dataset with 6 people to avoid the reporting of a large amount of probes as gap signals.

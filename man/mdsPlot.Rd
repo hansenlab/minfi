@@ -65,20 +65,4 @@ groups <- pData(MsetEx)$Sample_Group
 mdsPlot(MsetEx, sampNames=names, sampGroups=groups)
 
 }
-
-# ------------------------------------------------------------------------------
-# DelayedArray tests
-#
-
-library(DelayedArray)
-
-if (require(minfiData)) {
-
-assays(MsetEx) <- endoapply(assays(MsetEx), DelayedArray)
-
-names <- pData(MsetEx)$Sample_Name
-groups <- pData(MsetEx)$Sample_Group
-mdsPlot(MsetEx, sampNames=names, sampGroups=groups)
-
-}
 }

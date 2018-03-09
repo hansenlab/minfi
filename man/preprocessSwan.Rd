@@ -74,34 +74,4 @@ if (require(minfiData)) {
   datIlmnSwan <- preprocessSWAN(RGsetEx, mSet = datIlmn)
 }
 }
-
-# ------------------------------------------------------------------------------
-# DelayedArray tests
-#
-
-library(DelayedArray)
-
-if (require(minfiData)) {
-
-  assays(RGsetEx.sub) <- endoapply(assays(RGsetEx.sub), DelayedArray)
-
-  ## RGsetEx.sub is a small subset of RGsetEx;
-  ## only used for computational speed.
-  MsetEx.sub.swan <- preprocessSWAN(RGsetEx.sub)
-}
-\dontrun{
-if (require(minfiData)) {
-
-  assays(RGsetEx) <- endoapply(assays(RGsetEx), DelayedArray)
-
-  dat <- preprocessRaw(RGsetEx)
-  preprocessMethod(dat)
-  datSwan <- preprocessSWAN(RGsetEx, mSet = dat)
-  datIlmn <- preprocessIllumina(RGsetEx)
-  preprocessMethod(datIlmn)
-  datIlmnSwan <- preprocessSWAN(RGsetEx, mSet = datIlmn)
-}
-}
-
-
 }

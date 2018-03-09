@@ -23,17 +23,4 @@ getMethSignal(object, what = c("Beta", "M"), \dots)
 if(require(minfiData)) {
   head(getMethSignal(MsetEx, what = "Beta"))
 }
-
-# ------------------------------------------------------------------------------
-# DelayedArray tests
-#
-
-library(DelayedArray)
-
-if(require(minfiData)) {
-
-  assays(MsetEx) <- endoapply(assays(MsetEx))
-
-  head(getMethSignal(MsetEx, what = "Beta"))
-}
 }

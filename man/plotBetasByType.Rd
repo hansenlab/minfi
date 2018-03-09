@@ -62,20 +62,4 @@ if (require(minfiData)) {
   plotBetasByType(Mset.swan[,1], main="SWAN")
 }
 }
-
-# ------------------------------------------------------------------------------
-# DelayedArray tests
-#
-
-library(DelayedArray)
-
-\dontrun{
-if (require(minfiData)) {
-  assays(RGsetEx) <- endoapply(assays(RGsetEx), DelayedArray)
-  Mset.swan <- preprocessSWAN(RGsetEx, MsetEx)
-  par(mfrow=c(1,2))
-  plotBetasByType(MsetEx[,1], main="Raw")
-  plotBetasByType(Mset.swan[,1], main="SWAN")
-}
-}
 }

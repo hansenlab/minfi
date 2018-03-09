@@ -103,27 +103,4 @@ if(require(minfiData)) {
   GMset <- preprocessQuantile(RGsetEx)
 }
 }
-
-# ------------------------------------------------------------------------------
-# DelayedArray tests
-#
-
-library(DelayedArray)
-
-if (require(minfiData)) {
-
-  assays(RGsetEx.sub) <- endoapply(assays(RGsetEx.sub), DelayedArray)
-
-  ## RGsetEx.sub is a small subset of RGsetEx;
-  ## only used for computational speed.
-  GMset.sub.quantile <- preprocessSWAN(RGsetEx.sub)
-}
-\dontrun{
-if(require(minfiData)) {
-  assays(RGset.sub) <- endoapply(assays(RGset.sub), DelayedArray)
-
-  GMset <- preprocessQuantile(RGsetEx)
-}
-}
-
 }

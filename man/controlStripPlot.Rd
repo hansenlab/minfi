@@ -35,20 +35,4 @@ names <- pData(RGsetEx)$Sample_Name
 controlStripPlot(RGsetEx, controls=c("BISULFITE CONVERSION I"), sampNames=names)
 
 }
-
-# ------------------------------------------------------------------------------
-# DelayedArray tests
-#
-
-library(DelayedArray)
-
-if (require(minfiData)) {
-
-assays(RGsetEx) <- endoapply(assays(RGsetEx), DelayedArray)
-
-names <- pData(RGsetEx)$Sample_Name
-controlStripPlot(RGsetEx, controls=c("BISULFITE CONVERSION I"), sampNames=names)
-
-}
-
 }

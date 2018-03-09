@@ -61,15 +61,4 @@ can be supplied directly through \code{rownames}.
 mat <- matrix(10,5,2)
 rownames(mat) <- c( "cg13869341", "cg14008030","cg12045430", "cg20826792","cg00381604")
 grset <- makeGenomicRatioSetFromMatrix(mat)
-
-# ------------------------------------------------------------------------------
-# DelayedArray tests
-#
-
-library(DelayedArray)
-
-mat <- DelayedArray(matrix(10,5,2))
-rownames(mat) <- c( "cg13869341", "cg14008030","cg12045430", "cg20826792","cg00381604")
-grset <- makeGenomicRatioSetFromMatrix(mat)
-
 }

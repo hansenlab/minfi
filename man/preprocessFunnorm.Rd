@@ -87,17 +87,4 @@ if (require(minfiData)) {
   ## only used for computational speed.
   Mset.sub.funnorm <- preprocessFunnorm(RGsetEx.sub)
 }
-
-# ------------------------------------------------------------------------------
-# DelayedArray tests
-#
-
-library(DelayedArray)
-
-if (require(minfiData)) {
-  ## RGsetEx.sub is a small subset of RGsetEx;
-  ## only used for computational speed.
-  assays(RGsetEx.sub) <- assays(RGsetEx.sub, DelayedArray)
-  Mset.sub.funnorm <- preprocessFunnorm(RGsetEx.sub)
-}
 }
