@@ -256,3 +256,7 @@ getMethSignal <- function(object, what = c("Beta", "M"), ...) {
     vector <- do.call(c, lapply(types, vector))
     DelayedArray:::type(vector)
 }
+
+.NA_type <- function(type) {
+    c(vector(type), NA)
+}
