@@ -3,8 +3,7 @@
 
     # Set up output matrices with appropriate dimensions and type
     dim <- lengths(dimnames)
-    # TODO: Check with minfi whether this should be filled with 0 or NA
-    M <- matrix(vector(type),
+    M <- matrix(.NA_type(type),
                 nrow = dim[[1L]],
                 ncol = dim[[2L]],
                 dimnames = dimnames)
@@ -38,14 +37,18 @@
                                              type = type)
 
     # Fill intermediate RealizationSink objects
-    # TODO: Only do one subassignment for each sink
-    subassignRowsToRealizationSink(M_sink, TypeI.Red$Name, red[TypeI.Red$AddressB, ])
-    subassignRowsToRealizationSink(M_sink, TypeI.Green$Name, green[TypeI.Green$AddressB, ])
-    subassignRowsToRealizationSink(M_sink, TypeII$Name, green[TypeII$AddressA, ])
-
-    subassignRowsToRealizationSink(U_sink, TypeI.Red$Name, red[TypeI.Red$AddressA, ])
-    subassignRowsToRealizationSink(U_sink, TypeI.Green$Name, green[TypeI.Green$AddressA, ])
-    subassignRowsToRealizationSink(U_sink, TypeII$Name, red[TypeII$AddressA, ])
+    # M
+    M_i <- c(TypeI.Red$Name, TypeI.Green$Name, TypeII$Name)
+    M_value <- rbind(red[TypeI.Red$AddressB, ],
+                   green[TypeI.Green$AddressB, ],
+                   green[TypeII$AddressA, ])
+    subassignRowsToRealizationSink(M_sink, M_i, M_value)
+    # U
+    U_i <- c(TypeI.Red$Name, TypeI.Green$Name, TypeII$Name)
+    U_value <- rbind(red[TypeI.Red$AddressA, ],
+                     green[TypeI.Green$AddressA, ],
+                     red[TypeII$AddressA, ])
+    subassignRowsToRealizationSink(U_sink, U_i, U_value)
 
     # Coerce intermediate RealizationSink objects to output DelayedMatrix objects
     M <- as(M_sink, "DelayedArray")
@@ -56,6 +59,7 @@
 }
 
 # TODO: Add 'BACKEND' argument so that output can have different backend to input?
+#       Or should that be driven by setRealizationBackend()?
 # TODO: Add BPPARAM (and other BiocParallel args, e.g., BPREDO?)?
 preprocessRaw <- function(rgSet) {
     .isRGOrStop(rgSet)
@@ -93,7 +97,6 @@ preprocessRaw <- function(rgSet) {
     #packageVersion(getManifest(rgSet)))
     out
 }
-
 
 normalize.illumina.control <- function(rgSet, reference=1) {
     ## This function returns an rgset, not a methylset
