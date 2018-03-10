@@ -3,7 +3,7 @@ setMethod("type", "HDF5RealizationSink", function(x) {
     x@type
 })
 setMethod("type", "arrayRealizationSink", function(x) {
-    x@result_envir$result
+    DelayedArray::type(x@result_envir$result)
 })
 # TODO: dimnames() for all RealizationSink subclasses
 setMethod("dimnames", "arrayRealizationSink", function(x) {
@@ -11,6 +11,9 @@ setMethod("dimnames", "arrayRealizationSink", function(x) {
 })
 
 # NOTE: Conceptually, this is `sink[i, ] <- value`
+# TODO: This will break if multiple workers are used in the bplapply() (e.g.,
+#       if using MultiCoreParam() with workers > 1). Therefore, only allow
+#       SerialParam(), for now.
 # TODO: Formalise as `[<-`,RealizationSink-method
 # TODO: Generalize to arbitrary i, j, `...`. This is a low priority and will
 #       also be tricky.
@@ -38,8 +41,7 @@ subassignRowsToRealizationSink <- function(sink, i, value) {
     # Set up temporary 'Array' concrete subclass with appropriate dimensions
     # and type
     sink_dimnames <- dimnames(sink)
-    # TODO: Check with minfi whether this should be filled with 0 or NA
-    sink_temp_array <- RleArray(Rle(vector(sink_type, 1L), prod(sink_dim)),
+    sink_temp_array <- RleArray(Rle(.NA_type(sink_type), prod(sink_dim)),
                                 dim = sink_dim,
                                 dimnames = sink_dimnames)
 
@@ -83,5 +85,5 @@ subassignRowsToRealizationSink <- function(sink, i, value) {
         }
         sink_block
     }, i = i, sink_grid = sink_grid, value_grid = value_grid, value = value,
-    sink_temp_array = sink_temp_array)
+    sink_temp_array = sink_temp_array, BPPARAM = SerialParam())
 }
