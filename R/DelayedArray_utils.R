@@ -1,3 +1,15 @@
+# TODO: type() for all RealizationSink subclasses
+setMethod("type", "HDF5RealizationSink", function(x) {
+    x@type
+})
+setMethod("type", "arrayRealizationSink", function(x) {
+    x@result_envir$result
+})
+# TODO: dimnames() for all RealizationSink subclasses
+setMethod("dimnames", "arrayRealizationSink", function(x) {
+    dimnames(x@result_envir$result)
+})
+
 # NOTE: Conceptually, this is `sink[i, ] <- value`
 # TODO: Formalise as `[<-`,RealizationSink-method
 # TODO: Generalize to arbitrary i, j, `...`. This is a low priority and will
@@ -9,8 +21,7 @@ subassignRowsToRealizationSink <- function(sink, i, value) {
     # 1. Need to increase the block length so each block is made of at least
     #    one column.
     # 2. The grid over 'sink' must have the same dim as the grid over 'value'
-    # TODO: type,RealizationSink-method
-    sink_type <- DelayedArray:::type(sink@result_envir$result)
+    sink_type <- type(sink)
     sink_dim <- dim(sink)
     max_block_len <- max(DelayedArray:::get_max_block_length(sink_type),
                          sink_dim[[1L]])
@@ -26,8 +37,7 @@ subassignRowsToRealizationSink <- function(sink, i, value) {
     # TODO: It feels like 'sink_temp_array' shouldn't be necessary
     # Set up temporary 'Array' concrete subclass with appropriate dimensions
     # and type
-    # TODO: dimnames,RealizationSink-method
-    sink_dimnames <- dimnames(sink@result_envir$result)
+    sink_dimnames <- dimnames(sink)
     # TODO: Check with minfi whether this should be filled with 0 or NA
     sink_temp_array <- RleArray(Rle(vector(sink_type, 1L), prod(sink_dim)),
                                 dim = sink_dim,
