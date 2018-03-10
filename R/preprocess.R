@@ -1,7 +1,7 @@
 .preProcessRaw_matrix <- function(type, dimnames, red, green, TypeI.Red, TypeI.Green,
                                   TypeII) {
 
-    # Set up matrices with appropriate dimensions and type
+    # Set up output matrices with appropriate dimensions and type
     dim <- lengths(dimnames)
     # TODO: Check with minfi whether this should be filled with 0 or NA
     M <- matrix(vector(type),
@@ -10,7 +10,7 @@
                 dimnames = dimnames)
     U <- M
 
-    # Fill 'M' and 'U'
+    # Fill output matrices
     M[TypeI.Red$Name, ] <- red[TypeI.Red$AddressB, ]
     M[TypeI.Green$Name, ] <- green[TypeI.Green$AddressB, ]
     M[TypeII$Name, ] <- green[TypeII$AddressA, ]
@@ -19,14 +19,14 @@
     U[TypeI.Green$Name, ] <- green[TypeI.Green$AddressA, ]
     U[TypeII$Name, ] <- red[TypeII$AddressA, ]
 
-    # Return 'M' and 'U'
+    # Return output matrices
     list(M = M, U = U)
 }
 
 .preProcessRaw_DelayedMatrix <- function(type, dimnames, red, green, TypeI.Red,
                                          TypeI.Green, TypeII) {
 
-    # Set up RealizationSink objects of appropriate dimensions and type
+    # Set up intermediate RealizationSink objects of appropriate dimensions and type
     dim <- lengths(dimnames)
     M_sink <- DelayedArray:::RealizationSink(dim = dim,
                                              dimnames = dimnames,
@@ -37,7 +37,7 @@
                                              dimnames = dimnames,
                                              type = type)
 
-    # Fill 'M_sink' and 'U_sink'
+    # Fill intermediate RealizationSink objects
     subassignRowsToRealizationSink(M_sink, TypeI.Red$Name, red[TypeI.Red$AddressB, ])
     subassignRowsToRealizationSink(M_sink, TypeI.Green$Name, green[TypeI.Green$AddressB, ])
     subassignRowsToRealizationSink(M_sink, TypeII$Name, green[TypeII$AddressA, ])
@@ -46,11 +46,11 @@
     subassignRowsToRealizationSink(U_sink, TypeI.Green$Name, green[TypeI.Green$AddressA, ])
     subassignRowsToRealizationSink(U_sink, TypeII$Name, red[TypeII$AddressA, ])
 
-    # Coerce RealizationSink objects to DelayedMatrix objects
+    # Coerce intermediate RealizationSink objects to output DelayedMatrix objects
     M <- as(M_sink, "DelayedArray")
     U <- as(U_sink, "DelayedArray")
 
-    # Return 'M' and 'U'
+    # Return output DelayedMatrix objects
     list(M = M, U = U)
 }
 
@@ -59,7 +59,7 @@
 preprocessRaw <- function(rgSet) {
     .isRGOrStop(rgSet)
 
-    # Extract data to pass to low-level function that constructs M and U
+    # Extract data to pass to low-level function that constructs 'M' and 'U'
     locusNames <- getManifestInfo(rgSet, "locusNames")
     sampleNames <- sampleNames(rgSet)
     dimnames <- list(locusNames, sampleNames)
