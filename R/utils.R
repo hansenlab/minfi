@@ -248,3 +248,11 @@ getMethSignal <- function(object, what = c("Beta", "M"), ...) {
     }
     FALSE
 }
+
+# Get the 'highest' DelayedArray:::type() for a collection of array-like objects
+.highestType <- function(...) {
+    dots <- list(...)
+    types <- vapply(dots, DelayedArray::type, character(1L))
+    vector <- do.call(c, lapply(types, vector))
+    DelayedArray:::type(vector)
+}
