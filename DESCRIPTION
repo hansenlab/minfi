@@ -53,7 +53,8 @@ Imports:  S4Vectors,
           grDevices,
           graphics,
           utils,
-     DelayedArray
+     DelayedArray,
+     HDF5Array
 Collate:  generics.R
 	  mset.R
 	  rset.R
@@ -85,6 +86,7 @@ Collate:  generics.R
 	  gaphunter.R
 	  compartments.R
 	  combineArrays.R
+	  DelayedArray_utils.R
 VignetteBuilder: knitr
 License: Artistic-2.0
 URL: https://github.com/kasperdanielhansen/minfi

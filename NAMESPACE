@@ -12,6 +12,8 @@ import(GenomicRanges)
 import(SummarizedExperiment)
 import(S4Vectors)
 import(IRanges)
+import(DelayedArray)
+import(HDF5Array) # TODO: Remove once DelayedArray_utils.R are moved to DelayedArray
 importFrom(Biobase, assayDataElementNames, assayDataElementReplace,
            assayDataElement, "assayDataElement<-", validMsg, assayDataValidMembers)
 
@@ -46,7 +48,7 @@ importFrom("stats", "approx", "as.formula", "cmdscale", "contrasts",
 
 export(getManifest, getProbeInfo, getManifestInfo,
        IlluminaMethylationManifest, IlluminaMethylationAnnotation,
-       getControlAddress, 
+       getControlAddress,
        getRed, getGreen, getNBeads, getMeth, getUnmeth,
        getBeta, getM, getCN, getMethSignal,
        getOOB, getSnpBeta,
