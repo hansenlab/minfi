@@ -36,7 +36,7 @@ ilogit2 <- function(x) { 2^(x) / (1+2^(x)) }
         cat(sprintf("%s%s\n", indent, xx))
     })
 }
-           
+
 
 .show.preprocessMethod <- function(preprocessMethod) {
     if(length(preprocessMethod) == 3 && is.null(names(preprocessMethod)))
@@ -201,7 +201,7 @@ ilogit2 <- function(x) { 2^(x) / (1+2^(x)) }
     }
     list(x = x, y = y[, names(x)])
 }
-    
+
 getMethSignal <- function(object, what = c("Beta", "M"), ...) {
     what <- match.arg(what)
     switch(what,
@@ -237,4 +237,14 @@ getMethSignal <- function(object, what = c("Beta", "M"), ...) {
             df[[col]] <- as.character(df[[col]])
     }
     df
+}
+
+# TODO: Perhaps useful outside of minfi (e.g., for all SummarizedExperiment)
+.isBackedByDelayedArray <- function(x) {
+    stopifnot(is(x, "SummarizedExperiment"))
+    assays <- assays(x, withDimnames = FALSE)
+    if (any(vapply(assays, is, logical(1L), "DelayedArray"))) {
+        return(TRUE)
+    }
+    FALSE
 }
