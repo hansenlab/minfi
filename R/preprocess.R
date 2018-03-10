@@ -38,6 +38,7 @@
                                              type = type)
 
     # Fill intermediate RealizationSink objects
+    # TODO: Only do one subassignment for each sink
     subassignRowsToRealizationSink(M_sink, TypeI.Red$Name, red[TypeI.Red$AddressB, ])
     subassignRowsToRealizationSink(M_sink, TypeI.Green$Name, green[TypeI.Green$AddressB, ])
     subassignRowsToRealizationSink(M_sink, TypeII$Name, green[TypeII$AddressA, ])

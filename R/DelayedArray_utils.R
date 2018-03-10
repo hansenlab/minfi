@@ -44,6 +44,8 @@ subassignRowsToRealizationSink <- function(sink, i, value) {
                                 dimnames = sink_dimnames)
 
     # Loop over blocks and write to sink
+    # TODO: Adapted from DelayedArray::blockApply(); could blockApply() be
+    #       used directly?
     bplapply(seq_len(nblock), function(b, i, sink_grid, value_grid, value,
                                        sink_temp_array) {
         if (DelayedArray:::get_verbose_block_processing()) {
