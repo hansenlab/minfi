@@ -1,200 +1,81 @@
-.preProcessRaw_matrix <- function(red, green, locusNames, sampleNames, TypeI.Red,
-                                  TypeI.Green, TypeII) {
-    M <- matrix(NA_real_,
-                ncol = ncol(rgSet),
-                nrow = length(locusNames),
-                dimnames = list(locusNames, sampleNames))
+.preProcessRaw_matrix <- function(type, dimnames, red, green, TypeI.Red, TypeI.Green,
+                                  TypeII) {
+
+    # Set up matrices with appropriate dimensions and type
+    dim <- lengths(dimnames)
+    # TODO: Check with minfi whether this should be filled with 0 or NA
+    M <- matrix(vector(type),
+                nrow = dim[[1L]],
+                ncol = dim[[2L]],
+                dimnames = dimnames)
     U <- M
 
-    M[TypeII$Name, ] <- green[TypeII$AddressA, ]
-    U[TypeII$Name, ] <- red[TypeII$AddressA, ]
-
+    # Fill 'M' and 'U'
     M[TypeI.Red$Name, ] <- red[TypeI.Red$AddressB, ]
     M[TypeI.Green$Name, ] <- green[TypeI.Green$AddressB, ]
+    M[TypeII$Name, ] <- green[TypeII$AddressA, ]
+
     U[TypeI.Red$Name, ] <- red[TypeI.Red$AddressA, ]
     U[TypeI.Green$Name, ] <- green[TypeI.Green$AddressA, ]
+    U[TypeII$Name, ] <- red[TypeII$AddressA, ]
 
+    # Return 'M' and 'U'
     list(M = M, U = U)
 }
 
-.preProcessRaw_DelayedArray <- function(rgSet, locusNames, TypeI.Red, TypeI.Green,
-                                        TypeII, BACKEND) {
-    nrow <- length(locusNames)
-    sampleNames <- sampleNames(rgSet)
-    ncol <- length(sampleNames)
-    red <- getRed(rgSet)
-    green <- getGreen(rgSet)
-    # TODO: Take the 'higher' type of red and green
-    type <- DelayedArray:::type(red)
+.preProcessRaw_DelayedMatrix <- function(type, dimnames, red, green, TypeI.Red,
+                                         TypeI.Green, TypeII) {
 
-    # NOTE:  We're going to walk along the columns so need to increase the block
-    #        length so each block is made of at least one column.
-    max_block_len <- max(
-        DelayedArray:::get_max_block_length(type), nrow)
-    red_grid <- defaultGrid(red, max_block_len)
-    green_grid <- defaultGrid(green, max_block_len)
+    # Set up RealizationSink objects of appropriate dimensions and type
+    dim <- lengths(dimnames)
+    M_sink <- DelayedArray:::RealizationSink(dim = dim,
+                                             dimnames = dimnames,
+                                             type = type)
+    # NOTE: Don't do `U_sink <- M_sink` or else these will reference the same
+    #       object!
+    U_sink <- DelayedArray:::RealizationSink(dim = dim,
+                                             dimnames = dimnames,
+                                             type = type)
 
-    ### ------------------------------------------------------------------------------
-    ### M
-    ###
+    # Fill 'M_sink' and 'U_sink'
+    subassignRowsToRealizationSink(M_sink, TypeI.Red$Name, red[TypeI.Red$AddressB, ])
+    subassignRowsToRealizationSink(M_sink, TypeI.Green$Name, green[TypeI.Green$AddressB, ])
+    subassignRowsToRealizationSink(M_sink, TypeII$Name, green[TypeII$AddressA, ])
 
-    # TODO: It feels like 'M' shouldn't be necessary
-    rle <- Rle(vector(type, 1L), prod(nrow, ncol))
-    M <- RleArray(rle,
-                  dim = c(nrow, ncol),
-                  dimnames = list(locusNames, sampleNames))
-    # TODO: What is the proper way to set up the realization sink to match the
-    #       BACKEND? Within this function, may need to override the global value
-    M_sink <- DelayedArray:::RealizationSink(
-        dim = c(nrow, ncol),
-        dimnames = list(locusNames, sampleNames),
-        type = type)
-    M_grid <- RegularArrayGrid(dim(M), c(nrow(M), ncol(M) / ncol(red_grid)))
-    stopifnot(length(M_grid) == length(red_grid))
-    nblock <- length(M_grid)
+    subassignRowsToRealizationSink(U_sink, TypeI.Red$Name, red[TypeI.Red$AddressA, ])
+    subassignRowsToRealizationSink(U_sink, TypeI.Green$Name, green[TypeI.Green$AddressA, ])
+    subassignRowsToRealizationSink(U_sink, TypeII$Name, red[TypeII$AddressA, ])
 
-    M_blocks <- bplapply(
-        seq_len(nblock),
-        function(b, red_grid, green_grid, M_grid, red, green, M, TypeI.Red,
-                 TypeI.Green, TypeII) {
-            if (DelayedArray:::get_verbose_block_processing()) {
-                message("Processing block ", b, "/", nblock, " ... ",
-                        appendLF = FALSE)
-            }
-            red_viewport <- red_grid[[b]]
-            green_viewport <- green_grid[[b]]
-            M_viewport <- M_grid[[b]]
-            red_block <- DelayedArray:::extract_block(red, red_viewport)
-            green_block <- DelayedArray:::extract_block(green, green_viewport)
-            M_block <- DelayedArray:::extract_block(M, M_viewport)
-            if (!is.array(red_block)) {
-                red_block <- DelayedArray:::.as_array_or_matrix(red_block)
-            }
-            attr(red_block, "from_grid") <- red_grid
-            attr(red_block, "block_id") <- b
-            if (!is.array(green_block)) {
-                green_block <- DelayedArray:::.as_array_or_matrix(green_block)
-            }
-            attr(green_block, "from_grid") <- green_grid
-            attr(green_block, "block_id") <- b
-            if (!is.array(M_block)) {
-                M_block <- DelayedArray:::.as_array_or_matrix(M_block)
-            }
-            attr(M_block, "from_grid") <- M_grid
-            attr(M_block, "block_id") <- b
+    # Coerce RealizationSink objects to DelayedMatrix objects
+    M <- as(M_sink, "DelayedArray")
+    U <- as(U_sink, "DelayedArray")
 
-            # Update M
-            M_block[TypeII$Name, ] <- green_block[TypeII$AddressA, ]
-            M_block[TypeI.Red$Name, ] <- red_block[TypeI.Red$AddressB, ]
-            M_block[TypeI.Green$Name, ] <- green_block[TypeI.Green$AddressB, ]
-
-            if (!is.null(M_sink)) {
-                write_block_to_sink(M_block, M_sink, M_viewport)
-                M_block <- NULL
-            }
-            if (DelayedArray:::get_verbose_block_processing()) {
-                message("OK")
-            }
-            M_block
-        }, red_grid, green_grid, M_grid, red, green, M, TypeI.Red, TypeI.Green,
-        TypeII)
-
-    ### ------------------------------------------------------------------------------
-    ### U
-    ###U
-    # TODO: It feels like 'M' shouldn't be necessary
-    rle <- Rle(vector(type, 1L), prod(nrow, ncol))
-    U <- RleArray(rle,
-                  dim = c(nrow, ncol),
-                  dimnames = list(locusNames, sampleNames))
-    # TODO: What is the proper way to set up the realization sink to match the
-    #       BACKEND? Within this function, may need to override the global value
-    U_sink <- DelayedArray:::RealizationSink(
-        dim = c(nrow, ncol),
-        dimnames = list(locusNames, sampleNames),
-        type = type)
-    U_grid <- RegularArrayGrid(dim(U), c(nrow(U), ncol(U) / ncol(red_grid)))
-    stopifnot(length(U_grid) == length(red_grid))
-    nblock <- length(U_grid)
-    # TODO: This successfully writes to the sink if the loop is run
-    #       'manually' and when bpparam is a SerialParam, but not when it is
-    #       a MultiCoreParam; I think it's because some variables aren't
-    #       being exported to the workers
-    U_blocks <- bplapply(
-        seq_len(nblock),
-        function(b, red_grid, green_grid, U_grid, red, green, M, TypeI.Red,
-                 TypeI.Green,
-                 TypeII) {
-            if (DelayedArray:::get_verbose_block_processing()) {
-                message("Processing block ", b, "/", nblock, " ... ",
-                        appendLF = FALSE)
-            }
-            red_viewport <- red_grid[[b]]
-            green_viewport <- green_grid[[b]]
-            U_viewport <- U_grid[[b]]
-            red_block <- DelayedArray:::extract_block(red, red_viewport)
-            green_block <- DelayedArray:::extract_block(green, green_viewport)
-            U_block <- DelayedArray:::extract_block(U, U_viewport)
-            if (!is.array(red_block)) {
-                red_block <- DelayedArray:::.as_array_or_matrix(red_block)
-            }
-            attr(red_block, "from_grid") <- red_grid
-            attr(red_block, "block_id") <- b
-            if (!is.array(green_block)) {
-                green_block <- DelayedArray:::.as_array_or_matrix(green_block)
-            }
-            attr(green_block, "from_grid") <- green_grid
-            attr(green_block, "block_id") <- b
-            if (!is.array(U_block)) {
-                U_block <- DelayedArray:::.as_array_or_matrix(U_block)
-            }
-            attr(U_block, "from_grid") <- U_grid
-            attr(U_block, "block_id") <- b
-
-            # Update U
-            U_block[TypeII$Name, ] <- red_block[TypeII$AddressA, ]
-            U_block[TypeI.Red$Name, ] <- red_block[TypeI.Red$AddressA, ]
-            U_block[TypeI.Green$Name, ] <- green_block[TypeI.Green$AddressA, ]
-
-            if (!is.null(U_sink)) {
-                write_block_to_sink(U_block, U_sink, U_viewport)
-                U_block <- NULL
-            }
-            if (DelayedArray:::get_verbose_block_processing()) {
-                message("OK")
-            }
-            U_block
-        }, red_grid, green_grid, U_grid, red, green, U, TypeI.Red, TypeI.Green,
-        TypeII)
-
-    if (is.null(BACKEND)) {
-        M <- do.call(cbind, M_blocks)
-        U <- do.call(cbind, U_blocks)
-    } else {
-        M <- as(M_sink, "DelayedArray")
-        U <- as(U_sink, "DelayedArray")
-    }
+    # Return 'M' and 'U'
     list(M = M, U = U)
 }
 
-preprocessRaw <- function(rgSet, BACKEND = getRealizationBackend()) {
+# TODO: Add 'BACKEND' argument so that output can have different backend to input?
+# TODO: Add BPPARAM (and other BiocParallel args, e.g., BPREDO?)?
+preprocessRaw <- function(rgSet) {
     .isRGOrStop(rgSet)
 
-    # Extract data to pass to low-level preprocessing function
-    red <- getRed(rgSet)
-    green <- getGreen(rgSet)
+    # Extract data to pass to low-level function that constructs M and U
     locusNames <- getManifestInfo(rgSet, "locusNames")
     sampleNames <- sampleNames(rgSet)
-    TypeII <- getProbeInfo(rgSet, type = "II")
+    dimnames <- list(locusNames, sampleNames)
+    red <- getRed(rgSet)
+    green <- getGreen(rgSet)
+    type <- .highestType(red, green)
     TypeI.Red <- getProbeInfo(rgSet, type = "I-Red")
     TypeI.Green <- getProbeInfo(rgSet, type = "I-Green")
+    TypeII <- getProbeInfo(rgSet, type = "II")
 
-    # Fill M and U matrices using probe names and info
-    if (.isBackedByDelayedArray(rgSet)) {
-        val <- .preProcessRaw_DelayedArray(rgSet, locusNames, TypeI.Red,
-                                           TypeI.Green, TypeII, BACKEND)
-    } else {
-        val <- .preProcessRaw_matrix(red, green, locusNames, sampleNames, TypeI.Red,
+    # Construct M and U
+    if (is(red, "DelayedMatrix") || is(green, "DelayedMatrix")) {
+        val <- .preProcessRaw_DelayedMatrix(type, dimnames, red, green, TypeI.Red,
+                                            TypeI.Green, TypeII)
+    } else if (is.matrix(red) && is.matrix(green)) {
+        val <- .preProcessRaw_matrix(type, dimnames, red, green, TypeI.Red,
                                      TypeI.Green, TypeII)
     }
 
