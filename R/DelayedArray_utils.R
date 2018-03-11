@@ -5,6 +5,9 @@ setMethod("type", "HDF5RealizationSink", function(x) {
 setMethod("type", "arrayRealizationSink", function(x) {
     DelayedArray::type(x@result_envir$result)
 })
+setMethod("type", "RleRealizationSink", function(x) {
+    x@type
+})
 # TODO: dimnames() for all RealizationSink subclasses
 setMethod("dimnames", "arrayRealizationSink", function(x) {
     dimnames(x@result_envir$result)
