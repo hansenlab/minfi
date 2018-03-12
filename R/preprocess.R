@@ -1,4 +1,4 @@
-.preProcessRaw_matrix <- function(type, dimnames, red, green, TypeI.Red, TypeI.Green,
+.preProcessRaw_matrix <- function(type, dimnames, Red, Green, TypeI.Red, TypeI.Green,
                                   TypeII) {
 
     # Set up output matrices with appropriate dimensions and type
@@ -10,19 +10,19 @@
     U <- M
 
     # Fill output matrices
-    M[TypeI.Red$Name, ] <- red[TypeI.Red$AddressB, ]
-    M[TypeI.Green$Name, ] <- green[TypeI.Green$AddressB, ]
-    M[TypeII$Name, ] <- green[TypeII$AddressA, ]
+    M[TypeI.Red$Name, ] <- Red[TypeI.Red$AddressB, ]
+    M[TypeI.Green$Name, ] <- Green[TypeI.Green$AddressB, ]
+    M[TypeII$Name, ] <- Green[TypeII$AddressA, ]
 
-    U[TypeI.Red$Name, ] <- red[TypeI.Red$AddressA, ]
-    U[TypeI.Green$Name, ] <- green[TypeI.Green$AddressA, ]
-    U[TypeII$Name, ] <- red[TypeII$AddressA, ]
+    U[TypeI.Red$Name, ] <- Red[TypeI.Red$AddressA, ]
+    U[TypeI.Green$Name, ] <- Green[TypeI.Green$AddressA, ]
+    U[TypeII$Name, ] <- Red[TypeII$AddressA, ]
 
     # Return output matrices
     list(M = M, U = U)
 }
 
-.preProcessRaw_DelayedMatrix <- function(type, dimnames, red, green, TypeI.Red,
+.preProcessRaw_DelayedMatrix <- function(type, dimnames, Red, Green, TypeI.Red,
                                          TypeI.Green, TypeII) {
 
     # Set up intermediate RealizationSink objects of appropriate dimensions and type
@@ -39,15 +39,15 @@
     # Fill intermediate RealizationSink objects
     # M
     M_i <- c(TypeI.Red$Name, TypeI.Green$Name, TypeII$Name)
-    M_value <- rbind(red[TypeI.Red$AddressB, ],
-                   green[TypeI.Green$AddressB, ],
-                   green[TypeII$AddressA, ])
+    M_value <- rbind(Red[TypeI.Red$AddressB, ],
+                     Green[TypeI.Green$AddressB, ],
+                     Green[TypeII$AddressA, ])
     subassignRowsToRealizationSink(M_sink, M_i, M_value)
     # U
     U_i <- c(TypeI.Red$Name, TypeI.Green$Name, TypeII$Name)
-    U_value <- rbind(red[TypeI.Red$AddressA, ],
-                     green[TypeI.Green$AddressA, ],
-                     red[TypeII$AddressA, ])
+    U_value <- rbind(Red[TypeI.Red$AddressA, ],
+                     Green[TypeI.Green$AddressA, ],
+                     Red[TypeII$AddressA, ])
     subassignRowsToRealizationSink(U_sink, U_i, U_value)
 
     # Coerce intermediate RealizationSink objects to output DelayedMatrix objects
@@ -68,19 +68,19 @@ preprocessRaw <- function(rgSet) {
     locusNames <- getManifestInfo(rgSet, "locusNames")
     sampleNames <- sampleNames(rgSet)
     dimnames <- list(locusNames, sampleNames)
-    red <- getRed(rgSet)
-    green <- getGreen(rgSet)
-    type <- .highestType(red, green)
+    Red <- getRed(rgSet)
+    Green <- getGreen(rgSet)
+    type <- .highestType(Red, Green)
     TypeI.Red <- getProbeInfo(rgSet, type = "I-Red")
     TypeI.Green <- getProbeInfo(rgSet, type = "I-Green")
     TypeII <- getProbeInfo(rgSet, type = "II")
 
-    # Construct M and U
-    if (is(red, "DelayedMatrix") || is(green, "DelayedMatrix")) {
-        val <- .preProcessRaw_DelayedMatrix(type, dimnames, red, green, TypeI.Red,
+    # Construct 'M' and 'U'
+    if (is(Red, "DelayedMatrix") || is(Green, "DelayedMatrix")) {
+        val <- .preProcessRaw_DelayedMatrix(type, dimnames, Red, Green, TypeI.Red,
                                             TypeI.Green, TypeII)
-    } else if (is.matrix(red) && is.matrix(green)) {
-        val <- .preProcessRaw_matrix(type, dimnames, red, green, TypeI.Red,
+    } else if (is.matrix(Red) && is.matrix(Green)) {
+        val <- .preProcessRaw_matrix(type, dimnames, Red, Green, TypeI.Red,
                                      TypeI.Green, TypeII)
     }
 
