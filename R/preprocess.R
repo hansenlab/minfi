@@ -119,6 +119,8 @@ normalize.illumina.control <- function(rgSet, reference=1) {
         stop("perhaps 'reference' refer to an array that is not present.")
     Green.factor <- ref/Green.avg
     Red.factor <- ref/Red.avg
+    # TODO: Need a sweep,DelayedMatrix-method
+    #       https://github.com/Bioconductor/DelayedArray/issues/8
     Green <- sweep(Green, 2, FUN = "*", Green.factor)
     Red <- sweep(Red, 2, FUN = "*", Red.factor)
     assay(rgSet, "Green") <- Green
@@ -136,8 +138,14 @@ bgcorrect.illumina <- function(rgSet) {
     if (.is27k(rgSet)) {
         NegControls <- getControlAddress(rgSet, controlType = "Negative")
     }
-    Green.bg <- apply(Green[NegControls, , drop = FALSE], 2, function(xx) sort(xx)[31])
-    Red.bg <- apply(Red[NegControls, , drop = FALSE], 2, function(xx) sort(xx)[31])
+    Green.bg <- apply(Green[NegControls, , drop = FALSE], 2, function(xx) {
+        sort(as.vector(xx))[31]
+    })
+    Red.bg <- apply(Red[NegControls, , drop = FALSE], 2, function(xx) {
+        sort(as.vector(xx))[31]
+    })
+    # TODO: Need a sweep,DelayedMatrix-method
+    #       https://github.com/Bioconductor/DelayedArray/issues/8
     Green <- pmax(sweep(Green, 2, Green.bg), 0)
     Red <- pmax(sweep(Red, 2, Red.bg), 0)
     assay(rgSet, "Green") <- Green
