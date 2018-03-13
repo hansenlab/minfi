@@ -72,7 +72,7 @@ test_compartments_examples <- function() {
 test_controlStripPlot_examples <- function() {
     stopifnot(require(minfiData))
     stopifnot(require(DelayedArray))
-    stop("Currently no way to test that the 2 plots are identical",
+    stop("Functionality implemented, but currently no way to test that the 2 plots are identical",
          call. = TRUE)
     # TODO: Conceptually, the below is what is needed
 
