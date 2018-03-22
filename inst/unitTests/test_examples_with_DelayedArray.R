@@ -653,3 +653,23 @@ test_utils_examples <- function() {
     # Check equivalency
     checkEquals(a0, a)
 }
+
+test_.sweep <- function() {
+    # TODO: Formalise and make more robust
+    # Crappy fuzz testing of .sweep()
+    for (i in 1:100) {
+        ndim <- sample(2:5, 1)
+        dims <- sample(1:10, ndim, replace = TRUE)
+        MARGIN <- sample(ndim, 1)
+        FUN <- sample(c("+", "-", "*", "/"), 1)
+        if (runif(1) < 0.5) {
+            STATS <- runif(1)
+        } else {
+            STATS <- runif(dims[MARGIN])
+        }
+        x <- DelayedArray(array(runif(prod(dims)), dims))
+
+        stopifnot(all.equal(sweep(as.array(x), MARGIN, STATS, FUN),
+                            as.array(.sweep(x, MARGIN, STATS, FUN))))
+    }
+}
