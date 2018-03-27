@@ -1,0 +1,138 @@
+---
+title: "Benchmarking DelayedArray branch of **minfi**"
+author: "Peter Hickey"
+date: "`r BiocStyle::doc_date()`"
+output:
+  github_document:
+    toc: true
+    toc_depth: 2
+editor_options: 
+  chunk_output_type: console
+---
+
+## Setup
+
+```{r, include = FALSE, setup}
+knitr::opts_chunk$set(echo = TRUE, comment = "#>", collapse = TRUE,
+                      message = TRUE, warning = TRUE)
+```
+
+```{r}
+suppressPackageStartupMessages(library(minfi))
+suppressPackageStartupMessages(library(minfiData))
+```
+
+## Using **minfi** v1.25.1
+
+```{r 1.25.1}
+RGSet <- minfiData::RGsetEx
+system.time(MSetRaw_v1.25.1 <- preprocessRaw(RGSet))
+system.time(MSetIllumina_v1.25.1 <- detectionP(RGSet))
+system.time(detP_v1.25.1 <- detectionP(RGSet))
+```
+
+## Using DelayedArray branch of **minfi**
+
+Some setting up:
+
+```{r}
+suppressPackageStartupMessages(library(DelayedArray))
+suppressPackageStartupMessages(library(HDF5Array))
+
+source("R/utils.R")
+source("R/DelayedArray_utils.R")
+source("R/preprocessRaw.R")
+source("R/preprocessIllumina.R")
+source("R/detectionP.R")
+
+DelayedArray:::set_verbose_block_processing(TRUE)
+
+DEFAULT_BLOCK_SIZE <- getOption("DelayedArray.block.size")
+DEFAULT_BLOCK_SIZE
+```
+
+Create the various _RGChannelSet_ objects:
+
+```{r}
+RGSet_in_memory_DelayedMatrix <- minfiData::RGsetEx
+system.time(
+    assays(RGSet_in_memory_DelayedMatrix) <- endoapply(
+        assays(RGSet_in_memory_DelayedMatrix),
+        DelayedArray)
+)
+
+RGSet_on_disk_DelayedMatrix <- minfiData::RGsetEx
+system.time(
+    assays(RGSet_on_disk_DelayedMatrix) <- endoapply(
+        assays(RGSet_on_disk_DelayedMatrix),
+        writeHDF5Array))
+```
+
+### Using an ordinary _matrix_-backed _RGChannelSet_
+
+```{r}
+system.time(MSetRaw <- preprocessRaw(RGSet))
+system.time(MSetIllumina <- preprocessIllumina(RGSet))
+system.time(detP <- detectionP(RGSet))
+```
+
+### Using an in-memory _DelayedMatrix_-backed _RGChannelSet_
+
+#### Default block size
+
+```{r}
+options(DelayedArray.block.size = DEFAULT_BLOCK_SIZE)
+system.time(
+    MSetRaw_in_memory_DelayedMatrix <- preprocessRaw(RGSet_in_memory_DelayedMatrix))
+system.time(
+    MSetIllumina_in_memory_DelayedMatrix <- preprocessIllumina(
+        RGSet_in_memory_DelayedMatrix))
+system.time(
+    detP_in_memory_DelayedMatrix <- detectionP(RGSet_in_memory_DelayedMatrix))
+```
+
+#### Increased block size
+
+```{r}
+options(DelayedArray.block.size = DEFAULT_BLOCK_SIZE * 100L)
+system.time(MSetRaw_in_memory_DelayedMatrix <- preprocessRaw(
+    RGSet_in_memory_DelayedMatrix))
+system.time(MSetIllumina_in_memory_DelayedMatrix <- preprocessIllumina(
+    RGSet_in_memory_DelayedMatrix))
+system.time(
+    detP_in_memory_DelayedMatrix <- detectionP(RGSet_in_memory_DelayedMatrix))
+```
+
+### Using an on-disk (HDF5) _DelayedMatrix_-backed _RGChannelSet_
+
+Using the **HDF5Array** backend:
+
+```{r}
+setRealizationBackend("HDF5Array")
+```
+
+#### Default block size
+
+```{r}
+options(DelayedArray.block.size = DEFAULT_BLOCK_SIZE)
+system.time(
+    MSet_on_disk_DelayedMatrix <- preprocessRaw(RGSet_on_disk_DelayedMatrix))
+system.time(
+    MSetIllumina_on_disk_DelayedMatrix <- preprocessIllumina(
+        RGSet_on_disk_DelayedMatrix))
+system.time(
+   detP_on_disk_DelayedMatrix <- detectionP(RGSet_on_disk_DelayedMatrix))
+```
+
+#### Increased block size
+
+```{r}
+options(DelayedArray.block.size = DEFAULT_BLOCK_SIZE * 100L)
+system.time(
+    MSet_on_disk_DelayedMatrix <- preprocessRaw(RGSet_on_disk_DelayedMatrix))
+system.time(
+    MSetIllumina_on_disk_DelayedMatrix <- preprocessIllumina(
+        RGSet_on_disk_DelayedMatrix))
+system.time(
+   detP_on_disk_DelayedMatrix <- detectionP(RGSet_on_disk_DelayedMatrix))
+```
