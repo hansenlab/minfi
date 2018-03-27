@@ -54,7 +54,8 @@ Imports:  S4Vectors,
           graphics,
           utils,
      DelayedArray,
-     HDF5Array
+     HDF5Array,
+     BiocParallel
 Collate:  generics.R
 	  mset.R
 	  rset.R

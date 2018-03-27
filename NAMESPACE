@@ -13,6 +13,7 @@ import(SummarizedExperiment)
 import(S4Vectors)
 import(IRanges)
 import(DelayedArray)
+import(BiocParallel)
 import(HDF5Array) # TODO: Remove once DelayedArray_utils.R are moved to DelayedArray
 importFrom(Biobase, assayDataElementNames, assayDataElementReplace,
            assayDataElement, "assayDataElement<-", validMsg, assayDataValidMembers)
