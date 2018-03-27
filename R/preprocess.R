@@ -1,4 +1,4 @@
-.preProcessRawMeth <- function(dimnames, Red, Green, TypeI.Red, TypeI.Green,
+.preprocessRawMeth <- function(dimnames, Red, Green, TypeI.Red, TypeI.Green,
                                TypeII) {
     # Set up output matrix with appropriate dimension and type
     dim <- lengths(dimnames)
@@ -17,7 +17,7 @@
     M
 }
 
-.preProcessRawUnmeth <- function(dimnames, Red, Green, TypeI.Red, TypeI.Green,
+.preprocessRawUnmeth <- function(dimnames, Red, Green, TypeI.Red, TypeI.Green,
                                  TypeII) {
     # Set up output matrix with appropriate dimension and type
     dim <- lengths(dimnames)
@@ -36,7 +36,7 @@
     U
 }
 
-.preProcessRaw_DelayedMatrix <- function(dimnames, Red, Green, TypeI.Red,
+.preprocessRaw_DelayedMatrix <- function(dimnames, Red, Green, TypeI.Red,
                                          TypeI.Green, TypeII) {
     # Set up intermediate RealizationSink objects of appropriate dimensions and
     # type
@@ -110,7 +110,7 @@
 
         # Construct blocks of `M`  and `U` as ordinary arrays and write
         # to `M_sink` and `U_sink`, respectively.
-        M_block <- .preProcessRawMeth(
+        M_block <- .preprocessRawMeth(
             dimnames = dimnames_block,
             Red = Red_block,
             Green = Green_block,
@@ -119,7 +119,7 @@
             TypeII = TypeII)
         write_block_to_sink(M_block, M_sink, M_sink_viewport)
         M_block <- NULL
-        U_block <- .preProcessRawUnmeth(
+        U_block <- .preprocessRawUnmeth(
             dimnames = dimnames_block,
             Red = Red_block,
             Green = Green_block,
@@ -161,13 +161,13 @@ preprocessRaw <- function(rgSet) {
 
     # Construct `M` and `U`
     if (is(Red, "DelayedMatrix") || is(Green, "DelayedMatrix")) {
-        M_and_U <- .preProcessRaw_DelayedMatrix(dimnames, Red, Green, TypeI.Red,
+        M_and_U <- .preprocessRaw_DelayedMatrix(dimnames, Red, Green, TypeI.Red,
                                                 TypeI.Green, TypeII)
         M <- M_and_U[["M"]]
         U <- M_and_U[["U"]]
     } else if (is.matrix(Red) && is.matrix(Green)) {
-        M <- .preProcessRawMeth(dimnames, Red, Green, TypeI.Red, TypeI.Green, TypeII)
-        U <- .preProcessRawUnmeth(dimnames, Red, Green, TypeI.Red, TypeI.Green, TypeII)
+        M <- .preprocessRawMeth(dimnames, Red, Green, TypeI.Red, TypeI.Green, TypeII)
+        U <- .preprocessRawUnmeth(dimnames, Red, Green, TypeI.Red, TypeI.Green, TypeII)
     } else {
         stop("'Red' and 'Green' assays must be 'matrix' or 'DelayedMatrix' objects")
     }
