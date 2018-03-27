@@ -71,7 +71,9 @@ Collate:  generics.R
 	  blocks.R
 	  plot.R
 	  plotBetasByType.R
-	  preprocess.R
+	  preprocessRaw.R
+	  preprocessIllumina.R
+	  detectionP.R
 	  preprocessSwan.R
 	  preprocessQuantile.R
 	  preprocessNoob.R
