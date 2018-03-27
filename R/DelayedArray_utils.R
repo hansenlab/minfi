@@ -29,7 +29,7 @@ blockApplyWithRealization <- function(x, FUN, ..., grid = NULL, sink = NULL,
                     appendLF = FALSE)
         }
         viewport <- grid[[b]]
-        block <- extract_block(x, viewport)
+        block <- DelayedArray:::extract_block(x, viewport)
         if (!is.array(block)) {
             block <- DelayedArray:::.as_array_or_matrix(block)
         }
