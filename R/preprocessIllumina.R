@@ -22,8 +22,8 @@ normalize.illumina.control <- function(rgSet, reference=1) {
         stop("perhaps 'reference' refer to an array that is not present.")
     Green.factor <- ref/Green.avg
     Red.factor <- ref/Red.avg
-    Green <- .sweep(Green, 2, FUN = "*", Green.factor)
-    Red <- .sweep(Red, 2, FUN = "*", Red.factor)
+    Green <- sweep(Green, 2, FUN = "*", Green.factor)
+    Red <- sweep(Red, 2, FUN = "*", Red.factor)
     assay(rgSet, "Green") <- Green
     assay(rgSet, "Red") <- Red
     rgSet
@@ -47,8 +47,8 @@ bgcorrect.illumina <- function(rgSet) {
     Red.bg <- apply(Red[NegControls, , drop = FALSE], 2, function(xx) {
         sort(as.vector(xx))[31]
     })
-    Green <- pmax2(.sweep(Green, 2, Green.bg), 0)
-    Red <- pmax2(.sweep(Red, 2, Red.bg), 0)
+    Green <- pmax2(sweep(Green, 2, Green.bg), 0)
+    Red <- pmax2(sweep(Red, 2, Red.bg), 0)
     assay(rgSet, "Green") <- Green
     assay(rgSet, "Red") <- Red
     rgSet
