@@ -6,7 +6,7 @@
         arrayAnnotation <- c(array = "IlluminaHumanMethylationEPIC", annotation = .default.epic.annotation)
     } else if(nProbes >= 1032000 && nProbes <= 1033000) {
         ## "Old EPIC scan type"
-        arrayAnnotation <- c(array = "IlluminaHumanMethylationEPIC", annotation = .default.epic.annotation) 
+        arrayAnnotation <- c(array = "IlluminaHumanMethylationEPIC", annotation = .default.epic.annotation)
     } else if(nProbes >= 54000 && nProbes <= 56000) {
         arrayAnnotation <- c(array = "IlluminaHumanMethylation27k", annotation = .default.27k.annotation)
     } else {
@@ -15,81 +15,152 @@
     arrayAnnotation
 }
 
-read.metharray <- function(basenames, extended = FALSE, verbose = FALSE, force = FALSE) {
+# TODO: Need to think about API. Currently, if `BACKEND` is NULL then the RGSet
+#       is matrix-backed. However, within DelayedArray, BACKEND = NULL means to
+#       create a DelayedArray with an ordinary array as the seed. This is a
+#       source of slight tension. However, in general there is no advantage to
+#       using a DelayedMatrix with an ordinary matrix as the seed over
+#       directly using the ordinary matrix (at least within minfi).
+# TODO: Test out BPREDO and BPPARAM
+read.metharray <- function(basenames, extended = FALSE, verbose = FALSE,
+                           force = FALSE, BACKEND = NULL, BPREDO = list(),
+                           BPPARAM = bpparam()) {
+
+    # Check files exist
     basenames <- sub("_Grn\\.idat.*", "", basenames)
     basenames <- sub("_Red\\.idat.*", "", basenames)
     stopifnot(!anyDuplicated(basenames))
-    
     G.files <- paste(basenames, "_Grn.idat", sep = "")
     names(G.files) <- basename(basenames)
     these.dont.exists <- !file.exists(G.files)
-    if(any(these.dont.exists))
+    if (any(these.dont.exists)) {
         G.files[these.dont.exists] <- paste0(G.files[these.dont.exists], ".gz")
-    if(!all(file.exists(G.files))) {
+    }
+    if (!all(file.exists(G.files))) {
         noexits <- sub("\\.gz", "", G.files[!file.exists(G.files)])
-        stop("The following specified files do not exist:", paste(noexits, collapse = ", "))
+        stop("The following specified files do not exist:",
+             paste(noexits, collapse = ", "))
     }
     R.files <- paste(basenames, "_Red.idat", sep = "")
     names(R.files) <- basename(basenames)
     these.dont.exists <- !file.exists(R.files)
-    if(any(these.dont.exists))
+    if (any(these.dont.exists)) {
         R.files[these.dont.exists] <- paste0(R.files[these.dont.exists], ".gz")
-    if(!all(file.exists(R.files))) {
-        noexits <- R.files[!file.exists(G.files)]
-        stop("The following specified files do not exist:", paste(noexits, collapse = ", "))
     }
+    if (!all(file.exists(R.files))) {
+        noexits <- R.files[!file.exists(G.files)]
+        stop("The following specified files do not exist:",
+             paste(noexits, collapse = ", "))
+    }
+
+    # Load 'Quants' from IDAT file, including 'SD' and 'NBeads' if extend is TRUE
+    # TODO: Perform fewer realizations. E.g., if the block size is set large
+    #       enough so that k arrays' data can be kept in memory then should
+    #       only perform a realization every k-th array.
     stime <- system.time({
-        G.idats <- lapply(G.files, function(xx) {
-            if(verbose) message("[read.metharray] Reading", basename(xx))
-            readIDAT(xx)
-        })
-        R.idats <- lapply(R.files, function(xx) {
-            if(verbose) message("[read.metharray] Reading", basename(xx))
-            readIDAT(xx)
-        })
+        G.Quants <- bplapply(G.files, function(xx) {
+            if (verbose) message("[read.metharray] Reading ", basename(xx))
+            Quants <- readIDAT(xx)[["Quants"]]
+            if (!extended) {
+                Quants <- Quants[, "Mean", drop = FALSE]
+            }
+            if (!is.null(BACKEND)) {
+                Quants <- realize(Quants, BACKEND = BACKEND)
+            }
+            Quants
+        }, BPREDO = BPREDO, BPPARAM = BPPARAM)
+        R.Quants <- bplapply(R.files, function(xx) {
+            if (verbose) message("[read.metharray] Reading ", basename(xx))
+            Quants <- readIDAT(xx)[["Quants"]]
+            if (!extended) {
+                Quants <- Quants[, "Mean", drop = FALSE]
+            }
+            if (!is.null(BACKEND)) {
+                Quants <- realize(Quants, BACKEND = BACKEND)
+            }
+            Quants
+        }, BPREDO = BPREDO, BPPARAM = BPPARAM)
     })[3]
-    if(verbose) message(sprintf("[read.metharray] Read idat files in %.1f seconds", stime))
-    if(verbose) message("[read.metharray] Creating data matrices ... ", appendLF = FALSE)
+    if (verbose) {
+        message(sprintf("[read.metharray] Read idat files in %.1f seconds",
+                        stime))
+    }
+    if (verbose) {
+        message("[read.metharray] Creating data matrices ... ",
+                appendLF = FALSE)
+    }
     ptime1 <- proc.time()
-    allNProbes <- sapply(G.idats, function(xx) nrow(xx$Quants))
+    allNProbes <- vapply(G.Quants, nrow, integer(1L))
     arrayTypes <- cbind(do.call(rbind, lapply(allNProbes, .guessArrayTypes)),
                         size = allNProbes)
     sameLength <- (length(unique(arrayTypes[, "size"])) == 1)
     sameArray <- (length(unique(arrayTypes[, "array"])) == 1)
-    
-    if(!sameLength && !sameArray) {
+
+    if (!sameLength && !sameArray) {
         cat("[read.metharray] Trying to parse IDAT files from different arrays.\n")
         cat("  Inferred Array sizes and types:\n")
         print(arrayTypes[, c("array", "size")])
-        stop("[read.metharray] Trying to parse different IDAT files, of different size and type.")
+        stop("[read.metharray] Trying to parse different IDAT files, of ",
+             "different size and type.")
     }
-    if(!sameLength && sameArray && !force) {
-        stop("[read.metharray] Trying to parse IDAT files with different array size but seemingly all of the same type.\n  You can force this by 'force=TRUE', see the man page ?read.metharray")
+    if (!sameLength && sameArray && !force) {
+        stop("[read.metharray] Trying to parse IDAT files with different array ",
+             "size but seemingly all of the same type.\n  You can force this by ",
+             "'force=TRUE', see the man page ?read.metharray")
     }
-    commonAddresses <- as.character(Reduce("intersect", lapply(G.idats, function(xx) rownames(xx$Quants))))
-    GreenMean <- do.call(cbind, lapply(G.idats, function(xx) xx$Quants[commonAddresses, "Mean"]))
-    RedMean <- do.call(cbind, lapply(R.idats, function(xx) xx$Quants[commonAddresses, "Mean"]))
-    if(extended) {
-        GreenSD <- do.call(cbind, lapply(G.idats, function(xx) xx$Quants[commonAddresses, "SD"]))
-        RedSD <- do.call(cbind, lapply(R.idats, function(xx) xx$Quants[commonAddresses, "SD"]))
-        NBeads <- do.call(cbind, lapply(G.idats, function(xx) xx$Quants[commonAddresses, "NBeads"]))
+    commonAddresses <- as.character(
+        Reduce("intersect", lapply(G.Quants, rownames)))
+    # NOTE: Must manually set colnames because it is not safe to assume these
+    #       will be correctly deparsed
+    GreenMean <- do.call(
+        cbind,
+        lapply(G.Quants, function(xx) xx[commonAddresses, "Mean"]))
+    colnames(GreenMean) <- names(G.Quants)
+    RedMean <- do.call(
+        cbind,
+        lapply(R.Quants, function(xx) xx[commonAddresses, "Mean"]))
+    colnames(RedMean) <- names(R.Quants)
+    if (extended) {
+        GreenSD <- do.call(
+            cbind,
+            lapply(G.Quants, function(xx) xx[commonAddresses, "SD"]))
+        colnames(GreenSD) <- names(G.Quants)
+        RedSD <- do.call(
+            cbind,
+            lapply(R.Quants, function(xx) xx[commonAddresses, "SD"]))
+        colnames(RedSD) <- names(R.Quants)
+        NBeads <- do.call(
+            cbind,
+            lapply(G.Quants, function(xx) xx[commonAddresses, "NBeads"]))
+        colnames(NBeads) <- names(G.Quants)
     }
     ptime2 <- proc.time()
     stime <- (ptime2 - ptime1)[3]
-    if(verbose) message(sprintf("done in %.1f seconds", stime))
-    if(verbose) message("[read.metharray] Instantiating final object ... ", appendLF = FALSE)
+    if (verbose) {
+        message(sprintf("done in %.1f seconds", stime))
+    }
+    if (verbose) {
+        message("[read.metharray] Instantiating final object ... ",
+                appendLF = FALSE)
+    }
     ptime1 <- proc.time()
-    if(extended) {
-        out <- RGChannelSetExtended(Red = RedMean, Green = GreenMean,
-                                    RedSD = RedSD, GreenSD = GreenSD, NBeads = NBeads)
+    if (extended) {
+        out <- RGChannelSetExtended(
+            Red = RedMean,
+            Green = GreenMean,
+            RedSD = RedSD,
+            GreenSD = GreenSD,
+            NBeads = NBeads)
     } else {
         out <- RGChannelSet(Red = RedMean, Green = GreenMean)
     }
     rownames(out) <- commonAddresses
-    out@annotation <- c(array = arrayTypes[1,1], annotation = arrayTypes[1,2])
+    out@annotation <- c(array = arrayTypes[1, 1], annotation = arrayTypes[1, 2])
     ptime2 <- proc.time()
     stime <- (ptime2 - ptime1)[3]
-    if(verbose) message(sprintf("done in %.1f seconds", stime))
+    if (verbose) {
+        message(sprintf("done in %.1f seconds", stime))
+    }
     out
 }
 
@@ -131,7 +202,7 @@ read.metharray.sheet <- function(base, pattern = "csv$", ignore.case = TRUE,
                 df[[nam]] <- as.character(df[[nam]])
             }
         }
-            
+
         if(!is.null(df$Array)) {
             patterns <- sprintf("%s_%s_Grn.idat", df$Slide, df$Array)
             allfiles <- list.files(dirname(file), recursive = recursive, full.names = TRUE)
@@ -165,9 +236,9 @@ read.metharray.sheet <- function(base, pattern = "csv$", ignore.case = TRUE,
     }))
     df
 }
-    
 
-read.metharray.exp <- function(base = NULL, targets = NULL, extended = FALSE, 
+
+read.metharray.exp <- function(base = NULL, targets = NULL, extended = FALSE,
                                recursive = FALSE, verbose = FALSE, force = FALSE) {
     if(!is.null(targets)) {
         if(! "Basename" %in% names(targets))
