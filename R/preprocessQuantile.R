@@ -1,3 +1,12 @@
+# TODO: Quantile normalization currently requires that all data are loaded into
+#       memory; is there a way to do column-block-processing and achieve
+#       identical (or near-enough-to-identical) results?
+# TODO: Add `BACKEND` argument so that output can have different backend to
+#       input? Or should that be driven by setRealizationBackend()?
+# TODO: Add BPPARAM (and other BiocParallel args, e.g., BPREDO?)?
+# TODO: Instead of (or in addition to) relying on
+#       option("DelayedArray.block.size"), perhaps offer argument to specify
+#       how many samples should be processed per "batch".
 preprocessQuantile <- function(object, fixOutliers=TRUE,
                                removeBadSamples=FALSE, badSampleCutoff=10.5,
                                quantileNormalize=TRUE, stratified=TRUE,
@@ -7,19 +16,19 @@ preprocessQuantile <- function(object, fixOutliers=TRUE,
           is(object, "GenomicMethylSet") ))
         stop("object must be of class 'RGChannelSet' or '[Genomic]MethylSet'")
     if( (is(object, "MethylSet") || is(object, "GenomicMethylSet") ) &&
-       preprocessMethod(object)["rg.norm"] != "Raw (no normalization or bg correction)")
+        preprocessMethod(object)["rg.norm"] != "Raw (no normalization or bg correction)")
         warning("preprocessQuantile has only been tested with 'preprocessRaw'")
     if (!is.null(sex))
         sex <- .checkSex(sex)
-    
+
     if(verbose) message("[preprocessQuantile] Mapping to genome.")
     object <- mapToGenome(object, mergeManifest = mergeManifest)
-    
+
     if (.is27k(object) && stratified) {
         stratified <- FALSE
-        warning("The stratification option is not available for 27k arrays.")        
+        warning("The stratification option is not available for 27k arrays.")
     }
-    
+
     if(fixOutliers){
         if(verbose) message("[preprocessQuantile] Fixing outliers.")
         object <- fixMethOutliers(object)
@@ -30,7 +39,7 @@ preprocessQuantile <- function(object, fixOutliers=TRUE,
     if(length(keepIndex) == 0 && removeBadSamples) stop("All samples found to be bad")
     if(length(keepIndex) < ncol(object) && removeBadSamples) {
         if(verbose) message(sprintf("[preprocessQuantile] Found and removed %s bad samples.",
-                                ncol(object) - length(keepIndex)))
+                                    ncol(object) - length(keepIndex)))
         object <- object[, keepIndex]
     }
 
@@ -46,20 +55,50 @@ preprocessQuantile <- function(object, fixOutliers=TRUE,
     if(quantileNormalize){
         if(verbose) message("[preprocessQuantile] Quantile normalizing.")
         if (!stratified) {
-            U <- .qnormNotStratified(mat = getUnmeth(object), auIndex = auIndex,
-                                     xIndex = xIndex, yIndex = yIndex, sex = sex)
-            M <- .qnormNotStratified(mat = getMeth(object), auIndex = auIndex,
-                                     xIndex = xIndex, yIndex = yIndex, sex = sex)
+            U <- .qnormNotStratified(
+                mat = as.matrix(getUnmeth(object)),
+                auIndex = auIndex,
+                xIndex = xIndex,
+                yIndex = yIndex,
+                sex = sex)
+            if (!is.null(getRealizationBackend())) {
+                U <- realize(U)
+            }
+            M <- .qnormNotStratified(
+                mat = as.matrix(getMeth(object)),
+                auIndex = auIndex,
+                xIndex = xIndex,
+                yIndex = yIndex,
+                sex = sex)
+            if (!is.null(getRealizationBackend())) {
+                M <- realize(M)
+            }
         } else {
             probeType <- getProbeType(object)
             regionType <- getIslandStatus(object)
             regionType[regionType %in% c("Shelf", "OpenSea")] <- "Far"
-            U <- .qnormStratified(mat = getUnmeth(object), auIndex = auIndex,
-                                  xIndex = xIndex, yIndex = yIndex, sex = sex,
-                                  probeType = probeType, regionType = regionType)
-            M <- .qnormStratified(mat = getMeth(object), auIndex = auIndex,
-                                  xIndex = xIndex, yIndex = yIndex, sex = sex,
-                                  probeType = probeType, regionType = regionType)
+            U <- .qnormStratified(
+                mat = as.matrix(getUnmeth(object)),
+                auIndex = auIndex,
+                xIndex = xIndex,
+                yIndex = yIndex,
+                sex = sex,
+                probeType = probeType,
+                regionType = regionType)
+            if (!is.null(getRealizationBackend())) {
+                U <- realize(U)
+            }
+            M <- .qnormStratified(
+                mat = as.matrix(getMeth(object)),
+                auIndex = auIndex,
+                xIndex = xIndex,
+                yIndex = yIndex,
+                sex = sex,
+                probeType = probeType,
+                regionType = regionType)
+            if (!is.null(getRealizationBackend())) {
+                M <- realize(M)
+            }
         }
     } else {
         U <- getUnmeth(object)
@@ -72,7 +111,6 @@ preprocessQuantile <- function(object, fixOutliers=TRUE,
                            preprocessMethod=preprocessMethod)
     return(out)
 }
-
 
 ##quantile normalize but X and Y chromsome by sex
 .qnormNotStratified <- function(mat, auIndex, xIndex, yIndex, sex=NULL){
@@ -136,7 +174,7 @@ preprocessQuantile <- function(object, fixOutliers=TRUE,
         target <- approx(seq(along = Index2), sort(mat[Index2, 1]),
                          seq(1, length(Index2), length.out = length(Index1)))$y
         mat[Index1, ] <- preprocessCore::normalize.quantiles.use.target(
-                                             mat[Index1, ,drop = FALSE], target)
+            mat[Index1, ,drop = FALSE], target)
     }
     return(mat)
 }
