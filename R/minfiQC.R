@@ -1,26 +1,33 @@
-.fixMethOutliers <- function(mat, K=-3, verbose = FALSE) {
-    logMat <- log2(mat + 0.5)
-    mu <- matrixStats::colMedians(logMat)
-    sd <- matrixStats::colMads(logMat)
-    cutoff <- K*sd + mu
-    nFixes <- integer(ncol(mat))
-    for(jj in 1:ncol(mat)) {
-        wh <- which(logMat[, jj] < cutoff[jj])
-        mat[wh, jj] <- 2^cutoff[jj]
-        nFixes[jj] <- length(wh)
-        if(verbose)
-            message(sprintf("[.fixMethOutliers] for sample %s, fixing %s outliers with 2^cutoff=%s\n",
-                        jj, nFixes[jj], round(2^cutoff[jj],0)))
+.fixMethOutliers <- function(mat, K = -3, verbose = FALSE) {
+    # Compute cutoff
+    log2_mat <- log2(mat + 0.5)
+    mu <- colMedians(log2_mat)
+    sd <- colMads(log2_mat)
+    cutoff <- 2 ^ (K * sd + mu)
+
+    # NOTE: nFixes is only computed if verbose is TRUE because it's not
+    #       otherwise needed
+    if (verbose) {
+        nFixes <- colSums2(sweep(mat, 2, cutoff, `<`))
+        msg <- paste0(
+            "[.fixMethOutliers] for sample %s, fixing %s outliers with ",
+            "2^cutoff=%s\n")
+        for (j in seq_len(ncol(mat))) {
+            message(sprintf(msg, j, nFixes[j], round(cutoff[j], 0)))
+        }
     }
-    return(list(mat = mat, cutoff = cutoff, nFixes = nFixes))
+
+    # Threshold matrix values so that all values are greater than or equal to
+    # the column-specific `cutoff`
+    sweep(mat, 2, cutoff, pmax2)
 }
 
-fixMethOutliers <- function(object, K=-3, verbose = FALSE){
+fixMethOutliers <- function(object, K = -3, verbose = FALSE) {
     .isMethylOrStop(object)
-    if(verbose) message("[fixMethOutliers] fixing Meth channel\n")
-    assay(object, "Meth") <- .fixMethOutliers(getMeth(object), K=K, verbose = verbose)$mat
-    if(verbose) message("[fixMethOutliers] fixing Unmeth channel\n")
-    assay(object, "Unmeth") <- .fixMethOutliers(getUnmeth(object), K=K, verbose = verbose)$mat
+    if (verbose) message("[fixMethOutliers] fixing Meth channel\n")
+    assay(object, "Meth") <- .fixMethOutliers(getMeth(object), K, verbose)
+    if (verbose) message("[fixMethOutliers] fixing Unmeth channel\n")
+    assay(object, "Unmeth") <- .fixMethOutliers(getMeth(object), K, verbose)
     return(object)
 }
 
@@ -51,8 +58,8 @@ plotQC <- function(qc, badSampleCutoff = 10.5) {
 
 getQC <- function(object) {
     .isMethylOrStop(object)
-    U.medians <- log2(matrixStats::colMedians(getUnmeth(object)))
-    M.medians <- log2(matrixStats::colMedians(getMeth(object)))
+    U.medians <- log2(colMedians(getUnmeth(object)))
+    M.medians <- log2(colMedians(getMeth(object)))
     df <- DataFrame(mMed = M.medians, uMed = U.medians)
     rownames(df) <- colnames(object)
     df
@@ -67,7 +74,7 @@ minfiQC <- function(object, fixOutliers=TRUE, verbose = FALSE){
     }
     qc <- getQC(object)
     object <- addQC(object, qc = qc)
-    if(!is(object, "GenomicMethylSet")) {
+    if (!is(object, "GenomicMethylSet")) {
         sex <- getSex(mapToGenome(object))
     } else {
         sex <- getSex(object)
@@ -75,4 +82,3 @@ minfiQC <- function(object, fixOutliers=TRUE, verbose = FALSE){
     object <- addSex(object, sex = sex)
     return(list(object = object, qc = cbind(qc, sex)))
 }
-
