@@ -1,5 +1,5 @@
 import(methods)
-importFrom(matrixStats, rowVars, colMedians, colMads, colQuantiles, rowDiffs, colCummaxs, rowMaxs, rowCounts)
+importFrom(DelayedMatrixStats, rowVars, colMedians, colMads, colQuantiles, rowDiffs, colCummaxs, rowMaxs, rowCounts)
 import(BiocGenerics)
 importMethodsFrom(Biobase, exprs, fData,
                   featureNames, "featureNames<-",
