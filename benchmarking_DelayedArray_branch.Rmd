@@ -26,9 +26,12 @@ suppressPackageStartupMessages(library(minfiData))
 
 ```{r 1.25.1}
 RGSet <- minfiData::RGsetEx
-system.time(MSetRaw_v1.25.1 <- preprocessRaw(RGSet))
-system.time(MSetIllumina_v1.25.1 <- detectionP(RGSet))
-system.time(detP_v1.25.1 <- detectionP(RGSet))
+system.time(MSetRaw_v1.25.1 <- minfi::preprocessRaw(RGSet))
+system.time(MSetIllumina_v1.25.1 <- minfi::detectionP(RGSet))
+system.time(detP_v1.25.1 <- minfi::detectionP(RGSet))
+
+MSet <- minfiData::MsetEx
+system.time(MSetFixedOutliers_v1.25.1 <- minfi::fixMethOutliers(MSet))
 ```
 
 ## Using DelayedArray branch of **minfi**
@@ -38,12 +41,14 @@ Some setting up:
 ```{r}
 suppressPackageStartupMessages(library(DelayedArray))
 suppressPackageStartupMessages(library(HDF5Array))
+suppressPackageStartupMessages(library(DelayedMatrixStats))
 
 source("R/utils.R")
 source("R/DelayedArray_utils.R")
 source("R/preprocessRaw.R")
 source("R/preprocessIllumina.R")
 source("R/detectionP.R")
+source("R/minfiQC.R")
 
 DelayedArray:::set_verbose_block_processing(TRUE)
 
@@ -51,7 +56,7 @@ DEFAULT_BLOCK_SIZE <- getOption("DelayedArray.block.size")
 DEFAULT_BLOCK_SIZE
 ```
 
-Create the various _RGChannelSet_ objects:
+Create the various _RGChannelSet_ and _MethylSet_ objects:
 
 ```{r}
 RGSet_in_memory_DelayedMatrix <- minfiData::RGsetEx
@@ -66,6 +71,19 @@ system.time(
     assays(RGSet_on_disk_DelayedMatrix) <- endoapply(
         assays(RGSet_on_disk_DelayedMatrix),
         writeHDF5Array))
+
+MSet_in_memory_DelayedMatrix <- minfiData::MsetEx
+system.time(
+    assays(MSet_in_memory_DelayedMatrix) <- endoapply(
+        assays(MSet_in_memory_DelayedMatrix),
+        DelayedArray)
+)
+
+MSet_on_disk_DelayedMatrix <- minfiData::MsetEx
+system.time(
+    assays(MSet_on_disk_DelayedMatrix) <- endoapply(
+        assays(MSet_on_disk_DelayedMatrix),
+        writeHDF5Array))
 ```
 
 ### Using an ordinary _matrix_-backed _RGChannelSet_
@@ -74,6 +92,8 @@ system.time(
 system.time(MSetRaw <- preprocessRaw(RGSet))
 system.time(MSetIllumina <- preprocessIllumina(RGSet))
 system.time(detP <- detectionP(RGSet))
+
+system.time(MSetFixedOutliers <- fixMethOutliers(MSet))
 ```
 
 ### Using an in-memory _DelayedMatrix_-backed _RGChannelSet_
@@ -89,6 +109,10 @@ system.time(
         RGSet_in_memory_DelayedMatrix))
 system.time(
     detP_in_memory_DelayedMatrix <- detectionP(RGSet_in_memory_DelayedMatrix))
+
+system.time(fixMethOutliers_in_memory_DelayedMatrix <-
+                fixMethOutliers(MSet_in_memory_DelayedMatrix))
+
 ```
 
 #### Increased block size
@@ -101,6 +125,9 @@ system.time(MSetIllumina_in_memory_DelayedMatrix <- preprocessIllumina(
     RGSet_in_memory_DelayedMatrix))
 system.time(
     detP_in_memory_DelayedMatrix <- detectionP(RGSet_in_memory_DelayedMatrix))
+
+system.time(fixMethOutliers_in_memory_DelayedMatrix <-
+                fixMethOutliers(MSet_in_memory_DelayedMatrix))
 ```
 
 ### Using an on-disk (HDF5) _DelayedMatrix_-backed _RGChannelSet_
@@ -122,6 +149,9 @@ system.time(
         RGSet_on_disk_DelayedMatrix))
 system.time(
    detP_on_disk_DelayedMatrix <- detectionP(RGSet_on_disk_DelayedMatrix))
+
+system.time(fixMethOutliers_in_memory_DelayedMatrix <-
+                fixMethOutliers(MSet_on_disk_DelayedMatrix))
 ```
 
 #### Increased block size
@@ -135,4 +165,7 @@ system.time(
         RGSet_on_disk_DelayedMatrix))
 system.time(
    detP_on_disk_DelayedMatrix <- detectionP(RGSet_on_disk_DelayedMatrix))
+
+system.time(fixMethOutliers_in_memory_DelayedMatrix <-
+                fixMethOutliers(MSet_on_disk_DelayedMatrix))
 ```
