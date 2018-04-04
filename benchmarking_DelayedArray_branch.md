@@ -1,7 +1,7 @@
 Benchmarking DelayedArray branch of **minfi**
 ================
 Peter Hickey
-3 April 2018
+4 April 2018
 
 ## Setup
 
@@ -16,18 +16,21 @@ suppressPackageStartupMessages(library(minfiData))
 RGSet <- minfiData::RGsetEx
 system.time(MSetRaw_v1.25.1 <- minfi::preprocessRaw(RGSet))
 #>    user  system elapsed 
-#>   3.594   0.522   4.377
+#>   3.666   0.534   4.922
+system.time(MSetSWAN_v1.25.1 <- minfi::preprocessSWAN(RGSet))
+#>    user  system elapsed 
+#>  12.472   1.998  16.564
 system.time(MSetIllumina_v1.25.1 <- minfi::detectionP(RGSet))
 #>    user  system elapsed 
-#>   6.170   0.600   6.867
+#>   5.275   0.708   6.354
 system.time(detP_v1.25.1 <- minfi::detectionP(RGSet))
 #>    user  system elapsed 
-#>   5.841   0.708   6.831
+#>   5.618   0.741   7.660
 
 MSet <- minfiData::MsetEx
 system.time(MSetFixedOutliers_v1.25.1 <- minfi::fixMethOutliers(MSet))
 #>    user  system elapsed 
-#>   0.698   0.254   0.992
+#>   0.645   0.246   0.975
 ```
 
 ## Using DelayedArray branch of **minfi**
@@ -45,6 +48,7 @@ source("R/preprocessRaw.R")
 source("R/preprocessIllumina.R")
 source("R/detectionP.R")
 source("R/minfiQC.R")
+source("R/preprocessSwan.R")
 
 DelayedArray:::set_verbose_block_processing(TRUE)
 #> [1] FALSE
@@ -64,7 +68,7 @@ system.time(
         DelayedArray)
 )
 #>    user  system elapsed 
-#>   0.032   0.009   0.042
+#>   0.024   0.008   0.032
 
 RGSet_on_disk_DelayedMatrix <- minfiData::RGsetEx
 system.time(
@@ -84,7 +88,7 @@ system.time(
 #> Processing block 5/6 ... OK
 #> Processing block 6/6 ... OK
 #>    user  system elapsed 
-#>   7.184   1.374   8.943
+#>   6.811   1.209   8.624
 
 MSet_in_memory_DelayedMatrix <- minfiData::MsetEx
 system.time(
@@ -93,7 +97,7 @@ system.time(
         DelayedArray)
 )
 #>    user  system elapsed 
-#>   0.026   0.017   0.045
+#>   0.025   0.019   0.044
 
 MSet_on_disk_DelayedMatrix <- minfiData::MsetEx
 system.time(
@@ -113,7 +117,7 @@ system.time(
 #> Processing block 5/6 ... OK
 #> Processing block 6/6 ... OK
 #>    user  system elapsed 
-#>   6.038   1.260   7.537
+#>   5.826   1.187   7.177
 ```
 
 ### Using an ordinary *matrix*-backed *RGChannelSet*
@@ -121,17 +125,20 @@ system.time(
 ``` r
 system.time(MSetRaw <- preprocessRaw(RGSet))
 #>    user  system elapsed 
-#>   1.957   0.256   2.246
+#>   1.683   0.225   1.925
 system.time(MSetIllumina <- preprocessIllumina(RGSet))
 #>    user  system elapsed 
-#>   4.603   0.792   5.865
+#>   3.388   0.608   4.089
+system.time(MSetSWAN <- preprocessSWAN(RGSet))
+#>    user  system elapsed 
+#>   6.713   1.331   8.190
 system.time(detP <- detectionP(RGSet))
 #>    user  system elapsed 
-#>   6.511   0.913   8.281
+#>   5.612   0.777   6.790
 
 system.time(MSetFixedOutliers <- fixMethOutliers(MSet))
 #>    user  system elapsed 
-#>   0.644   0.254   0.947
+#>   0.656   0.249   0.926
 ```
 
 ### Using an in-memory *DelayedMatrix*-backed *RGChannelSet*
@@ -149,7 +156,29 @@ system.time(
 #> Processing block 5/6 ... OK
 #> Processing block 6/6 ... OK
 #>    user  system elapsed 
-#>   7.305   1.078   8.880
+#>   8.326   1.277  12.519
+system.time(MSetSWAN_in_memory_DelayedMatrix <- preprocessSWAN(
+    RGSet_in_memory_DelayedMatrix))
+#> Processing block 1/6 ... OK
+#> Processing block 2/6 ... OK
+#> Processing block 3/6 ... OK
+#> Processing block 4/6 ... OK
+#> Processing block 5/6 ... OK
+#> Processing block 6/6 ... OK
+#> Processing block 1/6 ... OK
+#> Processing block 2/6 ... OK
+#> Processing block 3/6 ... OK
+#> Processing block 4/6 ... OK
+#> Processing block 5/6 ... OK
+#> Processing block 6/6 ... OK
+#> Processing block 1/6 ... OK
+#> Processing block 2/6 ... OK
+#> Processing block 3/6 ... OK
+#> Processing block 4/6 ... OK
+#> Processing block 5/6 ... OK
+#> Processing block 6/6 ... OK
+#>    user  system elapsed 
+#>  15.022   2.809  20.762
 system.time(
     MSetIllumina_in_memory_DelayedMatrix <- preprocessIllumina(
         RGSet_in_memory_DelayedMatrix))
@@ -162,7 +191,7 @@ system.time(
 #> Processing block 5/6 ... OK
 #> Processing block 6/6 ... OK
 #>    user  system elapsed 
-#>   9.173   1.640  11.431
+#>   7.355   1.523   9.078
 system.time(
     detP_in_memory_DelayedMatrix <- detectionP(RGSet_in_memory_DelayedMatrix))
 #> Processing block 1/6 ... OK
@@ -172,10 +201,11 @@ system.time(
 #> Processing block 5/6 ... OK
 #> Processing block 6/6 ... OK
 #>    user  system elapsed 
-#>   6.422   0.974   7.615
+#>   5.790   0.912   6.788
 
-system.time(fixMethOutliers_in_memory_DelayedMatrix <-
-                fixMethOutliers(MSet_in_memory_DelayedMatrix))
+system.time(
+    fixMethOutliers_in_memory_DelayedMatrix <- fixMethOutliers(
+        MSet_in_memory_DelayedMatrix))
 #> Processing block 1/6 ... OK
 #> Processing block 2/6 ... OK
 #> Processing block 3/6 ... OK
@@ -189,7 +219,7 @@ system.time(fixMethOutliers_in_memory_DelayedMatrix <-
 #> Processing block 5/6 ... OK
 #> Processing block 6/6 ... OK
 #>    user  system elapsed 
-#>   1.290   0.641   1.979
+#>   1.157   0.561   1.736
 ```
 
 #### Increased block size
@@ -200,26 +230,36 @@ system.time(MSetRaw_in_memory_DelayedMatrix <- preprocessRaw(
     RGSet_in_memory_DelayedMatrix))
 #> Processing block 1/1 ... OK
 #>    user  system elapsed 
-#>   2.035   0.333   2.487
-system.time(MSetIllumina_in_memory_DelayedMatrix <- preprocessIllumina(
-    RGSet_in_memory_DelayedMatrix))
+#>   1.745   0.264   2.033
+system.time(
+    MSetSWAN_in_memory_DelayedMatrix <- preprocessSWAN(
+        RGSet_in_memory_DelayedMatrix))
 #> Processing block 1/1 ... OK
 #> Processing block 1/1 ... OK
 #> Processing block 1/1 ... OK
 #>    user  system elapsed 
-#>   3.239   0.706   4.088
+#>   6.878   1.347   8.335
+system.time(
+    MSetIllumina_in_memory_DelayedMatrix <- preprocessIllumina(
+        RGSet_in_memory_DelayedMatrix))
+#> Processing block 1/1 ... OK
+#> Processing block 1/1 ... OK
+#> Processing block 1/1 ... OK
+#>    user  system elapsed 
+#>   3.472   0.568   4.097
 system.time(
     detP_in_memory_DelayedMatrix <- detectionP(RGSet_in_memory_DelayedMatrix))
 #> Processing block 1/1 ... OK
 #>    user  system elapsed 
-#>   5.877   0.749   6.937
+#>   5.165   0.702   6.233
 
-system.time(fixMethOutliers_in_memory_DelayedMatrix <-
-                fixMethOutliers(MSet_in_memory_DelayedMatrix))
+system.time(
+    fixMethOutliers_in_memory_DelayedMatrix <- fixMethOutliers(
+        MSet_in_memory_DelayedMatrix))
 #> Processing block 1/1 ... OK
 #> Processing block 1/1 ... OK
 #>    user  system elapsed 
-#>   1.019   0.403   1.500
+#>   0.990   0.557   1.908
 ```
 
 ### Using an on-disk (HDF5) *DelayedMatrix*-backed *RGChannelSet*
@@ -235,7 +275,7 @@ setRealizationBackend("HDF5Array")
 ``` r
 options(DelayedArray.block.size = DEFAULT_BLOCK_SIZE)
 system.time(
-    MSet_on_disk_DelayedMatrix <- preprocessRaw(RGSet_on_disk_DelayedMatrix))
+    MSetRaw_on_disk_DelayedMatrix <- preprocessRaw(RGSet_on_disk_DelayedMatrix))
 #> Processing block 1/6 ... OK
 #> Processing block 2/6 ... OK
 #> Processing block 3/6 ... OK
@@ -243,7 +283,33 @@ system.time(
 #> Processing block 5/6 ... OK
 #> Processing block 6/6 ... OK
 #>    user  system elapsed 
-#>  13.990   2.707  18.463
+#>  11.590   2.575  14.662
+system.time(
+    MSetSWAN_on_disk_DelayedMatrix <- preprocessSWAN(
+        RGSet_on_disk_DelayedMatrix))
+#> Processing block 1/6 ... OK
+#> Processing block 2/6 ... OK
+#> Processing block 3/6 ... OK
+#> Processing block 4/6 ... OK
+#> Processing block 5/6 ... OK
+#> Processing block 6/6 ... OK
+#> Processing block 1/1 ... OK
+#> Processing block 1/1 ... OK
+#> Processing block 1/6 ... OK
+#> Processing block 2/6 ... OK
+#> Processing block 3/6 ... OK
+#> Processing block 4/6 ... OK
+#> Processing block 5/6 ... OK
+#> Processing block 6/6 ... OK
+#> Processing block 1/6 ... OK
+#> Processing block 2/6 ... OK
+#> Processing block 3/6 ... OK
+#> Processing block 4/6 ... OK
+#> Processing block 5/6 ... OK
+#> Processing block 6/6 ... OK
+#>    user  system elapsed 
+#>  25.274   5.875  33.219
+
 system.time(
     MSetIllumina_on_disk_DelayedMatrix <- preprocessIllumina(
         RGSet_on_disk_DelayedMatrix))
@@ -256,9 +322,9 @@ system.time(
 #> Processing block 5/6 ... OK
 #> Processing block 6/6 ... OK
 #>    user  system elapsed 
-#>  15.043   3.825  25.527
+#>  12.023   3.219  15.729
 system.time(
-   detP_on_disk_DelayedMatrix <- detectionP(RGSet_on_disk_DelayedMatrix))
+    detP_on_disk_DelayedMatrix <- detectionP(RGSet_on_disk_DelayedMatrix))
 #> Processing block 1/6 ... OK
 #> Processing block 2/6 ... OK
 #> Processing block 3/6 ... OK
@@ -266,10 +332,11 @@ system.time(
 #> Processing block 5/6 ... OK
 #> Processing block 6/6 ... OK
 #>    user  system elapsed 
-#>   8.400   1.791  10.585
+#>   8.463   2.002  11.110
 
-system.time(fixMethOutliers_in_memory_DelayedMatrix <-
-                fixMethOutliers(MSet_on_disk_DelayedMatrix))
+system.time(
+    fixMethOutliers_in_memory_DelayedMatrix <- fixMethOutliers(
+        MSet_on_disk_DelayedMatrix))
 #> Processing block 1/6 ... OK
 #> Processing block 2/6 ... OK
 #> Processing block 3/6 ... OK
@@ -295,7 +362,7 @@ system.time(fixMethOutliers_in_memory_DelayedMatrix <-
 #> Processing block 5/6 ... OK
 #> Processing block 6/6 ... OK
 #>    user  system elapsed 
-#>   3.819   1.708   6.051
+#>   4.154   2.051   6.653
 ```
 
 #### Increased block size
@@ -303,10 +370,20 @@ system.time(fixMethOutliers_in_memory_DelayedMatrix <-
 ``` r
 options(DelayedArray.block.size = DEFAULT_BLOCK_SIZE * 100L)
 system.time(
-    MSet_on_disk_DelayedMatrix <- preprocessRaw(RGSet_on_disk_DelayedMatrix))
+    MSetRaw_on_disk_DelayedMatrix <- preprocessRaw(RGSet_on_disk_DelayedMatrix))
 #> Processing block 1/1 ... OK
 #>    user  system elapsed 
-#>   6.975   0.783   9.788
+#>   6.227   0.787   7.312
+system.time(
+    MSetSWAN_on_disk_DelayedMatrix <- preprocessSWAN(
+        RGSet_on_disk_DelayedMatrix))
+#> Processing block 1/1 ... OK
+#> Processing block 1/1 ... OK
+#> Processing block 1/1 ... OK
+#> Processing block 1/1 ... OK
+#> Processing block 1/1 ... OK
+#>    user  system elapsed 
+#>  16.869   2.800  20.560
 system.time(
     MSetIllumina_on_disk_DelayedMatrix <- preprocessIllumina(
         RGSet_on_disk_DelayedMatrix))
@@ -314,12 +391,12 @@ system.time(
 #> Processing block 1/1 ... OK
 #> Processing block 1/1 ... OK
 #>    user  system elapsed 
-#>   6.900   1.618   9.888
+#>   6.795   1.589  10.046
 system.time(
-   detP_on_disk_DelayedMatrix <- detectionP(RGSet_on_disk_DelayedMatrix))
+    detP_on_disk_DelayedMatrix <- detectionP(RGSet_on_disk_DelayedMatrix))
 #> Processing block 1/1 ... OK
 #>    user  system elapsed 
-#>   6.729   1.079   8.955
+#>   7.401   1.255  10.741
 
 system.time(fixMethOutliers_in_memory_DelayedMatrix <-
                 fixMethOutliers(MSet_on_disk_DelayedMatrix))
@@ -328,5 +405,5 @@ system.time(fixMethOutliers_in_memory_DelayedMatrix <-
 #> Processing block 1/1 ... OK
 #> Processing block 1/1 ... OK
 #>    user  system elapsed 
-#>   1.535   0.558   2.122
+#>   1.550   0.511   2.079
 ```

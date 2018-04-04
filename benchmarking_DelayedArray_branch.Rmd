@@ -27,6 +27,7 @@ suppressPackageStartupMessages(library(minfiData))
 ```{r 1.25.1}
 RGSet <- minfiData::RGsetEx
 system.time(MSetRaw_v1.25.1 <- minfi::preprocessRaw(RGSet))
+system.time(MSetSWAN_v1.25.1 <- minfi::preprocessSWAN(RGSet))
 system.time(MSetIllumina_v1.25.1 <- minfi::detectionP(RGSet))
 system.time(detP_v1.25.1 <- minfi::detectionP(RGSet))
 
@@ -49,6 +50,7 @@ source("R/preprocessRaw.R")
 source("R/preprocessIllumina.R")
 source("R/detectionP.R")
 source("R/minfiQC.R")
+source("R/preprocessSwan.R")
 
 DelayedArray:::set_verbose_block_processing(TRUE)
 
@@ -91,6 +93,7 @@ system.time(
 ```{r}
 system.time(MSetRaw <- preprocessRaw(RGSet))
 system.time(MSetIllumina <- preprocessIllumina(RGSet))
+system.time(MSetSWAN <- preprocessSWAN(RGSet))
 system.time(detP <- detectionP(RGSet))
 
 system.time(MSetFixedOutliers <- fixMethOutliers(MSet))
@@ -104,14 +107,17 @@ system.time(MSetFixedOutliers <- fixMethOutliers(MSet))
 options(DelayedArray.block.size = DEFAULT_BLOCK_SIZE)
 system.time(
     MSetRaw_in_memory_DelayedMatrix <- preprocessRaw(RGSet_in_memory_DelayedMatrix))
+system.time(MSetSWAN_in_memory_DelayedMatrix <- preprocessSWAN(
+    RGSet_in_memory_DelayedMatrix))
 system.time(
     MSetIllumina_in_memory_DelayedMatrix <- preprocessIllumina(
         RGSet_in_memory_DelayedMatrix))
 system.time(
     detP_in_memory_DelayedMatrix <- detectionP(RGSet_in_memory_DelayedMatrix))
 
-system.time(fixMethOutliers_in_memory_DelayedMatrix <-
-                fixMethOutliers(MSet_in_memory_DelayedMatrix))
+system.time(
+    fixMethOutliers_in_memory_DelayedMatrix <- fixMethOutliers(
+        MSet_in_memory_DelayedMatrix))
 
 ```
 
@@ -121,13 +127,18 @@ system.time(fixMethOutliers_in_memory_DelayedMatrix <-
 options(DelayedArray.block.size = DEFAULT_BLOCK_SIZE * 100L)
 system.time(MSetRaw_in_memory_DelayedMatrix <- preprocessRaw(
     RGSet_in_memory_DelayedMatrix))
-system.time(MSetIllumina_in_memory_DelayedMatrix <- preprocessIllumina(
-    RGSet_in_memory_DelayedMatrix))
+system.time(
+    MSetSWAN_in_memory_DelayedMatrix <- preprocessSWAN(
+        RGSet_in_memory_DelayedMatrix))
+system.time(
+    MSetIllumina_in_memory_DelayedMatrix <- preprocessIllumina(
+        RGSet_in_memory_DelayedMatrix))
 system.time(
     detP_in_memory_DelayedMatrix <- detectionP(RGSet_in_memory_DelayedMatrix))
 
-system.time(fixMethOutliers_in_memory_DelayedMatrix <-
-                fixMethOutliers(MSet_in_memory_DelayedMatrix))
+system.time(
+    fixMethOutliers_in_memory_DelayedMatrix <- fixMethOutliers(
+        MSet_in_memory_DelayedMatrix))
 ```
 
 ### Using an on-disk (HDF5) _DelayedMatrix_-backed _RGChannelSet_
@@ -143,15 +154,20 @@ setRealizationBackend("HDF5Array")
 ```{r}
 options(DelayedArray.block.size = DEFAULT_BLOCK_SIZE)
 system.time(
-    MSet_on_disk_DelayedMatrix <- preprocessRaw(RGSet_on_disk_DelayedMatrix))
+    MSetRaw_on_disk_DelayedMatrix <- preprocessRaw(RGSet_on_disk_DelayedMatrix))
+system.time(
+    MSetSWAN_on_disk_DelayedMatrix <- preprocessSWAN(
+        RGSet_on_disk_DelayedMatrix))
+
 system.time(
     MSetIllumina_on_disk_DelayedMatrix <- preprocessIllumina(
         RGSet_on_disk_DelayedMatrix))
 system.time(
-   detP_on_disk_DelayedMatrix <- detectionP(RGSet_on_disk_DelayedMatrix))
+    detP_on_disk_DelayedMatrix <- detectionP(RGSet_on_disk_DelayedMatrix))
 
-system.time(fixMethOutliers_in_memory_DelayedMatrix <-
-                fixMethOutliers(MSet_on_disk_DelayedMatrix))
+system.time(
+    fixMethOutliers_in_memory_DelayedMatrix <- fixMethOutliers(
+        MSet_on_disk_DelayedMatrix))
 ```
 
 #### Increased block size
@@ -159,12 +175,15 @@ system.time(fixMethOutliers_in_memory_DelayedMatrix <-
 ```{r}
 options(DelayedArray.block.size = DEFAULT_BLOCK_SIZE * 100L)
 system.time(
-    MSet_on_disk_DelayedMatrix <- preprocessRaw(RGSet_on_disk_DelayedMatrix))
+    MSetRaw_on_disk_DelayedMatrix <- preprocessRaw(RGSet_on_disk_DelayedMatrix))
+system.time(
+    MSetSWAN_on_disk_DelayedMatrix <- preprocessSWAN(
+        RGSet_on_disk_DelayedMatrix))
 system.time(
     MSetIllumina_on_disk_DelayedMatrix <- preprocessIllumina(
         RGSet_on_disk_DelayedMatrix))
 system.time(
-   detP_on_disk_DelayedMatrix <- detectionP(RGSet_on_disk_DelayedMatrix))
+    detP_on_disk_DelayedMatrix <- detectionP(RGSet_on_disk_DelayedMatrix))
 
 system.time(fixMethOutliers_in_memory_DelayedMatrix <-
                 fixMethOutliers(MSet_on_disk_DelayedMatrix))
