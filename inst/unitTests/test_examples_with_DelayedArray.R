@@ -1,12 +1,11 @@
-# A helper function to check whether two SummarizedExperiment objects, one
-# matrix-backed and one DelayedMatrix-backed, are 'equal'
-checkEqualSummarizedExperiments <- function(SE, SE_with_DA) {
-    stopifnot(is(SE, "SummarizedExperiment"),
-              is(SE_with_DA, "SummarizedExperiment"),
-              is(assay(SE), "matrix"),
-              is(assay(SE_with_DA), "DelayedMatrix"))
-    assays(SE_with_DA) <- endoapply(assays(SE_with_DA), as.matrix)
-    all.equal(SE, SE_with_DA)
+# A helper function to check whether two SummarizedExperiment objects are
+# 'equal'
+checkEqualSummarizedExperiments <- function(SE1, SE2) {
+    stopifnot(is(SE1, "SummarizedExperiment"),
+              is(SE2, "SummarizedExperiment"))
+    assays(SE1) <- endoapply(assays(SE1), as.matrix)
+    assays(SE2) <- endoapply(assays(SE2), as.matrix)
+    all.equal(SE1, SE2)
 }
 
 test_bumphunter_examples <- function() {
