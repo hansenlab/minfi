@@ -1,3 +1,7 @@
+# ------------------------------------------------------------------------------
+# Missing methods
+#
+
 # TODO: type() for all RealizationSink subclasses
 setMethod("type", "HDF5RealizationSink", function(x) {
     x@type
@@ -13,9 +17,33 @@ setMethod("dimnames", "arrayRealizationSink", function(x) {
     dimnames(x@result_envir$result)
 })
 
+# ------------------------------------------------------------------------------
+# Helper functions for setting up ArrayGrid instances
+#
+
+colGrid <- function(x) {
+    max_block_len <- max(nrow(x), DelayedArray:::get_max_block_length(type(x)))
+    spacings <- DelayedArray:::get_spacings_for_linear_capped_length_blocks(
+        refdim = dim(x),
+        max_block_len = max_block_len)
+    RegularArrayGrid(dim(x), spacings)
+}
+
+rowGrid <- function(x) {
+    max_block_len <- max(ncol(x), DelayedArray:::get_max_block_length(type(x)))
+    spacings <- DelayedArray:::get_spacings_for_hypercube_capped_length_blocks(
+        refdim = dim(x),
+        max_block_len = max_block_len)
+    RegularArrayGrid(dim(x), spacings)
+}
+
+# ------------------------------------------------------------------------------
+# Advanced block processing routines
+#
+
 # NOTE: DelayedArray::blockApply() with the option to write the blocks to
 #       'sink'. Useful, for example, to apply a function across column-blocks
-#       of a DelayedMatrix and write these results to disk and then wrap
+#       of a DelayedMatrix, write these results to disk, and then wrap
 #       these in a DelayedMatrix.
 # TODO: See https://github.com/Bioconductor/DelayedArray/issues/10
 blockApplyWithRealization <- function(x, FUN, ..., grid = NULL, sink = NULL,
@@ -50,24 +78,34 @@ blockApplyWithRealization <- function(x, FUN, ..., grid = NULL, sink = NULL,
 }
 
 # NOTE: A mapply()-like function for conformable arrays.
-# NOTE: Different from DelayedArray:::block_Mapply(); designed to have an API more like
-#       DelayedArray::blockArray()
+# NOTE: Different from DelayedArray:::block_Mapply(); designed to have an API
+#       more like DelayedArray::blockArray()
 # TODO: See https://github.com/Bioconductor/DelayedArray/issues/11
 blockMapply <- function(FUN, ..., grids = NULL, BPREDO = list(),
                         BPPARAM = bpparam()) {
     FUN <- match.fun(FUN)
     dots <- unname(list(...))
     dims <- lapply(dots, dim)
-    if (!all(vapply(dims, function(dim) all(dim == dims[[1L]]), logical(1L)))) {
+    all_same_dims <- all(
+        vapply(dims, function(dim) all(dim == dims[[1L]]), logical(1L)))
+    if (!all_same_dims) {
         stop("non-conformable arrays")
     }
     if (is.null(grids)) {
         grids <- replicate(length(dots), NULL)
     }
-    grids <- mapply(DelayedArray:::.normarg_grid, grids, dots, SIMPLIFY = FALSE,
-                    USE.NAMES = FALSE)
+    grids <- mapply(
+        FUN = DelayedArray:::.normarg_grid,
+        grids,
+        dots,
+        SIMPLIFY = FALSE,
+        USE.NAMES = FALSE)
     grid_dims <- lapply(grids, dim)
-    if (!all(vapply(grid_dims, function(dim) all(dim == grid_dims[[1L]]), logical(1L)))) {
+    all_same_grid_dims <- all(
+        vapply(X = grid_dims,
+               FUN = function(dim) all(dim == grid_dims[[1L]]),
+               FUN.VALUE = logical(1L)))
+    if (!all_same_grid_dims) {
         stop("non-conformable grids")
     }
     stopifnot(length(dots) == length(grids))
@@ -78,14 +116,85 @@ blockMapply <- function(FUN, ..., grids = NULL, BPREDO = list(),
                     appendLF = FALSE)
         }
         viewports <- lapply(grids, function(grid) grid[[b]])
-        blocks <- mapply(function(x, viewport) {
-            block <- DelayedArray:::extract_block(x, viewport)
-            if (!is.array(block)) {
-                block <- DelayedArray:::.as_array_or_matrix(block)
-            }
-            block
-        }, x = dots, viewport = viewports, SIMPLIFY = FALSE, USE.NAMES = FALSE)
+        blocks <- mapply(
+            FUN = function(x, viewport) {
+                block <- DelayedArray:::extract_block(x, viewport)
+                if (!is.array(block)) {
+                    block <- DelayedArray:::.as_array_or_matrix(block)
+                }
+                block
+            },
+            x = dots,
+            viewport = viewports,
+            SIMPLIFY = FALSE,
+            USE.NAMES = FALSE)
         block_ans <- do.call(FUN, blocks)
+        if (DelayedArray:::get_verbose_block_processing()) {
+            message("OK")
+        }
+        block_ans
+    },
+    BPREDO = BPREDO,
+    BPPARAM = BPPARAM)
+}
+
+# NOTE: blockMapply() with the option to write the blocks to 'sink'. Useful,
+#       for example, to apply a function across column-blocks of multiple
+#       DelayedMatrix objects, write these results to disk, and then wrap
+#       these in a DelayedMatrix.
+blockMapplyWithRealization <- function(FUN, ..., grids = NULL, sink = NULL,
+                                       BPREDO = list(), BPPARAM = bpparam()) {
+    FUN <- match.fun(FUN)
+    dots <- unname(list(...))
+    dims <- lapply(dots, dim)
+    all_same_dims <- all(
+        vapply(dims, function(dim) all(dim == dims[[1L]]), logical(1L)))
+    if (!all_same_dims) {
+        stop("non-conformable arrays")
+    }
+    if (is.null(grids)) {
+        grids <- replicate(length(dots), NULL)
+    }
+    grids <- mapply(
+        FUN = DelayedArray:::.normarg_grid,
+        grids,
+        dots,
+        SIMPLIFY = FALSE,
+        USE.NAMES = FALSE)
+    grid_dims <- lapply(grids, dim)
+    all_same_grid_dims <- all(
+        vapply(X = grid_dims,
+               FUN = function(dim) all(dim == grid_dims[[1L]]),
+               FUN.VALUE = logical(1L)))
+    if (!all_same_grid_dims) {
+        stop("non-conformable grids")
+    }
+    stopifnot(length(dots) == length(grids))
+    nblock <- length(grids[[1]])
+    bplapply(seq_len(nblock), function(b) {
+        if (DelayedArray:::get_verbose_block_processing()) {
+            message("Processing block ", b, "/", nblock, " ... ",
+                    appendLF = FALSE)
+        }
+        viewports <- lapply(grids, function(grid) grid[[b]])
+        blocks <- mapply(
+            FUN = function(x, viewport) {
+                block <- DelayedArray:::extract_block(x, viewport)
+                if (!is.array(block)) {
+                    block <- DelayedArray:::.as_array_or_matrix(block)
+                }
+                block
+            },
+            x = dots,
+            viewport = viewports,
+            SIMPLIFY = FALSE,
+            USE.NAMES = FALSE)
+        block_ans <- do.call(FUN, blocks)
+        # NOTE: This is the only part different from blockMapply()
+        if (!is.null(sink)) {
+            write_block_to_sink(block_ans, sink, viewport)
+            block_ans <- NULL
+        }
         if (DelayedArray:::get_verbose_block_processing()) {
             message("OK")
         }
