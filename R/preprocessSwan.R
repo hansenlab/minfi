@@ -1,5 +1,5 @@
 # ------------------------------------------------------------------------------
-# Unexported helper functions
+# Internal helper functions
 #
 
 getSubset <- function(counts, subset){
@@ -102,8 +102,8 @@ subsetQuantileNorm <- function(x, xNormSet, xTarget, bg) {
 # Internal generics
 #
 
-# x is either `Meth` or `Unmeth`
-# `...` is passed down to specific methods
+# `x` is either `Meth` or `Unmeth`
+# `...` are additional arguments passed to methods.
 setGeneric(
     ".preprocessSWAN",
     function(x, xNormSet, counts, bg, ...) standardGeneric(".preprocessSWAN"),
@@ -142,11 +142,11 @@ setMethod(
         # NOTE: This is ultimately coerced to the output DelayedMatrix object,
         #       `normalized_x`
         # NOTE: SWAN can return non-integer values, so fill a "double" sink
-        normalized_x_type <- "double"
+        ans_type <- "double"
         normalized_x_sink <- DelayedArray:::RealizationSink(
             dim = c(nrow(x), ncol(x)),
             dimnames = dimnames(x),
-            type = normalized_x_type)
+            type = ans_type)
         on.exit(close(normalized_x_sink))
 
         # Set up column-block ArrayGrid instance over `x`.

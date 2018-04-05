@@ -2,6 +2,7 @@
 # Internal generics
 #
 
+# NOTE: `...` are additional arguments passed to methods.
 setGeneric(
     ".detectionP",
     function(Red, Green, locusNames, controlIdx, TypeI.Red, TypeI.Green, TypeII,
@@ -13,6 +14,7 @@ setGeneric(
 # Internal methods
 #
 
+# NOTE: `...` is ignored
 setMethod(
     ".detectionP",
     c("matrix", "matrix"),
@@ -72,19 +74,19 @@ setMethod(
         # and type
         # NOTE: This is ultimately coerced to the output DelayedMatrix objects,
         #       `detP`
-        output_dim <- lengths(dimnames)
         detP_sink <- DelayedArray:::RealizationSink(
-            dim = output_dim,
-            dimnames = list(colnames(Red), locusNames),
+            dim = c(length(locusNames, ncol(Red))),
+            dimnames = list(locusNames, colnames(Red)),
             type = "double")
+        on.exit(close(detP_sink))
 
         # Set up ArrayGrid instances over `Red` and `Green` as well as
         # "parallel" ArrayGrid instance over `detP_sink`.
         Red_grid <- colGrid(Red)
         Green_grid <- colGrid(Green)
         detP_sink_grid <- RegularArrayGrid(
-            refdim = output_dim,
-            spacings = c(output_dim[[1L]], output_dim[[2L]] / length(Red_grid)))
+            refdim = dim(detP_sink),
+            spacings = c(nrow(detP_sink), ncol(detP_sink) / length(Red_grid)))
         # Sanity check ArrayGrid objects have the same dim
         stopifnot(dim(Red_grid) == dim(Green_grid),
                   dim(Red_grid) == dim(detP_sink_grid))

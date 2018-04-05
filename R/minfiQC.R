@@ -1,3 +1,7 @@
+# ------------------------------------------------------------------------------
+# Internal helper functions
+#
+
 .fixMethOutliers <- function(mat, K = -3, verbose = FALSE) {
     # Compute cutoff
     log2_mat <- log2(mat + 0.5)
@@ -21,6 +25,10 @@
     # the column-specific `cutoff`
     sweep(mat, 2, cutoff, pmax2)
 }
+
+# ------------------------------------------------------------------------------
+# Exported functions
+#
 
 fixMethOutliers <- function(object, K = -3, verbose = FALSE) {
     .isMethylOrStop(object)

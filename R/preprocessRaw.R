@@ -2,21 +2,24 @@
 # Internal generics
 #
 
+# `...` are additional arguments passed to methods.
 setGeneric(
     ".preprocessRawMeth",
-    function(Red, Green, locusNames, TypeI.Red, TypeI.Green, TypeII)
+    function(Red, Green, locusNames, TypeI.Red, TypeI.Green, TypeII, ...)
         standardGeneric(".preprocessRawMeth"),
     signature = c("Red", "Green"))
 
+# `...` are additional arguments passed to methods.
 setGeneric(
     ".preprocessRawUnmeth",
-    function(Red, Green, locusNames, TypeI.Red, TypeI.Green, TypeII)
+    function(Red, Green, locusNames, TypeI.Red, TypeI.Green, TypeII, ...)
         standardGeneric(".preprocessRawUnmeth"),
     signature = c("Red", "Green"))
 
+# `...` are additional arguments passed to methods.
 setGeneric(
     ".preprocessRaw",
-    function(Red, Green, locusNames, TypeI.Red, TypeI.Green, TypeII)
+    function(Red, Green, locusNames, TypeI.Red, TypeI.Green, TypeII, ...)
         standardGeneric(".preprocessRaw"),
     signature = c("Red", "Green"))
 
@@ -27,7 +30,7 @@ setGeneric(
 setMethod(
     ".preprocessRawMeth",
     c("matrix", "matrix"),
-    function(Red, Green, locusNames, TypeI.Red, TypeI.Green, TypeII) {
+    function(Red, Green, locusNames, TypeI.Red, TypeI.Green, TypeII, ...) {
         # Set up output matrix with appropriate dimension and type
         type <- .highestType(Red, Green)
         M <- matrix(.NA_type(type),
@@ -48,7 +51,7 @@ setMethod(
 setMethod(
     ".preprocessRawUnmeth",
     c("matrix", "matrix"),
-    function(Red, Green, locusNames, TypeI.Red, TypeI.Green, TypeII) {
+    function(Red, Green, locusNames, TypeI.Red, TypeI.Green, TypeII, ...) {
         # Set up output matrix with appropriate dimension and type
         type <- .highestType(Red, Green)
         U <- matrix(.NA_type(type),
@@ -69,7 +72,7 @@ setMethod(
 setMethod(
     ".preprocessRaw",
     c("matrix", "matrix"),
-    function(Red, Green, locusNames, TypeI.Red, TypeI.Green, TypeII) {
+    function(Red, Green, locusNames, TypeI.Red, TypeI.Green, TypeII, ...) {
         list(
             M = .preprocessRawMeth(
                 Red, Green, locusNames, TypeI.Red, TypeI.Green, TypeII),
@@ -81,7 +84,7 @@ setMethod(
 setMethod(
     ".preprocessRaw",
     c("DelayedMatrix", "DelayedMatrix"),
-    function(Red, Green, dimnames, TypeI.Red, TypeI.Green, TypeII,
+    function(Red, Green, locusNames, TypeI.Red, TypeI.Green, TypeII,
              BPREDO = list(), BPPARAM = SerialParam()) {
         # Set up intermediate RealizationSink objects of appropriate dimensions
         # and type
@@ -89,22 +92,25 @@ setMethod(
         #       objects, `M` and `U`
         # NOTE: Don't do `U_sink <- M_sink` or else these will reference the
         #       same object and clobber each other when written to!
-        output_dim <- lengths(dimnames)
-        type <- .highestType(Red, Green)
-        M_sink <- DelayedArray:::RealizationSink(dim = output_dim,
-                                                 dimnames = dimnames,
-                                                 type = type)
-        U_sink <- DelayedArray:::RealizationSink(dim = output_dim,
-                                                 dimnames = dimnames,
-                                                 type = type)
+        ans_type <- .highestType(Red, Green)
+        M_sink <- DelayedArray:::RealizationSink(
+            dim = c(length(locusNames), ncol(Red)),
+            dimnames = list(locusNames, colnames(Red)),
+            type = ans_type)
+        on.exit(close(M_sink))
+        U_sink <- DelayedArray:::RealizationSink(
+            dim = c(length(locusNames), ncol(Red)),
+            dimnames = list(locusNames, colnames(Red)),
+            type = ans_type)
+        on.exit(close(U_sink), add = TRUE)
 
         # Set up ArrayGrid instances over `Red` and `Green` as well as
         # "parallel" ArrayGrid instances over `M_sink`, and `U_sink`.
         Red_grid <- colGrid(Red)
         Green_grid <- colGrid(Green)
         M_sink_grid <- RegularArrayGrid(
-            refdim = output_dim,
-            spacings = c(output_dim[[1L]], output_dim[[2L]] / length(Red_grid)))
+            refdim = dim(M_sink),
+            spacings = c(nrow(M_sink), ncol(M_sink) / length(Red_grid)))
         U_sink_grid <- M_sink_grid
         # Sanity check ArrayGrid objects have the same dim
         stopifnot(dim(Red_grid) == dim(Green_grid),

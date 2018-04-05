@@ -1,27 +1,38 @@
+# ------------------------------------------------------------------------------
+# Internal helper functions
+#
 
-# TODO: Add option to realize result?
-# TODO: Add BACKEND arg?
-normalize.illumina.control <- function(rgSet, reference=1) {
+normalize.illumina.control <- function(rgSet, reference = 1) {
     ## This function returns an rgset, not a methylset
     ## code duplication
     Green <- getGreen(rgSet)
     Red <- getRed(rgSet)
 
     if (.is450k(rgSet) || .isEPIC(rgSet)) {
-        AT.controls <- getControlAddress(rgSet, controlType = c("NORM_A", "NORM_T"))
-        CG.controls <- getControlAddress(rgSet, controlType = c("NORM_C", "NORM_G"))
+        AT.controls <- getControlAddress(
+            object = rgSet,
+            controlType = c("NORM_A", "NORM_T"))
+        CG.controls <- getControlAddress(
+            object = rgSet,
+            controlType = c("NORM_C", "NORM_G"))
     }
     if (.is27k(rgSet)) {
-        AT.controls <- getControlAddress(rgSet, controlType = "Normalization-Red")
-        CG.controls <- getControlAddress(rgSet, controlType = "Normalization-Green")
+        AT.controls <- getControlAddress(
+            object = rgSet,
+            controlType = "Normalization-Red")
+        CG.controls <- getControlAddress(
+            object = rgSet,
+            controlType = "Normalization-Green")
     }
+
     Green.avg <- colMeans(Green[CG.controls, , drop = FALSE])
     Red.avg <- colMeans(Red[AT.controls, , drop = FALSE])
-    ref <- (Green.avg + Red.avg)[reference]/2
-    if(is.na(ref))
+    ref <- (Green.avg + Red.avg)[reference] / 2
+    if (is.na(ref)) {
         stop("perhaps 'reference' refer to an array that is not present.")
-    Green.factor <- ref/Green.avg
-    Red.factor <- ref/Red.avg
+    }
+    Green.factor <- ref / Green.avg
+    Red.factor <- ref / Red.avg
     Green <- sweep(Green, 2, FUN = "*", Green.factor)
     Red <- sweep(Red, 2, FUN = "*", Red.factor)
     assay(rgSet, "Green") <- Green
@@ -29,8 +40,6 @@ normalize.illumina.control <- function(rgSet, reference=1) {
     rgSet
 }
 
-# TODO: Add option to realize result?
-# TODO: Add BACKEND arg?
 bgcorrect.illumina <- function(rgSet) {
     .isRGOrStop(rgSet)
     Green <- getGreen(rgSet)
@@ -54,27 +63,36 @@ bgcorrect.illumina <- function(rgSet) {
     rgSet
 }
 
+# ------------------------------------------------------------------------------
+# Exported functions
+#
 
-preprocessIllumina <- function(rgSet, bg.correct = TRUE, normalize = c("controls", "no"),
-                               reference = 1) {
+# TODO: Document: This does not realize the result for a DelayedMatrix-backed
+#       RGChannelSet{Extended}
+preprocessIllumina <- function(rgSet, bg.correct = TRUE,
+                               normalize = c("controls", "no"), reference = 1) {
     .isRGOrStop(rgSet)
     normalize <- match.arg(normalize)
 
-    if(normalize == "controls") {
+    if (normalize == "controls") {
         rgSet <- normalize.illumina.control(rgSet, reference = reference)
     }
-    if(bg.correct) {
+    if (bg.correct) {
         rgSet <- bgcorrect.illumina(rgSet)
     }
     out <- preprocessRaw(rgSet)
-    preprocess <- sprintf("Illumina, bg.correct = %s, normalize = %s, reference = %d",
-                          bg.correct, normalize, reference)
-    ## TODO:
-    ## The manifest package version is currently not updated since `packageVersion(getManifest(rgSet))` fails.
-    ## packageVersion expects a string
-    out@preprocessMethod <- c(rg.norm = preprocess,
-                              minfi = as.character(packageVersion("minfi")),
-                              manifest = as.character(packageVersion(.getManifestString(rgSet@annotation))))
+    preprocess <- sprintf(
+        "Illumina, bg.correct = %s, normalize = %s, reference = %d",
+        bg.correct, normalize, reference)
+
+    # TODO: The manifest package version is currently not updated since
+    #       `packageVersion(getManifest(rgSet))` fails. `packageVersion()`
+    #       expects a string
+    out@preprocessMethod <- c(
+        rg.norm = preprocess,
+        minfi = as.character(packageVersion("minfi")),
+        manifest = as.character(
+            packageVersion(.getManifestString(rgSet@annotation))))
     #packageVersion(getManifest(rgSet)))
     out
 }
