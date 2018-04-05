@@ -1,3 +1,7 @@
+# ------------------------------------------------------------------------------
+# Unexported helper functions
+#
+
 getSubset <- function(counts, subset){
     x <- integer(0)
     for (i in 1:3) {
@@ -16,109 +20,6 @@ bgIntensitySwan <- function(rgSet) {
         x = getRed(rgSet),
         rows = rows)
     return(rowMeans(cbind(grnMed, redMed)))
-}
-
-# x is either `Meth` or `Unmeth`
-setGeneric(
-    ".preprocessSWAN",
-    function(x, xNormSet, counts, bg) standardGeneric(".preprocessSWAN"),
-    signature = "x")
-
-# TODO: Parallelise with BiocParallel
-setMethod(".preprocessSWAN", "matrix", function(x, xNormSet, counts, bg) {
-    # NOTE: SWAN can return non-integer values, so fill a numeric matrix
-    normalized_x <- matrix(NA_real_,
-                           ncol = ncol(x),
-                           nrow = nrow(x),
-                           dimnames = dimnames(x))
-    typeI_idx <- rownames(x) %in% counts$Name[counts$Type == "I"]
-    typeII_idx <- rownames(x) %in% counts$Name[counts$Type == "II"]
-    for (j in seq_len(ncol(x))) {
-        normalized_x[, j] <- normaliseChannel(
-            intensityI = x[typeI_idx, j],
-            intensityII = x[typeII_idx, j],
-            xNormSet = xNormSet,
-            bg = bg[j])
-    }
-    normalized_x
-})
-
-# TODO: Parallelise with BiocParallel
-setMethod(".preprocessSWAN", "DelayedMatrix", function(x, xNormSet, counts, bg) {
-    # Set up intermediate RealizationSink objects of appropriate dimensions and
-    # type
-    # NOTE: This is ultimately coerced to the output DelayedMatrix object,
-    #       `normalized_x`
-    # NOTE: SWAN can return non-integer values, so fill a numeric sink
-    normalized_x_type <- "double"
-    normalized_x_sink <- DelayedArray:::RealizationSink(
-        dim = c(nrow(x), ncol(x)),
-        dimnames = dimnames(x),
-        type = normalized_x_type)
-
-    # Set up ArrayGrid instances over `x`.
-    # We're going to walk over columns of `x` and write to columns
-    # of `normalized_x_sink`. This imposes some requirement(s):
-    # 1. Need to increase the block length so each block is made of at least
-    #    one column of `x`
-    max_block_len <- max(
-        nrow(x),
-        DelayedArray:::get_max_block_length(normalized_x_type))
-    x_grid <- defaultGrid(x, max_block_len)
-
-    blockApplyWithRealization(
-        x = x,
-        xNormSet = xNormSet,
-        counts = counts,
-        bg = bg,
-        FUN = .preprocessSWAN,
-        grid = x_grid,
-        sink = normalized_x_sink,
-        BPREDO = list(),
-        BPPARAM = SerialParam())
-
-    as(normalized_x_sink, "DelayedArray")
-})
-
-# TODO: Parallelise with BiocParallel
-preprocessSWAN <- function(rgSet, mSet = NULL, verbose = FALSE){
-    if (is.null(mSet)) {
-        MSet <- preprocessRaw(rgSet)
-    }
-    typeI <- getProbeInfo(rgSet, type = "I")[, c("Name", "nCpG")]
-    typeII <- getProbeInfo(rgSet, type = "II")[, c("Name", "nCpG")]
-    ## This next part should be fixed so it becomes more elegant
-    CpG.counts <- rbind(typeI, typeII)
-    # TODO: Unclear why this is necessary
-    CpG.counts$Name <- as.character(CpG.counts$Name)
-    CpG.counts$Type <- rep(c("I", "II"), times = c(nrow(typeI), nrow(typeII)))
-    counts <- CpG.counts[CpG.counts$Name %in% rownames(MSet), ]
-    subset <- min(
-        table(counts$nCpG[counts$Type == "I" & counts$nCpG %in% 1:3]),
-        table(counts$nCpG[counts$Type == "II" & counts$nCpG %in% 1:3]))
-    bg <- bgIntensitySwan(rgSet)
-    Meth <- getMeth(MSet)
-    Unmeth <- getUnmeth(MSet)
-    xNormSet <- lapply(c("I", "II"), function(type) {
-        getSubset(counts$nCpG[counts$Type == type], subset)
-    })
-    assay(MSet, "Meth") <- .preprocessSWAN(
-        x = Meth,
-        xNormSet = xNormSet,
-        counts = counts,
-        bg = bg)
-    assay(MSet, "Unmeth") <- .preprocessSWAN(
-        x = Unmeth,
-        xNormSet = xNormSet,
-        counts = counts,
-        bg = bg)
-    MSet@preprocessMethod <- c(
-        rg.norm = sprintf("SWAN (based on a MethylSet preprocesses as '%s'",
-                          preprocessMethod(MSet)[1]),
-        minfi = as.character(packageVersion("minfi")),
-        manifest = as.character(
-            packageVersion(.getManifestString(annotation(rgSet)))))
-    MSet
 }
 
 # TODO: Profile
@@ -195,6 +96,140 @@ subsetQuantileNorm <- function(x, xNormSet, xTarget, bg) {
         x[[i]] = ifelse(x[[i]] <= 0, bg, x[[i]])
     }
     x
+}
+
+# ------------------------------------------------------------------------------
+# Internal generics
+#
+
+# x is either `Meth` or `Unmeth`
+# `...` is passed down to specific methods
+setGeneric(
+    ".preprocessSWAN",
+    function(x, xNormSet, counts, bg, ...) standardGeneric(".preprocessSWAN"),
+    signature = "x")
+
+# ------------------------------------------------------------------------------
+# Internal methods
+#
+
+# NOTE: `...` is ignored
+setMethod(".preprocessSWAN", "matrix", function(x, xNormSet, counts, bg, ...) {
+    # NOTE: SWAN can return non-integer values, so fill a numeric matrix
+    normalized_x <- matrix(NA_real_,
+                           ncol = ncol(x),
+                           nrow = nrow(x),
+                           dimnames = dimnames(x))
+    typeI_idx <- rownames(x) %in% counts$Name[counts$Type == "I"]
+    typeII_idx <- rownames(x) %in% counts$Name[counts$Type == "II"]
+    for (j in seq_len(ncol(x))) {
+        normalized_x[, j] <- normaliseChannel(
+            intensityI = x[typeI_idx, j],
+            intensityII = x[typeII_idx, j],
+            xNormSet = xNormSet,
+            bg = bg[j])
+    }
+    normalized_x
+})
+
+setMethod(
+    ".preprocessSWAN",
+    "DelayedMatrix",
+    function(x, xNormSet, counts, bg, BPREDO = list(),
+             BPPARAM = SerialParam()) {
+        # Set up intermediate RealizationSink objects of appropriate dimensions
+        # and type
+        # NOTE: This is ultimately coerced to the output DelayedMatrix object,
+        #       `normalized_x`
+        # NOTE: SWAN can return non-integer values, so fill a "double" sink
+        normalized_x_type <- "double"
+        normalized_x_sink <- DelayedArray:::RealizationSink(
+            dim = c(nrow(x), ncol(x)),
+            dimnames = dimnames(x),
+            type = normalized_x_type)
+        on.exit(close(normalized_x_sink))
+
+        # Set up column-block ArrayGrid instance over `x`.
+        x_grid <- colGrid(x)
+
+        # Loop over column-blocks of `x`, perform SWAN normalization, and write
+        # to `normalized_x_sink`
+        blockApplyWithRealization(
+            x = x,
+            xNormSet = xNormSet,
+            counts = counts,
+            bg = bg,
+            FUN = .preprocessSWAN,
+            grid = x_grid,
+            sink = normalized_x_sink,
+            BPREDO = BPREDO,
+            BPPARAM = BPPARAM)
+
+        # Return as DelayedMatrix
+        as(normalized_x_sink, "DelayedMatrix")
+    })
+
+# ------------------------------------------------------------------------------
+# Exported functions
+#
+
+preprocessSWAN <- function(rgSet, mSet = NULL, verbose = FALSE) {
+    .isRGOrStop(rgSet)
+
+    # Extract data to pass to low-level functions that construct normalized `M`
+    # and `U`
+    if (is.null(mSet)) {
+        MSet <- preprocessRaw(rgSet)
+    } else {
+        .isMethylOrStop(mSet)
+    }
+    typeI <- getProbeInfo(rgSet, type = "I")[, c("Name", "nCpG")]
+    typeII <- getProbeInfo(rgSet, type = "II")[, c("Name", "nCpG")]
+    # TODO This next part should be fixed so it becomes more elegant
+    CpG.counts <- rbind(typeI, typeII)
+    # TODO: Unclear why this is necessary
+    CpG.counts$Name <- as.character(CpG.counts$Name)
+    CpG.counts$Type <- rep(c("I", "II"), times = c(nrow(typeI), nrow(typeII)))
+    counts <- CpG.counts[CpG.counts$Name %in% rownames(MSet), ]
+    subset <- min(
+        table(counts$nCpG[counts$Type == "I" & counts$nCpG %in% 1:3]),
+        table(counts$nCpG[counts$Type == "II" & counts$nCpG %in% 1:3]))
+    bg <- bgIntensitySwan(rgSet)
+    Meth <- getMeth(MSet)
+    Unmeth <- getUnmeth(MSet)
+    xNormSet <- lapply(c("I", "II"), function(type) {
+        getSubset(counts$nCpG[counts$Type == type], subset)
+    })
+
+    # Construct normalized data
+    # NOTE: Some parameters are currently harcoded
+    BPREDO <- list()
+    BPPARAM <- SerialParam()
+    M <- .preprocessSWAN(
+        x = Meth,
+        xNormSet = xNormSet,
+        counts = counts,
+        bg = bg,
+        BPREDO = BPREDO,
+        BPPARAM = BPPARAM)
+    U <- .preprocessSWAN(
+        x = Unmeth,
+        xNormSet = xNormSet,
+        counts = counts,
+        bg = bg,
+        BPREDO = BPREDO,
+        BPPARAM = BPPARAM)
+
+    # Construct MethylSet
+    assay(MSet, "Meth") <- M
+    assay(MSet, "Unmeth") <- U
+    MSet@preprocessMethod <- c(
+        rg.norm = sprintf("SWAN (based on a MethylSet preprocesses as '%s'",
+                          preprocessMethod(MSet)[1]),
+        minfi = as.character(packageVersion("minfi")),
+        manifest = as.character(
+            packageVersion(.getManifestString(annotation(rgSet)))))
+    MSet
 }
 
 # ------------------------------------------------------------------------------
