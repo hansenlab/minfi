@@ -15,16 +15,22 @@
     arrayAnnotation
 }
 
-# TODO: Need to think about API. Currently, if `BACKEND` is NULL then the RGSet
-#       is matrix-backed. However, within DelayedArray, BACKEND = NULL means to
-#       create a DelayedArray with an ordinary array as the seed. This is a
-#       source of slight tension. However, in general there is no advantage to
-#       using a DelayedMatrix with an ordinary matrix as the seed over
-#       directly using the ordinary matrix (at least within minfi).
-# TODO: Test out BPREDO and BPPARAM
+# TODO: Add BACKEND, BPREDO, and BPPARAM arguments (or similar) to give the
+#       user more explicit control over what backends are used for storing the
+#       data and parallelisation
 read.metharray <- function(basenames, extended = FALSE, verbose = FALSE,
-                           force = FALSE, BACKEND = NULL, BPREDO = list(),
-                           BPPARAM = bpparam()) {
+                           force = FALSE) {
+
+    # TODO: Need to think about API. Currently, if `BACKEND` is NULL then the
+    #       RGSet is matrix-backed. However, within DelayedArray,
+    #       BACKEND = NULL means to create a DelayedArray with an ordinary
+    #       array as the seed. This is a source of slight tension. However, in
+    #       general there is no advantage to using a DelayedMatrix with an
+    #       ordinary matrix as the seed over directly using the ordinary matrix
+    #       (at least within minfi).
+    BACKEND <- getRealizationBackend()
+    BPREDO <- list()
+    BPPARAM <- SerialParam()
 
     # Check files exist
     basenames <- sub("_Grn\\.idat.*", "", basenames)
