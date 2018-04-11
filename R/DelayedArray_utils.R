@@ -46,18 +46,28 @@ rowGrid <- function(x) {
 #       of a DelayedMatrix, write these results to disk, and then wrap
 #       these in a DelayedMatrix.
 # TODO: See https://github.com/Bioconductor/DelayedArray/issues/10
-blockApplyWithRealization <- function(x, FUN, ..., grid = NULL, sink = NULL,
-                                      BPREDO = list(), BPPARAM = bpparam()) {
+blockApplyWithRealization <- function(x, FUN, ..., sink = NULL, x_grid = NULL,
+                                      sink_grid = NULL, BPREDO = list(),
+                                      BPPARAM = bpparam()) {
     FUN <- match.fun(FUN)
-    grid <- DelayedArray:::.normarg_grid(grid, x)
-    nblock <- length(grid)
+
+    # Check conformable input_grids and output_grids
+    x_grid <- DelayedArray:::.normarg_grid(x_grid, x)
+    sink_grid <- DelayedArray:::.normarg_grid(sink_grid, sink)
+    if (!identical(dim(x_grid), dim(sink_grid))) {
+        stop("non-conformable 'x_grid' and 'sink_grid'")
+    }
+
+    # Loop over blocks of `x` and write to `sink`
+    nblock <- length(x_grid)
     bplapply(seq_len(nblock), function(b) {
         if (DelayedArray:::get_verbose_block_processing()) {
             message("Processing block ", b, "/", nblock, " ... ",
                     appendLF = FALSE)
         }
-        viewport <- grid[[b]]
-        block <- DelayedArray:::extract_block(x, viewport)
+        x_viewport <- x_grid[[b]]
+        sink_viewport <- sink_grid[[b]]
+        block <- DelayedArray:::extract_block(x, x_viewport)
         if (!is.array(block)) {
             block <- DelayedArray:::.as_array_or_matrix(block)
         }
@@ -66,7 +76,7 @@ blockApplyWithRealization <- function(x, FUN, ..., grid = NULL, sink = NULL,
         block_ans <- FUN(block, ...)
         # NOTE: This is the only part different from DelayedArray::blockApply()
         if (!is.null(sink)) {
-            write_block_to_sink(block_ans, sink, viewport)
+            write_block_to_sink(block_ans, sink, sink_viewport)
             block_ans <- NULL
         }
         if (DelayedArray:::get_verbose_block_processing()) {

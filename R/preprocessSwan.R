@@ -139,18 +139,23 @@ setMethod(
              BPPARAM = SerialParam()) {
         # Set up intermediate RealizationSink objects of appropriate dimensions
         # and type
-        # NOTE: This is ultimately coerced to the output DelayedMatrix object,
-        #       `normalized_x`
+        # NOTE: This is ultimately coerced to the output DelayedMatrix object
         # NOTE: SWAN can return non-integer values, so fill a "double" sink
         ans_type <- "double"
-        normalized_x_sink <- DelayedArray:::RealizationSink(
+        sink <- DelayedArray:::RealizationSink(
             dim = c(nrow(x), ncol(x)),
             dimnames = dimnames(x),
             type = ans_type)
-        on.exit(close(normalized_x_sink))
+        on.exit(close(sink))
 
-        # Set up column-block ArrayGrid instance over `x`.
+        # Set up ArrayGrid instances over `x` as well as "parallel" ArrayGrid
+        # instance over `sink`.
         x_grid <- colGrid(x)
+        sink_grid <- RegularArrayGrid(
+            refdim = dim(sink),
+            spacings = c(nrow(sink), ncol(sink) / length(x_grid)))
+        # Sanity check ArrayGrid objects have the same dim
+        stopifnot(dim(x_grid) == dim(sink_grid))
 
         # Loop over column-blocks of `x`, perform SWAN normalization, and write
         # to `normalized_x_sink`
@@ -160,13 +165,14 @@ setMethod(
             counts = counts,
             bg = bg,
             FUN = .preprocessSWAN,
-            grid = x_grid,
-            sink = normalized_x_sink,
+            sink = sink,
+            x_grid = x_grid,
+            sink_grid = sink_grid,
             BPREDO = BPREDO,
             BPPARAM = BPPARAM)
 
         # Return as DelayedMatrix
-        as(normalized_x_sink, "DelayedArray")
+        as(sink, "DelayedArray")
     })
 
 # ------------------------------------------------------------------------------
