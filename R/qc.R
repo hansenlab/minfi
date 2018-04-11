@@ -71,13 +71,11 @@ controlStripPlot <- function(rgSet, controls=c("BISULFITE CONVERSION I", "BISULF
 densityBeanPlot <- function(dat, sampGroups=NULL, sampNames=NULL, main=NULL, pal=brewer.pal(8, "Dark2"), numPositions=10000) {
     if (is(dat, "RGChannelSet") || is(dat, "MethylSet")) {
         b <- getBeta(dat)
-    } else if (is(dat, "matrix")) {
-        b <- dat
-    } else if (is(dat, "DelayedMatrix")) {
+    } else if (is(dat, "matrix") || is(dat, "DelayedMatrix")) {
         b <- dat
     } else {
         stop("argument 'dat' must be an 'RGChannelSet', a 'MethylSet', ",
-             "a 'DelayedMatrix', or 'matrix'.")
+             "a 'matrix', or a 'DelayedMatrix'.")
     }
     n <- ncol(b)
     if (!is.null(sampNames)) colnames(b) <- sampNames

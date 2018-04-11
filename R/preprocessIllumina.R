@@ -1,5 +1,5 @@
 # ------------------------------------------------------------------------------
-# Internal helper functions
+# Internal functions
 #
 
 normalize.illumina.control <- function(rgSet, reference = 1) {
