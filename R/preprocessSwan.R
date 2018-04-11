@@ -1,5 +1,5 @@
 # ------------------------------------------------------------------------------
-# Internal helper functions
+# Internal functions
 #
 
 getSubset <- function(counts, subset){
@@ -166,7 +166,7 @@ setMethod(
             BPPARAM = BPPARAM)
 
         # Return as DelayedMatrix
-        as(normalized_x_sink, "DelayedMatrix")
+        as(normalized_x_sink, "DelayedArray")
     })
 
 # ------------------------------------------------------------------------------

@@ -75,7 +75,7 @@ setMethod(
         # NOTE: This is ultimately coerced to the output DelayedMatrix objects,
         #       `detP`
         detP_sink <- DelayedArray:::RealizationSink(
-            dim = c(length(locusNames, ncol(Red))),
+            dim = c(length(locusNames), ncol(Red)),
             dimnames = list(locusNames, colnames(Red)),
             type = "double")
         on.exit(close(detP_sink))
@@ -109,7 +109,7 @@ setMethod(
             BPPARAM = BPPARAM)
 
         # Return as DelayedMatrix
-        as(detP_sink, "DelayedMatrix")
+        as(detP_sink, "DelayedArray")
     }
 )
 
