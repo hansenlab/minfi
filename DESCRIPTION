@@ -59,7 +59,8 @@ Imports:  S4Vectors,
 Collate:  generics.R
 	  mset.R
 	  rset.R
-	  rgset.R
+	  RGChannelSet-class.R
+	  RGChannelSetExtended-class.R
 	  gmset.R
 	  grset.R
 	  eSet_methods.R
