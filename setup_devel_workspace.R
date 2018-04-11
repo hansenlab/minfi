@@ -19,6 +19,8 @@ source("R/getSex.R")
 source("R/minfiQC.R")
 source("R/preprocessQuantile.R")
 source("R/preprocessSwan.R")
+source("R/RGChannelSet-class.R")
+source("R/RGChannelSetExtended-class.R")
 
 # These functions are properly imported by the package but not visible when the
 # workspace is set up using this script
