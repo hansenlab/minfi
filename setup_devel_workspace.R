@@ -21,12 +21,15 @@ source("R/preprocessQuantile.R")
 source("R/preprocessSwan.R")
 source("R/RGChannelSet-class.R")
 source("R/RGChannelSetExtended-class.R")
+source("R/preprocessNoob.R")
 
 # These functions are properly imported by the package but not visible when the
 # workspace is set up using this script
 normalize.quantiles <- preprocessCore::normalize.quantiles
 normalize.quantiles.use.target <- preprocessCore::normalize.quantiles.use.target
 type <- DelayedArray::type
+huber <- MASS::huber
+normexp.signal <- limma::normexp.signal
 
 # These methods are properly defined by the package but not visible when the
 # workspace is set up using this script
