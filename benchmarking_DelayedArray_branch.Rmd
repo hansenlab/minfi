@@ -31,9 +31,11 @@ MSet <- minfiData::MsetEx
 system.time(MSetRaw_v1.25.1 <- minfi::preprocessRaw(RGSet))
 system.time(MSetSWAN_v1.25.1 <- minfi::preprocessSWAN(RGSet))
 system.time(MSetIllumina_v1.25.1 <- minfi::detectionP(RGSet))
-system.time(MSetQuantile_v1.25.1 <- minfi::preprocessQuantile(RGSet))
+system.time(MSetNoob_v1.25.1 <- minfi::preprocessNoob(RGSet))
 system.time(detP_v1.25.1 <- minfi::detectionP(RGSet))
+system.time(oob_v1.25.1 <- minfi::getOOB(RGSet))
 
+system.time(MSetQuantile_v1.25.1 <- minfi::preprocessQuantile(MSet))
 system.time(MSetFixedOutliers_v1.25.1 <- minfi::fixMethOutliers(MSet))
 ```
 
@@ -68,9 +70,11 @@ options(DelayedArray.block.size = DEFAULT_BLOCK_SIZE)
 system.time(MSetRaw <- preprocessRaw(RGSet))
 system.time(MSetIllumina <- preprocessIllumina(RGSet))
 system.time(MSetSWAN <- preprocessSWAN(RGSet))
-system.time(MSetQuantile <- preprocessQuantile(RGSet))
+system.time(MSetNoob <- preprocessNoob(RGSet))
 system.time(detP <- detectionP(RGSet))
+system.time(oob <- getOOB(RGSet))
 
+system.time(MSetQuantile <- preprocessQuantile(MSet))
 system.time(MSetFixedOutliers <- fixMethOutliers(MSet))
 ```
 
@@ -92,11 +96,16 @@ system.time(
     MSetIllumina_in_memory_DelayedMatrix <- preprocessIllumina(
         RGSet_in_memory_DelayedMatrix))
 system.time(
-    MSetQuantile_in_memory_DelayedMatrix <- preprocessQuantile(
+    MSetNoob_in_memory_DelayedMatrix <- preprocessNoob(
         RGSet_in_memory_DelayedMatrix))
 system.time(
     detP_in_memory_DelayedMatrix <- detectionP(RGSet_in_memory_DelayedMatrix))
+system.time(
+    oob_in_memory_DelayedMatrix <- getOOB(RGSet_in_memory_DelayedMatrix))
 
+system.time(
+    MSetQuantile_in_memory_DelayedMatrix <- preprocessQuantile(
+        MSet_in_memory_DelayedMatrix))
 system.time(
     fixMethOutliers_in_memory_DelayedMatrix <- fixMethOutliers(
         MSet_in_memory_DelayedMatrix))
@@ -117,11 +126,16 @@ system.time(
     MSetIllumina_in_memory_DelayedMatrix <- preprocessIllumina(
         RGSet_in_memory_DelayedMatrix))
 system.time(
-    MSetQuantile_in_memory_DelayedMatrix <- preprocessQuantile(
+    MSetNoob_in_memory_DelayedMatrix <- preprocessNoob(
         RGSet_in_memory_DelayedMatrix))
 system.time(
     detP_in_memory_DelayedMatrix <- detectionP(RGSet_in_memory_DelayedMatrix))
+system.time(
+    oob_in_memory_DelayedMatrix <- getOOB(RGSet_in_memory_DelayedMatrix))
 
+system.time(
+    MSetQuantile_in_memory_DelayedMatrix <- preprocessQuantile(
+        MSet_in_memory_DelayedMatrix))
 system.time(
     fixMethOutliers_in_memory_DelayedMatrix <- fixMethOutliers(
         MSet_in_memory_DelayedMatrix))
@@ -146,11 +160,15 @@ system.time(
     MSetIllumina_on_disk_DelayedMatrix <- preprocessIllumina(
         RGSet_on_disk_DelayedMatrix))
 system.time(
-    MSetQuantile_on_disk_DelayedMatrix <- preprocessQuantile(
+    MSetNoob_on_disk_DelayedMatrix <- preprocessNoob(
         RGSet_on_disk_DelayedMatrix))
 system.time(
     detP_on_disk_DelayedMatrix <- detectionP(RGSet_on_disk_DelayedMatrix))
+system.time(oob_on_disk_DelayedMatrix <- getOOB(RGSet_in_memory_DelayedMatrix))
 
+system.time(
+    MSetQuantile_on_disk_DelayedMatrix <- preprocessQuantile(
+        MSet_on_disk_DelayedMatrix))
 system.time(
     fixMethOutliers_in_memory_DelayedMatrix <- fixMethOutliers(
         MSet_on_disk_DelayedMatrix))
@@ -171,11 +189,15 @@ system.time(
     MSetIllumina_on_disk_DelayedMatrix <- preprocessIllumina(
         RGSet_on_disk_DelayedMatrix))
 system.time(
-    MSetQuantile_on_disk_DelayedMatrix <- preprocessQuantile(
+    MSetNoob_on_disk_DelayedMatrix <- preprocessNoob(
         RGSet_on_disk_DelayedMatrix))
 system.time(
     detP_on_disk_DelayedMatrix <- detectionP(RGSet_on_disk_DelayedMatrix))
+system.time(oob_on_disk_DelayedMatrix <- getOOB(RGSet_in_memory_DelayedMatrix))
 
+system.time(
+    MSetQuantile_on_disk_DelayedMatrix <- preprocessQuantile(
+        MSet_on_disk_DelayedMatrix))
 system.time(fixMethOutliers_in_memory_DelayedMatrix <-
                 fixMethOutliers(MSet_on_disk_DelayedMatrix))
 ```

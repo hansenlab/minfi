@@ -32,14 +32,6 @@ type <- DelayedArray::type
 huber <- MASS::huber
 normexp.signal <- limma::normexp.signal
 
-# These methods are properly defined by the package but not visible when the
-# workspace is set up using this script
-setMethod("mapToGenome", signature(object = "RGChannelSet"),
-          function(object, ...) {
-              object <- preprocessRaw(object)
-              callGeneric(object, ...)
-          })
-
 # Some DelayedArray functionality
 DelayedArray:::set_verbose_block_processing(TRUE)
 DEFAULT_BLOCK_SIZE <- getOption("DelayedArray.block.size")
