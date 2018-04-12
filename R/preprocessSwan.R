@@ -200,23 +200,16 @@ preprocessSWAN <- function(rgSet, mSet = NULL, verbose = FALSE) {
     })
 
     # Construct normalized data
-    # NOTE: Some parameters are currently harcoded
-    BPREDO <- list()
-    BPPARAM <- SerialParam()
     M <- .preprocessSWAN(
         x = Meth,
         xNormSet = xNormSet,
         counts = counts,
-        bg = bg,
-        BPREDO = BPREDO,
-        BPPARAM = BPPARAM)
+        bg = bg)
     U <- .preprocessSWAN(
         x = Unmeth,
         xNormSet = xNormSet,
         counts = counts,
-        bg = bg,
-        BPREDO = BPREDO,
-        BPPARAM = BPPARAM)
+        bg = bg)
 
     # Construct MethylSet
     assay(MSet, "Meth") <- M
