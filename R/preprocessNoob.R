@@ -227,18 +227,6 @@ setMethod(
             Unmeth[d2.probes, ] <- estimates[["Cy5"]][["xs"]][d2.U, ]
         }
 
-        # NOTE (Kasper): This next code block does nothing because the rgSet is
-        #                not returned and colData(rgSet) is not referenced
-        #                below
-        # TODO: Address the above by either removing the code chunk or
-        #       modifying the return value
-        for (ch in names(estimates)) {
-            chnames <- names(estimates[[ch]][["params"]])
-            for (nm in chnames) {
-                colData(rgSet)[, nm] <- estimates[[ch]][["params"]][[nm]]
-            }
-        }
-
         if (!dyeCorr) {
             return(list(Meth = Meth, Unmeth = Unmeth))
         }
