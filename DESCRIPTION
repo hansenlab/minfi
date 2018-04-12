@@ -57,7 +57,7 @@ Imports:  S4Vectors,
      HDF5Array,
      BiocParallel
 Collate:  generics.R
-	  mset.R
+	  MethylSet-class.R
 	  rset.R
 	  RGChannelSet-class.R
 	  RGChannelSetExtended-class.R
