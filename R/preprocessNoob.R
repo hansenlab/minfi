@@ -1,6 +1,4 @@
-# ------------------------------------------------------------------------------
-# Internal functions
-#
+# Internal functions -----------------------------------------------------------
 
 # TODO: Profile
 normexp.get.xs <- function(xf, controls, offset = 50, verbose = FALSE) {
@@ -153,9 +151,7 @@ dyeCorrection <- function(Meth, Unmeth, Red, Green, control_probes, cy3.probes,
     list(Meth = Meth, Unmeth = Unmeth)
 }
 
-# ------------------------------------------------------------------------------
-# Internal generics
-#
+# Internal generics ------------------------------------------------------------
 
 # `...` are additional arguments passed to methods.
 setGeneric(
@@ -167,9 +163,7 @@ setGeneric(
     signature = c("Meth", "Unmeth")
 )
 
-# ------------------------------------------------------------------------------
-# Internal methods
-#
+# Internal methods -------------------------------------------------------------
 
 setMethod(
     ".preprocessNoob",
@@ -368,9 +362,7 @@ setMethod(
     }
 )
 
-# ------------------------------------------------------------------------------
-# Exported functions
-#
+# Exported functions -----------------------------------------------------------
 
 # TODO: Document: because we simultaneously walk over column-blocks of `Meth`,
 #       and `Unmeth`, as well as `Red` and `Green` if doing dye correction, the

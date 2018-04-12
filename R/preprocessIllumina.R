@@ -1,10 +1,8 @@
-# ------------------------------------------------------------------------------
-# Internal functions
-#
+# Internal functions -----------------------------------------------------------
 
 normalize.illumina.control <- function(rgSet, reference = 1) {
-    ## This function returns an rgset, not a methylset
-    ## code duplication
+    # This function returns an rgset, not a methylset
+    # code duplication
     Green <- getGreen(rgSet)
     Red <- getRed(rgSet)
 
@@ -63,9 +61,7 @@ bgcorrect.illumina <- function(rgSet) {
     rgSet
 }
 
-# ------------------------------------------------------------------------------
-# Exported functions
-#
+# Exported functions -----------------------------------------------------------
 
 # TODO: Document: This does not realize the result for a DelayedMatrix-backed
 #       RGChannelSet{Extended}

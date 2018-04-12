@@ -1,8 +1,8 @@
 utils::globalVariables(c("channel"))
 
-logit2 <- function(x) { log2(x) - log2(1-x) }
+logit2 <- function(x) log2(x) - log2(1 - x)
 
-ilogit2 <- function(x) { 2^(x) / (1+2^(x)) }
+ilogit2 <- function(x) 2^x / (1 + 2^x)
 
 .default.27k.annotation  <- "ilmn12.hg19"
 .default.450k.annotation <- "ilmn12.hg19"
@@ -81,13 +81,13 @@ ilogit2 <- function(x) { 2^(x) / (1+2^(x)) }
                                 betaThreshold = 0, minZero = TRUE) {
     stopifnot(offset >= 0)
     stopifnot(betaThreshold >= 0 & betaThreshold <= 0.5)
-    if(minZero) {
+    if (minZero) {
         Meth <- pmax2(Meth, 0)
         Unmeth <- pmax2(Unmeth, 0)
     }
     beta <- Meth / (Meth + Unmeth + offset)
-    if(betaThreshold > 0) {
-        beta <- pmin2(pmax2(beta, betaThreshold), 1-betaThreshold)
+    if (betaThreshold > 0) {
+        beta <- pmin2(pmax2(beta, betaThreshold), 1 - betaThreshold)
     }
     beta
 }

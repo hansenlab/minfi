@@ -1,6 +1,4 @@
-# ------------------------------------------------------------------------------
-# Internal functions
-#
+# Internal functions -----------------------------------------------------------
 
 .qnormStratifiedHelper <- function(mat, probeType, regionType) {
     # Check inputs
@@ -36,7 +34,6 @@
 
     mat
 }
-
 
 .qnormStratified <- function(mat, auIndex, xIndex, yIndex, sex = NULL,
                              probeType, regionType) {
@@ -91,9 +88,7 @@
     mat
 }
 
-# ------------------------------------------------------------------------------
-# Exported functions
-#
+# Exported functions -----------------------------------------------------------
 
 # TODO: Document: Quantile normalization currently requires that all data are
 #       loaded into memory

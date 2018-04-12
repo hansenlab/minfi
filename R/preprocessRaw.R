@@ -1,6 +1,4 @@
-# ------------------------------------------------------------------------------
-# Internal generics
-#
+# Internal generics ------------------------------------------------------------
 
 # `...` are additional arguments passed to methods.
 setGeneric(
@@ -23,9 +21,7 @@ setGeneric(
         standardGeneric(".preprocessRaw"),
     signature = c("Red", "Green"))
 
-# ------------------------------------------------------------------------------
-# Internal methods
-#
+# Internal methods -------------------------------------------------------------
 
 setMethod(
     ".preprocessRawMeth",
@@ -141,9 +137,7 @@ setMethod(
     }
 )
 
-# ------------------------------------------------------------------------------
-# Exported functions
-#
+# Exported functions -----------------------------------------------------------
 
 # TODO: Document: because we simultaneously walk over column-blocks of
 #       `Red` and `Green`, the number of elements loaded into memory is

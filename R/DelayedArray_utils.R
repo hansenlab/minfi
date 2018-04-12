@@ -1,6 +1,4 @@
-# ------------------------------------------------------------------------------
-# Missing methods
-#
+# Missing methods --------------------------------------------------------------
 
 # TODO: type() for all RealizationSink subclasses
 setMethod("type", "HDF5RealizationSink", function(x) {
@@ -17,9 +15,7 @@ setMethod("dimnames", "arrayRealizationSink", function(x) {
     dimnames(x@result_envir$result)
 })
 
-# ------------------------------------------------------------------------------
-# Helper functions for setting up ArrayGrid instances
-#
+# Helper functions for setting up ArrayGrid instances --------------------------
 
 colGrid <- function(x) {
     max_block_len <- max(nrow(x), DelayedArray:::get_max_block_length(type(x)))
@@ -37,9 +33,7 @@ rowGrid <- function(x) {
     RegularArrayGrid(dim(x), spacings)
 }
 
-# ------------------------------------------------------------------------------
-# Advanced block processing routines
-#
+# Advanced block processing routines -------------------------------------------
 
 # NOTE: DelayedArray::blockApply() with the option to write the blocks to
 #       'sink'. Useful, for example, to apply a function across column-blocks

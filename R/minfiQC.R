@@ -1,6 +1,4 @@
-# ------------------------------------------------------------------------------
-# Internal helper functions
-#
+# Internal functions -----------------------------------------------------------
 
 .fixMethOutliers <- function(mat, K = -3, verbose = FALSE) {
     # Compute cutoff
@@ -26,9 +24,7 @@
     sweep(mat, 2, cutoff, pmax2)
 }
 
-# ------------------------------------------------------------------------------
-# Exported functions
-#
+# Exported functions -----------------------------------------------------------
 
 fixMethOutliers <- function(object, K = -3, verbose = FALSE) {
     .isMethylOrStop(object)
@@ -55,10 +51,11 @@ plotQC <- function(qc, badSampleCutoff = 10.5) {
     axis(side = 2, at = c(9,11,13))
     ## abline(h = badSampleCutoff, lty = 2)
     ## abline(v = badSampleCutoff, lty = 2)
-    abline(badSampleCutoff *2 , -1, lty = 2)
-    if(length(whichBad) > 0)
+    abline(badSampleCutoff * 2 , -1, lty = 2)
+    if (length(whichBad) > 0) {
         text(qc$mMed[whichBad], qc$uMed[whichBad] - 0.25,
              labels = whichBad, col = "red")
+    }
     legend("topleft", legend = c("good", "bad, with sample index"), pch = 1,
            col = c("black", "red"), bty = "n")
     invisible(NULL)
@@ -76,8 +73,8 @@ getQC <- function(object) {
 minfiQC <- function(object, fixOutliers=TRUE, verbose = FALSE){
     .isMethylOrStop(object)
     subverbose <- max(as.integer(verbose) - 1L, 0L)
-    if(fixOutliers){
-        if(verbose) message("[minfiQC] fixing outliers\n")
+    if (fixOutliers) {
+        if (verbose) message("[minfiQC] fixing outliers\n")
         fixMethOutliers(object, verbose = subverbose)
     }
     qc <- getQC(object)

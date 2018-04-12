@@ -1,4 +1,5 @@
 # Exported classes -------------------------------------------------------------
+
 setClass(
     "MethylSet",
     representation(preprocessMethod = "character", annotation = "character"),
@@ -6,6 +7,7 @@ setClass(
 )
 
 # Validity method --------------------------------------------------------------
+
 setValidity(
     "MethylSet",
     function(object) {
@@ -16,6 +18,7 @@ setValidity(
 
 
 # Exported functions -----------------------------------------------------------
+
 MethylSet <- function(Meth = new("matrix"), Unmeth = new("matrix"),
                       annotation = "", preprocessMethod = "", ...) {
     # Check rownames, colnames
@@ -43,6 +46,7 @@ dropMethylationLoci <- function(object, dropRS = TRUE, dropCH = TRUE) {
 
 
 # Exported methods -------------------------------------------------------------
+
 setMethod("show", signature(object = "MethylSet"), function(object) {
     callNextMethod()
     .show.annotation(annotation(object))

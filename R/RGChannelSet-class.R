@@ -1,6 +1,4 @@
-# ------------------------------------------------------------------------------
-# Exported classes
-#
+# Exported classes -------------------------------------------------------------
 
 setClass(
     "RGChannelSet",
@@ -8,9 +6,7 @@ setClass(
     contains = "SummarizedExperiment"
 )
 
-# ------------------------------------------------------------------------------
-# Validity method
-#
+# Validity method --------------------------------------------------------------
 
 setValidity(
     "RGChannelSet",
@@ -20,9 +16,7 @@ setValidity(
     }
 )
 
-# ------------------------------------------------------------------------------
-# Internal generics
-#
+# Internal generics ------------------------------------------------------------
 
 # `x` and `probe_info` are either `Red` and `IGrn` or `Green` and `IRed`,
 # respectively.
@@ -33,9 +27,7 @@ setGeneric(
     signature = c("x")
 )
 
-# ------------------------------------------------------------------------------
-# Internal methods
-#
+# Internal methods -------------------------------------------------------------
 
 setMethod(".getOOB", "matrix", function(x, probe_info, ...) {
     rbind(
@@ -83,9 +75,7 @@ setMethod(
     }
 )
 
-# ------------------------------------------------------------------------------
-# Exported functions
-#
+# Exported functions -----------------------------------------------------------
 
 RGChannelSet <- function(Green = new("matrix"), Red = new("matrix"),
                          annotation = "", ...) {
@@ -194,9 +184,7 @@ subsetByLoci <- function(rgSet, includeLoci = NULL, excludeLoci = NULL,
     rgSet[indices, ]
 }
 
-# ------------------------------------------------------------------------------
-# Exported methods
-#
+# Exported methods -------------------------------------------------------------
 
 setMethod(
     "show",

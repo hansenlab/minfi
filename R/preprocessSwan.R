@@ -1,6 +1,4 @@
-# ------------------------------------------------------------------------------
-# Internal functions
-#
+# Internal functions -----------------------------------------------------------
 
 getSubset <- function(counts, subset){
     x <- integer(0)
@@ -98,9 +96,7 @@ subsetQuantileNorm <- function(x, xNormSet, xTarget, bg) {
     x
 }
 
-# ------------------------------------------------------------------------------
-# Internal generics
-#
+# Internal generics ------------------------------------------------------------
 
 # `x` is either `Meth` or `Unmeth`
 # `...` are additional arguments passed to methods.
@@ -109,9 +105,7 @@ setGeneric(
     function(x, xNormSet, counts, bg, ...) standardGeneric(".preprocessSWAN"),
     signature = "x")
 
-# ------------------------------------------------------------------------------
-# Internal methods
-#
+# Internal methods -------------------------------------------------------------
 
 # NOTE: `...` is ignored
 setMethod(".preprocessSWAN", "matrix", function(x, xNormSet, counts, bg) {
@@ -175,9 +169,7 @@ setMethod(
         as(sink, "DelayedArray")
     })
 
-# ------------------------------------------------------------------------------
-# Exported functions
-#
+# Exported functions -----------------------------------------------------------
 
 preprocessSWAN <- function(rgSet, mSet = NULL, verbose = FALSE) {
     .isRGOrStop(rgSet)
@@ -238,8 +230,6 @@ preprocessSWAN <- function(rgSet, mSet = NULL, verbose = FALSE) {
     MSet
 }
 
-# ------------------------------------------------------------------------------
-# TODOs
-#
+# TODOs ------------------------------------------------------------------------
 
 # TODO: Choose more informative names for variables

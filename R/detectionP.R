@@ -1,6 +1,4 @@
-# ------------------------------------------------------------------------------
-# Internal generics
-#
+# Internal generics ------------------------------------------------------------
 
 # NOTE: `...` are additional arguments passed to methods.
 setGeneric(
@@ -10,9 +8,7 @@ setGeneric(
         standardGeneric(".detectionP"),
     signature = c("Red", "Green"))
 
-# ------------------------------------------------------------------------------
-# Internal methods
-#
+# Internal methods -------------------------------------------------------------
 
 # NOTE: `...` is ignored
 setMethod(
@@ -113,9 +109,7 @@ setMethod(
     }
 )
 
-# ------------------------------------------------------------------------------
-# Exported functions
-#
+# Exported functions -----------------------------------------------------------
 
 # TODO: Document: because we simultaneously walk over column-blocks of
 #       `Red` and `Green`, the number of elements loaded into memory is

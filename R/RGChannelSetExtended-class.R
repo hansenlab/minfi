@@ -1,12 +1,8 @@
-# ------------------------------------------------------------------------------
-# Exported classes
-#
+# Exported classes -------------------------------------------------------------
 
 setClass("RGChannelSetExtended", contains = "RGChannelSet")
 
-# ------------------------------------------------------------------------------
-# Validity methods
-#
+# Validity methods -------------------------------------------------------------
 
 setValidity(
     "RGChannelSetExtended",
@@ -19,9 +15,7 @@ setValidity(
     }
 )
 
-# ------------------------------------------------------------------------------
-# Exported functions
-#
+# Exported functions -----------------------------------------------------------
 
 RGChannelSetExtended <- function(Green = new("matrix"), Red = new("matrix"),
                                  GreenSD = new("matrix"), RedSD = new("matrix"),
@@ -49,9 +43,7 @@ getNBeads <- function(object) {
     assay(object, "NBeads")
 }
 
-# ------------------------------------------------------------------------------
-# Exported methods
-#
+# Exported methods -------------------------------------------------------------
 
 setMethod(
     "updateObject",
