@@ -30,7 +30,7 @@ setGeneric(
 setMethod(
     ".preprocessRawMeth",
     c("matrix", "matrix"),
-    function(Red, Green, locusNames, TypeI.Red, TypeI.Green, TypeII, ...) {
+    function(Red, Green, locusNames, TypeI.Red, TypeI.Green, TypeII) {
         # Set up output matrix with appropriate dimension and type
         type <- .highestType(Red, Green)
         M <- matrix(.NA_type(type),

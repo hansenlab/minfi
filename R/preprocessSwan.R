@@ -114,7 +114,7 @@ setGeneric(
 #
 
 # NOTE: `...` is ignored
-setMethod(".preprocessSWAN", "matrix", function(x, xNormSet, counts, bg, ...) {
+setMethod(".preprocessSWAN", "matrix", function(x, xNormSet, counts, bg) {
     # NOTE: SWAN can return non-integer values, so fill a numeric matrix
     normalized_x <- matrix(NA_real_,
                            ncol = ncol(x),
