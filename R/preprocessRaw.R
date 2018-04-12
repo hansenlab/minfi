@@ -128,8 +128,8 @@ setMethod(
                 TypeI.Green = TypeI.Green,
                 TypeII = TypeII),
             sinks = list(M_sink, U_sink),
-            input_grids = list(Red_grid, Green_grid),
-            output_grids = list(M_sink_grid, U_sink_grid),
+            dots_grids = list(Red_grid, Green_grid),
+            sinks_grids = list(M_sink_grid, U_sink_grid),
             BPREDO = BPREDO,
             BPPARAM = BPPARAM)
 

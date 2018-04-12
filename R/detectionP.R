@@ -103,8 +103,8 @@ setMethod(
                 TypeI.Green = TypeI.Green,
                 TypeII = TypeII),
             sinks = list(detP_sink),
-            input_grids = list(Red_grid, Green_grid),
-            output_grids = list(detP_sink_grid),
+            dots_grids = list(Red_grid, Green_grid),
+            sinks_grids = list(detP_sink_grid),
             BPREDO = BPREDO,
             BPPARAM = BPPARAM)
 
