@@ -1,6 +1,6 @@
 # A helper function to check whether two SummarizedExperiment objects are
-# 'equal'
-checkEqualSummarizedExperiments <- function(SE1, SE2) {
+# equivalent
+checkEquivalentSummarizedExperiments <- function(SE1, SE2) {
     stopifnot(is(SE1, "SummarizedExperiment"),
               is(SE2, "SummarizedExperiment"))
     assays(SE1) <- endoapply(assays(SE1), as.matrix)
@@ -47,7 +47,7 @@ test_combineArrays_examples <- function() {
     rgSet <- combineArrays(RGsetEPIC, RGsetEx.sub)
 
     # Check equivalency
-    checkEqualSummarizedExperiments(rgSet0, rgSet)
+    checkEquivalentSummarizedExperiments(rgSet0, rgSet)
 }
 
 test_compartments_examples <- function() {
@@ -105,7 +105,7 @@ test_convertArray_examples <- function() {
     rgSet <- convertArray(RGsetEx.sub, outType = "IlluminaHumanMethylationEPIC")
 
     # Check equivalency
-    checkEqualSummarizedExperiments(rgSet0, rgSet)
+    checkEquivalentSummarizedExperiments(rgSet0, rgSet)
 }
 
 test_densityBeanPlot_examples <- function() {
@@ -226,7 +226,7 @@ test_fixMethOutliers_examples <- function() {
     MsetEx <- fixMethOutliers(MsetEx)
 
     # Check equivalency
-    checkEqualSummarizedExperiments(MsetEx0, MsetEx)
+    checkEquivalentSummarizedExperiments(MsetEx0, MsetEx)
 }
 
 test_gaphunter_examples <- function() {
@@ -242,7 +242,7 @@ test_gaphunter_examples <- function() {
     gapres <- gaphunter(MsetEx.sub, threshold=0.3, keepOutliers=TRUE)
 
     # Check equivalency
-    checkEqualSummarizedExperiments(gapres0, gapres)
+    checkEquivalentSummarizedExperiments(gapres0, gapres)
 }
 
 test_getAnnotation_examples <- function() {
@@ -280,7 +280,7 @@ test_getQC_examples <- function() {
     ## plotQC(qc)
 
     # Check equivalency
-    checkEqualSummarizedExperiments(MsetEx0, MsetEx)
+    checkEquivalentSummarizedExperiments(MsetEx0, MsetEx)
 }
 
 test_getSex_examples <- function() {
@@ -302,7 +302,7 @@ test_getSex_examples <- function() {
     GMsetEx <- addSex(GMsetEx, sex = estSex)
 
     # Check equivalency
-    checkEqualSummarizedExperiments(GMsetEx0, GMsetEx)
+    checkEquivalentSummarizedExperiments(GMsetEx0, GMsetEx)
 }
 
 test_logit2_examples <- function() {
@@ -335,7 +335,7 @@ test_makeGenomicRatioSetFromMatrix_examples <- function() {
     grset <- makeGenomicRatioSetFromMatrix(mat)
 
     # Check equivalency
-    checkEqualSummarizedExperiments(grset0, grset)
+    checkEquivalentSummarizedExperiments(grset0, grset)
 }
 
 test_mapToGenome_examples <- function() {
@@ -350,7 +350,7 @@ test_mapToGenome_examples <- function() {
     assays(MsetEx.sub) <- endoapply(assays(MsetEx.sub), DelayedArray)
     GMsetEx.sub <- mapToGenome(MsetEx.sub)
 
-    checkEqualSummarizedExperiments(GMsetEx.sub0, GMsetEx.sub)
+    checkEquivalentSummarizedExperiments(GMsetEx.sub0, GMsetEx.sub)
 }
 
 test_mdsPlot_examples <- function() {
@@ -458,7 +458,7 @@ test_preprocessFunnorm_examples <- function() {
     Mset.sub.funnorm <- preprocessFunnorm(RGsetEx.sub)
 
     # Check equivalency
-    checkEqualSummarizedExperiments(Mset.sub.funnorm0, Mset.sub.funnorm)
+    checkEquivalentSummarizedExperiments(Mset.sub.funnorm0, Mset.sub.funnorm)
 }
 
 test_preprocessIllumina_examples <- function() {
@@ -476,7 +476,7 @@ test_preprocessIllumina_examples <- function() {
     slot(name="preprocessMethod", dat)[1]
 
     # Check equality
-    checkEqualSummarizedExperiments(dat0, dat)
+    checkEquivalentSummarizedExperiments(dat0, dat)
 }
 
 test_preprocessNoob_examples <- function() {
@@ -503,7 +503,7 @@ test_preprocessNoob_examples <- function() {
     checkEquals(getBeta(GRsets$refNoob), getBeta(GRsets$ssNoob))
 
     # Check equivalency
-    checkEqualSummarizedExperiments(GRsets0, GRsets)
+    checkEquivalentSummarizedExperiments(GRsets0, GRsets)
 }
 
 test_preprocessQuantile_examples <- function() {
@@ -523,8 +523,8 @@ test_preprocessQuantile_examples <- function() {
     GMset <- preprocessQuantile(RGsetEx)
 
     # Check equivalency
-    checkEqualSummarizedExperiments(GMset.sub.quantile0, GMset.sub.quantile)
-    checkEqualSummarizedExperiments(GMset0, GMset)
+    checkEquivalentSummarizedExperiments(GMset.sub.quantile0, GMset.sub.quantile)
+    checkEquivalentSummarizedExperiments(GMset0, GMset)
 }
 
 test_preprocessRaw_examples <- function() {
@@ -540,7 +540,7 @@ test_preprocessRaw_examples <- function() {
     dat <- preprocessRaw(RGsetEx)
 
     # Check equivalency
-    checkEqualSummarizedExperiments(dat0, dat)
+    checkEquivalentSummarizedExperiments(dat0, dat)
 }
 
 test_preprocessSwan_examples <- function() {
@@ -572,10 +572,10 @@ test_preprocessSwan_examples <- function() {
     datIlmnSwan <- preprocessSWAN(RGsetEx, mSet = datIlmn)
 
     # Check equivalency
-    checkEqualSummarizedExperiments(dat0, dat)
-    checkEqualSummarizedExperiments(datSwan0, datSwan)
-    checkEqualSummarizedExperiments(datIlmn0, datIlmn)
-    checkEqualSummarizedExperiments(datIlmnSwan0, datIlmnSwan)
+    checkEquivalentSummarizedExperiments(dat0, dat)
+    checkEquivalentSummarizedExperiments(datSwan0, datSwan)
+    checkEquivalentSummarizedExperiments(datIlmn0, datIlmn)
+    checkEquivalentSummarizedExperiments(datIlmnSwan0, datIlmnSwan)
 }
 
 test_qcReport_examples <- function() {
@@ -616,7 +616,7 @@ test_ratioConvert_examples <- function() {
     RsetEx.sub <- ratioConvert(MsetEx.sub, keepCN = TRUE)
 
     # Check equivalency
-    checkEqualSummarizedExperiments(RGsetEx.sub0, RGsetEx.sub)
+    checkEquivalentSummarizedExperiments(RGsetEx.sub0, RGsetEx.sub)
 }
 
 test_subsetByLoci_examples <- function() {
@@ -634,8 +634,8 @@ test_subsetByLoci_examples <- function() {
     b <- subsetByLoci(RGsetEx.sub, excludeLoci = loci)
 
     # Check equivalency
-    checkEqualSummarizedExperiments(a0, a)
-    checkEqualSummarizedExperiments(b0, b)
+    checkEquivalentSummarizedExperiments(a0, a)
+    checkEquivalentSummarizedExperiments(b0, b)
 }
 
 test_utils_examples <- function() {
