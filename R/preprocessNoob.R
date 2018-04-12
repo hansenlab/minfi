@@ -56,7 +56,9 @@ normexp.get.xcs <- function(xcf, params) {
 # "single" is now the default: it provides single-sample preprocessing and
 # betas/M-values produced by this method are identical to those from the
 # "reference" version used in (e.g.) the TCGA data processing pipeline.
-dyeCorrection <- function(Meth, Unmeth, Red, Green, control_probes, estimates) {
+dyeCorrection <- function(Meth, Unmeth, Red, Green, control_probes, cy3.probes,
+                          cy5.probes, d2.probes, estimates, array_type,
+                          dyeMethod, verbose) {
 
     # Background correct the Illumina normalization controls
     redControls <- Red[control_probes$Address, , drop = FALSE]
@@ -97,7 +99,7 @@ dyeCorrection <- function(Meth, Unmeth, Red, Green, control_probes, estimates) {
     if (dyeMethod == "single") {
         if (verbose) {
             message(
-                "[preprocessNoob] Applying R/G ratio flip to fix dye ",
+                "[dyeCorrection] Applying R/G ratio flip to fix dye ",
                 "bias")
         }
         Red.factor <- 1 / R.G.ratio
@@ -106,7 +108,7 @@ dyeCorrection <- function(Meth, Unmeth, Red, Green, control_probes, estimates) {
         reference <- which.min(abs(R.G.ratio - 1))
         if (verbose) {
             message(
-                "[preprocessNoob] Using sample number ",
+                "[dyeCorrection] Using sample number ",
                 reference,
                 " as reference level")
         }
@@ -158,8 +160,9 @@ dyeCorrection <- function(Meth, Unmeth, Red, Green, control_probes, estimates) {
 # `...` are additional arguments passed to methods.
 setGeneric(
     ".preprocessNoob",
-    function(Meth, Unmeth, oob, cy3.probes, cy5.probes, d2.probes, dyeCorr, Red,
-             Green, control_probes, array_type, ...)
+    function(Meth, Unmeth, oob, cy3.probes, cy5.probes, d2.probes, offset,
+             dyeCorr, Red, Green, control_probes, array_type, dyeMethod,
+             verbose, ...)
         standardGeneric(".preprocessNoob"),
     signature = c("Meth", "Unmeth")
 )
@@ -171,8 +174,10 @@ setGeneric(
 setMethod(
     ".preprocessNoob",
     c("matrix", "matrix"),
-    function(Meth, Unmeth, oob, cy3.probes, cy5.probes, d2.probes, dyeCorr,
-             Red, Green, control_probes, array_type) {
+    function(Meth, Unmeth, oob, cy3.probes, cy5.probes, d2.probes, offset,
+             dyeCorr, Red, Green, control_probes, array_type, dyeMethod,
+             verbose) {
+        subverbose <- max(as.integer(verbose) - 1L, 0)
 
         # Threshold Meth and Unmeth to be positive
         Meth[Meth <= 0] <- 1L
@@ -249,18 +254,117 @@ setMethod(
             Red = Red,
             Green = Green,
             control_probes = control_probes,
-            estimates = estimates)
+            cy3.probes = cy3.probes,
+            cy5.probes = cy5.probes,
+            d2.probes = d2.probes,
+            estimates = estimates,
+            array_type = array_type,
+            dyeMethod = dyeMethod,
+            verbose = verbose)
     }
 )
 
 setMethod(
     ".preprocessNoob",
     c("DelayedMatrix", "DelayedMatrix"),
-    function(Meth, Unmeth, oob, cy3.probes, cy5.probes, d2.probes,
-             BPPREDO = list(), BPPARAM = SerialParam()) {
-        stop("TODO")
-        # TODO: blockMapplyWithRealization over Meth and Unmeth using
-        #       .preprocessNoob
+    function(Meth, Unmeth, oob, cy3.probes, cy5.probes, d2.probes, offset,
+             dyeCorr, Red, Green, control_probes, array_type, dyeMethod,
+             verbose, BPREDO = list(), BPPARAM = SerialParam()) {
+        # Set up intermediate RealizationSink objects of appropriate dimensions
+        # and type
+        # NOTE: These are ultimately coerced to the output DelayedMatrix
+        #       objects, `Meth` and `Unmeth`
+        # NOTE: Noob can return non-integer values, so write to a numeric sink
+        # NOTE: Don't do `Unmeth_sink <- Meth__sink` or else these will
+        #       reference the same object and clobber each other when written
+        #       to!
+        ans_type <- "double"
+        M_sink <- DelayedArray:::RealizationSink(
+            dim = dim(Meth),
+            dimnames = dimnames(Meth),
+            type = ans_type)
+        on.exit(close(M_sink))
+        U_sink <- DelayedArray:::RealizationSink(
+            dim = dim(Unmeth),
+            dimnames = dimnames(Unmeth),
+            type = ans_type)
+        on.exit(close(U_sink), add = TRUE)
+
+        # Set up ArrayGrid instances over `Meth`, `Unmeth`, `M_sink`, and
+        # `U_sink`. Also set up "parallel" ArrayGrid instances over `Red` and
+        # `Green` if performing dye correction.
+        Meth_grid <- colGrid(Meth)
+        Unmeth_grid <- colGrid(Unmeth)
+        M_sink_grid <- RegularArrayGrid(
+            refdim = dim(M_sink),
+            spacings = c(nrow(M_sink), ncol(M_sink) / length(Meth_grid)))
+        U_sink_grid <- M_sink_grid
+        # Sanity check ArrayGrid objects have the same dim
+        stopifnot(dim(Meth_grid) == dim(Unmeth_grid),
+                  dim(Meth_grid) == dim(M_sink_grid))
+
+        # Loop over blocks of `Meth` and `Unmeth`, as well as `Red` and
+        # `Green` if doing dye correction, and write to `M_sink` and `U_sink`.
+        if (dyeCorr) {
+            Red_grid <- RegularArrayGrid(
+                refdim = dim(Red),
+                spacings = c(nrow(Red), ncol(Red) / length(Meth_grid)))
+            Green_grid <- RegularArrayGrid(
+                refdim = dim(Green),
+                spacings = c(nrow(Green), ncol(Green) / length(Meth_grid)))
+            # Sanity check ArrayGrid objects have the same dim
+            stopifnot(dim(Red_grid) == dim(Green_grid),
+                      dim(Red_grid) == dim(Meth_grid))
+            blockMapplyWithRealization(
+                FUN = .preprocessNoob,
+                Meth = Meth,
+                Unmeth = Unmeth,
+                Red = Red,
+                Green = Green,
+                MoreArgs = list(
+                    oob = oob,
+                    cy3.probes = cy3.probes,
+                    cy5.probes = cy5.probes,
+                    d2.probes = d2.probes,
+                    offset = offset,
+                    dyeCorr = dyeCorr,
+                    control_probes = control_probes,
+                    array_type = array_type,
+                    dyeMethod = dyeMethod,
+                    verbose = verbose),
+                sinks = list(M_sink, U_sink),
+                dots_grids = list(Meth_grid, Unmeth_grid, Red_grid, Green_grid),
+                sinks_grids = list(M_sink_grid, U_sink_grid),
+                BPREDO = BPREDO,
+                BPPARAM = BPPARAM)
+        } else {
+            blockMapplyWithRealization(
+                FUN = .preprocessNoob,
+                Meth = Meth,
+                Unmeth = Unmeth,
+                MoreArgs = list(
+                    oob = oob,
+                    cy3.probes = cy3.probes,
+                    cy5.probes = cy5.probes,
+                    d2.probes = d2.probes,
+                    offset = offset,
+                    dyeCorr = dyeCorr,
+                    control_probes = control_probes,
+                    array_type = array_type,
+                    dyeMethod = dyeMethod,
+                    verbose = verbose),
+                sinks = list(M_sink, U_sink),
+                dots_grids = list(Meth_grid, Unmeth_grid),
+                sinks_grids = list(M_sink_grid, U_sink_grid),
+                BPREDO = BPREDO,
+                BPPARAM = BPPARAM)
+        }
+
+        # Return as DelayedMatrix objects
+        M <- as(M_sink, "DelayedArray")
+        U <- as(U_sink, "DelayedArray")
+
+        list(Meth = M, Unmeth = U)
     }
 )
 
@@ -268,12 +372,16 @@ setMethod(
 # Exported functions
 #
 
+# TODO: Document: because we simultaneously walk over column-blocks of `Meth`,
+#       and `Unmeth`, as well as `Red` and `Green` if doing dye correction, the
+#       number of elements loaded into memory is doubled or quadrupled. If
+#       running into memory issues, try halving/quartering
+#       getOption("DelayedArray.block.size")
 preprocessNoob <- function(rgSet, offset = 15, dyeCorr = TRUE, verbose = TRUE,
                            dyeMethod = c("single", "reference")) {
 
     # Check inputs
     .isRGOrStop(rgSet)
-    subverbose <- max(as.integer(verbose) - 1L, 0)
     dyeMethod <- match.arg(dyeMethod)
 
     # Extract data to pass to low-level functions that construct `M` and `U`
@@ -309,11 +417,14 @@ preprocessNoob <- function(rgSet, offset = 15, dyeCorr = TRUE, verbose = TRUE,
         cy3.probes = cy3.probes,
         cy5.probes = cy5.probes,
         d2.probes = d2.probes,
+        offset = offset,
         dyeCorr = dyeCorr,
         Red = Red,
         Green = Green,
         control_probes = control_probes,
-        array_type = array_type)
+        array_type = array_type,
+        dyeMethod = dyeMethod,
+        verbose = verbose)
 
     # Construct MethylSet
     assay(MSet, "Meth") <- M_and_U[["Meth"]]
@@ -324,3 +435,7 @@ preprocessNoob <- function(rgSet, offset = 15, dyeCorr = TRUE, verbose = TRUE,
         mu.norm = sprintf("Noob, dyeCorr=%s, dyeMethod=%s", dyeCorr, dyeMethod))
     MSet
 }
+
+# TODO: Switch from `Meth` to `M` and `Unmeth` to `U`
+# TODO: Rationalise argument order across functions, set defaults assuming
+#       dyeCorr is FALSE
