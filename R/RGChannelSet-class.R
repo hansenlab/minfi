@@ -186,25 +186,18 @@ subsetByLoci <- function(rgSet, includeLoci = NULL, excludeLoci = NULL,
 
 # Exported methods -------------------------------------------------------------
 
-setMethod(
-    "show",
-    signature(object = "RGChannelSet"),
-    function(object) {
-        callNextMethod()
-        .show.annotation(annotation(object))
-    }
-)
+setMethod("show", signature(object = "RGChannelSet"), function(object) {
+    callNextMethod()
+    .show.annotation(annotation(object))
+})
 
-setMethod(
-    "annotation",
-    signature(object = "RGChannelSet"),
-    function(object) {
-        object@annotation
-    }
-)
+setMethod("annotation", signature(object = "RGChannelSet"), function(object) {
+    object@annotation
+})
 
 setReplaceMethod(
-    "annotation", signature(object = "RGChannelSet"),
+    "annotation",
+    signature(object = "RGChannelSet"),
     function(object, value) {
         object@annotation <- value
         object
@@ -229,26 +222,18 @@ setMethod(
     }
 )
 
-setMethod(
-    "getManifest",
-    signature(object = "RGChannelSet"),
-    function(object) {
-        maniString <- .getManifestString(object@annotation)
-        if (!require(maniString, character.only = TRUE)) {
-            stop(sprintf("cannot load manifest package %s", maniString))
-        }
-        get(maniString)
+setMethod("getManifest", signature(object = "RGChannelSet"), function(object) {
+    maniString <- .getManifestString(object@annotation)
+    if (!require(maniString, character.only = TRUE)) {
+        stop(sprintf("cannot load manifest package %s", maniString))
     }
-)
+    get(maniString)
+})
 
-setMethod(
-    "getBeta",
-    signature(object = "RGChannelSet"),
-    function(object, ...) {
-        object <- preprocessRaw(object)
-        callGeneric(object, ...)
-    }
-)
+setMethod("getBeta", signature(object = "RGChannelSet"), function(object, ...) {
+    object <- preprocessRaw(object)
+    callGeneric(object, ...)
+})
 
 setMethod(
     "mapToGenome",
