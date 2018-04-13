@@ -1,3 +1,5 @@
 ^\.travis\.yml$
 .DS_Store
 minfi.Rproj
+^.*\.Rproj$
+^\.Rproj\.user$
