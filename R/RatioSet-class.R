@@ -44,7 +44,7 @@ setMethod("show", signature(object = "RatioSet"), function(object) {
     .show.preprocessMethod(preprocessMethod(object))
 })
 
-setMethod("preprocessMethod", signature(object = "RatioSet"), (object) {
+setMethod("preprocessMethod", signature(object = "RatioSet"), function(object) {
     object@preprocessMethod
 })
 
