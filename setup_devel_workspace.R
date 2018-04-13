@@ -26,6 +26,7 @@ source("R/MethylSet-class.R")
 source("R/GenomicMethylSet-class.R")
 source("R/GenomicRatioSet-class.R")
 source("R/RatioSet-class.R")
+source("R/plotBetasByType.R")
 
 # These functions are properly imported by the package but not visible when the
 # workspace is set up using this script
