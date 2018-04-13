@@ -6,21 +6,18 @@ setClass(
     contains = "RangedSummarizedExperiment"
 )
 
-# Validity method --------------------------------------------------------------
+# Validity methods -------------------------------------------------------------
 
-setValidity(
-    "GenomicMethylSet",
-    function(object) {
-        msg <- validMsg(NULL, .checkAssayNames(object, c("Meth", "Unmeth")))
-        if (class(rowRanges(object)) != "GRanges") {
-            msg <- validMsg(
-                msg,
-                sprintf("object of class '%s' needs to have a 'GRanges' in slot 'rowRanges'",
-                        class(object)))
-        }
-        if (is.null(msg)) TRUE else msg
+setValidity("GenomicMethylSet", function(object) {
+    msg <- validMsg(NULL, .checkAssayNames(object, c("Meth", "Unmeth")))
+    if (class(rowRanges(object)) != "GRanges") {
+        msg <- validMsg(
+            msg,
+            sprintf("object of class '%s' needs to have a 'GRanges' in slot 'rowRanges'",
+                    class(object)))
     }
-)
+    if (is.null(msg)) TRUE else msg
+})
 
 # Exported functions -----------------------------------------------------------
 

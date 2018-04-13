@@ -6,15 +6,12 @@ setClass(
     contains = "SummarizedExperiment"
 )
 
-# Validity method --------------------------------------------------------------
+# Validity methods -------------------------------------------------------------
 
-setValidity(
-    "MethylSet",
-    function(object) {
-        msg <- validMsg(NULL, .checkAssayNames(object, c("Meth", "Unmeth")))
-        if (is.null(msg)) TRUE else msg
-    }
-)
+setValidity("MethylSet", function(object) {
+    msg <- validMsg(NULL, .checkAssayNames(object, c("Meth", "Unmeth")))
+    if (is.null(msg)) TRUE else msg
+})
 
 
 # Exported functions -----------------------------------------------------------

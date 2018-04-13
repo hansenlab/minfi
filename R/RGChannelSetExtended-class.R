@@ -4,16 +4,13 @@ setClass("RGChannelSetExtended", contains = "RGChannelSet")
 
 # Validity methods -------------------------------------------------------------
 
-setValidity(
-    "RGChannelSetExtended",
-    function(object) {
-        msg <- validMsg(
-            NULL,
-            .checkAssayNames(
-                object, c("Red", "Green", "RedSD", "GreenSD", "NBeads")))
-        if (is.null(msg)) TRUE else msg
-    }
-)
+setValidity("RGChannelSetExtended", function(object) {
+    msg <- validMsg(
+        NULL,
+        .checkAssayNames(
+            object, c("Red", "Green", "RedSD", "GreenSD", "NBeads")))
+    if (is.null(msg)) TRUE else msg
+})
 
 # Exported functions -----------------------------------------------------------
 

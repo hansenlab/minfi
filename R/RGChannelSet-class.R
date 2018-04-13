@@ -6,15 +6,12 @@ setClass(
     contains = "SummarizedExperiment"
 )
 
-# Validity method --------------------------------------------------------------
+# Validity methods -------------------------------------------------------------
 
-setValidity(
-    "RGChannelSet",
-    function(object) {
-        msg <- validMsg(NULL, .checkAssayNames(object, c("Red", "Green")))
-        if (is.null(msg)) TRUE else msg
-    }
-)
+setValidity("RGChannelSet", function(object) {
+    msg <- validMsg(NULL, .checkAssayNames(object, c("Red", "Green")))
+    if (is.null(msg)) TRUE else msg
+})
 
 # Internal generics ------------------------------------------------------------
 
