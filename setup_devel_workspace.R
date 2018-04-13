@@ -23,6 +23,7 @@ source("R/RGChannelSet-class.R")
 source("R/RGChannelSetExtended-class.R")
 source("R/preprocessNoob.R")
 source("R/MethylSet-class.R")
+source("R/GenomicMethylSet-class.R")
 
 # These functions are properly imported by the package but not visible when the
 # workspace is set up using this script
