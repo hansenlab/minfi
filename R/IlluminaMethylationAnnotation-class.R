@@ -1,4 +1,27 @@
-# Internal methods -------------------------------------------------------------
+# Exported classes -------------------------------------------------------------
+
+setClass(
+    "IlluminaMethylationAnnotation",
+    representation(
+        data = "environment",
+        annotation = "character",
+        defaults = "character"
+    )
+)
+
+# Validity methods -------------------------------------------------------------
+
+# TODO: Uncomment, fix, or delete this validity method
+
+## setValidity("IlluminaMethylationAnnotation", function(object) {
+##     msg <- NULL
+##     if(!(all(sapply(object@data, class) == "DataFrame")))
+##         msg <- paste(msg,
+##                      "All objects in 'objects@data' has to be of class 'DataFrame'", sep = "\n")
+##     if (is.null(msg)) TRUE else msg
+## })
+
+# Internal functions------------------------------------------------------------
 
 .availableAnnotation <- function(object) {
     object <- getAnnotationObject(object)
@@ -69,48 +92,7 @@
     snpAnno
 }
 
-# Exported classes -------------------------------------------------------------
 
-setClass(
-    "IlluminaMethylationAnnotation",
-    representation(
-        data = "environment",
-        annotation = "character",
-        defaults = "character"
-    )
-)
-
-# Validity methods -------------------------------------------------------------
-
-# TODO: Uncomment, fix, or delete this validity method
-
-## setValidity("IlluminaMethylationAnnotation", function(object) {
-##     msg <- NULL
-##     if(!(all(sapply(object@data, class) == "DataFrame")))
-##         msg <- paste(msg,
-##                      "All objects in 'objects@data' has to be of class 'DataFrame'", sep = "\n")
-##     if (is.null(msg)) TRUE else msg
-## })
-
-# Exported methods -------------------------------------------------------------
-
-setMethod("show", "IlluminaMethylationAnnotation", function(object) {
-    cat("IlluminaMethylationAnnotation object\n")
-    .show.annotation(object@annotation)
-    .show.availableAnnotation(object)
-})
-
-setMethod(
-    "getManifest",
-    signature(object = "IlluminaMethylationAnnotation"),
-    function(object) {
-        maniString <- .getManifestString(object@annotation)
-        if (!require(maniString, character.only = TRUE)) {
-            stop(sprintf("cannot load manifest package %s", maniString))
-        }
-        get(maniString)
-    }
-)
 
 # Exported functions -----------------------------------------------------------
 
@@ -342,3 +324,23 @@ dropLociWithSnps <- function(object, snps = c("CpG", "SBE"), maf = 0,
     if (length(wh) == 0) return(object)
     object[-wh,]
 }
+
+# Exported methods -------------------------------------------------------------
+
+setMethod("show", "IlluminaMethylationAnnotation", function(object) {
+    cat("IlluminaMethylationAnnotation object\n")
+    .show.annotation(object@annotation)
+    .show.availableAnnotation(object)
+})
+
+setMethod(
+    "getManifest",
+    signature(object = "IlluminaMethylationAnnotation"),
+    function(object) {
+        maniString <- .getManifestString(object@annotation)
+        if (!require(maniString, character.only = TRUE)) {
+            stop(sprintf("cannot load manifest package %s", maniString))
+        }
+        get(maniString)
+    }
+)
