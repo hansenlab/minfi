@@ -84,7 +84,7 @@
     ids <- subjectHits(findOverlaps(gr.unbinnedCor, gr.binnedCor))
     gr.binnedCor$cor.matrix <- bin2D(
         matrix = gr.unbinnedCor$cor.matrix,
-        matrix = ids,
+        idx = ids,
         n = length(gr.binnedCor))
     gr.binnedCor
 }
