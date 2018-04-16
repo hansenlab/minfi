@@ -5,7 +5,7 @@ importMethodsFrom(Biobase, exprs, fData,
                   featureNames, "featureNames<-",
                   pData, "pData<-",
                   sampleNames, "sampleNames<-")
-import(Biostrings)
+import(Biostrings, except = c(type))
 importMethodsFrom(GenomeInfoDb, seqlevels, "seqlevels<-", genome, "genome<-", seqlengths, "seqlengths<-")
 importClassesFrom(GenomeInfoDb, Seqinfo)
 import(GenomicRanges)
@@ -26,7 +26,7 @@ importFrom(beanplot, beanplot)
 importFrom(nor1mix, norMix, pnorMix, qnorMix)
 importFrom(siggenes, pi0.est, qvalue.cal)
 importFrom(limma, squeezeVar, lmFit, eBayes, contrasts.fit, normexp.signal)
-importFrom(preprocessCore, normalize.quantiles)
+importFrom(preprocessCore, normalize.quantiles, normalize.quantiles.use.target)
 importFrom(illuminaio, readIDAT)
 importFrom(genefilter, rowFtests, rowttests)
 importFrom(utils, packageVersion, read.csv, read.table, data)
@@ -44,7 +44,7 @@ importFrom("graphics", "abline", "axis", "legend", "lines", "par",
            "plot", "plot.new", "stripchart", "text")
 importFrom("stats", "approx", "as.formula", "cmdscale", "contrasts",
            "dist", "fitted", "kmeans", "lm", "lm.fit", "model.matrix",
-           "pchisq", "pf", "pnorm", "prcomp", "pt", "rnorm", "runif",
+           "pchisq", "pf", "prcomp", "pt", "rnorm", "runif",
            "vcov")
 
 export(getManifest, getProbeInfo, getManifestInfo,
