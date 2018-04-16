@@ -56,7 +56,7 @@ Imports:  S4Vectors,
      DelayedArray (>= 0.5.23),
      HDF5Array,
      BiocParallel
-Collate:  generics.R
+Collate:  AllGenerics.R
 	  MethylSet-class.R
 	  RatioSet-class.R
 	  RGChannelSet-class.R
