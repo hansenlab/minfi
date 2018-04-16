@@ -69,7 +69,7 @@ Collate:  generics.R
 	  anno.R
 	  minfiQC.R
 	  getSex.R
-	  dmr.R
+	  dmpFinder.R
 	  blocks.R
 	  plot.R
 	  plotBetasByType.R
