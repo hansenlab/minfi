@@ -1,6 +1,6 @@
 # Missing methods --------------------------------------------------------------
 
-# TODO: type() for all RealizationSink subclasses
+# TODO: DelayedArray::type() for all RealizationSink subclasses
 setMethod("type", "HDF5RealizationSink", function(x) {
     x@type
 })
@@ -38,7 +38,7 @@ rowGrid <- function(x) {
     dots <- list(...)
     types <- vapply(dots, DelayedArray::type, character(1L))
     vector <- do.call(c, lapply(types, vector))
-    DelayedArray:::type(vector)
+    DelayedArray::type(vector)
 }
 
 # Advanced block processing routines -------------------------------------------
