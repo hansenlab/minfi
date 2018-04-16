@@ -33,7 +33,7 @@
                                                 "IlluminaHumanMethylationEPIC"),
                                     verbose = verbose) {
 
-    .checkDelayedArraySupport(rgSet)
+    .supportsDelayedArray(rgSet)
 
     outType <- match.arg(outType)
     .isRGOrStop(rgSet)
@@ -135,8 +135,8 @@ setMethod(
                          "IlluminaHumanMethylationEPIC"),
              verbose = TRUE) {
 
-        .checkDelayedArraySupport(object1)
-        .checkDelayedArraySupport(object2)
+        .supportsDelayedArray(object1)
+        .supportsDelayedArray(object2)
 
         outType <- match.arg(outType)
         array1 <- annotation(object1)[["array"]]
@@ -169,8 +169,8 @@ setMethod("combineArrays",
                                "IlluminaHumanMethylation27k"),
                    verbose = TRUE) {
 
-              .checkDelayedArraySupport(object1)
-              .checkDelayedArraySupport(object2)
+              .supportsDelayedArray(object1)
+              .supportsDelayedArray(object2)
 
               outType <- match.arg(outType)
               array1 <- annotation(object1)["array"]
@@ -203,8 +203,8 @@ setMethod("combineArrays",
                                "IlluminaHumanMethylation27k"),
                    verbose = TRUE) {
 
-              .checkDelayedArraySupport(object1)
-              .checkDelayedArraySupport(object2)
+              .supportsDelayedArray(object1)
+              .supportsDelayedArray(object2)
 
               outType <- match.arg(outType)
               array1 <- annotation(object1)["array"]
@@ -238,8 +238,8 @@ setMethod(
                          "IlluminaHumanMethylation27k"),
              verbose = TRUE) {
 
-        .checkDelayedArraySupport(object1)
-        .checkDelayedArraySupport(object2)
+        .supportsDelayedArray(object1)
+        .supportsDelayedArray(object2)
 
         outType <- match.arg(outType)
         array1 <- annotation(object1)["array"]
@@ -280,8 +280,8 @@ setMethod(
                          "IlluminaHumanMethylation27k"),
              verbose = TRUE) {
 
-        .checkDelayedArraySupport(object1)
-        .checkDelayedArraySupport(object2)
+        .supportsDelayedArray(object1)
+        .supportsDelayedArray(object2)
 
         outType <- match.arg(outType)
         array1 <- annotation(object1)["array"]
@@ -319,7 +319,7 @@ setMethod(
                          "IlluminaHumanMethylationEPIC"),
              verbose = TRUE) {
 
-        .checkDelayedArraySupport(object)
+        .supportsDelayedArray(object)
 
         outType <- match.arg(outType)
         array <- annotation(object)[["array"]]
@@ -342,7 +342,7 @@ setMethod(
                          "IlluminaHumanMethylation27k"),
              verbose = TRUE) {
 
-        .checkDelayedArraySupport(object)
+        .supportsDelayedArray(object)
 
         outType <- match.arg(outType)
         array <- annotation(object)[["array"]]
@@ -366,7 +366,7 @@ setMethod(
                          "IlluminaHumanMethylation27k"),
              verbose = TRUE) {
 
-        .checkDelayedArraySupport(object)
+        .supportsDelayedArray(object)
 
         outType <- match.arg(outType)
         array <- annotation(object)[["array"]]
@@ -390,7 +390,7 @@ setMethod(
                          "IlluminaHumanMethylation27k"),
              verbose = TRUE) {
 
-        .checkDelayedArraySupport(object)
+        .supportsDelayedArray(object)
 
         outType <- match.arg(outType)
         array <- annotation(object)[["array"]]
@@ -414,7 +414,7 @@ setMethod(
                          "IlluminaHumanMethylation27k"),
              verbose = TRUE) {
 
-        .checkDelayedArraySupport(object)
+        .supportsDelayedArray(object)
 
         outType <- match.arg(outType)
         array <- annotation(object)[["array"]]

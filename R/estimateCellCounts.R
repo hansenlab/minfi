@@ -3,7 +3,7 @@
 pickCompProbes <- function(mSet, cellTypes = NULL, numProbes = 50,
                            compositeCellType = compositeCellType,
                            probeSelect = probeSelect) {
-    .checkDelayedArraySupport(mSet)
+    .supportsDelayedArray(mSet)
     splitit <- function(x) {
         split(seq_along(x), x)
     }
