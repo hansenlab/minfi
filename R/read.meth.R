@@ -1,28 +1,37 @@
+# Internal functions -----------------------------------------------------------
+
 .guessArrayTypes <- function(nProbes) {
-    if(nProbes >= 622000 && nProbes <= 623000) {
-        arrayAnnotation <- c(array = "IlluminaHumanMethylation450k", annotation = .default.450k.annotation)
-    } else if(nProbes >= 1050000 && nProbes <= 1053000) {
-        ## "Current EPIC scan type"
-        arrayAnnotation <- c(array = "IlluminaHumanMethylationEPIC", annotation = .default.epic.annotation)
-    } else if(nProbes >= 1032000 && nProbes <= 1033000) {
-        ## "Old EPIC scan type"
-        arrayAnnotation <- c(array = "IlluminaHumanMethylationEPIC", annotation = .default.epic.annotation)
-    } else if(nProbes >= 54000 && nProbes <= 56000) {
-        arrayAnnotation <- c(array = "IlluminaHumanMethylation27k", annotation = .default.27k.annotation)
+    if (nProbes >= 622000 && nProbes <= 623000) {
+        arrayAnnotation <- c(
+            array = "IlluminaHumanMethylation450k",
+            annotation = .default.450k.annotation)
+    } else if (nProbes >= 1050000 && nProbes <= 1053000) {
+        # NOTE: "Current EPIC scan type"
+        arrayAnnotation <- c(
+            array = "IlluminaHumanMethylationEPIC",
+            annotation = .default.epic.annotation)
+    } else if (nProbes >= 1032000 && nProbes <= 1033000) {
+        # NOTE: "Old EPIC scan type"
+        arrayAnnotation <- c(
+            array = "IlluminaHumanMethylationEPIC",
+            annotation = .default.epic.annotation)
+    } else if (nProbes >= 54000 && nProbes <= 56000) {
+        arrayAnnotation <- c(
+            array = "IlluminaHumanMethylation27k",
+            annotation = .default.27k.annotation)
     } else {
         arrayAnnotation <- c(array = "Unknown", annotation = "Unknown")
     }
     arrayAnnotation
 }
 
-# TODO: Add BACKEND, BPREDO, and BPPARAM arguments (or similar) to give the
-#       user more explicit control over what backends are used for storing the
-#       data and parallelisation
+# Exported functions -----------------------------------------------------------
+
 read.metharray <- function(basenames, extended = FALSE, verbose = FALSE,
                            force = FALSE) {
 
     # TODO: Need to think about API. Currently, if `BACKEND` is NULL then the
-    #       RGSet is matrix-backed. However, within DelayedArray,
+    #       RGSet is matrix-backed. However, within the DelayedArray package,
     #       BACKEND = NULL means to create a DelayedArray with an ordinary
     #       array as the seed. This is a source of slight tension. However, in
     #       general there is no advantage to using a DelayedMatrix with an
@@ -59,7 +68,8 @@ read.metharray <- function(basenames, extended = FALSE, verbose = FALSE,
              paste(noexits, collapse = ", "))
     }
 
-    # Load 'Quants' from IDAT file, including 'SD' and 'NBeads' if extend is TRUE
+    # Load 'Quants' from IDAT file, including 'SD' and 'NBeads' if extend is
+    #       TRUE
     # TODO: Perform fewer realizations. E.g., if the block size is set large
     #       enough so that k arrays' data can be kept in memory then should
     #       only perform a realization every k-th array.
@@ -110,9 +120,9 @@ read.metharray <- function(basenames, extended = FALSE, verbose = FALSE,
              "different size and type.")
     }
     if (!sameLength && sameArray && !force) {
-        stop("[read.metharray] Trying to parse IDAT files with different array ",
-             "size but seemingly all of the same type.\n  You can force this by ",
-             "'force=TRUE', see the man page ?read.metharray")
+        stop("[read.metharray] Trying to parse IDAT files with different ",
+             "array size but seemingly all of the same type.\n  You can force ",
+             "this by 'force=TRUE', see the man page ?read.metharray")
     }
     commonAddresses <- as.character(
         Reduce("intersect", lapply(G.Quants, rownames)))
@@ -174,60 +184,92 @@ read.metharray.sheet <- function(base, pattern = "csv$", ignore.case = TRUE,
                                  recursive = TRUE, verbose = TRUE) {
     readSheet <- function(file) {
         dataheader <- grep("^\\[DATA\\]", readLines(file), ignore.case = TRUE)
-        if(length(dataheader) == 0)
-            dataheader <- 0
+        if (length(dataheader) == 0) dataheader <- 0
         df <- read.csv(file, stringsAsFactor = FALSE, skip = dataheader)
-        if(length(nam <- grep("Sentrix_Position", names(df), ignore.case = TRUE, value = TRUE)) == 1) {
+        nam <- grep(
+            pattern = "Sentrix_Position",
+            x = names(df),
+            ignore.case = TRUE,
+            value = TRUE)
+        if (length(nam) == 1) {
             df$Array <- as.character(df[, nam])
             df[, nam] <- NULL
         }
-        if(length(nam <- grep("Array[\\._]ID", names(df), ignore.case = TRUE, value = TRUE)) == 1) {
+        nam <- grep(
+            pattern = "Array[\\._]ID",
+            x = names(df),
+            ignore.case = TRUE,
+            value = TRUE)
+        if (length(nam) == 1) {
             df$Array <- as.character(df[, nam])
             df[, nam] <- NULL
         }
-        if(! "Array" %in% names(df))
+        if (!"Array" %in% names(df)) {
             warning(sprintf("Could not infer array name for file: %s", file))
-        if(length(nam <- grep("Sentrix_ID", names(df), ignore.case = TRUE, value = TRUE)) == 1) {
+        }
+        nam <- grep("Sentrix_ID", names(df), ignore.case = TRUE, value = TRUE)
+        if (length(nam) == 1) {
             df$Slide <- as.character(df[, nam])
             df[, nam] <- NULL
         }
-        if(length(nam <- grep("Slide[\\._]ID", names(df), ignore.case = TRUE, value = TRUE)) == 1) {
+        nam <- grep(
+            pattern = "Slide[\\._]ID",
+            x = names(df),
+            ignore.case = TRUE,
+            value = TRUE)
+        if (length(nam) == 1) {
             df$Slide <- as.character(df[, nam])
             df[, nam] <- NULL
         }
-        if(! "Slide" %in% names(df))
+        if (!"Slide" %in% names(df)) {
             warning(sprintf("Could not infer slide name for file: %s", file))
-        else
+        } else {
             df[, "Slide"] <- as.character(df[, "Slide"])
-        if(length(nam <- grep("Plate[\\._]ID", names(df), ignore.case = TRUE, value = TRUE)) == 1) {
+        }
+        nam <- grep(
+            pattern = "Plate[\\._]ID",
+            x = names(df),
+            ignore.case = TRUE,
+            value = TRUE)
+        if (length(name) == 1) {
             df$Plate <- as.character(df[, nam])
             df[, nam] <- NULL
         }
-        for(nam in c("Pool_ID", "Sample_Plate", "Sample_Well")) {
-            if(nam %in% names(df)) {
+        for (nam in c("Pool_ID", "Sample_Plate", "Sample_Well")) {
+            if (nam %in% names(df)) {
                 df[[nam]] <- as.character(df[[nam]])
             }
         }
 
-        if(!is.null(df$Array)) {
+        if (!is.null(df$Array)) {
             patterns <- sprintf("%s_%s_Grn.idat", df$Slide, df$Array)
-            allfiles <- list.files(dirname(file), recursive = recursive, full.names = TRUE)
-            basenames <- sapply(patterns, function(xx) grep(xx, allfiles, value = TRUE))
+            allfiles <- list.files(
+                path = dirname(file),
+                recursive = recursive,
+                full.names = TRUE)
+            # TODO: Switch sapply() to vapply()
+            basenames <- sapply(
+                X = patterns,
+                FUN = function(xx) grep(xx, allfiles, value = TRUE))
             names(basenames) <- NULL
             basenames <- sub("_Grn\\.idat.*", "", basenames, ignore.case = TRUE)
             df$Basename <- basenames
         }
         df
     }
-    if(!all(file.exists(base)))
-        stop("'base' does not exists")
+    if (!all(file.exists(base))) stop("'base' does not exists")
     info <- file.info(base)
-    if(!all(info$isdir) && !all(!info$isdir))
+    if (!all(info$isdir) && !all(!info$isdir)) {
         stop("'base needs to be either directories or files")
-    if(all(info$isdir)) {
-        csvfiles <- list.files(base, recursive = recursive, pattern = pattern,
-                               ignore.case = ignore.case, full.names = TRUE)
-        if(verbose) {
+    }
+    if (all(info$isdir)) {
+        csvfiles <- list.files(
+            path = base,
+            recursive = recursive,
+            pattern = pattern,
+            ignore.case = ignore.case,
+            full.names = TRUE)
+        if (verbose) {
             message("[read.metharray.sheet] Found the following CSV files:")
             print(csvfiles)
         }
@@ -235,50 +277,82 @@ read.metharray.sheet <- function(base, pattern = "csv$", ignore.case = TRUE,
         csvfiles <- list.files(base, full.names = TRUE)
     dfs <- lapply(csvfiles, readSheet)
     namesUnion <- Reduce(union, lapply(dfs, names))
-    df <- do.call(rbind, lapply(dfs, function(df) {
-        newnames <- setdiff(namesUnion, names(df))
-        newdf <- matrix(NA, ncol = length(newnames), nrow = nrow(df), dimnames = list(NULL, newnames))
-        cbind(df, as.data.frame(newdf))
-    }))
+    df <- do.call(
+        what = rbind,
+        args = lapply(dfs, function(df) {
+            newnames <- setdiff(namesUnion, names(df))
+            newdf <- matrix(
+                data = NA,
+                ncol = length(newnames),
+                nrow = nrow(df),
+                dimnames = list(NULL, newnames))
+            cbind(df, as.data.frame(newdf))
+        }))
     df
 }
 
-
 read.metharray.exp <- function(base = NULL, targets = NULL, extended = FALSE,
-                               recursive = FALSE, verbose = FALSE, force = FALSE) {
-    if(!is.null(targets)) {
-        if(! "Basename" %in% names(targets))
+                               recursive = FALSE, verbose = FALSE,
+                               force = FALSE) {
+    if (!is.null(targets)) {
+        if (!"Basename" %in% names(targets)) {
             stop("Need 'Basename' amongst the column names of 'targets'")
-        if(!is.null(base)) {
+        }
+        if (!is.null(base)) {
             files <- file.path(base, basename(targets$Basename))
         } else {
             files <- targets$Basename
         }
-        rgSet <- read.metharray(files, extended = extended, verbose = verbose, force = force)
+        rgSet <- read.metharray(
+            basenames = files,
+            extended = extended,
+            verbose = verbose,
+            force = force)
         pD <- targets
         pD$filenames <- files
         rownames(pD) <- colnames(rgSet)
         colData(rgSet) <- as(pD, "DataFrame")
         return(rgSet)
     }
-    ## Now we just read all files in the directory
-    Grn.files <- list.files(base, pattern = "_Grn.idat$", recursive = recursive,
-                            ignore.case = TRUE, full.names = TRUE)
-    Red.files <- list.files(base, pattern = "_Red.idat$", recursive = recursive,
-                            ignore.case = TRUE, full.names = TRUE)
-    if(length(Grn.files) == 0 || length(Red.files) == 0)
+    # Now we just read all files in the directory
+    Grn.files <- list.files(
+        path = base,
+        pattern = "_Grn.idat$",
+        recursive = recursive,
+        ignore.case = TRUE,
+        full.names = TRUE)
+    Red.files <- list.files(
+        path = base,
+        pattern = "_Red.idat$",
+        recursive = recursive,
+        ignore.case = TRUE,
+        full.names = TRUE)
+    if (length(Grn.files) == 0 || length(Red.files) == 0) {
         stop("No IDAT files were found")
-    commonFiles <- intersect(sub("_Grn.idat$", "", Grn.files), sub("_Red.idat$", "", Red.files))
-    if(length(commonFiles) == 0)
+    }
+    commonFiles <- intersect(
+        x = sub("_Grn.idat$", "", Grn.files),
+        y = sub("_Red.idat$", "", Red.files))
+    if (length(commonFiles) == 0) {
         stop("No IDAT files with both Red and Green channel were found")
+    }
     commonFiles.Grn <- paste(commonFiles, "_Grn.idat", sep = "")
     commonFiles.Red <- paste(commonFiles, "_Red.idat", sep = "")
-    if(!setequal(commonFiles.Grn, Grn.files))
-        warning(sprintf("the following files only exists for the green channel: %s",
-                        paste(setdiff(Grn.files, commonFiles.Grn), collapse = ", ")))
-    if(!setequal(commonFiles.Red, Red.files))
-        warning(sprintf("the following files only exists for the red channel: %s",
-                        paste(setdiff(Red.files, commonFiles.Red), collapse = ", ")))
-    rgSet <- read.metharray(basenames = commonFiles, extended = extended, verbose = verbose, force = force)
-    rgSet
+    if (!setequal(commonFiles.Grn, Grn.files)) {
+        warning(
+            sprintf("the following files only exists for the green channel: %s",
+                    paste(
+                        setdiff(Grn.files, commonFiles.Grn), collapse = ", ")))
+    }
+    if (!setequal(commonFiles.Red, Red.files)) {
+        warning(
+            sprintf("the following files only exists for the red channel: %s",
+                    paste(
+                        setdiff(Red.files, commonFiles.Red), collapse = ", ")))
+    }
+    read.metharray(
+        basenames = commonFiles,
+        extended = extended,
+        verbose = verbose,
+        force = force)
 }
