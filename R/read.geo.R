@@ -225,7 +225,7 @@ readTCGA <- function(filename, sep = "\t", keyName = "Composite Element REF",
         c(grep(keyName, colnames[[2]]), grep(Betaname,colnames[[2]])))
 
     mat <- fread(
-        filename = filename,
+        input = filename,
         header = FALSE,
         sep = sep,
         select = select,
@@ -267,7 +267,7 @@ readGEORawFile <- function(filename, sep = ",", Uname = "Unmethylated signal",
     select <- sort(c(row.names, grep(Uname,colnames), grep(Mname,colnames)))
 
     mat <- fread(
-        filename = filename,
+        input = filename,
         header = TRUE,
         sep = sep,
         select = select,
