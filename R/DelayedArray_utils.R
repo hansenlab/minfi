@@ -33,6 +33,14 @@ rowGrid <- function(x) {
     RegularArrayGrid(dim(x), spacings)
 }
 
+# Get the 'highest' DelayedArray::type() of array-like objects -----------------
+.highestType <- function(...) {
+    dots <- list(...)
+    types <- vapply(dots, DelayedArray::type, character(1L))
+    vector <- do.call(c, lapply(types, vector))
+    DelayedArray:::type(vector)
+}
+
 # Advanced block processing routines -------------------------------------------
 
 # NOTE: DelayedArray::blockApply() with the option to write the blocks to
