@@ -40,6 +40,18 @@ setClass(
     out
 }
 
+.show.availableAnnotation <- function(object, indent = "  ") {
+    available <- .availableAnnotation(object)
+    cat("Available annotation\n")
+    sapply(available$names, function(xx) {
+        cat(sprintf("%s%s\n", indent, xx))
+    })
+    cat("Defaults\n")
+    sapply(available$defaults, function(xx) {
+        cat(sprintf("%s%s\n", indent, xx))
+    })
+}
+
 .annoGet <- function(what, envir) {
     pointer <- get(what, envir = envir)
     if (is(pointer, "DataFrame")) return(pointer)
