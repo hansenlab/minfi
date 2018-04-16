@@ -58,11 +58,11 @@ Imports:  S4Vectors,
      BiocParallel
 Collate:  generics.R
 	  MethylSet-class.R
-	  rset.R
+	  RatioSet-class.R
 	  RGChannelSet-class.R
 	  RGChannelSetExtended-class.R
-	  gmset.R
-	  grset.R
+	  GenomicMethylSet-class.R
+	  GenomicRatioSet-class.R
 	  eSet_methods.R
 	  utils.R
 	  manifest.R
