@@ -231,3 +231,13 @@ blockMapplyWithRealization <- function(FUN, ..., MoreArgs = NULL, sinks = NULL,
     BPREDO = BPREDO,
     BPPARAM = BPPARAM)
 }
+
+
+# Unsupported method error message ---------------------------------------------
+
+.supportsDelayedArray <- function(se) {
+    if (any(vapply(assays(se), is, logical(1L), "DelayedArray"))) {
+        stop("This function does not yet support DelayedArray-backed minfi ",
+             "objects")
+    }
+}
