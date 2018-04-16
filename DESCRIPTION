@@ -65,7 +65,7 @@ Collate:  AllGenerics.R
 	  GenomicRatioSet-class.R
 	  eSet_methods.R
 	  utils.R
-	  manifest.R
+	  IlluminaMethylationManifest-class.R
 	  anno.R
 	  minfiQC.R
 	  getSex.R
