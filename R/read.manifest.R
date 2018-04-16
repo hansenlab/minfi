@@ -163,8 +163,8 @@ read.manifest.450k <- function(file) {
 
 read.manifest.27k <- function(file) {
     # NOTE: As is, requires grep
-    control.line <- system
-    (sprintf("grep -a -n \\\\[Controls\\\\] %s", file), intern = TRUE)
+    control.line <- system(
+        sprintf("grep -a -n \\\\[Controls\\\\] %s", file), intern = TRUE)
     control.line <- as.integer(sub(":.*", "", control.line))
     assay.line <- system(
         sprintf("grep -a -n \\\\[Assay\\\\] %s", file), intern = TRUE)
