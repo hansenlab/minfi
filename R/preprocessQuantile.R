@@ -90,19 +90,13 @@
 
 # Exported functions -----------------------------------------------------------
 
-# TODO: Document: Quantile normalization currently requires that all data are
-#       loaded into memory
-# TODO: Is there a way to do column-block-processing and achieve identical (or
-#       near-enough-to-identical) results? This problem should be solved
-#       separately from the minfi package, i.e. there should be a quantile
-#       normalization routine for DelayedMatrix objects that can be shared
-#       across packages.
 preprocessQuantile <- function(object, fixOutliers = TRUE,
                                removeBadSamples = FALSE, badSampleCutoff = 10.5,
                                quantileNormalize = TRUE, stratified = TRUE,
                                mergeManifest = FALSE, sex = NULL,
                                verbose = TRUE) {
     # Check inputs
+    .supportsDelayedArray(object)
     # NOTE (Kasper): We could use [Genomic]MethylSet if the object has been
     #                processed with preprocessRaw()
     # TODO: Add the above support?
@@ -167,8 +161,7 @@ preprocessQuantile <- function(object, fixOutliers = TRUE,
         if (verbose) message("[preprocessQuantile] Quantile normalizing.")
         if (!stratified) {
             U <- .qnormNotStratified(
-                # NOTE: This loads `U` into memory
-                mat = as.matrix(U),
+                mat = U,
                 auIndex = auIndex,
                 xIndex = xIndex,
                 yIndex = yIndex,
@@ -177,8 +170,7 @@ preprocessQuantile <- function(object, fixOutliers = TRUE,
                 U <- realize(U)
             }
             M <- .qnormNotStratified(
-                # NOTE: This loads `M` into memory
-                mat = as.matrix(M),
+                mat = M,
                 auIndex = auIndex,
                 xIndex = xIndex,
                 yIndex = yIndex,
@@ -191,8 +183,7 @@ preprocessQuantile <- function(object, fixOutliers = TRUE,
             regionType <- getIslandStatus(object)
             regionType[regionType %in% c("Shelf", "OpenSea")] <- "Far"
             U <- .qnormStratified(
-                # NOTE: This loads `U` into memory
-                mat = as.matrix(U),
+                mat = U,
                 auIndex = auIndex,
                 xIndex = xIndex,
                 yIndex = yIndex,
@@ -203,8 +194,7 @@ preprocessQuantile <- function(object, fixOutliers = TRUE,
                 U <- realize(U)
             }
             M <- .qnormStratified(
-                # NOTE: This loads `M` into memory
-                mat = as.matrix(M),
+                mat = M,
                 auIndex = auIndex,
                 xIndex = xIndex,
                 yIndex = yIndex,
