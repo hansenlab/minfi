@@ -177,7 +177,7 @@ preprocessSWAN <- function(rgSet, mSet = NULL, verbose = FALSE) {
     # Extract data to pass to low-level functions that construct normalized `M`
     # and `U`
     if (is.null(mSet)) {
-        MSet <- preprocessRaw(rgSet)
+        mSet <- preprocessRaw(rgSet)
     } else {
         .isMethylOrStop(mSet)
     }
@@ -188,13 +188,13 @@ preprocessSWAN <- function(rgSet, mSet = NULL, verbose = FALSE) {
     # TODO: Unclear why this is necessary
     CpG.counts$Name <- as.character(CpG.counts$Name)
     CpG.counts$Type <- rep(c("I", "II"), times = c(nrow(typeI), nrow(typeII)))
-    counts <- CpG.counts[CpG.counts$Name %in% rownames(MSet), ]
+    counts <- CpG.counts[CpG.counts$Name %in% rownames(mSet), ]
     subset <- min(
         table(counts$nCpG[counts$Type == "I" & counts$nCpG %in% 1:3]),
         table(counts$nCpG[counts$Type == "II" & counts$nCpG %in% 1:3]))
     bg <- bgIntensitySwan(rgSet)
-    Meth <- getMeth(MSet)
-    Unmeth <- getUnmeth(MSet)
+    Meth <- getMeth(mSet)
+    Unmeth <- getUnmeth(mSet)
     xNormSet <- lapply(c("I", "II"), function(type) {
         getSubset(counts$nCpG[counts$Type == type], subset)
     })
@@ -212,15 +212,15 @@ preprocessSWAN <- function(rgSet, mSet = NULL, verbose = FALSE) {
         bg = bg)
 
     # Construct MethylSet
-    assay(MSet, "Meth") <- M
-    assay(MSet, "Unmeth") <- U
-    MSet@preprocessMethod <- c(
+    assay(mSet, "Meth") <- M
+    assay(mSet, "Unmeth") <- U
+    mSet@preprocessMethod <- c(
         rg.norm = sprintf("SWAN (based on a MethylSet preprocesses as '%s'",
-                          preprocessMethod(MSet)[1]),
+                          preprocessMethod(mSet)[1]),
         minfi = as.character(packageVersion("minfi")),
         manifest = as.character(
             packageVersion(.getManifestString(annotation(rgSet)))))
-    MSet
+    mSet
 }
 
 # TODOs ------------------------------------------------------------------------
