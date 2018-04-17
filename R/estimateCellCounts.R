@@ -24,7 +24,7 @@ pickCompProbes <- function(mSet, cellTypes = NULL, numProbes = 50,
     prof <- vapply(
         X = splitit(pd$CellType),
         FUN = function(j) rowMeans2(p, cols = j),
-        FUN.VALUE = numeric(1L))
+        FUN.VALUE = numeric(nrow(p)))
     r <- rowRanges(p)
     compTable <- cbind(ffComp, prof, r, abs(r[, 1] - r[, 2]))
     names(compTable)[1] <- "Fstat"
@@ -222,8 +222,8 @@ validationCellType <- function(Y, pheno, modelFix, modelBatch=NULL,
 
 estimateCellCounts <- function(rgSet, compositeCellType = "Blood",
                                processMethod = "auto", probeSelect = "auto",
-                               cellTypes = c("CD8T","CD4T", "NK", "Bcell",
-                                             "Mono","Gran"),
+                               cellTypes = c("CD8T", "CD4T", "NK", "Bcell",
+                                             "Mono", "Gran"),
                                referencePlatform = c(
                                    "IlluminaHumanMethylation450k",
                                    "IlluminaHumanMethylationEPIC",
@@ -289,7 +289,7 @@ estimateCellCounts <- function(rgSet, compositeCellType = "Blood",
         probeSelect <- "both"
     }
 
-    if(verbose) {
+    if (verbose) {
         message("[estimateCellCounts] Combining user data with reference ",
                 "(flow sorted) data.\n")
     }
@@ -374,7 +374,3 @@ estimateCellCounts <- function(rgSet, compositeCellType = "Blood",
         counts
     }
 }
-
-
-
-
