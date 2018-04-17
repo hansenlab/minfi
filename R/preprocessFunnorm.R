@@ -8,6 +8,9 @@
 ##
 ## need stuff from gmodels.  Where?
 preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr = TRUE, keepCN = TRUE, ratioConvert = TRUE, verbose = TRUE) {
+
+    .supportsDelayedArray(rgSet)
+
     .isRGOrStop(rgSet)
     rgSet <- updateObject(rgSet) ## FIXM: might not KDH: technically, this should not be needed, but might be nice
 
