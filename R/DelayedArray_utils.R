@@ -73,7 +73,7 @@ blockApplyWithRealization <- function(x, FUN, ..., sink = NULL, x_grid = NULL,
         if (!is.array(block)) {
             block <- DelayedArray:::.as_array_or_matrix(block)
         }
-        attr(block, "from_grid") <- grid
+        attr(block, "from_grid") <- x_grid
         attr(block, "block_id") <- b
         block_ans <- FUN(block, ...)
         # NOTE: This is the only part different from DelayedArray::blockApply()
