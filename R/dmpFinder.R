@@ -8,10 +8,12 @@ dmpFinder <- function(dat, pheno, type = c("categorical", "continuous"),
     if (is(dat, "MethylSet")) {
         .supportsDelayedArray(dat)
         M <- getM(dat)
+    } else if (is(M, "DelayedMatrix")) {
+        stop("This function does not yet support DelayedArray objects")
     } else {
         stopifnot(is.numeric(dat))
         M <- dat
-        if (is.vector(M)) M <- matrix(M, nrow=1)
+        if (is.vector(M)) M <- matrix(M, nrow = 1)
     }
     n <- length(pheno)
     if (n != ncol(M)) stop("length of pheno does not equal number of samples")
@@ -24,7 +26,7 @@ dmpFinder <- function(dat, pheno, type = c("categorical", "continuous"),
             fit <- contrasts.fit(fit, contrasts(pheno))
             fit <- eBayes(fit)
             tab <- data.frame(
-                intercept=fit$coefficients[, 1],
+                intercept = fit$coefficients[, 1],
                 f = fit[["F"]],
                 pval = fit[["F.p.value"]])
         } else {
@@ -35,10 +37,10 @@ dmpFinder <- function(dat, pheno, type = c("categorical", "continuous"),
             df2 <- n - length(levels(pheno))
             Fstat <- ((RSS1 - RSS)/df1)/(RSS/df2)
             if (df2 > 1e+06) {
-                F.p.value <- pchisq(df1 * Fstat, df1, lower.tail=FALSE)
+                F.p.value <- pchisq(df1 * Fstat, df1, lower.tail = FALSE)
             }
             else {
-                F.p.value <- pf(Fstat, df1, df2, lower.tail=FALSE)
+                F.p.value <- pf(Fstat, df1, df2, lower.tail = FALSE)
             }
             tab <- data.frame(
                 intercept = fit$coefficients[, 1],
@@ -62,7 +64,7 @@ dmpFinder <- function(dat, pheno, type = c("categorical", "continuous"),
         stdev <- fit$stdev.unscaled
         if (is.vector(stdev)) stdev <- matrix(stdev, ncol = 2)
         t <- coef[, 2] / (stdev[, 2] * sigma)
-        pval <- 2 * pt(abs(t), df=df, lower.tail = FALSE)
+        pval <- 2 * pt(abs(t), df = df, lower.tail = FALSE)
         tab <- data.frame(
             intercept = coef[, 1],
             beta = coef[, 2],
