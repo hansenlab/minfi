@@ -231,7 +231,7 @@ read.metharray.sheet <- function(base, pattern = "csv$", ignore.case = TRUE,
             x = names(df),
             ignore.case = TRUE,
             value = TRUE)
-        if (length(name) == 1) {
+        if (length(nam) == 1) {
             df$Plate <- as.character(df[, nam])
             df[, nam] <- NULL
         }
@@ -273,8 +273,9 @@ read.metharray.sheet <- function(base, pattern = "csv$", ignore.case = TRUE,
             message("[read.metharray.sheet] Found the following CSV files:")
             print(csvfiles)
         }
-    } else
+    } else {
         csvfiles <- list.files(base, full.names = TRUE)
+    }
     dfs <- lapply(csvfiles, readSheet)
     namesUnion <- Reduce(union, lapply(dfs, names))
     df <- do.call(
