@@ -143,9 +143,9 @@ dyeCorrection <- function(Meth, Unmeth, Red, Green, control_probes, cy3.probes,
             FUN = function(x) {
                 sweep(x, MARGIN = 2, STATS = Green.factor, FUN = "*")
             })
-        meth[cy3.probes,] <- Grn$M
-        unmeth[cy3.probes,] <- Grn$U
-        meth[d2.probes,] <- Grn$D2
+        Meth[cy3.probes, ] <- Green$M
+        Unmeth[cy3.probes, ] <- Green$U
+        Meth[d2.probes, ] <- Green$D2
     }
 
     list(Meth = Meth, Unmeth = Unmeth)
