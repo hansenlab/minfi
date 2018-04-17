@@ -31,7 +31,7 @@ fixMethOutliers <- function(object, K = -3, verbose = FALSE) {
     if (verbose) message("[fixMethOutliers] fixing Meth channel\n")
     assay(object, "Meth") <- .fixMethOutliers(getMeth(object), K, verbose)
     if (verbose) message("[fixMethOutliers] fixing Unmeth channel\n")
-    assay(object, "Unmeth") <- .fixMethOutliers(getMeth(object), K, verbose)
+    assay(object, "Unmeth") <- .fixMethOutliers(getUnmeth(object), K, verbose)
     return(object)
 }
 
