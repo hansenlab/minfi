@@ -68,10 +68,10 @@ library(minfiData)
 # ------------------------------------------------------------------------------
 # DelayedArray tests
 
-assays(MsetEx) <- endoapply(assays(MsetEx), DelayedArray)
-assays(MsetEx.sub) <- endoapply(assays(MsetEx.sub), DelayedArray)
-assays(RGsetEx) <- endoapply(assays(RGsetEx), DelayedArray)
-assays(RGsetEx.sub) <- endoapply(assays(RGsetEx.sub), DelayedArray)
+MsetEx <- realize(MsetEx)
+MsetEx.sub <- realize(MsetEx.sub)
+RGsetEx <- realize(RGsetEx)
+RGsetEx.sub <- realize(RGsetEx.sub)
 ```
 
 
