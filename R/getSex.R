@@ -13,16 +13,18 @@ getSex <- function(object = NULL, cutoff = -2){
 }
 
 addSex <- function(object, sex = NULL) {
-    if(is.null(sex))
-        sex <- getSex(object)$predictedSex
-    if(is(sex, "DataFrame") && "predictedSex" %in% names(sex))
-        sex <- sex$predictedSex
-    sex <- .checkSex(sex)
-    .pDataAdd(object, DataFrame(predictedSex = sex))
+    if (is.null(sex)) 
+        sex <- getSex(object)
+    if (is(sex, "DataFrame") && "predictedSex" %in% names(sex)) {
+      stopifnot(all(c("predictedSex", "xMed", "yMed") %in% colnames(sex)))
+      sex <- sex[, c("xMed", "yMed", "predictedSex")]
+    }
+    .checkSex(sex$predictedSex)
+    .pDataAdd(object, DataFrame(sex))
 }
 
 plotSex <- function(object, id = NULL) {
-    stopifnot(all(c("predictedSex", "xMed", "yMed") %in% names(object)))
+    stopifnot(all(c("predictedSex", "xMed", "yMed") %in% colnames(pData(object))))
     if(is.null(id))
         id <- 1:length(object$predictedSex)
     if(length(id) != length(object$predictedSex))
