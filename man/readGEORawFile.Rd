@@ -20,17 +20,17 @@ readGEORawFile(filename, sep = ",", Uname = "Unmethylated signal",
   }
   \item{sep}{
     The field separator character.  Values on each line of the
-    file are separated by this character.  
+    file are separated by this character.
   }
   \item{Uname}{
     A string that uniquely identifies the columns containing the
-    unmethylated signals. 
+    unmethylated signals.
   }
   \item{Mname}{
     A string that uniquely identifies the columns containing the
     methylated signals.}
   \item{row.names}{
-    The column containing the feature (CpG) IDs. 
+    The column containing the feature (CpG) IDs.
   }
   \item{pData}{
     A \code{DataFrame} or \code{data.frame} describing the samples represented by the columns of
@@ -52,7 +52,7 @@ readGEORawFile(filename, sep = ",", Uname = "Unmethylated signal",
     TRUE displays progress on the console. It is
     produced in fread's C code.
   }
-} 
+}
 \details{
  450K experiments uploaded to GEO typically include a raw data file as
  part of the supplementary materials. Unfortunately there does not
@@ -62,7 +62,7 @@ readGEORawFile(filename, sep = ",", Uname = "Unmethylated signal",
  make sure the first column includes the feature (CpG) IDs. You can use the
  \code{\link{readLines}} function to decipher how to set these
  arguments.
- 
+
  Note that the function uses the \code{\link[data.table]{fread}}
 function in the \pkg{data.table} package to read the data. To install
 \pkg{data.table} type \code{install.packages("data.table")}. We use this
@@ -70,7 +70,7 @@ function in the \pkg{data.table} package to read the data. To install
 }
 \value{
   A \linkS4class{GenomicMethylSet} object.
-  
+
 }
 \author{
   Rafael A. Irizarry\email{rafa@jimmy.harvard.edu}.
@@ -80,9 +80,18 @@ function in the \pkg{data.table} package to read the data. To install
 }
 \examples{
 \dontrun{
-    ##Here is an example for GSE29290
-    gmset=read.GEORawFile("GSE29290_Matrix_Signal.txt",Uname="Signal_A",Mname="Signal_B",sep="\t")
-    ##Note: I changed 0,00 to 0.00 in the file first using sed:
-    ##sed s/,/\\./g GSE29290_Matrix_Signal.txt >  GSE29290_Matrix_Signal.txt
+library(GEOquery)
+getGEOSuppFiles("GSE29290")
+gunzip("GSE29290/GSE29290_Matrix_Signal.txt.gz")
+# NOTE: This particular example file uses a comma as the decimal separator
+#       (e.g., 0,00 instead of 0.00). We replace all such instances using the
+#       command line tool 'sed' before reading in the modified file.
+cmd <- paste0("sed s/,/\\./g GSE29290/GSE29290_Matrix_Signal.txt > ",
+              "GSE29290/GSE29290_Matrix_Signal_mod.txt")
+system(cmd)
+gmset <- readGEORawFile(filename = "GSE29290/GSE29290_Matrix_Signal_mod.txt",
+                        Uname = "Signal_A",
+                        Mname = "Signal_B",
+                        sep = "\t")
 }
 }
