@@ -6,7 +6,7 @@ mdsPlot <- function(dat, numPositions = 1000, sampNames = NULL,
                     legendNCol, main = NULL) {
     if (is(dat, "MethylSet") || is(dat, "RGChannelSet")) {
         b <- getBeta(dat)
-    } else if (is.matrix(dat, "matrix")) {
+    } else if (is(dat, "matrix")) {
         b <- dat
     } else {
         stop("dat must be an 'MethylSet', 'RGChannelSet', or 'matrix'.")
