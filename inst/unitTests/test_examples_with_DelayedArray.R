@@ -1,18 +1,19 @@
-# NOTE: Use the in-memory backend for testing all examples
-DelayedArray::setRealizationBackend(NULL)
-
 # A helper function to check whether two SummarizedExperiment objects are
 # equivalent
 checkEquivalentSummarizedExperiments <- function(SE1, SE2) {
+    stopifnot(require(SummarizedExperiment))
     stopifnot(is(SE1, "SummarizedExperiment"),
               is(SE2, "SummarizedExperiment"))
     assays(SE1) <- endoapply(assays(SE1), as.matrix)
     assays(SE2) <- endoapply(assays(SE2), as.matrix)
-    all.equal(SE1, SE2)
+    if (all.equal(SE1, SE2)) {
+        return(all.equal(assays(SE1), assays(SE2)))
+    }
+    FALSE
 }
 
 # TODO: Uncomment once bumphunter() supports DelayedArray-backed minfi
-#       objects and remove
+#       objects
 test_bumphunter_examples <- function() {
 
     stopifnot(require(minfiData))
@@ -428,19 +429,25 @@ test_preprocessSwan_examples <- function() {
     stopifnot(require(DelayedArray))
 
     # Original example
+    set.seed(666)
     MsetEx.sub.swan0 <- preprocessSWAN(RGsetEx.sub)
     dat0 <- preprocessRaw(RGsetEx)
+    set.seed(777)
     datSwan0 <- preprocessSWAN(RGsetEx, mSet = dat0)
     datIlmn0 <- preprocessIllumina(RGsetEx)
+    set.seed(888)
     datIlmnSwan0 <- preprocessSWAN(RGsetEx, mSet = datIlmn0)
 
     # DelayedArray-backed version
     RGsetEx.sub <- realize(RGsetEx.sub)
     RGsetEx <- realize(RGsetEx)
+    set.seed(666)
     MsetEx.sub.swan <- preprocessSWAN(RGsetEx.sub)
     dat <- preprocessRaw(RGsetEx)
+    set.seed(777)
     datSwan <- preprocessSWAN(RGsetEx, mSet = dat)
     datIlmn <- preprocessIllumina(RGsetEx)
+    set.seed(888)
     datIlmnSwan <- preprocessSWAN(RGsetEx, mSet = datIlmn)
 
     # Check equivalency

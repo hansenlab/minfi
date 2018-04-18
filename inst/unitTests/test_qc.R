@@ -1,23 +1,15 @@
 test_sex <- function() {
     stopifnot(require(minfiData))
+    stopifnot(require(DelayedArray))
     data(MsetEx)
+
+    # Original tests
     gmSet <- mapToGenome(MsetEx)
     gmSet <- addSex(gmSet)
     checkEquals(gmSet$sex, gmSet$predictedSex)
-}
 
-# ------------------------------------------------------------------------------
-# DelayedArray tests
-#
-
-library(DelayedArray)
-
-test_sex_with_DelayedArray <- function() {
-    stopifnot(require(minfiData))
-    data(MsetEx)
-
-    assays(MsetEx) <- endoapply(assays(MsetEx), DelayedArray)
-
+    # Testing with DelayedArray-backed objects
+    MsetEx <- realize(MsetEx)
     gmSet <- mapToGenome(MsetEx)
     gmSet <- addSex(gmSet)
     checkEquals(gmSet$sex, gmSet$predictedSex)
