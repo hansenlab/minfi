@@ -131,7 +131,6 @@ test_preprocessQuantile <- function() {
     #             minfi:::.digestMatrix(as.matrix(getCN(GRset))))
 }
 
-# TODO: These tests fail
 test_preprocessNoob <- function() {
     stopifnot(require(minfiData))
     stopifnot(require(digest))
