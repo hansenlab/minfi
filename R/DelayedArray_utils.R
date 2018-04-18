@@ -240,7 +240,6 @@ blockMapplyWithRealization <- function(FUN, ..., MoreArgs = NULL, sinks = NULL,
     BPPARAM = BPPARAM)
 }
 
-
 # Unsupported method error message ---------------------------------------------
 
 .supportsDelayedArray <- function(se) {
