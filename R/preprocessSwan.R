@@ -142,9 +142,17 @@ setMethod(
             type = ans_type)
         on.exit(close(sink))
 
+        # Coerce `bg` to a row vector
+        # NOTE: This is required in order to iterate in "parallel" over `x`,
+        #       `bg`, and `sink`.
+        bg <- matrix(bg, ncol = length(bg))
+
         # Set up ArrayGrid instances over `x` as well as "parallel" ArrayGrid
-        # instance over `sink`.
+        # instances over `bg` and `sink`.
         x_grid <- colGrid(x)
+        bg_grid <- RegularArrayGrid(
+            refdim = dim(bg),
+            spacings = c(nrow(bg), ncol(bg) / length(x_grid)))
         sink_grid <- RegularArrayGrid(
             refdim = dim(sink),
             spacings = c(nrow(sink), ncol(sink) / length(x_grid)))
@@ -153,15 +161,16 @@ setMethod(
 
         # Loop over column-blocks of `x`, perform SWAN normalization, and write
         # to `normalized_x_sink`
-        blockApplyWithRealization(
-            x = x,
-            xNormSet = xNormSet,
-            counts = counts,
-            bg = bg,
+        blockMapplyWithRealization(
             FUN = .preprocessSWAN,
-            sink = sink,
-            x_grid = x_grid,
-            sink_grid = sink_grid,
+            x = x,
+            bg = bg,
+            MoreArgs = list(
+                xNormSet = xNormSet,
+                counts = counts),
+            sinks = list(sink),
+            dots_grids = list(x_grid, bg_grid),
+            sinks_grids = list(sink_grid),
             BPREDO = BPREDO,
             BPPARAM = BPPARAM)
 
