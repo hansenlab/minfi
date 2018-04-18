@@ -247,7 +247,7 @@ setMethod(
 setMethod(
     ".preprocessNoob",
     c("DelayedMatrix", "DelayedMatrix"),
-    function(Meth, Unmeth, GreenOOb, RedOOB, Green_probes, Red_probes,
+    function(Meth, Unmeth, GreenOOB, RedOOB, Green_probes, Red_probes,
              d2.probes, offset, dyeCorr, Red, Green, control_probes,
              array_type, dyeMethod, verbose, BPREDO = list(),
              BPPARAM = SerialParam()) {
