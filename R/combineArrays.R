@@ -133,9 +133,6 @@ setMethod(
                          "IlluminaHumanMethylationEPIC"),
              verbose = TRUE) {
 
-        .supportsDelayedArray(object1)
-        .supportsDelayedArray(object2)
-
         outType <- match.arg(outType)
         array1 <- annotation(object1)[["array"]]
         array2 <- annotation(object2)[["array"]]
@@ -149,8 +146,8 @@ setMethod(
         features1 <- rownames(object1)
         features2 <- rownames(object2)
         features  <- intersect(features1, features2)
-        object1  <- object1[features,]
-        object2  <- object2[features,]
+        object1  <- object1[features, ]
+        object2  <- object2[features, ]
         rgSet <- combine(object1, object2)
         rgSet$ArrayTypes <- rep(
             x = c(array1, array2),
@@ -167,9 +164,6 @@ setMethod("combineArrays",
                                "IlluminaHumanMethylation27k"),
                    verbose = TRUE) {
 
-              .supportsDelayedArray(object1)
-              .supportsDelayedArray(object2)
-
               outType <- match.arg(outType)
               array1 <- annotation(object1)["array"]
               array2 <- annotation(object2)["array"]
@@ -183,8 +177,8 @@ setMethod("combineArrays",
                   outType = outType,
                   verbose = verbose)
               common.features <- intersect(rownames(object1), rownames(object2))
-              object1 <- object1[common.features,]
-              object2 <- object2[common.features,]
+              object1 <- object1[common.features, ]
+              object2 <- object2[common.features, ]
               Mset <- combine(object1, object2)
               Mset$ArrayTypes <- rep(
                   x = c(array1, array2),
@@ -201,9 +195,6 @@ setMethod("combineArrays",
                                "IlluminaHumanMethylation27k"),
                    verbose = TRUE) {
 
-              .supportsDelayedArray(object1)
-              .supportsDelayedArray(object2)
-
               outType <- match.arg(outType)
               array1 <- annotation(object1)["array"]
               array2 <- annotation(object2)["array"]
@@ -217,8 +208,8 @@ setMethod("combineArrays",
                   outType = outType,
                   verbose = verbose)
               common.features <- intersect(rownames(object1), rownames(object2))
-              object1 <- object1[common.features,]
-              object2 <- object2[common.features,]
+              object1 <- object1[common.features, ]
+              object2 <- object2[common.features, ]
               Rset <- combine(object1, object2)
               Rset$ArrayTypes <- rep(
                   x = c(array1, array2),
@@ -235,9 +226,6 @@ setMethod(
                          "IlluminaHumanMethylationEPIC",
                          "IlluminaHumanMethylation27k"),
              verbose = TRUE) {
-
-        .supportsDelayedArray(object1)
-        .supportsDelayedArray(object2)
 
         outType <- match.arg(outType)
         array1 <- annotation(object1)["array"]
@@ -277,9 +265,6 @@ setMethod(
                          "IlluminaHumanMethylationEPIC",
                          "IlluminaHumanMethylation27k"),
              verbose = TRUE) {
-
-        .supportsDelayedArray(object1)
-        .supportsDelayedArray(object2)
 
         outType <- match.arg(outType)
         array1 <- annotation(object1)["array"]

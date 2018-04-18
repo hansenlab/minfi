@@ -194,6 +194,6 @@ setMethod(
             .pDataFix(colData(y)))
         colData(x) <- colDataFix$x
         colData(y) <- colDataFix$y
-        cbind(x,y)
+        cbind(x, y)
     }
 )
