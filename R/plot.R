@@ -4,6 +4,7 @@ mdsPlot <- function(dat, numPositions = 1000, sampNames = NULL,
                     sampGroups = NULL, xlim, ylim, pch = 1,
                     pal = brewer.pal(8, "Dark2"), legendPos = "bottomleft",
                     legendNCol, main = NULL) {
+    # Check inputs
     if (is(dat, "MethylSet") || is(dat, "RGChannelSet")) {
         b <- getBeta(dat)
     } else if (is(dat, "matrix")) {
@@ -16,11 +17,12 @@ mdsPlot <- function(dat, numPositions = 1000, sampNames = NULL,
             "Beta MDS\n%d most variable positions",
             numPositions)
     }
+
     o <- order(rowVars(b), decreasing = TRUE)[seq_len(numPositions)]
     d <- dist(t(b[o, ]))
     fit <- cmdscale(d)
-    if (missing(xlim)) xlim <- range(fit[,1]) * 1.2
-    if (missing(ylim)) ylim <- range(fit[,2]) * 1.2
+    if (missing(xlim)) xlim <- range(fit[, 1]) * 1.2
+    if (missing(ylim)) ylim <- range(fit[, 2]) * 1.2
     if (is.null(sampGroups)) sampGroups <- rep(1, numPositions)
     sampGroups <- as.factor(sampGroups)
     col <- pal[sampGroups]
