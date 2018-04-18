@@ -17,10 +17,12 @@ test_compartments <- function() {
                 minfi:::.digestVector(gr.ab$pc, digits = 2))
 
     # Testing with DelayedArray-backed objects
+    MsetEx <- realize(MsetEx)
+    GMsetEx <- mapToGenome(MsetEx)
+    checkException(gr.cor <- createCorMatrix(GMsetEx, res = 500*1000),
+                   silent = TRUE)
     # TODO: Uncomment once createCorMatrix() supports DelayedArray-backed
     #       minfi objects
-    # MsetEx <- realize(MsetEx)
-    # GMsetEx <- mapToGenome(MsetEx)
     # gr.cor <- createCorMatrix(GMsetEx, res = 500*1000)
     # checkEquals(digest_compartments$cor.matrix,
     #             minfi:::.digestMatrix(gr.cor$cor.matrix))
