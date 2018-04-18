@@ -5,7 +5,7 @@ getSubset <- function(counts, subset){
     for (i in 1:3) {
         x <- c(x, sample(seq.int(1, length(counts))[counts == i], subset))
     }
-    return(seq.int(1, length(counts)) %in% x)
+    seq.int(1, length(counts)) %in% x
 }
 
 bgIntensitySwan <- function(rgSet) {
@@ -17,10 +17,10 @@ bgIntensitySwan <- function(rgSet) {
     redMed <- colMedians(
         x = getRed(rgSet),
         rows = rows)
-    return(rowMeans(cbind(grnMed, redMed)))
+    rowMeans(cbind(grnMed, redMed))
 }
 
-# TODO: Profile
+# TODO: Profile and tidy
 normaliseChannel <- function(intensityI, intensityII, xNormSet, bg) {
     xTarget <- aveQuantile(
         list(intensityI[xNormSet[[1]]], intensityII[xNormSet[[2]]]))
@@ -31,7 +31,7 @@ normaliseChannel <- function(intensityI, intensityII, xNormSet, bg) {
     xNorm
 }
 
-# TODO: Profile
+# TODO: Profile and tidy
 aveQuantile <- function(X) {
     nbrOfChannels <- length(X)
     if (nbrOfChannels == 1) {
@@ -61,7 +61,7 @@ aveQuantile <- function(X) {
     xTarget
 }
 
-# TODO: Profile
+# TODO: Profile and tidy
 subsetQuantileNorm <- function(x, xNormSet, xTarget, bg) {
     for(i in 1:length(x)){
         n <- length(x[[i]])
