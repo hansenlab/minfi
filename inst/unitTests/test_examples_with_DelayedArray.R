@@ -87,24 +87,21 @@ test_compartments_examples <- function() {
     # checkEquals(comps0, comps)
 }
 
-# TODO: Uncomment once convertArray() supports DelayedArray-backed minfi objects
 test_convertArray_examples <- function() {
     stopifnot(require(minfiData))
     stopifnot(require(DelayedArray))
 
     # Original example
-    # data(RGsetEx.sub)
-    # rgSet <- convertArray(RGsetEx.sub, outType = "IlluminaHumanMethylationEPIC")
-    # rgSet0 <- rgSet
+    data(RGsetEx.sub)
+    rgSet <- convertArray(RGsetEx.sub, outType = "IlluminaHumanMethylationEPIC")
+    rgSet0 <- rgSet
 
     # DelayedArray-backed version
     RGsetEx.sub <- realize(RGsetEx.sub)
-    checkException(rgSet <- convertArray(
-        RGsetEx.sub, outType = "IlluminaHumanMethylationEPIC"),
-        silent = TRUE)
+    rgSet <- convertArray(RGsetEx.sub, outType = "IlluminaHumanMethylationEPIC")
 
     # Check equivalency
-    # checkEquivalentSummarizedExperiments(rgSet0, rgSet)
+    checkEquivalentSummarizedExperiments(rgSet0, rgSet)
 }
 
 test_detectionP_examples <- function() {
