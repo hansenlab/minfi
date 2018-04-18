@@ -37,7 +37,7 @@ normexp.get.xcs <- function(xcf, params) {
         sigma = log(params[[grep("sigma", names(params), value = TRUE)]]),
         alpha = log(params[[grep("alpha", names(params), value = TRUE)]]))
     for (i in seq_len(ncol(xcf))) {
-        xcf[, i] <- normexp.signal(as.numeric((pars[i, ])), xcf[, i] )
+        xcf[, i] <- normexp.signal(as.numeric(pars[i, ]), xcf[, i])
     }
 
     xcf + params[[grep("offset", names(params), value = TRUE)]][1]
@@ -86,12 +86,10 @@ dyeCorrection <- function(Meth, Unmeth, Red, Green, control_probes,
     }
 
     # Dye bias normalization with the corrected Illumina control probes
-    Green.avg <- colMeans2(
-        x = internal.controls[["Green"]],
-        rows = CG.controls)
-    Red.avg <- colMeans2(
-        x = internal.controls[["Red"]],
-        rows = AT.controls)
+    Green.avg <- colMeans(
+        internal.controls[["Green"]][CG.controls, , drop = FALSE])
+    Red.avg <- colMeans(
+        internal.controls[["Red"]][AT.controls, , drop = FALSE])
     R.G.ratio <- Red.avg / Green.avg
 
     if (dyeMethod == "single") {
