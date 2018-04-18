@@ -111,8 +111,7 @@
     # TODO: Remove commented code if not needed
     ## if(method == "nipals")
     ##     pc <- mixOmics::nipals(matrix, ncomp = 1)$p[,1]
-    pc <- .fsvd(matrix, k = 1, method = method)$u
-    pc
+    .fsvd(matrix, k = 1, method = method)$u
 }
 
 .meanSmoother <- function(x, k = 1L, iter = 2L, na.rm = TRUE) {
@@ -120,9 +119,9 @@
         n <- length(x)
         y <- rep(NA_real_, n)
 
-        window.mean <- function(x, j, k, na.rm=na.rm){
+        window.mean <- function(x, j, k, na.rm = na.rm){
             if (k >= 1) {
-                return(mean(seq(j - (k + 1L), j + k), na.rm = na.rm))
+                return(mean(x[seq(j - (k + 1L), j + k)], na.rm = na.rm))
             } else {
                 x[j]
             }
@@ -132,7 +131,7 @@
             y[i] <- window.mean(x, i, k, na.rm)
         }
         for (i in seq_len(k)) {
-            y[i] <- window.mean(x, i, i - 1, na.rm)
+            y[i] <- window.mean(x, i, i - 1L, na.rm)
         }
         for (i in seq(n - k + 1L, n)) {
             y[i] <- window.mean(x, i, n - i, na.rm)
@@ -145,7 +144,6 @@
     }
     x
 }
-
 
 .unitarize <- function(x, medianCenter = TRUE) {
     if (medianCenter) x <- x - median(x, na.rm = TRUE)
