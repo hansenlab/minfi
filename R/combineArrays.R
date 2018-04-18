@@ -26,14 +26,11 @@
     probes
 }
 
-
 # Convert the rgSet into the outType array.
 .convertArray_450k_epic <- function(rgSet,
                                     outType = c("IlluminaHumanMethylation450k",
                                                 "IlluminaHumanMethylationEPIC"),
                                     verbose = verbose) {
-
-    .supportsDelayedArray(rgSet)
 
     outType <- match.arg(outType)
     .isRGOrStop(rgSet)
@@ -55,8 +52,8 @@
     probes1 <- getProbeInfo(manifest1, type = "I")
     probes2 <- getProbeInfo(manifest2, type = "I")
     commonNames <- intersect(probes1$Name, probes2$Name)
-    probes1 <- probes1[match(commonNames, probes1$Name),]
-    probes2 <- probes2[match(commonNames, probes2$Name),]
+    probes1 <- probes1[match(commonNames, probes1$Name), ]
+    probes2 <- probes2[match(commonNames, probes2$Name), ]
     stopifnot(all(probes1$Color == probes2$Color))
     stopifnot(all(probes1$ProbeSeqA == probes2$ProbeSeqA))
     stopifnot(all(probes1$ProbeSeqB == probes2$ProbeSeqB))
@@ -118,9 +115,10 @@
     probes2 <- probes2[match(commonAddress, probes2$Address),]
     keepAddresses$Control <- unname(probes1$Address)
 
+    # Update rgSet
     keepAddresses <- do.call("c", keepAddresses)
     keepAddresses <- keepAddresses[keepAddresses %in% rownames(rgSet)]
-    rgSet  <- rgSet[keepAddresses,]
+    rgSet  <- rgSet[keepAddresses, ]
     annotation(rgSet) <- .getAnnotationFromOutType(outType)
     rgSet
 }
@@ -319,17 +317,14 @@ setMethod(
                          "IlluminaHumanMethylationEPIC"),
              verbose = TRUE) {
 
-        .supportsDelayedArray(object)
-
         outType <- match.arg(outType)
         array <- annotation(object)[["array"]]
         if (array == outType) return(object)
         if (verbose) message(sprintf("[convertArray] Casting as %s", outType))
-        rgSet <- .convertArray_450k_epic(
+        .convertArray_450k_epic(
             rgSet = object,
             outType = outType,
             verbose = verbose)
-        rgSet
     }
 )
 
@@ -342,8 +337,6 @@ setMethod(
                          "IlluminaHumanMethylation27k"),
              verbose = TRUE) {
 
-        .supportsDelayedArray(object)
-
         outType <- match.arg(outType)
         array <- annotation(object)[["array"]]
         if (array == outType) return(object)
@@ -351,7 +344,7 @@ setMethod(
         common.features <- intersect(
             x = rownames(object),
             y = .getLociFromOutType(outType))
-        object <- object[common.features,]
+        object <- object[common.features, ]
         annotation(object) <- .getAnnotationFromOutType(outType)
         object
     }
@@ -366,8 +359,6 @@ setMethod(
                          "IlluminaHumanMethylation27k"),
              verbose = TRUE) {
 
-        .supportsDelayedArray(object)
-
         outType <- match.arg(outType)
         array <- annotation(object)[["array"]]
         if (array == outType) return(object)
@@ -375,7 +366,7 @@ setMethod(
         common.features <- intersect(
             x = rownames(object),
             y = .getLociFromOutType(outType))
-        object <- object[common.features,]
+        object <- object[common.features, ]
         annotation(object) <- .getAnnotationFromOutType(outType)
         object
     }
@@ -390,7 +381,6 @@ setMethod(
                          "IlluminaHumanMethylation27k"),
              verbose = TRUE) {
 
-        .supportsDelayedArray(object)
 
         outType <- match.arg(outType)
         array <- annotation(object)[["array"]]
@@ -399,7 +389,7 @@ setMethod(
         common.features <- intersect(
             x = rownames(object),
             y = .getLociFromOutType(outType))
-        object <- object[common.features,]
+        object <- object[common.features, ]
         object@annotation <- .getAnnotationFromOutType(outType)
         object
     }
@@ -414,8 +404,6 @@ setMethod(
                          "IlluminaHumanMethylation27k"),
              verbose = TRUE) {
 
-        .supportsDelayedArray(object)
-
         outType <- match.arg(outType)
         array <- annotation(object)[["array"]]
         if (array == outType) return(object)
@@ -423,12 +411,12 @@ setMethod(
         common.features <- intersect(
             x = rownames(object),
             y = .getLociFromOutType(outType))
-        object <- object[common.features,]
+        object <- object[common.features, ]
         object@annotation <- .getAnnotationFromOutType(outType)
         object
-    })
+    }
+)
 
 # TODOs ------------------------------------------------------------------------
 
 # TODO: Lots of duplicated code; DRY
-
