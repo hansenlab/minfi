@@ -11,7 +11,8 @@ Authors@R: c(person(c("Kasper", "Daniel"), "Hansen", role = c("cre", "aut"),
              person(c("E.", "Andres"), "Houseman", role = "ctb"),
              person("Jean-Philippe", "Fortin", role = "ctb"),
              person("Tim", "Triche", role = "ctb"),
-             person(c("Shan", "V."), "Andrews", role = "ctb"))
+             person(c("Shan", "V."), "Andrews", role = "ctb"),
+             person(c("Peter", "F."), "Hickey", role = "ctb"))
 Depends:  methods,
 	  BiocGenerics (>= 0.15.3),
 	  GenomicRanges,
