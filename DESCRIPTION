@@ -1,5 +1,5 @@
 Package: minfi
-Version: 1.25.1
+Version: 1.25.2
 Title: Analyze Illumina Infinium DNA methylation arrays
 Description: Tools to analyze & visualize Illumina Infinium methylation arrays.
 Authors@R: c(person(c("Kasper", "Daniel"), "Hansen", role = c("cre", "aut"),
@@ -11,7 +11,8 @@ Authors@R: c(person(c("Kasper", "Daniel"), "Hansen", role = c("cre", "aut"),
              person(c("E.", "Andres"), "Houseman", role = "ctb"),
              person("Jean-Philippe", "Fortin", role = "ctb"),
              person("Tim", "Triche", role = "ctb"),
-             person(c("Shan", "V."), "Andrews", role = "ctb"))
+             person(c("Shan", "V."), "Andrews", role = "ctb"),
+             person(c("Peter", "F."), "Hickey", role = "ctb"))
 Depends:  methods,
 	  BiocGenerics (>= 0.15.3),
 	  GenomicRanges,
@@ -27,7 +28,8 @@ Suggests: IlluminaHumanMethylation450kmanifest (>= 0.2.0),
 	  digest,
 	  BiocStyle,
 	  knitr,
-	  rmarkdown
+	  rmarkdown,
+	  tools
 Imports:  S4Vectors,
 	  GenomeInfoDb,
 	  Biobase (>= 2.33.2),
@@ -40,7 +42,7 @@ Imports:  S4Vectors,
 	  limma,
 	  preprocessCore,
 	  illuminaio,
-	  matrixStats (>= 0.50.0),
+	  DelayedMatrixStats,
 	  mclust,
 	  genefilter,
 	  nlme,
@@ -52,24 +54,30 @@ Imports:  S4Vectors,
           stats,
           grDevices,
           graphics,
-          utils
-Collate:  generics.R
-	  mset.R
-	  rset.R
-	  rgset.R
-	  gmset.R
-	  grset.R
+          utils,
+     DelayedArray (>= 0.5.23),
+     HDF5Array,
+     BiocParallel
+Collate:  AllGenerics.R
+	  MethylSet-class.R
+	  RatioSet-class.R
+	  RGChannelSet-class.R
+	  RGChannelSetExtended-class.R
+	  GenomicMethylSet-class.R
+	  GenomicRatioSet-class.R
 	  eSet_methods.R
 	  utils.R
-	  manifest.R
-	  anno.R
+	  IlluminaMethylationManifest-class.R
+	  IlluminaMethylationAnnotation-class.R
 	  minfiQC.R
 	  getSex.R
-	  dmr.R
+	  dmpFinder.R
 	  blocks.R
 	  plot.R
 	  plotBetasByType.R
-	  preprocess.R
+	  preprocessRaw.R
+	  preprocessIllumina.R
+	  detectionP.R
 	  preprocessSwan.R
 	  preprocessQuantile.R
 	  preprocessNoob.R
@@ -84,6 +92,7 @@ Collate:  generics.R
 	  gaphunter.R
 	  compartments.R
 	  combineArrays.R
+	  DelayedArray_utils.R
 VignetteBuilder: knitr
 License: Artistic-2.0
 URL: https://github.com/kasperdanielhansen/minfi

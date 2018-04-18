@@ -2,11 +2,11 @@
 \alias{plotBetasByType}
 \title{
   Plot the overall distribution of beta values and the distributions of
-  the Infinium I and II probe types. 
+  the Infinium I and II probe types.
 }
 \description{
   Plot the overall density distribution of beta values and the density
-  distributions of the Infinium I and II probe types. 
+  distributions of the Infinium I and II probe types.
 }
 \usage{
 plotBetasByType(data, probeTypes = NULL, legendPos = "top",
@@ -20,16 +20,16 @@ plotBetasByType(data, probeTypes = NULL, legendPos = "top",
   \item{probeTypes}{If \code{data} is a \code{MethylSet} this argument
     is not needed.  Otherwise, a \code{data.frame} with a column 'Name'
     containing probe IDs and a column 'Type' containing their
-    corresponding assay design type.} 
+    corresponding assay design type.}
   \item{legendPos}{The x and y co-ordinates to be used to position the
     legend. They can be specified by keyword or in any way which is
     accepted by \code{\link[grDevices]{xy.coords}}. See
-    \code{\link[graphics]{legend}} for details.} 
+    \code{\link[graphics]{legend}} for details.}
   \item{colors}{Colors to be used for the different beta value density
-    distributions. Must be a vector of length 3.} 
+    distributions. Must be a vector of length 3.}
   \item{main}{Plot title.}
   \item{lwd}{The line width to be used for the different beta value
-    density distributions.} 
+    density distributions.}
   \item{cex.legend}{The character expansion factor for the legend text.}
 }
 \details{
@@ -62,5 +62,4 @@ if (require(minfiData)) {
   plotBetasByType(Mset.swan[,1], main="SWAN")
 }
 }
-
 }

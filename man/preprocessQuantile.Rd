@@ -6,8 +6,8 @@
 
 \description{
   Stratified quantile normalization for Illumina amethylation arrays.
-  
-  This function implements stratified quantile normalization preprocessing for 
+
+  This function implements stratified quantile normalization preprocessing for
   Illumina methylation microarrays. Probes are stratified by region (CpG island,
   shore, etc.)
 
@@ -22,10 +22,10 @@ preprocessQuantile(object, fixOutliers = TRUE, removeBadSamples = FALSE,
   \item{object}{An object of class \code{RGChannelSet} or
     \code{[Genomic]MethylSet}.}
   \item{fixOutliers}{Should low outlier Meth and Unmeth signals be
-    fixed?} 
+    fixed?}
   \item{removeBadSamples}{Should bad samples be removed?}
   \item{badSampleCutoff}{Samples with median Meth and Umneth signals
-    below this cutoff will be labelled \sQuote{bad}.} 
+    below this cutoff will be labelled \sQuote{bad}.}
   \item{quantileNormalize}{Should quantile normalization be performed?}
   \item{stratified}{Should quantile normalization be performed within
     genomic region strata (e.g. CpG island, shore, etc.)?}
@@ -94,9 +94,9 @@ supported version.
 
 \examples{
 if (require(minfiData)) {
-  ## RGsetEx.sub is a small subset of RGsetEx; 
-  ## only used for computational speed.
-  GMset.sub.quantile <- preprocessSWAN(RGsetEx.sub)
+  # NOTE: RGsetEx.sub is a small subset of RGsetEx; only used for computational
+  #       speed
+  GMset.sub.quantile <- preprocessQuantile(RGsetEx.sub)
 }
 \dontrun{
 if(require(minfiData)) {

@@ -64,5 +64,4 @@ dat <- preprocessIllumina(RGsetEx, bg.correct=FALSE, normalize="controls")
 slot(name="preprocessMethod", dat)[1]
 
 }
-
 }

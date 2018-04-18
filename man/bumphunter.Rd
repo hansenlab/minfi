@@ -7,13 +7,13 @@
 \description{
   Estimate regions for which a genomic profile deviates from its baseline
   value. Originally implemented to detect differentially methylated
-  genomic regions between two populations, but can be applied to any CpG-level 
+  genomic regions between two populations, but can be applied to any CpG-level
   coefficient of interest.
-  
+
 }
 \usage{
 \S4method{bumphunter}{GenomicRatioSet}(object, design, cluster=NULL,
-          coef=2,  cutoff=NULL, pickCutoff=FALSE, pickCutoffQ=0.99, 
+          coef=2,  cutoff=NULL, pickCutoff=FALSE, pickCutoffQ=0.99,
           maxGap=500,  nullMethod=c("permutation","bootstrap"),
           smooth=FALSE, smoothFunction=locfitByCluster,
           useWeights=FALSE,   B=ncol(permutations), permutations=NULL,
@@ -47,7 +47,7 @@
     Method used to generate null candidate regions, must be one of \sQuote{boots
       trap} or
     \sQuote{permutation} (defaults to \sQuote{permutation}).
-    However, if covariates in addition to the 
+    However, if covariates in addition to the
     outcome of interest are included in the design matrix
     (ncol(design)>2), the \sQuote{permutation} approach is not
     recommended. See vignette and original paper for more information.}
@@ -61,7 +61,7 @@
   \item{useWeights}{
     A logical value. If \code{TRUE} then the standard errors of the
    point-wise estimates of the profile function will be used as weights
-   in the loess smoother \code{loessByCluster}. If the 
+   in the loess smoother \code{loessByCluster}. If the
    \code{runmedByCluster} smoother is used this argument is ignored.}
 \item{B}{An integer denoting the number of resamples to use when computing
    null distributions. This defaults to 0. If \code{permutations} is
@@ -85,7 +85,7 @@
 }
 \details{
   See help file for \code{\link[bumphunter]{bumphunter}} method in the
-  \code{bumphunter} package for for details. 
+  \code{bumphunter} package for for details.
 }
 
 \value{

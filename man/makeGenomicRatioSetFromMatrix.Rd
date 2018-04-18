@@ -38,7 +38,7 @@ features thus depends on genome build.
 Should the Manifest be merged to the final object.
 }
 \item{what}{
-Are \code{Beta} or \code{M} values being downloaded.  
+Are \code{Beta} or \code{M} values being downloaded.
 }
 }
 \details{

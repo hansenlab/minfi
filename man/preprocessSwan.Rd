@@ -7,8 +7,8 @@
 \description{Subset-quantile Within Array Normalisation (SWAN) is a
   within array normalisation method for the Illumina Infinium
   HumanMethylation450 platform. It allows Infinium I and II type probes
-  on a single array to be normalized together.} 
- 
+  on a single array to be normalized together.}
+
 \usage{
   preprocessSWAN(rgSet, mSet = NULL, verbose = FALSE)
 }
@@ -60,7 +60,7 @@ between the subset probes.}
 
 \examples{
 if (require(minfiData)) {
-  ## RGsetEx.sub is a small subset of RGsetEx; 
+  ## RGsetEx.sub is a small subset of RGsetEx;
   ## only used for computational speed.
   MsetEx.sub.swan <- preprocessSWAN(RGsetEx.sub)
 }

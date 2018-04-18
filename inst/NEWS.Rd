@@ -4,10 +4,17 @@
 
 \section{Version 1.25}{
   \itemize{
+    \item Added preliminary support for DelayedArray-backed minfi objects. This
+    allows disk-backed minfi objects (e.g., using HDF5). This functionality is
+    currently recommended only for developers and advanced users. A
+    user-friendly interface is currently in development. All existing minfi
+    functionality and serialized objects should continue to work as it did in
+    versions prior to 1.25. Please report any problems to the GitHub issue
+    tracker.
     \item Fixing bug in functions readGEORawFile() and
     getGenomicRatioSetFromGEO(). These two functions did not work
     (reported an error). They should work now. Thanks to users who
-    reported probles at GitHub issues.
+    reported problems at GitHub issues.
     \item Updated CITATION and citations in the vignette.
   }
 }
@@ -25,7 +32,7 @@
     \item Improved (made prettier) the printing of messages in
     read.metharray() and friends.
     \item Changed seqlevels(..., force = TRUE) to seqlevel(...,
-    pruning.mode = "coarse").  
+    pruning.mode = "coarse").
   }
 }
 
@@ -92,7 +99,7 @@
     450k) and now silently converts the input data to the desired platform
     using convertArray.
     \item Major refactoring of the annotation packages to reduce memory
-    consumption. 
+    consumption.
   }
 }
 
@@ -132,7 +139,7 @@
     format.
     \item Minor coding fixes including some NAMESPACE issues, missing
     pData<- methods, replace require() with requireNamespace().
-    \item cpgCollapse now works for GenomicRatioSets since it no longer attempts 
+    \item cpgCollapse now works for GenomicRatioSets since it no longer attempts
     to summarize CN data when passed a GenomicRatioSet.
     \item estimateCellCounts now works on only 2 cell types.
     \item Various NAMESPACE fixes.
@@ -162,14 +169,14 @@
     analysis. This is useful for cases in which the total number of
     possilbe permutations is small and one wants to use them all or in
     cases in which one wants to assure balance, for example, between cases
-    and controls. 
+    and controls.
     \item The bumphunter method now has the option to create null
     distributions using a bootstrap approach.
     \item Fixed a man page issue.
     \item Added GitHub URL to DESCRIPTION.
     \item Functional normalization now supports background correction by
     NOOB (see preprocessNoob); this is recommended (and the new
-    default). 
+    default).
   }
 }
 
@@ -178,9 +185,9 @@
     \item Modified read.450k.sheet to ignore case when identifying the
     data header "[DATA]".  This addresses an issue with sheets generated
     by some Illumina instruments.  Reported and partial fix provided by
-    the github user nilsigem. 
+    the github user nilsigem.
   }
-} 
+}
 
 \section{Version 1.9}{
   \itemize{
@@ -237,8 +244,8 @@
     \item Added getMethSignal(), a convenience function for
     programming.
     \item Changed the argument name of "type" to "what" for
-    getMethSignal(). 
-    \item Added the class "RatioSet", like "GenomicRatioSet" but without 
+    getMethSignal().
+    \item Added the class "RatioSet", like "GenomicRatioSet" but without
     the genome information.
     \item Bugfixes to the "GenomicRatioSet()" constructor.
     \item Added the method ratioConvert(), for converting a "MethylSet"

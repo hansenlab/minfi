@@ -39,12 +39,12 @@ The output array is specified by the \code{outType} argument.
                               "IlluminaHumanMethylationEPIC",
                               "IlluminaHumanMethylation27k"),
                   verbose = TRUE)
-\S4method{convertArray}{GenomicMethylSet}(object, 
+\S4method{convertArray}{GenomicMethylSet}(object,
                   outType = c("IlluminaHumanMethylation450k",
                               "IlluminaHumanMethylationEPIC",
                               "IlluminaHumanMethylation27k"),
                   verbose = TRUE)
-\S4method{convertArray}{GenomicRatioSet}(object, 
+\S4method{convertArray}{GenomicRatioSet}(object,
                   outType = c("IlluminaHumanMethylation450k",
                               "IlluminaHumanMethylationEPIC",
                               "IlluminaHumanMethylation27k"),

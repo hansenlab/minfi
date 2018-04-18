@@ -1,11 +1,11 @@
 \name{qcReport}
 \alias{qcReport}
 \title{
-  QC report for Illumina Infinium Human Methylation 450k arrays 
+  QC report for Illumina Infinium Human Methylation 450k arrays
 }
 \description{
   Produces a PDF QC report for Illumina Infinium Human Methylation 450k
-  arrays, useful for identifying failed samples. 
+  arrays, useful for identifying failed samples.
 }
 \usage{
 qcReport(rgSet, sampNames = NULL, sampGroups = NULL, pdf = "qcReport.pdf",
@@ -19,7 +19,7 @@ qcReport(rgSet, sampNames = NULL, sampGroups = NULL, pdf = "qcReport.pdf",
   \item{sampGroups}{Sample groups to be used for labels.}
   \item{pdf}{Path and name of the PDF output file.}
   \item{maxSamplesPerPage}{Maximum number of samples to plot per page in
-    those sections that plot each sample separately.} 
+    those sections that plot each sample separately.}
   \item{controls}{The control probe types to include in the report.}
 }
 \details{

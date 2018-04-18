@@ -21,7 +21,7 @@
 
 \arguments{
   \item{object}{Either a \code{MethylSet}, a \code{RGChannelSet} or a
-    \code{RatioSet}.} 
+    \code{RatioSet}.}
   \item{mergeManifest}{Should the information in the associated manifest
     package be merged into the location \code{GRanges}?}
   \item{\dots}{Passed to the method for \code{MethylSet}.}
@@ -32,7 +32,7 @@
 }
 \details{
   FIXME: details on the MethylSet method.
-  
+
   The \code{RGChannelSet} method of this function is a convenience
   function: the \code{RGChannelSet} is first transformed into a
   \code{MethylSet} using \code{preprocessRaw}.  The resulting
@@ -47,13 +47,13 @@
 \seealso{
   \code{\link{GenomicMethylSet}} for the output object and
   \code{\link{MethylSet}} for the input object.  Also,
-  \code{\link{getLocations}} obtains the genomic locations for a given object. 
+  \code{\link{getLocations}} obtains the genomic locations for a given object.
 }
 
 \keyword{methods}
 \examples{
 if (require(minfiData)) {
-  ## MsetEx.sub is a small subset of MsetEx; 
+  ## MsetEx.sub is a small subset of MsetEx;
   ## only used for computational speed.
   GMsetEx.sub <- mapToGenome(MsetEx.sub)
 }

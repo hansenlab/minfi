@@ -80,7 +80,7 @@ getIslandStatus(object, islandAnno = NULL)
   where. \code{addSnpInfo} adds this information to the \code{rowRanges}
   or \code{granges} of the object.  \code{dropLociWithSnps} is a
   convenience function for removing loci with SNPs based on their MAF.
-  
+
   To see which options are available for \code{what}, simply print the
   annotation object, possibly using \code{getAnnotationObject}.
 }
@@ -91,13 +91,13 @@ getIslandStatus(object, islandAnno = NULL)
   information.
 
   For \code{getAnnotationObject}, a \code{IlluminaMethylationAnnotation}
-  object. 
+  object.
 
   For \code{getLocations}, a \code{GRanges} with the locations.
 
   For \code{getProbeType} and \code{getIslandStatus}, a \code{character}
   vector with the requested information.
-  
+
   For \code{getSnpInfo}, a \code{DataFrame} with the requested
   information.  For \code{addSnpInfo}, an object of the same class as
   \code{object} but with the SNP information added to the metadata columns
@@ -113,7 +113,7 @@ Kasper Daniel Hansen\email{khansen@jhsph.edu}
 \seealso{
 \code{\linkS4class{IlluminaMethylationAnnotation}} for the basic class,
 \code{\link{mapToGenome}} for a better alternative (for users) to
-\code{getLocations}. 
+\code{getLocations}.
 }
 \examples{
 if(require(minfiData)) {

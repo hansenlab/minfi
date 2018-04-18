@@ -1,3 +1,207 @@
+# Internal functions -----------------------------------------------------------
+
+clusterMaker4Blocks <- function(gr, relationToIsland, islandName, maxGap,
+                                maxClusterWidth) {
+    # Get middle position of each island
+    if (!is.character(relationToIsland) ||
+       !all(unique(relationToIsland) %in%
+            c("OpenSea", "Island", "Shelf", "N_Shelf", "S_Shelf", "Shore",
+              "N_Shore", "S_Shore")) ||
+       length(gr) != length(relationToIsland)) {
+        stop("argument 'relationToIsland' is either not a character or seems ",
+             "to have wrong values")
+    }
+    if (!is.character(islandName) || length(gr) != length(islandName)) {
+        stop("argument 'islandName' is not a character or it has the wrong ",
+             "length")
+    }
+
+    fullName <- paste0(islandName, relationToIsland)
+    isNotSea <- (fullName != "OpenSea")
+
+    pos <- start(gr)
+    # NOTE: These are the "average positions" on shelfs, shores, and islands
+    ipos <- round(tapply(pos[isNotSea], fullName[isNotSea], mean))
+    # Make non-island/shore/shelf positions their own island
+    islFactor <- ifelse(isNotSea, fullName, seq_along(pos))
+    # Check which of the new positions correspond to islands/shores/shelfs,
+    # i.e. open sea. Assign probes in islands/shores/shelves just one position
+    pos[isNotSea] <- ipos[islFactor[isNotSea]]
+    # make first pass clusters with new positions
+    pns <- boundedClusterMaker(
+        chr = as.numeric(seqnames(gr)),
+        pos = pos,
+        assumeSorted = TRUE,
+        maxGap = maxGap,
+        maxClusterWidth = maxClusterWidth)
+    # But islands must be on their own so we change those beginning and ends of
+    # each genomic region type: island, shore, shelf
+    types <- unique(relationToIsland)
+    # Take out open sea
+    types <- types[types != "OpenSea"]
+    for (i in types) {
+        ind <- relationToIsland == i
+        StartEnd <- abs(diff(c(0,ind) != 0))
+        add2pns <- cumsum(StartEnd)
+        pns <- pns + add2pns
+    }
+    # where are the islands?
+    pns <- as.numeric(as.factor(pns))
+
+    # annotation
+    type <- sub("^[NS]_", "", relationToIsland)
+
+    data.frame(pns = pns, type = type)
+}
+
+
+cpgCollapseAnnotation <- function(gr, relationToIsland, islandName,
+                                  maxGap = 500, maxClusterWidth = 1500,
+                                  blockMaxGap = 2.5*10^5, verbose = TRUE) {
+
+    # Check inputs
+    if (is.unsorted(order(gr))) stop("object has to be ordered.")
+    # NOTE: This function aggregates probes in islands and the rest are
+    #       aggregated into clusters. Then annotation is created for the new
+    #       aggregated data the indexes of the original probes along with the
+    #       group ids are returned indexes and pns respectively. Note that
+    #       these two are redudant but they save me work
+    # Make sure chr is a factor.
+    # TODO (Kasper): Should this be done from get-go?
+
+    if (verbose) {
+        message("[cpgCollapseAnnotation] Clustering islands and clusters of ",
+                " probes.\n")
+    }
+
+    # Block tab has the block group ids
+    blocktab <- clusterMaker4Blocks(
+        gr = gr,
+        relationToIsland = relationToIsland,
+        islandName = islandName,
+        maxGap = maxGap,
+        maxClusterWidth = maxClusterWidth)
+
+    # Split rows by group id
+    groupIndexes <- split(seq_along(blocktab$pns), blocktab$pns)
+
+    # make an object with results
+    if (verbose) message("[cpgCollapseAnnotation] Computing new annotation.\n")
+    tmpRanges <- t(sapply(groupIndexes, function(ind) range(start(gr)[ind])))
+
+    anno <- GRanges(
+        seqnames = Rle(
+            tapply(as.vector(seqnames(gr)), blocktab$pns, function(x) x[1])),
+        ranges = IRanges(start = tmpRanges[,1], end = tmpRanges[,2]),
+        id = as.numeric(names(groupIndexes)),
+        type = as.vector(
+            tapply(
+                as.character(blocktab$type), blocktab$pns, function(x) x[1])))
+    res <- list(anno = anno, indexes = groupIndexes)
+    seql <- seqlevels(res$anno)
+    seqlevels(res$anno, pruning.mode = "coarse") <-
+        .seqnames.order[.seqnames.order %in% seql]
+
+    if (verbose) message("[cpgCollapseAnnotation] Defining blocks.\n")
+    ind <- (res$anno$type == "OpenSea")
+    pns <- rep(NA, length(res$anno))
+    pns[ind] <- clusterMaker(
+        chr = as.numeric(seqnames(res$anno[ind,])),
+        pos = start(res$anno[ind,]),
+        maxGap = blockMaxGap)
+    res$anno$blockgroup <- pns
+    res$pns <- blocktab$pns
+    res
+}
+
+
+# Exported functions -----------------------------------------------------------
+
+# NOTE: Collapses a minfi object into islands, shores, and defines block regions
+# NOTE: `...`` is for illumna type
+cpgCollapse <- function(object, what = c("Beta", "M"), maxGap = 500,
+                        blockMaxGap = 2.5*10^5, maxClusterWidth = 1500,
+                        dataSummary = colMeans, na.rm = FALSE,
+                        returnBlockInfo = TRUE, islandAnno = NULL,
+                        verbose = TRUE, ...) {
+    .supportsDelayedArray(object)
+    what <- match.arg(what)
+    gr <- granges(object)
+    islands <- .getIslandAnnotation(object = object, islandAnno = islandAnno)
+    relationToIsland <- islands$Relation_to_Island
+    islandName <- islands$Islands_Name
+    if (verbose) message("[cpgCollapse] Creating annotation.\n")
+    anno <- cpgCollapseAnnotation(
+        gr = gr,
+        relationToIsland = relationToIsland,
+        islandName = islandName,
+        maxGap = maxGap,
+        blockMaxGap = blockMaxGap,
+        maxClusterWidth = maxClusterWidth,
+        verbose = verbose)
+    y <- getMethSignal(object, what = what, ...)
+    a <- getCN(object,...)
+
+    if (verbose) message("[cpgCollapse] Collapsing data")
+    Indexes <- split(seq(along = anno$pns), anno$pns)
+    yy  <- matrix(0, length(Indexes), ncol(y))
+    Ns <- sapply(Indexes, length)
+    ones <- (Ns == 1)
+    ind <- which(ones)
+    yy[ind,] <- y[unlist(Indexes[ind]),]
+    if (class(object) == "GenomicMethylSet") {
+        aa  <- matrix(0,length(Indexes), ncol(y))
+        aa[ind,] <- a[unlist(Indexes[ind]),]
+    } else {
+        aa <- NULL
+    }
+
+    ind <- which(!ones)
+    for (i in ind) {
+        if (verbose) if (runif(1) < 0.0001) cat(".")
+        yy[i, ] <- dataSummary(y[Indexes[[i]], , drop = FALSE], na.rm = na.rm)
+        if (class(object) == "GenomicMethylSet") {
+            aa[i,] <- dataSummary(
+                a[Indexes[[i]], , drop = FALSE], na.rm = na.rm)
+        }
+    }
+    if (verbose) cat("\n")
+
+    preproc <- c(collapse = "cpgCollapse", preprocessMethod(object))
+    if (what == "M") {
+        ret <- GenomicRatioSet(
+            gr = anno$anno,
+            Beta = NULL,
+            M = yy,
+            CN = aa,
+            colData = colData(object),
+            annotation = annotation(object),
+            preprocessMethod = preproc)
+    }
+    else {
+        ret <- GenomicRatioSet(
+            gr = anno$anno,
+            Beta = yy,
+            M = NULL,
+            CN = aa,
+            colData = colData(object),
+            annotation = annotation(object),
+            preprocessMethod = preproc)
+    }
+    # NOTE: Take out annotation as we already kept it
+    anno <- anno[2:3]
+    if (returnBlockInfo) {
+        return(list(object = ret, blockInfo = anno))
+    }
+    ret
+}
+
+# NOTE: blockFinder() just uses a cluster object or granges()$blockgroup
+#       where clusters are constructed by
+#           cpgCollpase() which calls
+#               cpgCollapseAnnotation() which calls
+#                   clusterMaker4Blocks() which calls
+#                       boundedClusterMaker()
 blockFinder <- function(object, design, coef = 2, what = c("Beta", "M"),
                         cluster = NULL, cutoff = NULL,
                         pickCutoff = FALSE, pickCutoffQ = 0.99,
@@ -5,27 +209,34 @@ blockFinder <- function(object, design, coef = 2, what = c("Beta", "M"),
                         smooth = TRUE, smoothFunction = locfitByCluster,
                         B = ncol(permutations), permutations = NULL,
                         verbose = TRUE, bpSpan = 2.5*10^5, ...) {
+
+    # Check inputs
+    .supportsDelayedArray(object)
     if (!is(object,"GenomicRatioSet")) stop("object must be 'GenomicRatioSet'")
-
-    if(is.null(cluster)) cluster <- granges(object)$blockgroup
-    if(is.null(cluster))
-        stop("need 'cluster'")
-
+    if (is.null(cluster)) cluster <- granges(object)$blockgroup
+    if (is.null(cluster)) stop("need 'cluster'")
     what <- match.arg(what)
     nullMethod <- match.arg(nullMethod)
     idx <- which(granges(object)$type == "OpenSea")
-    if(length(idx) == 0) stop("need OpenSea types in granges(object)")
-    pos <- start(granges(object)) /2 + end(granges(object))/2
-    res <- bumphunterEngine(getMethSignal(object, what)[idx,], design= design,
-                            coef=coef,
-                            chr = as.character(seqnames(object))[idx],
-                            pos = pos[idx], cluster = cluster[idx],
-                            cutoff = cutoff,  pickCutoff = pickCutoff,
-                            pickCutoffQ = pickCutoffQ,                            
-                            nullMethod=nullMethod,
-                            smooth = smooth, smoothFunction = smoothFunction,
-                            B = B,  permutations = permutations, verbose = verbose,
-                            bpSpan = bpSpan,...)
+    if (length(idx) == 0) stop("need OpenSea types in granges(object)")
+
+
+    pos <- start(granges(object)) / 2 + end(granges(object)) / 2
+    res <- bumphunterEngine(
+        mat = getMethSignal(object, what)[idx,],
+        design = design,
+        coef = coef,
+        chr = as.character(seqnames(object))[idx],
+        pos = pos[idx], cluster = cluster[idx],
+        cutoff = cutoff,  pickCutoff = pickCutoff,
+        pickCutoffQ = pickCutoffQ,
+        nullMethod = nullMethod,
+        smooth = smooth,
+        smoothFunction = smoothFunction,
+        B = B,
+        permutations = permutations,
+        verbose = verbose,
+        bpSpan = bpSpan,...)
 
     ## FIXME: reindex like below
     res$coef <- bumphunter:::.getEstimate(getMethSignal(object, what), design, coef = coef)
@@ -41,167 +252,5 @@ blockFinder <- function(object, design, coef = 2, what = c("Beta", "M"),
     res$pvaluesMarginal <- pvaluesMarginal
 
     return(res)
-}
-
-
-
-## blockFinder just uses a cluster object or granges()$blockgroup
-## clusters are constructed by
-##   cpgCollpase which calls
-##     cpgCollapseAnnotation which calls
-##       clusterMaker4Blocks which calls
-##         boundedClusterMaker
-
-
-##### collapses a minfi object into islands, shores, and defines block regions
-cpgCollapse <- function(object, what = c("Beta", "M"), maxGap = 500,
-                        blockMaxGap = 2.5*10^5, maxClusterWidth = 1500,
-                        dataSummary = colMeans, na.rm = FALSE,
-                        returnBlockInfo = TRUE, islandAnno = NULL, verbose = TRUE, ...) { ### ... is for illumna type
-    what <- match.arg(what)
-    gr <- granges(object)
-    islands <- .getIslandAnnotation(object = object, islandAnno = islandAnno)
-    relationToIsland <- islands$Relation_to_Island
-    islandName <- islands$Islands_Name
-    if(verbose) message("[cpgCollapse] Creating annotation.\n")
-    anno <- cpgCollapseAnnotation(gr, relationToIsland, islandName,
-                                  maxGap = maxGap, blockMaxGap = blockMaxGap,
-                                  maxClusterWidth = maxClusterWidth,
-                                  verbose = verbose)
-    y <- getMethSignal(object, what = what, ...)
-    a <- getCN(object,...)
-    
-    if(verbose) message("[cpgCollapse] Collapsing data")
-    Indexes <- split(seq(along = anno$pns), anno$pns)
-    yy  <- matrix(0, length(Indexes), ncol(y))
-    Ns <- sapply(Indexes, length)
-    ones <- (Ns == 1)
-    ind <- which(ones)
-    yy[ind,] <- y[unlist(Indexes[ind]),]
-    if (class(object)=="GenomicMethylSet") {
-      aa  <- matrix(0,length(Indexes), ncol(y))
-      aa[ind,] <- a[unlist(Indexes[ind]),]
-    } else {
-      aa <- NULL
-    }
-
-    ind <- which(!ones)
-    for(i in ind) {
-        if(verbose) if(runif(1) < 0.0001) cat(".")
-        yy[i,] <- dataSummary(y[Indexes[[i]],, drop=FALSE], na.rm = na.rm)
-        if (class(object)=="GenomicMethylSet") {
-          aa[i,] <- dataSummary(a[Indexes[[i]],, drop=FALSE], na.rm = na.rm)
-        }
-    }
-    if(verbose) cat("\n")
-    
-    preproc <- c(collapse = "cpgCollapse", preprocessMethod(object))
-    if(what == "M") {
-        ret <- GenomicRatioSet(gr = anno$anno,
-                               Beta = NULL, M = yy, CN = aa,
-                               colData = colData(object),
-                               annotation = annotation(object),
-                               preprocessMethod = preproc) 
-    }
-    else {
-        ret <- GenomicRatioSet(gr = anno$anno,
-                               Beta = yy, M = NULL, CN = aa,
-                               colData = colData(object),
-                               annotation = annotation(object),
-                               preprocessMethod = preproc)
-    }
-    anno <- anno[2:3] ## take out annotation as we already kept it
-    if(returnBlockInfo) return(list(object = ret, blockInfo = anno)) else return(ret)
-}
-
-cpgCollapseAnnotation <- function(gr, relationToIsland, islandName,
-                                  maxGap = 500, maxClusterWidth = 1500,
-                                  blockMaxGap = 2.5*10^5, verbose = TRUE) {
-
-    if(is.unsorted(order(gr))) stop("object has to be ordered.")
-    ## this function aggregates probes in islands
-    ## and the rest are aggregated into clusters
-    ## then annotation is created for the new aggregated data
-    ## the indexes of the original probes along with the group ids are
-    ## returned indexes and pns respectively. note these two are redudant
-    ## but they save me work
-    
-    ## make sure chr is a factor.. Kasper, should this be done from get-go?
-    if(verbose) message("[cpgCollapseAnnotation] Clustering islands and clusters of probes.\n")
-    ## block tab has the block group ids
-    blocktab <- clusterMaker4Blocks(gr, relationToIsland, islandName,
-                                    maxClusterWidth = maxClusterWidth,
-                                    maxGap = maxGap)
-    
-    ## split rows by group id
-    groupIndexes <- split(seq(along = blocktab$pns), blocktab$pns)
-
-    ## make an object with results
-    if(verbose) message("[cpgCollapseAnnotation] Computing new annotation.\n")
-    tmpRanges <- t(sapply(groupIndexes, function(ind) range(start(gr)[ind])))
-
-    anno <- GRanges(seqnames = Rle(tapply(as.vector(seqnames(gr)), blocktab$pns,function(x) x[1])),
-                    ranges = IRanges(start = tmpRanges[,1], end = tmpRanges[,2]),
-                    id = as.numeric(names(groupIndexes)),
-                    type = as.vector(tapply(as.character(blocktab$type), blocktab$pns, function(x) x[1])))
-    res <- list(anno = anno, indexes = groupIndexes)
-    seql <- seqlevels(res$anno)
-    seqlevels(res$anno, pruning.mode = "coarse") <- .seqnames.order[.seqnames.order %in% seql]
-    
-    if(verbose) message("[cpgCollapseAnnotation] Defining blocks.\n")
-    ind <- (res$anno$type == "OpenSea")
-    pns <- rep(NA, length(res$anno))
-    pns[ind] <- clusterMaker(as.numeric(seqnames(res$anno[ind,])),
-                             start(res$anno[ind,]), maxGap = blockMaxGap)
-    res$anno$blockgroup <- pns
-    res$pns <- blocktab$pns
-    return(res)
-}
-
-clusterMaker4Blocks <- function(gr, relationToIsland, islandName, maxGap, maxClusterWidth) {
-    ## get middle position of each island
-    if(!is.character(relationToIsland) ||
-       ! all(unique(relationToIsland) %in% c("OpenSea", "Island", "Shelf", "N_Shelf",
-                                             "S_Shelf", "Shore", "N_Shore", "S_Shore")) ||
-       length(gr) != length(relationToIsland))
-        stop("argument 'relationToIsland' is either not a character or seems to have wrong values")
-    if(!is.character(islandName) ||
-       length(gr) != length(islandName))
-        stop("argument 'islandName' is not a character or it has the wrong length")
-    
-    fullName <- paste0(islandName, relationToIsland)
-    isNotSea <- (fullName != "OpenSea")
-
-    pos <- start(gr)
-    ## these are the "average positions" on shelfs, shores, and islands
-    ipos <- round(tapply(pos[isNotSea], fullName[isNotSea], mean))
-    ## make non-island/shore/shelf positions their own island
-    islFactor <- ifelse(isNotSea, fullName, seq_along(pos))
-    ## check which of the new positions correspond to
-    ## islands/shores/shelfs, i.e. open sea
-    ## assign probes in islands/shores/shelves just one position
-    pos[isNotSea] <- ipos[islFactor[isNotSea]]
-    ## make first pass clusters with new positions
-    pns <- boundedClusterMaker(chr = as.numeric(seqnames(gr)), pos = pos,
-                               assumeSorted = TRUE, maxGap = maxGap,
-                               maxClusterWidth = maxClusterWidth)
-    ## but islands must be on their own so we change those
-    ## beginning and ends of each genomic region type:
-    ## island,shore,shelf)
-    types <- unique(relationToIsland)
-    ## take out open sea
-    types <- types[types != "OpenSea"]
-    for(i in types) {
-        ind <- relationToIsland == i
-        StartEnd <- abs(diff(c(0,ind) != 0))
-        add2pns <- cumsum(StartEnd)
-        pns <- pns + add2pns
-    }    
-    ## where are the islands
-    pns <- as.numeric(as.factor(pns))
-    
-    ## annotation
-    type <- sub("^[NS]_", "", relationToIsland)
-    return(data.frame(pns = pns, type = type))
 }
 

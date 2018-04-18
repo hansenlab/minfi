@@ -1,7 +1,7 @@
 ## This script compares the output of Genome Studio to preprocess.Illumina
 
 require(minfi)
-require(matrixStats)
+require(DelayedMatrixStats)
 
 basepath <- "/thumper2/feinbergLab/core/arrays/illumina/IL002"
 sheet <- read.450k.sheet(basepath, pattern = "IL002_v2.csv$")

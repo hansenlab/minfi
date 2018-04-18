@@ -21,7 +21,7 @@ dmpFinder(dat, pheno, type = c("categorical", "continuous"),
 
   This function tests each genomic position for association between methylation and
   a phenotype. Continuous phenotypes are tested with linear regression,
-  while an F-test is used for categorical phenotypes. 
+  while an F-test is used for categorical phenotypes.
 
   Variance shrinkage (\code{shrinkVar=TRUE}) is recommended when sample
   sizes are small (<10). The sample variances are squeezed

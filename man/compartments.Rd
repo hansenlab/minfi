@@ -22,14 +22,14 @@ compartments(object, resolution=100*1000, what = "OpenSea", chr="chr22",
   \item{keep}{Should the correlation matrix be stored or not?}
 }
 \details{
-  
-This function extracts A/B compartments from Illumina methylation microarrays. Analysis of Hi-C data has shown that the genome can be divided into two compartments (A/B compartments) that are cell-type specific and are associated with open and closed chromatin respectively. The approximately 170,000 open sea probes on the 450k array can be used to estimate these compartments by computing the first eigenvector on a binned correlation matrix. The binning resolution can be specified by \code{resolution}, and by default is set to a 100 kb. We do not recommend higher resolutions because of the low-resolution probe design of the 450k array.  
+
+This function extracts A/B compartments from Illumina methylation microarrays. Analysis of Hi-C data has shown that the genome can be divided into two compartments (A/B compartments) that are cell-type specific and are associated with open and closed chromatin respectively. The approximately 170,000 open sea probes on the 450k array can be used to estimate these compartments by computing the first eigenvector on a binned correlation matrix. The binning resolution can be specified by \code{resolution}, and by default is set to a 100 kb. We do not recommend higher resolutions because of the low-resolution probe design of the 450k array.
 }
 
 \value{an object of class \code{GRanges} containing the correlation matrix, the compartment eigenvector and the compartment labels (A or B) as metadata.}
 
 \references{
-  JP Fortin and KD Hansen.  
+  JP Fortin and KD Hansen.
   \emph{Reconstructing A/B compartments as revealed by Hi-C using long-range correlations in epigenetic data}.
   bioRxiv (2015).
   doi:\href{http://dx.doi.org/10.1101/019000}{10.1101/019000}.
@@ -42,7 +42,7 @@ This function extracts A/B compartments from Illumina methylation microarrays. A
 \examples{
 if (require(minfiData)) {
   GMset <- mapToGenome(MsetEx)
-  ## compartments at 1MB resolution; we recommend 100kb.  
+  ## compartments at 1MB resolution; we recommend 100kb.
   comps <- compartments(GMset, res = 10^6)
 }
 }
