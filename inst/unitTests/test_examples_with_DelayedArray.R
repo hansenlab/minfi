@@ -45,27 +45,23 @@ test_bumphunter_examples <- function() {
     # checkIdentical(bumps0, bumps)
 }
 
-# TODO: Uncomment once combineArrays() supports DelayedArray-backed minfi
-#       objects
 test_combineArrays_examples <- function() {
     stopifnot(require(minfiData))
     stopifnot(require(minfiDataEPIC))
     stopifnot(require(DelayedArray))
 
     # Original example
-    # data(RGsetEx.sub)
-    # data(RGsetEPIC)
-    # rgSet <- combineArrays(RGsetEPIC, RGsetEx.sub)
-    # rgSet0 <- rgSet
+    data(RGsetEx.sub)
+    data(RGsetEPIC)
+    rgSet0 <- combineArrays(RGsetEPIC, RGsetEx.sub)
 
     # DelayedArray-backed version
     RGsetEx.sub <- realize(RGsetEx.sub)
     RGsetEPIC <- realize(RGsetEPIC)
-    checkException(rgSet <- combineArrays(RGsetEPIC, RGsetEx.sub),
-        silent = TRUE)
+    rgSet <- combineArrays(RGsetEPIC, RGsetEx.sub)
 
     # Check equivalency
-    # checkEquivalentSummarizedExperiments(rgSet0, rgSet)
+    checkEquivalentSummarizedExperiments(rgSet0, rgSet)
 }
 
 # TODO: Uncomment once compartments() supports DelayedArray-backed minfi objects
