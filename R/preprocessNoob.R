@@ -54,23 +54,23 @@ normexp.get.xcs <- function(xcf, params) {
 # "single" is now the default: it provides single-sample preprocessing and
 # betas/M-values produced by this method are identical to those from the
 # "reference" version used in (e.g.) the TCGA data processing pipeline.
-dyeCorrection <- function(Meth, Unmeth, Red, Green, control_probes, cy3.probes,
-                          cy5.probes, d2.probes, estimates, array_type,
-                          dyeMethod, verbose) {
+dyeCorrection <- function(Meth, Unmeth, Red, Green, control_probes,
+                          Green_probes, Red_probes, d2.probes, estimates,
+                          array_type, dyeMethod, verbose) {
 
     # Background correct the Illumina normalization controls
     redControls <- Red[control_probes$Address, , drop = FALSE]
     greenControls <- Green[control_probes$Address, ,drop = FALSE]
     rownames(redControls) <- rownames(greenControls) <-
         control_probes$Type
-    internal.controls <- list(Cy3 = greenControls, Cy5 = redControls)
+    internal.controls <- list(Green = greenControls, Red = redControls)
     xcs <- lapply(names(internal.controls), function(nch) {
         xcf <- as.matrix(internal.controls[[nch]])
         normexp.get.xcs(xcf = xcf, params = estimates[[nch]][["params"]])
     })
     names(xcs) <- names(internal.controls)
-    internal.controls[["Cy3"]] <- xcs[["Cy3"]]
-    internal.controls[["Cy5"]] <- xcs[["Cy5"]]
+    internal.controls[["Green"]] <- xcs[["Green"]]
+    internal.controls[["Red"]] <- xcs[["Red"]]
 
     if (array_type %in% c("IlluminaHumanMethylation450k",
                           "IlluminaHumanMethylationEPIC")) {
@@ -87,10 +87,10 @@ dyeCorrection <- function(Meth, Unmeth, Red, Green, control_probes, cy3.probes,
 
     # Dye bias normalization with the corrected Illumina control probes
     Green.avg <- colMeans2(
-        x = internal.controls[["Cy3"]],
+        x = internal.controls[["Green"]],
         rows = CG.controls)
     Red.avg <- colMeans2(
-        x = internal.controls[["Cy5"]],
+        x = internal.controls[["Red"]],
         rows = AT.controls)
     R.G.ratio <- Red.avg / Green.avg
 
@@ -119,12 +119,12 @@ dyeCorrection <- function(Meth, Unmeth, Red, Green, control_probes, cy3.probes,
     }
 
     Green <- list(
-        M = Meth[cy3.probes, , drop = FALSE],
-        U = Unmeth[cy3.probes, , drop = FALSE],
+        M = Meth[Green_probes, , drop = FALSE],
+        U = Unmeth[Green_probes, , drop = FALSE],
         D2 = Meth[d2.probes, , drop = FALSE])
     Red <- list(
-        M = Meth[cy5.probes, , drop = FALSE],
-        U = Unmeth[cy5.probes, , drop = FALSE],
+        M = Meth[Red_probes, , drop = FALSE],
+        U = Unmeth[Red_probes, , drop = FALSE],
         D2 = Unmeth[d2.probes, ])
 
     # NOTE: Adjust Red regardless of reference or equalization approach
@@ -134,8 +134,8 @@ dyeCorrection <- function(Meth, Unmeth, Red, Green, control_probes, cy3.probes,
         FUN = function(x) {
             sweep(x, MARGIN = 2, STATS = Red.factor, FUN = "*")
         })
-    Meth[cy5.probes, ] <- Red$M
-    Unmeth[cy5.probes, ] <- Red$U
+    Meth[Red_probes, ] <- Red$M
+    Unmeth[Red_probes, ] <- Red$U
     Unmeth[d2.probes, ] <- Red$D2
     if (dyeMethod == "reference") {
         Green <- lapply(
@@ -143,8 +143,8 @@ dyeCorrection <- function(Meth, Unmeth, Red, Green, control_probes, cy3.probes,
             FUN = function(x) {
                 sweep(x, MARGIN = 2, STATS = Green.factor, FUN = "*")
             })
-        Meth[cy3.probes, ] <- Green$M
-        Unmeth[cy3.probes, ] <- Green$U
+        Meth[Green_probes, ] <- Green$M
+        Unmeth[Green_probes, ] <- Green$U
         Meth[d2.probes, ] <- Green$D2
     }
 
@@ -156,9 +156,9 @@ dyeCorrection <- function(Meth, Unmeth, Red, Green, control_probes, cy3.probes,
 # `...` are additional arguments passed to methods.
 setGeneric(
     ".preprocessNoob",
-    function(Meth, Unmeth, oob, cy3.probes, cy5.probes, d2.probes, offset,
-             dyeCorr, Red, Green, control_probes, array_type, dyeMethod,
-             verbose, ...)
+    function(Meth, Unmeth, GreenOOB, RedOOB, Green_probes, Red_probes,
+             d2.probes, offset, dyeCorr, Red, Green, control_probes, array_type,
+             dyeMethod, verbose, ...)
         standardGeneric(".preprocessNoob"),
     signature = c("Meth", "Unmeth")
 )
@@ -168,26 +168,26 @@ setGeneric(
 setMethod(
     ".preprocessNoob",
     c("matrix", "matrix"),
-    function(Meth, Unmeth, oob, cy3.probes, cy5.probes, d2.probes, offset,
-             dyeCorr, Red, Green, control_probes, array_type, dyeMethod,
-             verbose) {
+    function(Meth, Unmeth, GreenOOB, RedOOB, Green_probes, Red_probes,
+             d2.probes, offset, dyeCorr, Red, Green, control_probes, array_type,
+             dyeMethod, verbose) {
         subverbose <- max(as.integer(verbose) - 1L, 0)
 
         # Threshold Meth and Unmeth to be positive
         Meth[Meth <= 0] <- 1L
         Unmeth[Unmeth <= 0] <- 1L
 
-        # NormExp estimates for Cy3 and Cy5
+        # NormExp estimates for Green and Red
         dat <- list(
-            Cy3 = list(
-                M =  Meth[cy3.probes, , drop = FALSE],
-                U =  Unmeth[cy3.probes, , drop = FALSE],
+            Green = list(
+                M =  Meth[Green_probes, , drop = FALSE],
+                U =  Unmeth[Green_probes, , drop = FALSE],
                 D2 = Meth[d2.probes, , drop = FALSE]),
-            Cy5 = list(
-                M =  Meth[cy5.probes, , drop = FALSE],
-                U =  Unmeth[cy5.probes, , drop = FALSE],
+            Red = list(
+                M =  Meth[Red_probes, , drop = FALSE],
+                U =  Unmeth[Red_probes, , drop = FALSE],
                 D2 = Unmeth[d2.probes, , drop = FALSE]))
-        estimates <- lapply(names(dat), function(nch) {
+        estimates <- lapply(names(dat), function(nch, oob) {
             xf <- rbind(
                 dat[[nch]][["M"]],
                 dat[[nch]][["U"]],
@@ -201,30 +201,30 @@ setMethod(
                 names(xs[["params"]]), nch, sep = ".")
             names(xs[["meta"]]) <- paste(names(xs[["meta"]]), nch, sep = ".")
             xs
-        })
+        }, oob = list(Green = GreenOOB, Red = RedOOB))
         names(estimates) <- names(dat)
 
-        # Correct for Cy3 and Cy5 in Meth and Unmeth
+        # Correct for Green and Red in Meth and Unmeth
         rows <- lapply(dat, function(x) vapply(x, nrow, integer(1L)))
         last <- lapply(rows, cumsum)
         first <- Map(function(last, rows) last - rows + 1, last, rows)
-        if (length(cy3.probes) > 0) {
-            cy3.M <- seq(first[["Cy3"]][["M"]], last[["Cy3"]][["M"]])
-            Meth[cy3.probes, ] <- estimates[["Cy3"]][["xs"]][cy3.M, ]
-            cy3.U <- seq(first[["Cy3"]][["U"]], last[["Cy3"]][["U"]])
-            Unmeth[cy3.probes, ] <- estimates[["Cy3"]][["xs"]][cy3.U, ]
+        if (length(Green_probes) > 0) {
+            Green.M <- seq(first[["Green"]][["M"]], last[["Green"]][["M"]])
+            Meth[Green_probes, ] <- estimates[["Green"]][["xs"]][Green.M, ]
+            Green.U <- seq(first[["Green"]][["U"]], last[["Green"]][["U"]])
+            Unmeth[Green_probes, ] <- estimates[["Green"]][["xs"]][Green.U, ]
         }
-        if (length(cy5.probes) > 0) {
-            cy5.M <- seq(first[["Cy5"]][["M"]], last[["Cy5"]][["M"]])
-            Meth[cy5.probes, ] <- estimates[["Cy5"]][["xs"]][cy5.M, ]
-            cy5.U <- seq(first[["Cy5"]][["U"]], last[["Cy5"]][["U"]])
-            Unmeth[cy5.probes, ] <- estimates[["Cy5"]][["xs"]][cy5.U, ]
+        if (length(Red_probes) > 0) {
+            Red.M <- seq(first[["Red"]][["M"]], last[["Red"]][["M"]])
+            Meth[Red_probes, ] <- estimates[["Red"]][["xs"]][Red.M, ]
+            Red.U <- seq(first[["Red"]][["U"]], last[["Red"]][["U"]])
+            Unmeth[Red_probes, ] <- estimates[["Red"]][["xs"]][Red.U, ]
         }
         if (length(d2.probes) > 0) {
-            d2.M <- seq(first[["Cy3"]][["D2"]], last[["Cy3"]][["D2"]])
-            d2.U <- seq(first[["Cy5"]][["D2"]], last[["Cy5"]][["D2"]])
-            Meth[d2.probes, ] <- estimates[["Cy3"]][["xs"]][d2.M, ]
-            Unmeth[d2.probes, ] <- estimates[["Cy5"]][["xs"]][d2.U, ]
+            d2.M <- seq(first[["Green"]][["D2"]], last[["Green"]][["D2"]])
+            d2.U <- seq(first[["Red"]][["D2"]], last[["Red"]][["D2"]])
+            Meth[d2.probes, ] <- estimates[["Green"]][["xs"]][d2.M, ]
+            Unmeth[d2.probes, ] <- estimates[["Red"]][["xs"]][d2.U, ]
         }
 
         if (!dyeCorr) {
@@ -236,8 +236,8 @@ setMethod(
             Red = Red,
             Green = Green,
             control_probes = control_probes,
-            cy3.probes = cy3.probes,
-            cy5.probes = cy5.probes,
+            Green_probes = Green_probes,
+            Red_probes = Red_probes,
             d2.probes = d2.probes,
             estimates = estimates,
             array_type = array_type,
@@ -249,9 +249,10 @@ setMethod(
 setMethod(
     ".preprocessNoob",
     c("DelayedMatrix", "DelayedMatrix"),
-    function(Meth, Unmeth, oob, cy3.probes, cy5.probes, d2.probes, offset,
-             dyeCorr, Red, Green, control_probes, array_type, dyeMethod,
-             verbose, BPREDO = list(), BPPARAM = SerialParam()) {
+    function(Meth, Unmeth, GreenOOb, RedOOB, Green_probes, Red_probes,
+             d2.probes, offset, dyeCorr, Red, Green, control_probes,
+             array_type, dyeMethod, verbose, BPREDO = list(),
+             BPPARAM = SerialParam()) {
         # Set up intermediate RealizationSink objects of appropriate dimensions
         # and type
         # NOTE: These are ultimately coerced to the output DelayedMatrix
@@ -273,20 +274,30 @@ setMethod(
         on.exit(close(U_sink), add = TRUE)
 
         # Set up ArrayGrid instances over `Meth`, `Unmeth`, `M_sink`, and
-        # `U_sink`. Also set up "parallel" ArrayGrid instances over `Red` and
-        # `Green` if performing dye correction.
+        # `U_sink`. Also set up "parallel" ArrayGrid instances over `GreenOOB`
+        # and `RedOOB`, as well as `Red` and `Green` if performing dye
+        # correction.
         Meth_grid <- colGrid(Meth)
         Unmeth_grid <- colGrid(Unmeth)
         M_sink_grid <- RegularArrayGrid(
             refdim = dim(M_sink),
             spacings = c(nrow(M_sink), ncol(M_sink) / length(Meth_grid)))
         U_sink_grid <- M_sink_grid
+        GreenOOB_grid <- RegularArrayGrid(
+            refdim = dim(GreenOOB),
+            spacings = c(nrow(GreenOOB), ncol(GreenOOB) / length(Meth_grid)))
+        RedOOB_grid <- RegularArrayGrid(
+            refdim = dim(RedOOB),
+            spacings = c(nrow(RedOOB), ncol(RedOOB) / length(Meth_grid)))
         # Sanity check ArrayGrid objects have the same dim
-        stopifnot(dim(Meth_grid) == dim(Unmeth_grid),
-                  dim(Meth_grid) == dim(M_sink_grid))
+        stopifnot(identical(dim(Meth_grid), dim(Unmeth_grid)),
+                  identical(dim(Meth_grid), dim(M_sink_grid)),
+                  identical(dim(Meth_grid), dim(GreenOOB_grid)),
+                  identical(dim(Meth_grid), dim(RedOOB_grid)))
 
-        # Loop over blocks of `Meth` and `Unmeth`, as well as `Red` and
-        # `Green` if doing dye correction, and write to `M_sink` and `U_sink`.
+        # Loop over blocks of `Meth`, `Unmeth`, `GreenOOB`, and `RedOOB`, as
+        # well as `Red` and `Green` if doing dye correction, and write to
+        # `M_sink` and `U_sink`.
         if (dyeCorr) {
             Red_grid <- RegularArrayGrid(
                 refdim = dim(Red),
@@ -301,12 +312,13 @@ setMethod(
                 FUN = .preprocessNoob,
                 Meth = Meth,
                 Unmeth = Unmeth,
+                GreenOOB = GreenOOB,
+                RedOOB = RedOOB,
                 Red = Red,
                 Green = Green,
                 MoreArgs = list(
-                    oob = oob,
-                    cy3.probes = cy3.probes,
-                    cy5.probes = cy5.probes,
+                    Green_probes = Green_probes,
+                    Red_probes = Red_probes,
                     d2.probes = d2.probes,
                     offset = offset,
                     dyeCorr = dyeCorr,
@@ -315,7 +327,9 @@ setMethod(
                     dyeMethod = dyeMethod,
                     verbose = verbose),
                 sinks = list(M_sink, U_sink),
-                dots_grids = list(Meth_grid, Unmeth_grid, Red_grid, Green_grid),
+                dots_grids = list(Meth_grid, Unmeth_grid,
+                                  GreenOOB_grid, RedOOB_grid,
+                                  Red_grid, Green_grid),
                 sinks_grids = list(M_sink_grid, U_sink_grid),
                 BPREDO = BPREDO,
                 BPPARAM = BPPARAM)
@@ -324,10 +338,12 @@ setMethod(
                 FUN = .preprocessNoob,
                 Meth = Meth,
                 Unmeth = Unmeth,
+                GreenOOB = GreenOOB,
+                RedOOB = RedOOB,
                 MoreArgs = list(
                     oob = oob,
-                    cy3.probes = cy3.probes,
-                    cy5.probes = cy5.probes,
+                    Green_probes = Green_probes,
+                    Red_probes = Red_probes,
                     d2.probes = d2.probes,
                     offset = offset,
                     dyeCorr = dyeCorr,
@@ -336,7 +352,8 @@ setMethod(
                     dyeMethod = dyeMethod,
                     verbose = verbose),
                 sinks = list(M_sink, U_sink),
-                dots_grids = list(Meth_grid, Unmeth_grid),
+                dots_grids = list(Meth_grid, Unmeth_grid,
+                                  GreenOOB_grid, RedOOB_grid),
                 sinks_grids = list(M_sink_grid, U_sink_grid),
                 BPREDO = BPREDO,
                 BPPARAM = BPPARAM)
@@ -366,17 +383,16 @@ preprocessNoob <- function(rgSet, offset = 15, dyeCorr = TRUE, verbose = TRUE,
 
     # Extract data to pass to low-level functions that construct `M` and `U`
     oob <- getOOB(rgSet)
-    names(oob) <- c("Cy3", "Cy5")
+    GreenOOB <- oob[["Grn"]]
+    RedOOB <- oob[["Red"]]
     MSet <- preprocessRaw(rgSet)
     probe.type <- getProbeType(MSet, withColor = TRUE)
-    cy3.probes <- which(probe.type == "IGrn")
-    cy5.probes <- which(probe.type == "IRed")
+    Green_probes <- which(probe.type == "IGrn")
+    Red_probes <- which(probe.type == "IRed")
     d2.probes <- which(probe.type == "II")
     Meth <- getMeth(MSet)
     Unmeth <- getUnmeth(MSet)
 
-    # TODO: At this point, want matrix-specific and DelayedMatrix-specific
-    #       methods
     if (dyeCorr) {
         control_probes <- getProbeInfo(rgSet, type = "Control")
         control_probes <- control_probes[
@@ -393,9 +409,10 @@ preprocessNoob <- function(rgSet, offset = 15, dyeCorr = TRUE, verbose = TRUE,
     M_and_U <- .preprocessNoob(
         Meth = Meth,
         Unmeth = Unmeth,
-        oob = oob,
-        cy3.probes = cy3.probes,
-        cy5.probes = cy5.probes,
+        GreenOOB = GreenOOB,
+        RedOOB = RedOOB,
+        Green_probes = Green_probes,
+        Red_probes = Red_probes,
         d2.probes = d2.probes,
         offset = offset,
         dyeCorr = dyeCorr,
@@ -417,5 +434,5 @@ preprocessNoob <- function(rgSet, offset = 15, dyeCorr = TRUE, verbose = TRUE,
 }
 
 # TODO: Switch from `Meth` to `M` and `Unmeth` to `U`
-# TODO: Rationalise argument order across functions, set defaults assuming
-#       dyeCorr is FALSE
+# TODO: Rationalise argument names and order across functions, set defaults
+#       assuming dyeCorr is FALSE
