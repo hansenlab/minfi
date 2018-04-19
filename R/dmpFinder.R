@@ -31,8 +31,8 @@ dmpFinder <- function(dat, pheno, type = c("categorical", "continuous"),
                 pval = fit[["F.p.value"]])
         } else {
             fit1 <- lmFit(M)
-            RSS1 <- rowSums((M - fitted(fit1))^2)
-            RSS <- rowSums((M - fitted(fit))^2)
+            RSS1 <- rowSums2((M - fitted(fit1))^2)
+            RSS <- rowSums2((M - fitted(fit))^2)
             df1 <- length(levels(pheno)) - 1
             df2 <- n - length(levels(pheno))
             Fstat <- ((RSS1 - RSS)/df1)/(RSS/df2)

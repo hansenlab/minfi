@@ -91,7 +91,7 @@
 
 .removeBadBins <- function(gr) {
     n <- nrow(gr$cor.matrix)
-    good.bins  <- which(colSums(gr$cor.matrix == 0) != n)
+    good.bins <- which(!colAlls(x, value = 0))
     if (length(good.bins) < n) {
         gr <- gr[good.bins]
         gr$cor.matrix <- gr$cor.matrix[, good.bins]
@@ -106,7 +106,7 @@
 
 .getFirstPC <- function(matrix, method){
     # Centre the matrix
-    center <- rowMeans(matrix, na.rm = TRUE)
+    center <- rowMeans2(matrix, na.rm = TRUE)
     matrix <- sweep(matrix, 1L, center, check.margin = FALSE)
     # TODO: Remove commented code if not needed
     ## if(method == "nipals")
@@ -286,7 +286,7 @@ extractAB <- function(gr, keep = TRUE, svdMethod = "qr"){
     pc <- .meanSmoother(pc)
     pc <- .unitarize(pc)
     # Fix sign of eigenvector
-    if (cor(colSums(gr$cor.matrix), pc) < 0 ) {
+    if (cor(colSums2(gr$cor.matrix), pc) < 0 ) {
         pc <- -pc
     }
     pc <- pc * sqrt(length(pc))

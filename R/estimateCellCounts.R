@@ -56,7 +56,7 @@ pickCompProbes <- function(mSet, cellTypes = NULL, numProbes = 50,
     trainingProbes <- unique(unlist(probeList))
     p <- p[trainingProbes,]
 
-    pMeans <- colMeans(p)
+    pMeans <- colMeans2(p)
     names(pMeans) <- pd$CellType
 
     form <- as.formula(
@@ -353,7 +353,8 @@ estimateCellCounts <- function(rgSet, compositeCellType = "Blood",
     if (meanPlot) {
         smeans <- compData$sampleMeans
         smeans <- smeans[order(names(smeans))]
-        sampleMeans <- c(colMeans(getBeta(mSet)[rownames(coefs), ]), smeans)
+        rows <- match(rownames(coefs), rownames(mSet))
+        sampleMeans <- c(colMeans2(getBeta(mSet), rows = rows), smeans)
 
         sampleColors <- c(
             rep(1, ncol(mSet)),

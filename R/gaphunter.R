@@ -26,7 +26,7 @@ gaphunter <- function(object, threshold = 0.05, keepOutliers = FALSE,
                  "(Genomic)MethylSet, or matrix")
         }
     }
-    nacheck <- rowSums(is.na(Beta))
+    nacheck <- rowCounts(Beta, value = NA_real_)
     if (sum(nacheck > 0) > 0) {
         if (verbose) {
             message("[gaphunter] Removing probes containing missing beta ",
@@ -51,7 +51,7 @@ gaphunter <- function(object, threshold = 0.05, keepOutliers = FALSE,
     sortedbeta <- do.call("rbind", lapply(sorting, function(n) n$x))
     rownames(sortedbeta) <- rownames(Beta)
     diffs <- rowDiffs(sortedbeta)
-    gapind <- rowSums(diffs > threshold)
+    gapind <- rowSums2(diffs > threshold)
     sortedindices <- lapply(which(gapind > 0), function(h) sortedindices[[h]])
     sortedbeta <- sortedbeta[which(gapind > 0),]
     diffs <- diffs[which(gapind > 0),]
