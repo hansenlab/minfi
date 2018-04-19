@@ -107,7 +107,6 @@ setGeneric(
 
 # Internal methods -------------------------------------------------------------
 
-# NOTE: `...` is ignored
 setMethod(".preprocessSWAN", "matrix", function(x, xNormSet, counts, bg) {
     # NOTE: SWAN can return non-integer values, so fill a numeric matrix
     normalized_x <- matrix(NA_real_,
@@ -131,7 +130,7 @@ setMethod(
     "DelayedMatrix",
     function(x, xNormSet, counts, bg, BPREDO = list(),
              BPPARAM = SerialParam()) {
-        # Set up intermediate RealizationSink objects of appropriate dimensions
+        # Set up intermediate RealizationSink object of appropriate dimensions
         # and type
         # NOTE: This is ultimately coerced to the output DelayedMatrix object
         # NOTE: SWAN can return non-integer values, so fill a "double" sink

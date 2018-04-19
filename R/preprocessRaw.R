@@ -101,7 +101,7 @@ setMethod(
         on.exit(close(U_sink), add = TRUE)
 
         # Set up ArrayGrid instances over `Red` and `Green` as well as
-        # "parallel" ArrayGrid instances over `M_sink`, and `U_sink`.
+        # "parallel" ArrayGrid instances over `M_sink` and `U_sink`.
         Red_grid <- colGrid(Red)
         Green_grid <- colGrid(Green)
         M_sink_grid <- RegularArrayGrid(
