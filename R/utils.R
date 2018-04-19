@@ -164,7 +164,9 @@ ilogit2 <- function(x) 2^x / (1 + 2^x)
 .isMatrixBackedOrWarning <- function(object) {
     if (!.isMatrixBacked(object)) {
         warning("This function is not yet optimized for use with ",
-                "DelayedArray-backed minfi objects. Memory usage may be high.")
+                "DelayedArray-backed minfi objects. Memory usage may be high.",
+                call. = FALSE,
+                immediate. = TRUE)
     }
 }
 
