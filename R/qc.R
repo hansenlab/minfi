@@ -11,11 +11,11 @@ qcReport <- function(rgSet, sampNames = NULL, sampGroups = NULL,
     if (is.null(sampNames)) sampNames <- colnames(rgSet)
     n <- ncol(rgSet)
     o <- rev(order(sampNames))
-    rgSet <- rgSet[,o]
+    rgSet <- rgSet[, o]
     sampNames <- sampNames[o]
+    if (is.null(sampGroups)) sampGroups <- rep(1, n)
     sampGroups <- sampGroups[o]
     sampGroups <- as.factor(sampGroups)
-    if (is.null(sampGroups)) sampGroups <- rep(1, n)
     numPages <- ceiling(n/maxSamplesPerPage)
     samplesPerPage <- ceiling(n/numPages)
     sampleIdxs <- suppressWarnings(
