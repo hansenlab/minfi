@@ -6,7 +6,7 @@ dmpFinder <- function(dat, pheno, type = c("categorical", "continuous"),
     # Check inputs
     type <- match.arg(type)
     if (is(dat, "MethylSet")) {
-        .supportsDelayedArray(dat)
+        .isMatrixBackedOrStop(dat)
         M <- getM(dat)
     } else if (is(M, "DelayedMatrix")) {
         stop("This function does not yet support DelayedArray objects")

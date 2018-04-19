@@ -10,7 +10,7 @@ setMethod(
              B = ncol(permutations), permutations = NULL, verbose = TRUE,
              type = c("Beta","M"), ...) {
 
-        .supportsDelayedArray(object)
+        .isMatrixBackedOrStop(object)
 
         type <- match.arg(type)
         bumphunterEngine(

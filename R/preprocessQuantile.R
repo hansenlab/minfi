@@ -96,7 +96,7 @@ preprocessQuantile <- function(object, fixOutliers = TRUE,
                                mergeManifest = FALSE, sex = NULL,
                                verbose = TRUE) {
     # Check inputs
-    .supportsDelayedArray(object)
+    .isMatrixBackedOrStop(object)
     # NOTE (Kasper): We could use [Genomic]MethylSet if the object has been
     #                processed with preprocessRaw()
     # TODO: Add the above support?

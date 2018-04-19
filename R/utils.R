@@ -157,6 +157,23 @@ ilogit2 <- function(x) 2^x / (1 + 2^x)
     }
 }
 
+.isMatrixBacked <- function(object) {
+    stopifnot(is(object, "SummarizedExperiment"))
+    all(vapply(assays(object), is.matrix, logical(1L)))
+}
+.isMatrixBackedOrWarning <- function(object) {
+    if (!.isMatrixBacked(object)) {
+        warning("This function is not yet optimized for use with ",
+                "DelayedArray-backed minfi objects. Memory usage may be high.")
+    }
+}
+
+.isMatrixBackedOrStop <- function(object) {
+    if (!.isMatrixBacked(object)) {
+        stop("This function only supports matrix-backed minfi objects")
+    }
+}
+
 .is27k <- function(object) {
     annotation(object)["array"] == "IlluminaHumanMethylation27k"
 }

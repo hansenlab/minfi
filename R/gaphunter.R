@@ -9,7 +9,7 @@ gaphunter <- function(object, threshold = 0.05, keepOutliers = FALSE,
     }
     if (is(object, "GenomicRatioSet") || is(object, "GenomicMethylSet") ||
         is(object, "MethylSet") || is(object,"RatioSet")) {
-        .supportsDelayedArray(object)
+        .isMatrixBackedOrStop(object)
         if (verbose) message("[gaphunter] Calculating beta matrix.")
         Beta <- getBeta(object)
     } else {

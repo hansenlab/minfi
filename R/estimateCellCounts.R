@@ -3,7 +3,7 @@
 pickCompProbes <- function(mSet, cellTypes = NULL, numProbes = 50,
                            compositeCellType = compositeCellType,
                            probeSelect = probeSelect) {
-    .supportsDelayedArray(mSet)
+    .isMatrixBackedOrStop(mSet)
     splitit <- function(x) {
         split(seq_along(x), x)
     }
@@ -232,7 +232,7 @@ estimateCellCounts <- function(rgSet, compositeCellType = "Blood",
                                verbose = TRUE, ...) {
 
     # Check inputs
-    .supportsDelayedArray(rgSet)
+    .isMatrixBackedOrStop(rgSet)
     .isRGOrStop(rgSet)
     rgSet <- as(rgSet, "RGChannelSet")
     referencePlatform <- match.arg(referencePlatform)
