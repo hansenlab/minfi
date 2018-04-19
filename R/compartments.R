@@ -90,9 +90,8 @@
 }
 
 .removeBadBins <- function(gr) {
-    n <- nrow(gr$cor.matrix)
-    good.bins <- which(!colAlls(x, value = 0))
-    if (length(good.bins) < n) {
+    good.bins <- which(!colAlls(gr$cor.matrix, value = 0))
+    if (length(good.bins) < nrow(gr$cor.matrix)) {
         gr <- gr[good.bins]
         gr$cor.matrix <- gr$cor.matrix[, good.bins]
     }

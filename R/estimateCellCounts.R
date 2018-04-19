@@ -353,9 +353,11 @@ estimateCellCounts <- function(rgSet, compositeCellType = "Blood",
     if (meanPlot) {
         smeans <- compData$sampleMeans
         smeans <- smeans[order(names(smeans))]
-        rows <- match(rownames(coefs), rownames(mSet))
-        sampleMeans <- c(colMeans2(getBeta(mSet), rows = rows), smeans)
-
+        sampleMeans <- c(
+            colMeans2(
+                x = getBeta(mSet),
+                rows = match(rownames(coefs), rownames(mSet))),
+            smeans)
         sampleColors <- c(
             rep(1, ncol(mSet)),
             1 + as.numeric(factor(names(smeans))))
