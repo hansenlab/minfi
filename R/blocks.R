@@ -4,10 +4,10 @@ clusterMaker4Blocks <- function(gr, relationToIsland, islandName, maxGap,
                                 maxClusterWidth) {
     # Get middle position of each island
     if (!is.character(relationToIsland) ||
-       !all(unique(relationToIsland) %in%
-            c("OpenSea", "Island", "Shelf", "N_Shelf", "S_Shelf", "Shore",
-              "N_Shore", "S_Shore")) ||
-       length(gr) != length(relationToIsland)) {
+        !all(unique(relationToIsland) %in%
+             c("OpenSea", "Island", "Shelf", "N_Shelf", "S_Shelf", "Shore",
+               "N_Shore", "S_Shore")) ||
+        length(gr) != length(relationToIsland)) {
         stop("argument 'relationToIsland' is either not a character or seems ",
              "to have wrong values")
     }
@@ -71,7 +71,7 @@ cpgCollapseAnnotation <- function(gr, relationToIsland, islandName,
 
     if (verbose) {
         message("[cpgCollapseAnnotation] Clustering islands and clusters of ",
-                " probes.\n")
+                "probes.\n")
     }
 
     # Block tab has the block group ids
@@ -114,23 +114,120 @@ cpgCollapseAnnotation <- function(gr, relationToIsland, islandName,
     res
 }
 
+# Internal generics ------------------------------------------------------------
+
+# `x` is either `meth_signal` or `cn`
+# `...` are additional arguments passed to methods.
+setGeneric(
+    ".cpgCollapse",
+    function(x, Indexes, dataSummary, na.rm, verbose, ...)
+        standardGeneric(".cpgCollapse"),
+    signature = "x")
+
+# Internal methods -------------------------------------------------------------
+
+setMethod(
+    ".cpgCollapse",
+    "matrix",
+    function(x, Indexes, dataSummary, na.rm, verbose) {
+
+        # Set up return matrix
+        n_clusters <- length(Indexes)
+        n_cpgs_per_cluster <- lengths(Indexes)
+        stopifnot(all(n_cpgs_per_cluster) > 0)
+        # NOTE: .cpgCollapse() can return non-integer values, so fill a numeric
+        #        matrix
+        collapsed_x <- matrix(NA_real_, nrow = n_clusters, ncol = ncol(x))
+
+        # Process clusters with a single CpG
+        cluster_idx <- n_cpgs_per_cluster == 1L
+        cpg_idx <- unlist(Indexes[cluster_idx], use.names = FALSE)
+        collapsed_x[cluster_idx, ] <- x[cpg_idx, , drop = FALSE]
+
+        # Process clusters with 0 or > 1 CpG
+        cluster_idx <- which(n_cpgs_per_cluster != 1L)
+        for (i in cluster_idx) {
+            if (verbose) if (runif(1) < 0.0001) cat(".")
+            # TODO: If willing to assume dataSummary comes from
+            #       DelayedMatrixStats, could use `rows` rather than explicit
+            #       subsetting.
+            collapsed_x[i, ] <- dataSummary(
+                x[Indexes[[i]], , drop = FALSE],
+                na.rm = na.rm)
+        }
+        if (verbose) cat("\n")
+        collapsed_x
+    })
+
+setMethod(
+    ".cpgCollapse",
+    "DelayedMatrix",
+    function(x, Indexes, dataSummary, na.rm, verbose, BPREDO = list(),
+             BPPARAM = SerialParam()) {
+
+        # Set up intermediate RealizationSink object of appropriate dimensions
+        # and type
+        n_clusters <- length(Indexes)
+        n_cpgs_per_cluster <- lengths(Indexes)
+        # NOTE: This is ultimately coerced to the output DelayedMatrix object
+        # NOTE: .cpgCollapse() can return non-integer values, so fill a "double"
+        #       sink
+        ans_type <- "double"
+        sink <- DelayedArray:::RealizationSink(
+            dim = c(n_clusters, ncol(x)),
+            type = ans_type)
+        on.exit(close(sink))
+
+        # Set up ArrayGrid instances over `x` as well as "parallel" ArrayGrid
+        # instance over `sink`
+        x_grid <- colGrid(x)
+        sink_grid <- RegularArrayGrid(
+            refdim = dim(sink),
+            spacings = c(nrow(sink), ncol(sink) / length(x_grid)))
+        # Sanity check ArrayGrid objects have the same dim
+        stopifnot(dim(x_grid) == dim(sink_grid))
+
+        # Loop over column-blocks of `x`, perform SWAN normalization, and write
+        # to `normalized_x_sink`
+        blockApplyWithRealization(
+            x = x,
+            FUN = .cpgCollapse,
+            Indexes = Indexes,
+            dataSummary = dataSummary,
+            na.rm = na.rm,
+            verbose = verbose,
+            sink = sink,
+            x_grid = x_grid,
+            sink_grid = sink_grid,
+            BPREDO = BPREDO,
+            BPPARAM = BPPARAM)
+
+        # Return as DelayedMatrix
+        as(sink, "DelayedArray")
+    }
+)
 
 # Exported functions -----------------------------------------------------------
 
 # NOTE: Collapses a minfi object into islands, shores, and defines block regions
-# NOTE: `...`` is for illumna type
 cpgCollapse <- function(object, what = c("Beta", "M"), maxGap = 500,
-                        blockMaxGap = 2.5*10^5, maxClusterWidth = 1500,
+                        blockMaxGap = 2.5 * 10^5, maxClusterWidth = 1500,
                         dataSummary = colMeans, na.rm = FALSE,
                         returnBlockInfo = TRUE, islandAnno = NULL,
                         verbose = TRUE, ...) {
-    .supportsDelayedArray(object)
+
+    # Check inputs
+    # TODO: ?cpgCollapse suggests `object` needn't be a
+    #       Genomic[MethlSet|RatioSet] but the code assumes `granges(object)`
+    #       works
     what <- match.arg(what)
-    gr <- granges(object)
+
+    # Construct annotation
+    if (verbose) message("[cpgCollapse] Creating annotation.\n")
     islands <- .getIslandAnnotation(object = object, islandAnno = islandAnno)
     relationToIsland <- islands$Relation_to_Island
     islandName <- islands$Islands_Name
-    if (verbose) message("[cpgCollapse] Creating annotation.\n")
+    gr <- granges(object)
     anno <- cpgCollapseAnnotation(
         gr = gr,
         relationToIsland = relationToIsland,
@@ -139,41 +236,35 @@ cpgCollapse <- function(object, what = c("Beta", "M"), maxGap = 500,
         blockMaxGap = blockMaxGap,
         maxClusterWidth = maxClusterWidth,
         verbose = verbose)
-    y <- getMethSignal(object, what = what, ...)
-    a <- getCN(object,...)
+    Indexes <- split(seq_along(anno$pns), anno$pns)
 
+    # Collapse data
     if (verbose) message("[cpgCollapse] Collapsing data")
-    Indexes <- split(seq(along = anno$pns), anno$pns)
-    yy  <- matrix(0, length(Indexes), ncol(y))
-    Ns <- sapply(Indexes, length)
-    ones <- (Ns == 1)
-    ind <- which(ones)
-    yy[ind,] <- y[unlist(Indexes[ind]),]
-    if (class(object) == "GenomicMethylSet") {
-        aa  <- matrix(0,length(Indexes), ncol(y))
-        aa[ind,] <- a[unlist(Indexes[ind]),]
-    } else {
-        aa <- NULL
+    meth_signal <- getMethSignal(object, what = what, ...)
+    collapsed_meth_signal <- .cpgCollapse(
+        x = meth_signal,
+        Indexes = Indexes,
+        dataSummary = dataSummary,
+        na.rm = na.rm,
+        verbose = verbose)
+    cn <- getCN(object,...)
+    if (!is.null(cn)) {
+        collapsed_cn <- .cpgCollapse(
+            x = cn,
+            Indexes = Indexes,
+            dataSummary = dataSummary,
+            na.rm = na.rm,
+            verbose = verbose)
     }
 
-    ind <- which(!ones)
-    for (i in ind) {
-        if (verbose) if (runif(1) < 0.0001) cat(".")
-        yy[i, ] <- dataSummary(y[Indexes[[i]], , drop = FALSE], na.rm = na.rm)
-        if (class(object) == "GenomicMethylSet") {
-            aa[i,] <- dataSummary(
-                a[Indexes[[i]], , drop = FALSE], na.rm = na.rm)
-        }
-    }
-    if (verbose) cat("\n")
-
+    # Construct output
     preproc <- c(collapse = "cpgCollapse", preprocessMethod(object))
     if (what == "M") {
         ret <- GenomicRatioSet(
             gr = anno$anno,
             Beta = NULL,
-            M = yy,
-            CN = aa,
+            M = collapsed_meth_signal,
+            CN = collapsed_cn,
             colData = colData(object),
             annotation = annotation(object),
             preprocessMethod = preproc)
@@ -181,9 +272,9 @@ cpgCollapse <- function(object, what = c("Beta", "M"), maxGap = 500,
     else {
         ret <- GenomicRatioSet(
             gr = anno$anno,
-            Beta = yy,
+            Beta = collapsed_meth_signal,
             M = NULL,
-            CN = aa,
+            CN = collapsed_cn,
             colData = colData(object),
             annotation = annotation(object),
             preprocessMethod = preproc)
