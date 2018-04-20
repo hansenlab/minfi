@@ -23,8 +23,8 @@ normalize.illumina.control <- function(rgSet, reference = 1) {
             controlType = "Normalization-Green")
     }
 
-    Green.avg <- colMeans(Green[CG.controls, , drop = FALSE])
-    Red.avg <- colMeans(Red[AT.controls, , drop = FALSE])
+    Green.avg <- colMeans2(Green, rows = match(CG.controls, rownames(Green)))
+    Red.avg <- colMeans2(Red, rows = match(AT.controls, rownames(Red)))
     ref <- (Green.avg + Red.avg)[reference] / 2
     if (is.na(ref)) {
         stop("perhaps 'reference' refer to an array that is not present.")

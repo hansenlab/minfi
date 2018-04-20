@@ -203,7 +203,7 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
     ## Bisulfite conversion extraction for probe type II:
     index <- match("BISULFITE CONVERSION II", controlNames)
     redControls.current <- redControls[[ index ]]
-    bisulfite2 <- colMeans(redControls.current, na.rm = TRUE)
+    bisulfite2 <- colMeans2(redControls.current, na.rm = TRUE)
 
     ## Bisulfite conversion extraction for probe type I:
     index <- match("BISULFITE CONVERSION I", controlNames)
@@ -220,9 +220,9 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
     }
     redControls.current <- redControls[[ index ]][addr,, drop=FALSE]
     if (nrow(redControls.current)==nrow(greenControls.current)){
-        bisulfite1 <- colMeans(redControls.current + greenControls.current, na.rm = TRUE)
+        bisulfite1 <- colMeans2(redControls.current + greenControls.current, na.rm = TRUE)
     } else {
-        bisulfite1 <- colMeans(redControls.current, na.rm=TRUE) + colMeans(greenControls.current, na.rm = TRUE)
+        bisulfite1 <- colMeans2(redControls.current, na.rm=TRUE) + colMeans2(greenControls.current, na.rm = TRUE)
     }
 
 
@@ -269,8 +269,8 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
     colnames(spec2.green) <- paste0("spec2Grn", 1:ncol(spec2.green))
     spec2.red <- t(redControls.current)
     colnames(spec2.red) <- paste0("spec2Red", 1:ncol(spec2.red))
-    spec2.ratio <- colMeans(greenControls.current, na.rm = TRUE) /
-        colMeans(redControls.current, na.rm = TRUE)
+    spec2.ratio <- colMeans2(greenControls.current, na.rm = TRUE) /
+        colMeans2(redControls.current, na.rm = TRUE)
 
     ## Specificity I
     index <- match("SPECIFICITY I", controlNames)
@@ -279,8 +279,8 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
     redControls.current <- redControls[[index]][addr,,drop=FALSE]
     spec1.green <- t(greenControls.current)
     colnames(spec1.green) <- paste0("spec1Grn", 1:ncol(spec1.green))
-    spec1.ratio1 <- colMeans(redControls.current, na.rm = TRUE) /
-        colMeans(greenControls.current, na.rm = TRUE)
+    spec1.ratio1 <- colMeans2(redControls.current, na.rm = TRUE) /
+        colMeans2(greenControls.current, na.rm = TRUE)
 
     index <- match("SPECIFICITY I", controlNames) # Added that line
     addr <- getCtrlsAddr(exType = sprintf("GT Mismatch %s (PM)", 4:6), index = index)
@@ -288,19 +288,19 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
     redControls.current <- redControls[[index]][addr,,drop=FALSE]
     spec1.red <- t(redControls.current)
     colnames(spec1.red) <- paste0("spec1Red", 1:ncol(spec1.red))
-    spec1.ratio2 <- colMeans(greenControls.current, na.rm = TRUE) /
-        colMeans(redControls.current, na.rm = TRUE)
+    spec1.ratio2 <- colMeans2(greenControls.current, na.rm = TRUE) /
+        colMeans2(redControls.current, na.rm = TRUE)
     spec1.ratio <- (spec1.ratio1 + spec1.ratio2) / 2
 
     ## Normalization probes:
     index <- match(c("NORM_A"), controlNames)
-    normA <- colMeans(redControls[[index]], na.rm = TRUE)
+    normA <- colMeans2(redControls[[index]], na.rm = TRUE)
     index <- match(c("NORM_T"), controlNames)
-    normT <- colMeans(redControls[[index]], na.rm = TRUE)
+    normT <- colMeans2(redControls[[index]], na.rm = TRUE)
     index <- match(c("NORM_C"), controlNames)
-    normC <- colMeans(greenControls[[index]], na.rm = TRUE)
+    normC <- colMeans2(greenControls[[index]], na.rm = TRUE)
     index <- match(c("NORM_G"), controlNames)
-    normG <- colMeans(greenControls[[index]], na.rm = TRUE)
+    normG <- colMeans2(greenControls[[index]], na.rm = TRUE)
 
     dyebias <- (normC + normG)/(normA + normT)
 
@@ -349,7 +349,7 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
     ## Fixing potential problems with extreme quantiles
     quantiles[1,] <- 0
     quantiles[nrow(quantiles),] <- quantiles[nrow(quantiles) - 1,] + 1000
-    meanFunction <- rowMeans(quantiles)
+    meanFunction <- rowMeans2(quantiles)
     res <- quantiles - meanFunction
     controlPCs <- prcomp(controlMatrix)$x[,1:nPCs,drop=FALSE]
     design <- model.matrix(~controlPCs)

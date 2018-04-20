@@ -86,10 +86,12 @@ dyeCorrection <- function(Meth, Unmeth, Red, Green, control_probes,
     }
 
     # Dye bias normalization with the corrected Illumina control probes
-    Green.avg <- colMeans(
-        internal.controls[["Green"]][CG.controls, , drop = FALSE])
-    Red.avg <- colMeans(
-        internal.controls[["Red"]][AT.controls, , drop = FALSE])
+    Green.avg <- colMeans2(
+        x = internal.controls[["Green"]],
+        rows = match(CG.controls, rownames(internal.controls[["Green"]])))
+    Red.avg <- colMeans2(
+        x = internal.controls[["Red"]],
+        rows = match(AT.controls, rownames(internal.controls[["Red"]])))
     R.G.ratio <- Red.avg / Green.avg
 
     if (dyeMethod == "single") {

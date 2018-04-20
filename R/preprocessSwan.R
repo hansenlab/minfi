@@ -17,7 +17,7 @@ bgIntensitySwan <- function(rgSet) {
     redMed <- colMedians(
         x = getRed(rgSet),
         rows = rows)
-    rowMeans(cbind(grnMed, redMed))
+    rowMeans2(cbind(grnMed, redMed))
 }
 
 # TODO: Profile and tidy
