@@ -128,17 +128,15 @@ ilogit2 <- function(x) 2^x / (1 + 2^x)
 
 .isGenomicOrStop <- function(object) {
     if (!is(object, "GenomicMethylSet") && !is(object, "GenomicRatioSet")) {
-        stop(sprintf(
-            "object is of class '%s', but needs to be of class 'GenomicMethylSet' or 'GenomicRatioSet'",
-            class(object)))
+        stop("object is of class '", class(object), "', but needs to be of ",
+             "class 'GenomicMethylSet' or 'GenomicRatioSet'")
     }
 }
 
 .isMethylOrStop <- function(object) {
     if (!is(object, "MethylSet") && !is(object, "GenomicMethylSet")) {
-        stop(sprintf(
-            "object is of class '%s', but needs to be of class 'MethylSet' or 'GenomicMethylSet'",
-            class(object)))
+        stop("object is of class '", class(object), "', but needs to be of ",
+             "class 'MethylSet' or 'GenomicMethylSet'")
     }
 }
 
@@ -151,9 +149,8 @@ ilogit2 <- function(x) 2^x / (1 + 2^x)
 
 .isRGOrStop <- function(object) {
     if (!is(object, "RGChannelSet")) {
-        stop(sprintf(
-            "object is of class '%s', but needs to be of class 'RGChannelSet' or 'RGChannelSetExtended'",
-            class(object)))
+        stop("object is of class '", class(object), "', but needs to be of ",
+             "class 'RGChannelSet' or 'RGChannelSetExtended'")
     }
 }
 
@@ -161,18 +158,30 @@ ilogit2 <- function(x) 2^x / (1 + 2^x)
     stopifnot(is(object, "SummarizedExperiment"))
     all(vapply(assays(object), is.matrix, logical(1L)))
 }
-.isMatrixBackedOrWarning <- function(object) {
-    if (!.isMatrixBacked(object)) {
-        warning("This function is not yet optimized for use with ",
-                "DelayedArray-backed minfi objects. Memory usage may be high.",
+
+.isDelayedArrayBacked <- function(object) {
+    stopifnot(is(object, "SummarizedExperiment"))
+    all(vapply(assays(object), is, logical(1L), "DelayedArray"))
+}
+
+.isMatrixBackedOrWarning <- function(object, FUN) {
+    if (.isDelayedArrayBacked(object)) {
+        warning("Memory usage may be high because '", FUN, "()' is not yet ",
+                "optimized for use with DelayedArray-backed minfi objects.",
+                call. = FALSE,
+                immediate. = TRUE)
+    } else if (!.isMatrixBacked(object)) {
+        warning("Memory usage may be high because '", FUN, "()' is not yet ",
+                "optimized for use with non-matrix-backed minfi objects.",
                 call. = FALSE,
                 immediate. = TRUE)
     }
 }
 
-.isMatrixBackedOrStop <- function(object) {
+.isMatrixBackedOrStop <- function(object, FUN) {
     if (!.isMatrixBacked(object)) {
-        stop("This function only supports matrix-backed minfi objects")
+        stop("'", FUN, "()' only supports matrix-backed minfi objects.",
+             call. = FALSE)
     }
 }
 

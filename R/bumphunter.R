@@ -10,7 +10,7 @@ setMethod(
              B = ncol(permutations), permutations = NULL, verbose = TRUE,
              type = c("Beta","M"), ...) {
 
-        .isMatrixBackedOrStop(object)
+        .isMatrixBackedOrStop(object, "bumphunter")
 
         type <- match.arg(type)
         bumphunterEngine(

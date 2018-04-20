@@ -238,7 +238,7 @@ compartments <- function(object, resolution = 100*1000, what="OpenSea",
                          chr = "chr22", method = c("pearson", "spearman"),
                          keep = TRUE) {
 
-    .isMatrixBackedOrStop(object)
+    .isMatrixBackedOrStop(object, "compartments")
 
     .isGenomicOrStop(object)
     stopifnot(length(chr) == 1 && chr %in% seqlevels(object))
@@ -256,7 +256,7 @@ compartments <- function(object, resolution = 100*1000, what="OpenSea",
 
 createCorMatrix <- function(object, resolution = 100 * 1000, what = "OpenSea",
                             chr = "chr22", method = c("pearson", "spearman")) {
-    .isMatrixBackedOrStop(object)
+    .isMatrixBackedOrStop(object, "createCorMatrix")
     .isGenomicOrStop(object)
     stopifnot(length(chr) == 1 && chr %in% seqlevels(object))
     method <- match.arg(method)

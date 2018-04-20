@@ -232,7 +232,7 @@ estimateCellCounts <- function(rgSet, compositeCellType = "Blood",
                                verbose = TRUE, ...) {
 
     # Check inputs
-    .isMatrixBackedOrStop(rgSet)
+    .isMatrixBackedOrStop(rgSet, "estimateCellCounts")
     .isRGOrStop(rgSet)
     rgSet <- as(rgSet, "RGChannelSet")
     referencePlatform <- match.arg(referencePlatform)
