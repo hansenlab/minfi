@@ -19,16 +19,12 @@ test_compartments <- function() {
     ## # Testing with DelayedArray-backed objects
     ## MsetEx <- realize(MsetEx)
     ## GMsetEx <- mapToGenome(MsetEx)
-    ## checkException(gr.cor <- createCorMatrix(GMsetEx, res = 500*1000),
-    ##                silent = TRUE)
-    ## # TODO: Uncomment once createCorMatrix() supports DelayedArray-backed
-    ## #       minfi objects
-    ## # gr.cor <- createCorMatrix(GMsetEx, res = 500*1000)
-    ## # checkEquals(digest_compartments$cor.matrix,
-    ## #             minfi:::.digestMatrix(gr.cor$cor.matrix))
-    ## # set.seed(456)
-    ## # gr.ab <- extractAB(gr.cor)
-    ## # checkEquals(digest_compartments$pc,
-    ## #             minfi:::.digestVector(gr.ab$pc, digits = 2))
+    ## gr.cor <- createCorMatrix(GMsetEx, res = 500*1000)
+    ## checkEquals(digest_compartments$cor.matrix,
+    ##             minfi:::.digestMatrix(gr.cor$cor.matrix))
+    ## set.seed(456)
+    ## gr.ab <- extractAB(gr.cor)
+    ## checkEquals(digest_compartments$pc,
+    ##             minfi:::.digestVector(gr.ab$pc, digits = 2))
     checkTrue(TRUE)
 }
