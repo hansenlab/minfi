@@ -74,24 +74,20 @@ dyeCorrection <- function(Meth, Unmeth, Red, Green, control_probes,
 
     if (array_type %in% c("IlluminaHumanMethylation450k",
                           "IlluminaHumanMethylationEPIC")) {
-        CG.controls <- rownames(
-            internal.controls[[1]]) %in% c("NORM_C", "NORM_G")
-        AT.controls <- rownames(
-            internal.controls[[1]]) %in% c("NORM_A", "NORM_T")
+        CG.controls <- which(
+            rownames(internal.controls[[1]]) %in% c("NORM_C", "NORM_G"))
+        AT.controls <- which(
+            rownames(internal.controls[[1]]) %in% c("NORM_A", "NORM_T"))
     } else {
-        CG.controls <- rownames(
-            internal.controls[[1]]) %in% c("Normalization-Green")
-        AT.controls <- rownames(
-            internal.controls[[1]]) %in% c("Normalization-Red")
+        CG.controls <- which(
+            rownames(internal.controls[[1]]) %in% c("Normalization-Green"))
+        AT.controls <- which(
+            rownames(internal.controls[[1]]) %in% c("Normalization-Red"))
     }
 
     # Dye bias normalization with the corrected Illumina control probes
-    Green.avg <- colMeans2(
-        x = internal.controls[["Green"]],
-        rows = match(CG.controls, rownames(internal.controls[["Green"]])))
-    Red.avg <- colMeans2(
-        x = internal.controls[["Red"]],
-        rows = match(AT.controls, rownames(internal.controls[["Red"]])))
+    Green.avg <- colMeans2(x = internal.controls[["Green"]], rows = CG.controls)
+    Red.avg <- colMeans2(x = internal.controls[["Red"]], rows = AT.controls)
     R.G.ratio <- Red.avg / Green.avg
 
     if (dyeMethod == "single") {
