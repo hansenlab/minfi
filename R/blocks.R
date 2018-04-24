@@ -54,7 +54,6 @@ clusterMaker4Blocks <- function(gr, relationToIsland, islandName, maxGap,
     data.frame(pns = pns, type = type)
 }
 
-
 cpgCollapseAnnotation <- function(gr, relationToIsland, islandName,
                                   maxGap = 500, maxClusterWidth = 1500,
                                   blockMaxGap = 2.5*10^5, verbose = TRUE) {
@@ -299,27 +298,33 @@ blockFinder <- function(object, design, coef = 2, what = c("Beta", "M"),
                         nullMethod = c("permutation","bootstrap"),
                         smooth = TRUE, smoothFunction = locfitByCluster,
                         B = ncol(permutations), permutations = NULL,
-                        verbose = TRUE, bpSpan = 2.5*10^5, ...) {
+                        verbose = TRUE, bpSpan = 2.5 * 10^5, ...) {
 
     # Check inputs
-    .supportsDelayedArray(object)
-    if (!is(object,"GenomicRatioSet")) stop("object must be 'GenomicRatioSet'")
+    if (!is(object, "GenomicRatioSet")) stop("object must be 'GenomicRatioSet'")
+    .isMatrixBackedOrWarning(object, "blockFinder")
     if (is.null(cluster)) cluster <- granges(object)$blockgroup
     if (is.null(cluster)) stop("need 'cluster'")
     what <- match.arg(what)
     nullMethod <- match.arg(nullMethod)
+
+    # Extract data to pass to low-level functions
+    meth_signal <- getMethSignal(object, what)
+    pos <- start(granges(object)) / 2 + end(granges(object)) / 2
     idx <- which(granges(object)$type == "OpenSea")
     if (length(idx) == 0) stop("need OpenSea types in granges(object)")
 
-
-    pos <- start(granges(object)) / 2 + end(granges(object)) / 2
+    # Run bumphunter on the open sea probes
     res <- bumphunterEngine(
-        mat = getMethSignal(object, what)[idx,],
+        # NOTE: as.matrix() realizes data in-memory
+        mat = as.matrix(meth_signal[idx, ]),
         design = design,
         coef = coef,
         chr = as.character(seqnames(object))[idx],
-        pos = pos[idx], cluster = cluster[idx],
-        cutoff = cutoff,  pickCutoff = pickCutoff,
+        pos = pos[idx],
+        cluster = cluster[idx],
+        cutoff = cutoff,
+        pickCutoff = pickCutoff,
         pickCutoffQ = pickCutoffQ,
         nullMethod = nullMethod,
         smooth = smooth,
@@ -327,21 +332,27 @@ blockFinder <- function(object, design, coef = 2, what = c("Beta", "M"),
         B = B,
         permutations = permutations,
         verbose = verbose,
-        bpSpan = bpSpan,...)
+        bpSpan = bpSpan,
+        ...)
 
-    ## FIXME: reindex like below
-    res$coef <- bumphunter:::.getEstimate(getMethSignal(object, what), design, coef = coef)
+    # Get genome-wide estimate
+    # TODO: reindex like below (FIXME)
+    res$coef <- bumphunter:::.getEstimate(
+        # NOTE: as.matrix() realizes data in-memory
+        mat = as.matrix(meth_signal),
+        design = design,
+        coef = coef)
 
-    ## Re-indexing because we only fit the model on the idx indexes
+    # Construct output object
+    # NOTE: Re-indexing because we only fit the model on the idx indexes
     res$table$indexStart <- idx[res$table$indexStart]
     res$table$indexEnd <- idx[res$table$indexEnd]
-    fitted <- rep(NA, length(granges(object)))
+    fitted <- rep(NA_real_, length(granges(object)))
     fitted[idx] <- res$fitted
     res$fitted <- fitted
-    pvaluesMarginal <- rep(NA,length(granges(object)))
+    pvaluesMarginal <- rep(NA_real_, length(granges(object)))
     pvaluesMarginal[idx] <- res$pvaluesMarginal
     res$pvaluesMarginal <- pvaluesMarginal
 
-    return(res)
+    res
 }
-
