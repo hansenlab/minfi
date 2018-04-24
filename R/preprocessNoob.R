@@ -1,3 +1,7 @@
+# Global variables -------------------------------------------------------------
+
+utils::globalVariables("oob")
+
 # Internal functions -----------------------------------------------------------
 
 # TODO: Profile

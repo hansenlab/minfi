@@ -302,7 +302,7 @@ blockFinder <- function(object, design, coef = 2, what = c("Beta", "M"),
                         verbose = TRUE, bpSpan = 2.5*10^5, ...) {
 
     # Check inputs
-    .supportsDelayedArray(object)
+    .isMatrixBackedOrStop(object)
     if (!is(object,"GenomicRatioSet")) stop("object must be 'GenomicRatioSet'")
     if (is.null(cluster)) cluster <- granges(object)$blockgroup
     if (is.null(cluster)) stop("need 'cluster'")
