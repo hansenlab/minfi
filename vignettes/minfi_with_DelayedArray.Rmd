@@ -1,0 +1,127 @@
+---
+title: "Using minfi with DelayedArray"
+author: 
+  - Peter F. Hickey
+package: minfi
+abstract: >
+  Using minfi with the DelayedArray package to support analyses 
+  of large datasets.
+vignette: >
+  %\VignetteIndexEntry{Using minfi with DelayedArray}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+output: 
+  BiocStyle::html_document:
+    toc_float: true
+editor_options: 
+  chunk_output_type: console
+---
+
+# Overview
+
+As of version `1.26.0`, `r Biocpkg("minfi")` provides the option to use 
+_disk-backed_ `r Biocpkg("minfi")` objects. This allows users to analyse larger 
+datasets and to do so without requiring a computer with large amounts of 
+memory. We have implemented this functionality using the 
+`r Biocpkg("DelayedArray")` framework. This vignettes explains how to use this 
+new functionality, some current limitations, and future work.
+
+# Introduction
+
+Projects such as The Cancer Genome Atlas have profiled DNA methylation in 
+thousands of samples using Illumina microarrays. Such large datasets have 
+traditionally been challenging to analyse with R/Bioconductor packages, 
+including `r Biocpkg("minfi")`, because all the data are required to be 
+in-memory. Consequently, to analyse these datasets required access to a machine 
+with a large amount of memory (> 100 GB of RAM) and even then could prove impossible. 
+
+One way to avoid this issue is to keep as much of the data on-disk as possible, 
+only loading into memory what is required for each operation and processing 
+data in "blocks" or "chunks". The `r Biocpkg("DelayedArray")` package provides 
+a framework for performing these *block-processing* operations on array-like 
+data, where the data may be on-disk or in-memory.
+
+**TODO Key points (to expand)**
+
+- Supports *matrix-backed* and *DelayedArray*-backed **minfi** objects
+- minfi functionality 'just works' with both
+- HDF5Array is the standard disk-backed backend but others are possible
+- Where to find out more about DelayedArray, HDF5Array, and HDF5
+
+## Which parts of a minfi object are stored on disk?
+
+Only the *assay* data are stored on disk in the HDF5 file, i.e.
+
+- The `Red` and `Green` assays of a *RGChannelSet[Extended]*
+- The `Meth`, `Unmeth`, and `CN` assays of a *[Genomic]MethylSet*
+- The `Beta`, `M`, and `CN` assays of a *[Genomic]RatioSet*. 
+
+Nonetheless, since the *assay* data comprises the bulk of a minfi object, the 
+memory saving of using an HDF5Array-backed minfi object can be substantial, 
+particularly for objects with a large number of samples.
+
+```{r}
+# TODO: Plot demonstrating size of matrix-backed vs. HDF5Array-backed minfi objects as a function of the number of samples (n = 1, 10, 50, 100, 500, 1000)
+# TODO: What are `rownames(minfiData::RGsetEx`? Are they required? 
+# TODO: Are dimnames on assays required? They're redundant and add to size of 
+#       object.
+```
+
+# How to use create an HDF5Array-backed minfi object
+
+We demonstrate how to construct an HDF5Array-backed minfi object for two common 
+use cases:
+
+1. Starting from an existing minfi object
+2. Starting from a bunch of IDAT files
+
+## Starting from an existing minfi object
+
+We demonstrate how to convert an existing minfi object to an HDF5Array-backed 
+object using a dataset included in the `r Biocpkg("minfi")` package, 
+`minfiData::RGsetEx`. We create an HDF5Array-backed version of the object and 
+save it to the `output_dir`[^output_dir] directory.
+
+[^output_dir]: For the purpose of demonstration, we use a temporary directory. In practice, you will want to use a more permanent location.
+
+```{r}
+library(minfi)
+library(minfiData)
+library(HDF5Array)
+
+RGSet <- minfiData::RGsetEx
+output_dir <- tempdir()
+HDF5Array::saveHDF5SummarizedExperiment(x = RGSet, dir = output_dir)
+```
+
+This step need only be done once. Once saved, we can then load the object into 
+an R session[^load] using the companion function, 
+`HDF5Array::loadHDF5SummarizedExperiment()`:
+
+[^load]: The `HDF5Array::saveHDF5SummarizedExperiment()` function invisibly returns the new object, so we could begin our analysis in the same session by assigning the outout of `HDF5Array::saveHDF5SummarizedExperiment` to a variable.
+
+```{r}
+RGSet_h5 <- HDF5Array::loadHDF5SummarizedExperiment(output_dir)
+```
+
+### Options to consider when saving a HDF5Array
+
+The `HDF5Array::saveHDF5SummarizedExperiment()` function automatically "chunks" 
+the assay data
+
+**TODO Key points (to expand)**
+
+- `chunk`
+- `level`
+
+## Starting from IDAT files
+
+**TODO Key points (to expand)**
+
+- `setRealizationBackend("HDF5Array"); read.metharray()`
+- Not yet optimized
+    - Writes each sample (and assay?) to a separate HDF5 file.
+
+# Supported functionality
+
+# Future work
