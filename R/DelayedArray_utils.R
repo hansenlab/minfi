@@ -37,8 +37,8 @@ rowGrid <- function(x) {
 .highestType <- function(...) {
     dots <- list(...)
     types <- vapply(dots, DelayedArray::type, character(1L))
-    vector <- do.call(c, lapply(types, vector))
-    DelayedArray::type(vector)
+    vector <- do.call(c, lapply(types, vector))  # guaranteed to be atomic
+    typeof(vector)
 }
 
 # Advanced block processing routines -------------------------------------------
