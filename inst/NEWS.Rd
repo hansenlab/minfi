@@ -3,13 +3,12 @@
 \encoding{UTF-8}
 
 \section{Version 1.26}{
-  \subsection{Bug fixes}{
-    \itemize{
-      \item \code{v1.26.1}: \code{dmpFinder()} again works when \code{dat} is
-        a numeric matrix. This bug was introduced in \code{v1.26.0} during the
-        transition to support DelayedArray-backed minfi objects. Thanks to
-        @ralowe for the report (#163).
-    }
+  \itemize{
+    \item \code{v1.26.1}: \code{dmpFinder()} again works when \code{dat} is
+    a numeric matrix. This bug was introduced in \code{v1.26.0} during the
+    transition to support DelayedArray-backed minfi objects. Thanks to
+    @ralowe for the report (#163).
+    \item Changed default annotation for EPIC arrays to B4 from B2.
   }
 }
 
