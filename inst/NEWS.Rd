@@ -4,7 +4,7 @@
 
 \section{Version 1.27}{
   \itemize{
-    \item {v.1.27.2} Fix bug in \code{preprocessQuantile()} that arose when
+    \item {v1.27.2} Fix bug in \code{preprocessQuantile()} that arose when
     checking input for previous preprocessing method. Thanks to @DelnazR for
     the report (\url{https://github.com/hansenlab/minfi/issues/165}).
   }
