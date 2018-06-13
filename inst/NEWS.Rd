@@ -2,6 +2,14 @@
 \title{Minfi News}
 \encoding{UTF-8}
 
+\section{Version 1.27}{
+  \itemize{
+    \item {v.1.27.2} Fix bug in \code{preprocessQuantile()} that arose when
+    checking input for previous preprocessing method. Thanks to @DelnazR for
+    the report (\url{https://github.com/hansenlab/minfi/issues/165}).
+  }
+}
+
 \section{Version 1.26}{
   \itemize{
     \item \code{v1.26.1}: \code{dmpFinder()} again works when \code{dat} is
