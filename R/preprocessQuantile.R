@@ -105,10 +105,10 @@ preprocessQuantile <- function(object, fixOutliers = TRUE,
           is(object, "GenomicMethylSet"))) {
         stop("object must be of class 'RGChannelSet' or '[Genomic]MethylSet'")
     }
-    if ((is(object, "MethylSet") ||
-         is(object, "GenomicMethylSet"))
-        && preprocessMethod(object)["rg.norm"] !=
-        "Raw (no normalization or bg correction)") {
+    if ((is(object, "MethylSet") || is(object, "GenomicMethylSet")) &&
+        (is.na(preprocessMethod(object)["rg.norm"]) ||
+         preprocessMethod(object)["rg.norm"] !=
+         "Raw (no normalization or bg correction)")) {
         warning("preprocessQuantile has only been tested with 'preprocessRaw'")
     }
     if (.is27k(object) && stratified) {
