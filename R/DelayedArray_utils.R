@@ -18,18 +18,20 @@ setMethod("dimnames", "arrayRealizationSink", function(x) {
 # Helper functions for setting up ArrayGrid instances --------------------------
 
 colGrid <- function(x) {
-    max_block_len <- max(nrow(x), DelayedArray:::get_max_block_length(type(x)))
+    block_maxlen <- max(nrow(x),
+                         DelayedArray:::get_default_block_maxlength(type(x)))
     spacings <- DelayedArray:::get_spacings_for_linear_capped_length_blocks(
         refdim = dim(x),
-        max_block_len = max_block_len)
+        block_maxlen = block_maxlen)
     RegularArrayGrid(dim(x), spacings)
 }
 
 rowGrid <- function(x) {
-    max_block_len <- max(ncol(x), DelayedArray:::get_max_block_length(type(x)))
+    block_maxlen <- max(ncol(x),
+                         DelayedArray:::get_default_block_maxlength(type(x)))
     spacings <- DelayedArray:::get_spacings_for_hypercube_capped_length_blocks(
         refdim = dim(x),
-        max_block_len = max_block_len)
+        block_maxlen = block_maxlen)
     RegularArrayGrid(dim(x), spacings)
 }
 
