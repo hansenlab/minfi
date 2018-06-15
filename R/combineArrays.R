@@ -78,7 +78,7 @@
     rownames(rgSet)[wh] <- translate[rownames(rgSet)[wh]]
     keepAddresses$II <- unname(translate)
 
-    # Probes of Type SnpII
+    # Probes of Type SnpI
     probes1 <- getProbeInfo(manifest1, type = "SnpI")
     probes2 <- getProbeInfo(manifest2, type = "SnpI")
     commonNames <- intersect(probes1$Name, probes2$Name)
@@ -88,7 +88,7 @@
     stopifnot(all(probes1$ProbeSeqB == probes2$ProbeSeqA))
     # Translating rgSet2 addresses to rgSet1 addresses
     translate <- c(probes1$AddressA, probes1$AddressB)
-    names(translate) <- c(probes2$AddressB, probes2$AddressA)
+    names(translate) <- c(probes2$AddressA, probes2$AddressB)
     wh <- which(rownames(rgSet) %in% names(translate))
     rownames(rgSet)[wh] <- translate[rownames(rgSet)[wh]]
     keepAddresses$SnpI <- unname(translate)

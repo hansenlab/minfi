@@ -7,6 +7,10 @@
     \item {v1.27.2} Fix bug in \code{preprocessQuantile()} that arose when
     checking input for previous preprocessing method. Thanks to @DelnazR for
     the report (\url{https://github.com/hansenlab/minfi/issues/165}).
+    \item {v1.27.3} Fixed bug related to switch A and B for SNPs of type
+    I when using convertArray / combineArrays.  Reported by Jenny van
+    Dongen.
+    \item {v1.27.3} Fixed error in dmpFinder.
   }
 }
 
