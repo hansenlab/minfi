@@ -71,16 +71,13 @@ blockApplyWithRealization <- function(x, FUN, ..., sink = NULL, x_grid = NULL,
         }
         x_viewport <- x_grid[[b]]
         sink_viewport <- sink_grid[[b]]
-        block <- DelayedArray:::extract_block(x, x_viewport)
-        if (!is.array(block)) {
-            block <- DelayedArray:::.as_array_or_matrix(block)
-        }
+        block <- read_block(x, x_viewport)
         attr(block, "from_grid") <- x_grid
         attr(block, "block_id") <- b
         block_ans <- FUN(block, ...)
         # NOTE: This is the only part different from DelayedArray::blockApply()
         if (!is.null(sink)) {
-            write_block_to_sink(block_ans, sink, sink_viewport)
+            write_block(sink, sink_viewport, block_ans)
             block_ans <- NULL
         }
         if (DelayedArray:::get_verbose_block_processing()) {
@@ -127,10 +124,7 @@ blockMapply <- function(FUN, ..., MoreArgs = NULL, grids = NULL,
         viewports <- lapply(grids, function(grid) grid[[b]])
         blocks <- mapply(
             FUN = function(x, grid, viewport) {
-                block <- DelayedArray:::extract_block(x, viewport)
-                if (!is.array(block)) {
-                    block <- DelayedArray:::.as_array_or_matrix(block)
-                }
+                block <- read_block(x, viewport)
                 attr(block, "from_grid") <- grid
                 attr(block, "block_id") <- b
                 block
@@ -208,10 +202,7 @@ blockMapplyWithRealization <- function(FUN, ..., MoreArgs = NULL, sinks = NULL,
         output_viewports <- lapply(sinks_grids, function(grid) grid[[b]])
         blocks <- mapply(
             FUN = function(x, grid, viewport) {
-                block <- DelayedArray:::extract_block(x, viewport)
-                if (!is.array(block)) {
-                    block <- DelayedArray:::.as_array_or_matrix(block)
-                }
+                block <- read_block(x, viewport)
                 attr(block, "from_grid") <- grid
                 attr(block, "block_id") <- b
                 block
@@ -228,7 +219,7 @@ blockMapplyWithRealization <- function(FUN, ..., MoreArgs = NULL, sinks = NULL,
         # NOTE: This is the only part different from blockMapply()
         if (!is.null(sinks)) {
             mapply(function(ans, sink, viewport) {
-                write_block_to_sink(ans, sink, viewport)
+                write_block(sink, viewport, ans)
             }, ans = block_ans, sink = sinks, viewport = output_viewports,
             SIMPLIFY = FALSE, USE.NAMES = FALSE)
             block_ans <- NULL
