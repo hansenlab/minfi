@@ -20,19 +20,18 @@ setMethod("dimnames", "arrayRealizationSink", function(x) {
 colGrid <- function(x) {
     block_maxlen <- max(nrow(x),
                          DelayedArray:::get_default_block_maxlength(type(x)))
-    spacings <- DelayedArray:::get_spacings_for_linear_capped_length_blocks(
-        refdim = dim(x),
-        block_maxlen = block_maxlen)
-    RegularArrayGrid(dim(x), spacings)
+    makeRegularArrayGridOfCappedLengthViewports(dim(x), block_maxlen,
+                                                "linear")
 }
 
 rowGrid <- function(x) {
     block_maxlen <- max(ncol(x),
                          DelayedArray:::get_default_block_maxlength(type(x)))
-    spacings <- DelayedArray:::get_spacings_for_hypercube_capped_length_blocks(
-        refdim = dim(x),
-        block_maxlen = block_maxlen)
-    RegularArrayGrid(dim(x), spacings)
+    ## Is the "hypercube" shape really intentional? Or should the
+    ## "transposed-linear" shape be used instead? (Like in
+    ## DelayedMatrixStats:::block_APPLY() when MARGIN == 1L.)
+    makeRegularArrayGridOfCappedLengthViewports(dim(x), block_maxlen,
+                                                "hypercube")
 }
 
 # Get the 'highest' DelayedArray::type() of array-like objects -----------------
