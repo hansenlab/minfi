@@ -21,15 +21,16 @@ colGrid <- function(x) {
     block_maxlen <- max(nrow(x),
                          DelayedArray:::get_default_block_maxlength(type(x)))
     makeRegularArrayGridOfCappedLengthViewports(dim(x), block_maxlen,
-                                                "linear")
+                                                "first-dim-grows-first")
 }
 
 rowGrid <- function(x) {
     block_maxlen <- max(ncol(x),
                          DelayedArray:::get_default_block_maxlength(type(x)))
     ## Is the "hypercube" shape really intentional? Or should the
-    ## "transposed-linear" shape be used instead? (Like in
+    ## "last-dim-grows-first" shape be used instead? (Like in
     ## DelayedMatrixStats:::block_APPLY() when MARGIN == 1L.)
+    ## [H.P. -- 06/29/2018]
     makeRegularArrayGridOfCappedLengthViewports(dim(x), block_maxlen,
                                                 "hypercube")
 }
