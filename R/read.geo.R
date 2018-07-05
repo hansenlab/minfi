@@ -251,7 +251,7 @@ readGEORawFile <- function(filename, sep = ",", Uname = "Unmethylated signal",
                            Mname = "Methylated signal", row.names = 1,
                            pData = NULL, array = "IlluminaHumanMethylation450k",
                            annotation = .default.450k.annotation,
-                           mergeManifest = FALSE, showProgress = TRUE) {
+                           mergeManifest = FALSE, showProgress = TRUE, ...) {
     colnames <- strsplit(readLines(filename, n = 1), sep)[[1]]
 
     if (all(!grepl(Uname, colnames))) {
@@ -271,7 +271,8 @@ readGEORawFile <- function(filename, sep = ",", Uname = "Unmethylated signal",
         header = TRUE,
         sep = sep,
         select = select,
-        showProgress = showProgress)
+        showProgress = showProgress,
+        ...)
 
     rowNames <- as.matrix(mat[, 1, with = FALSE])
     mat <- as.matrix(mat[,-1, with = FALSE])

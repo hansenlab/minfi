@@ -11,7 +11,7 @@ readGEORawFile(filename, sep = ",", Uname = "Unmethylated signal",
                Mname = "Methylated signal", row.names = 1, pData = NULL,
                array = "IlluminaHumanMethylation450k",
                annotation = .default.450k.annotation, mergeManifest = FALSE,
-               showProgress = TRUE)
+               showProgress = TRUE, ...)
 }
 
 \arguments{
@@ -51,6 +51,9 @@ readGEORawFile(filename, sep = ",", Uname = "Unmethylated signal",
   \item{showProgress}{
     TRUE displays progress on the console. It is
     produced in fread's C code.
+  }
+  \item{...}{
+    Additional arguments passed to \code{data.table::\link[data.table]{fread}()}.
   }
 }
 \details{
