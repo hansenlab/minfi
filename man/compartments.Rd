@@ -10,8 +10,8 @@
   eigenvector on a binned probe correlation matrix.
 }
 \usage{
-compartments(object, resolution=100*1000, what = "OpenSea", chr="chr22",
-                  method = c("pearson", "spearman"), keep=TRUE)
+compartments(object, resolution = 100000L, what = "OpenSea", chr = "chr22",
+                  method = c("pearson", "spearman"), keep = TRUE)
 }
 \arguments{
   \item{object}{An object of class (Genomic)MethylSet or (Genomic)RatioSet}

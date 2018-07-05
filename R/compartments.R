@@ -1,44 +1,25 @@
-# Example ----------------------------------------------------------------------
-
-# TODO: Move the commented out example to examples/tests or remove entirely
-
-# Author: Jean-Philippe Fortin
-# May 6th 2015
-
-# library(minfiData)
-# library(lineprof)
-# GMset <- mapToGenome(MsetEx)
-# prof1 <- lineprof({
-# con <- createCorMatrix(GMset, res=500*1000)
-# })
-# prof2 <- lineprof({
-# ab <- extractAB(con)
-# })
-# prof3 <- lineprof({
-# a <- compartments(GMset, resolution=500*1000)
-# })
-
 # Internal functions -----------------------------------------------------------
 
-.imputeMatrix <- function(matrix) {
-    matrix[is.infinite(matrix) & matrix > 0] <- max(matrix[is.finite(matrix)])
-    matrix[is.infinite(matrix) & matrix < 0] <- min(matrix[is.finite(matrix)])
+.imputeMatrix <- function(matrix, lower = min(matrix[is.finite(matrix)]),
+                          upper = max(matrix[is.finite(matrix)])) {
+    # NOTE: Does not support DelayedMatrix
+    stopifnot(is.matrix(matrix))
 
-    # Imputation of the missing values:
-    missing <- which(is.na(matrix), arr.ind = TRUE)
-    if (length(missing) != 0) {
-        for (j in seq_len(nrow(missing))) {
-            mean <- mean(
-                x = matrix[missing[j, 1L], ][
-                    is.finite(matrix[missing[j, 1L], ])],
-                na.rm = TRUE)
-            matrix[missing[j, 1L], missing[j, 2L]] <- mean
-        }
-    }
+    # Replace positive (resp. negative) infinite values by `upper` (resp.
+    # `lower`).
+    matrix <- pmax(pmin(matrix, upper), lower)
+
+    # Imputation of the missing values: Replace NA/NaN by (finite) row mean
+    rows_with_NAs <- rowAnyNAs(matrix)
+    matrix[rows_with_NAs, ] <- rowMeans2(
+        x = matrix,
+        rows = rows_with_NAs,
+        na.rm = TRUE)
+
     matrix
 }
 
-.returnBinnedMatrix <- function(gr.unbinnedCor, resolution){
+.returnBinnedMatrix <- function(gr.unbinnedCor, resolution) {
 
     bin2D <- function(matrix, ids, n) {
         unique.ids <- sort(unique(ids))
@@ -49,7 +30,7 @@
                 # TODO: We should be able to speed this one up a lot
                 indices1 <- which(ids == unique.ids[i])
                 indices2 <- which(ids == unique.ids[j])
-                bin.matrix[unique.ids[i],unique.ids[j]] <- median(
+                bin.matrix[unique.ids[i], unique.ids[j]] <- median(
                     x = matrix[indices1, indices2],
                     na.rm = TRUE)
             }
@@ -59,8 +40,6 @@
         bin.matrix
     }
 
-    # TODO: Use Bioconductor infrastructure to get chromosome lengths and
-    #       don't directly call structure() to create object
     chr.lengths <- structure(
         c(249250621L, 243199373L, 198022430L, 191154276L, 180915260L,
           171115067L, 159138663L, 146364022L, 141213431L, 135534747L,
@@ -76,6 +55,7 @@
     stopifnot(length(seqlevels(gr.unbinnedCor)) == 1 &&
                   !is.na(seqlengths(gr.unbinnedCor)))
     stopifnot("cor.matrix" %in% names(mcols(gr.unbinnedCor)))
+    stopifnot(is.matrix(gr.unbinnedCor$cor.matrix))
 
     gr.binnedCor <- tileGenome(
         seqlengths = seqlengths(gr.unbinnedCor),
@@ -90,11 +70,10 @@
 }
 
 .removeBadBins <- function(gr) {
-    good.bins <- which(!colAlls(gr$cor.matrix, value = 0))
-    if (length(good.bins) < nrow(gr$cor.matrix)) {
-        gr <- gr[good.bins]
-        gr$cor.matrix <- gr$cor.matrix[, good.bins]
-    }
+    n <- length(gr)
+    good.bins <- !colAlls(gr$cor.matrix, value = 0)
+    gr <- gr[good.bins]
+    gr$cor.matrix <- gr$cor.matrix[, good.bins]
     gr
 }
 
@@ -103,13 +82,17 @@
     ifelse(pc < cutoff, "open", "closed")
 }
 
-.getFirstPC <- function(matrix, method){
-    # Centre the matrix
+.getFirstPC <- function(matrix, method) {
+    stopifnot(is.matrix(matrix))
+
+    # Centre the rows of the matrix
     center <- rowMeans2(matrix, na.rm = TRUE)
-    matrix <- sweep(matrix, 1L, center, check.margin = FALSE)
-    # TODO: Remove commented code if not needed
-    ## if(method == "nipals")
-    ##     pc <- mixOmics::nipals(matrix, ncomp = 1)$p[,1]
+    matrix <- sweep(
+        x = matrix,
+        MARGIN = 1L,
+        STATS = center,
+        FUN = "-",
+        check.margin = FALSE)
     .fsvd(matrix, k = 1, method = method)$u
 }
 
@@ -157,6 +140,7 @@
 }
 
 .fsvd <- function(A, k, i = 1, p = 2, method = c("qr", "svd", "exact")) {
+    stopifnot(is.matrix(A))
     method <- match.arg(method)
     l <- k + p
     n <- ncol(A)
@@ -184,17 +168,12 @@
             H <- A %*% (crossprod(A, H))
         }
         # NOTE: We use a SVD to find an othogonal basis Q:
-        # TODO: Remove this commented line if not needed
-        # H = FF %*% Omega %*% t(S)
         svd <- svd(crossprod(H))
         FF <- svd$u # l x l
         omega <- diag(1/sqrt(svd$d)) # l x l
         S <- H %*% FF %*% omega # m x l
         # Define the orthogonal basis:
         Q <- S[, seq_len(k), drop = FALSE] # m x k
-        # TODO: Remove these commented lines if not needed
-        # TT <- t(A) %*% Q # n x k
-        # TT <- t(TT)
         TT <- crossprod(Q, A)
     } else if (method == "qr") {
         # NOTE: Need to create a list of H matrices
@@ -206,9 +185,6 @@
         H <- do.call("cbind", h.list) # n x [(1+1)l] matrix
         # QR algorithm
         Q <- qr.Q(qr(H, 0))
-        # TODO: Remove these commented lines if not needed
-        # TT <- t(A)%*%Q # n x [(i+1)l]
-        # TT <- t(TT)
         TT <- crossprod(Q, A)
     }
     if (method == "svd" || method == "qr") {
@@ -233,29 +209,35 @@
 
 # Exported functions -----------------------------------------------------------
 
-compartments <- function(object, resolution = 100*1000, what="OpenSea",
+compartments <- function(object, resolution = 100000L, what = "OpenSea",
                          chr = "chr22", method = c("pearson", "spearman"),
                          keep = TRUE) {
 
-    .isMatrixBackedOrStop(object, "compartments")
-
+    # Check inputs
+    .isMatrixBackedOrWarning(object, FUN = "compartments")
     .isGenomicOrStop(object)
     stopifnot(length(chr) == 1 && chr %in% seqlevels(object))
     method <- match.arg(method)
+
+    # Construct correlation matrix
     gr <- createCorMatrix(
         object = object,
         resolution = resolution,
         what = what,
         chr = chr,
         method = method)
+
+    # Extract A/B compartments
     gr <- extractAB(gr, keep = keep)
     gr$compartment <- .extractOpenClosed(gr)
+
     gr
 }
 
 createCorMatrix <- function(object, resolution = 100 * 1000, what = "OpenSea",
                             chr = "chr22", method = c("pearson", "spearman")) {
-    .isMatrixBackedOrStop(object, "createCorMatrix")
+    # Check inputs
+    .isMatrixBackedOrWarning(object, "createCorMatrix")
     .isGenomicOrStop(object)
     stopifnot(length(chr) == 1 && chr %in% seqlevels(object))
     method <- match.arg(method)
@@ -263,29 +245,57 @@ createCorMatrix <- function(object, resolution = 100 * 1000, what = "OpenSea",
     if (is(object, "GenomicMethylSet")) {
         object <- ratioConvert(object, what = "M", keepCN = FALSE)
     }
-    assay(object, "M") <- .imputeMatrix(getM(object))
 
-    # Next we subset to a chromosome, keep OpenSea probes and remove SNPs
-    seqlevels(object, pruning.mode = "coarse") <- chr
-    object <- object[getIslandStatus(object) %in% what,]
+    # Compute lower and upper bounds used in imputation
+    # NOTE: In the original implementation these bounds are computed from the
+    #       complete `M`, prior to subsetting.
+    # NOTE: `assay(object, "M", withDimnames = FALSE)` is more efficient than
+    #       `getM(object)` since it uses `withDimnames = FALSE`.
+    M <- assay(object, "M", withDimnames = FALSE)
+    # TODO: Would be nice to use range(M, finite = TRUE) but
+    #       range,DelayedArray-method does not support the `finite` argument
+    #       (https://github.com/Bioconductor/DelayedArray/issues/18).
+    if (is.matrix(M)) {
+        M_finite_range <- range(M, finite = TRUE)
+    } else if (is(M, "DelayedMatrix")) {
+        M_finite_range <- range(
+            unlist(
+                blockApply(M, range, finite = TRUE, BPPARAM = SerialParam()),
+                use.names = FALSE))
+    }
+    M_lower <- M_finite_range[1L]
+    M_upper <- M_finite_range[2L]
+
+    # Subset
+    object <- keepSeqlevels(object, value = chr, pruning.mode = "coarse")
+    object <- object[getIslandStatus(object) %in% what, ]
     object <- dropLociWithSnps(object, snps = c("CpG", "SBE"), maf = 0.01)
 
+    # Realize subsetted M in-memory and impute
+    M <- as.matrix(assay(object, "M", withDimnames = FALSE))
+    imputed_M <- .imputeMatrix(matrix = M, lower = M_lower, upper = M_upper)
+
+    # Construct unbinned object
     gr.unbinnedCor <- granges(object)
-    gr.unbinnedCor$cor.matrix <- cor(t(getM(object)), method = method)
+    gr.unbinnedCor$cor.matrix <- cor(t(imputed_M), method = method)
+
+    # Construct binned object
     gr.cor <- .returnBinnedMatrix(gr.unbinnedCor, resolution = resolution)
-    gr.cor <- .removeBadBins(gr.cor)
-    gr.cor
+    .removeBadBins(gr.cor)
 }
 
 extractAB <- function(gr, keep = TRUE, svdMethod = "qr"){
     if (!(is(gr, "GRanges") && "cor.matrix" %in% names(mcols(gr)))) {
         stop("'gr' must be an object created by createCorMatrix")
     }
+    # Compute, smooth, and unitarize first principal component of correlation
+    # matrix
     pc <- .getFirstPC(gr$cor.matrix, method = svdMethod)
     pc <- .meanSmoother(pc)
     pc <- .unitarize(pc)
-    # Fix sign of eigenvector
-    if (cor(colSums2(gr$cor.matrix), pc) < 0 ) {
+
+    # Standardize first principal component
+    if (cor(colSums(gr$cor.matrix), pc) < 0 ) {
         pc <- -pc
     }
     pc <- pc * sqrt(length(pc))
