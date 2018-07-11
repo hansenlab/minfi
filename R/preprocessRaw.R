@@ -106,7 +106,7 @@ setMethod(
         Green_grid <- colGrid(Green)
         M_sink_grid <- RegularArrayGrid(
             refdim = dim(M_sink),
-            spacings = c(nrow(M_sink), ncol(M_sink) / length(Red_grid)))
+            spacings = c(nrow(M_sink), Red_grid@spacings[2]))
         U_sink_grid <- M_sink_grid
         # Sanity check ArrayGrid objects have the same dim
         stopifnot(dim(Red_grid) == dim(Green_grid),
