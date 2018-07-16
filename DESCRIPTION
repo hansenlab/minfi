@@ -85,6 +85,7 @@ Collate:  AllGenerics.R
 	  qc.R
 	  read.450k.R
 	  read.meth.R
+	  read.meth2.R
 	  read.geo.R
 	  read.manifest.R
 	  bumphunter.R
