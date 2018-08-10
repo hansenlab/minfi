@@ -18,20 +18,18 @@ setMethod("dimnames", "arrayRealizationSink", function(x) {
 # Helper functions for setting up ArrayGrid instances --------------------------
 
 colGrid <- function(x) {
-    block_maxlen <- max(nrow(x),
-                         DelayedArray:::get_default_block_maxlength(type(x)))
-    makeRegularArrayGridOfCappedLengthViewports(dim(x), block_maxlen,
+    block_len <- max(nrow(x), getDefaultBlockLength(type(x)))
+    makeRegularArrayGridOfCappedLengthViewports(dim(x), block_len,
                                                 "first-dim-grows-first")
 }
 
 rowGrid <- function(x) {
-    block_maxlen <- max(ncol(x),
-                         DelayedArray:::get_default_block_maxlength(type(x)))
+    block_len <- max(ncol(x), getDefaultBlockLength(type(x)))
     ## Is the "hypercube" shape really intentional? Or should the
     ## "last-dim-grows-first" shape be used instead? (Like in
     ## DelayedMatrixStats:::block_APPLY() when MARGIN == 1L.)
     ## [H.P. -- 06/29/2018]
-    makeRegularArrayGridOfCappedLengthViewports(dim(x), block_maxlen,
+    makeRegularArrayGridOfCappedLengthViewports(dim(x), block_len,
                                                 "hypercube")
 }
 
