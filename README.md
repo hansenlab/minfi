@@ -2,8 +2,9 @@
 This is the developer version of Bioconductor package [minfi](http://bioconductor.org/packages/devel/bioc/html/minfi.html).  Install in R as:
 
 ```r
-install.packages("BiocManager")
-BiocManager::install("minfi", version = "devel")
+if (!requireNamespace("BiocManager", quietly=TRUE))
+    install.packages("BiocManager")
+BiocManager::install('minfi')
 ```
 
 ## Software status
