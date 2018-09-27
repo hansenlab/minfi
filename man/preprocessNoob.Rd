@@ -8,7 +8,7 @@
   with dye-bias normalization for Illumina Infinium methylation arrays.
 }
 \usage{
-preprocessNoob(rgSet, offset = 15, dyeCorr = TRUE, verbose = TRUE,
+preprocessNoob(rgSet, offset = 15, dyeCorr = TRUE, verbose = FALSE,
                dyeMethod=c("single", "reference"))
 }
 \arguments{

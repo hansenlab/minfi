@@ -97,8 +97,7 @@ dyeCorrection <- function(Meth, Unmeth, Red, Green, control_probes,
     if (dyeMethod == "single") {
         if (verbose) {
             message(
-                "[dyeCorrection] Applying R/G ratio flip to fix dye ",
-                "bias")
+                "[dyeCorrection] Applying R/G ratio flip to fix dye bias")
         }
         Red.factor <- 1 / R.G.ratio
         Green.factor <- 1
@@ -374,7 +373,7 @@ setMethod(
 #       number of elements loaded into memory is doubled or quadrupled. If
 #       running into memory issues, try halving/quartering
 #       getOption("DelayedArray.block.size")
-preprocessNoob <- function(rgSet, offset = 15, dyeCorr = TRUE, verbose = TRUE,
+preprocessNoob <- function(rgSet, offset = 15, dyeCorr = TRUE, verbose = FALSE,
                            dyeMethod = c("single", "reference")) {
 
     # Check inputs

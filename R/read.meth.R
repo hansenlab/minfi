@@ -20,10 +20,10 @@
             array = "IlluminaHumanMethylation27k",
             annotation = .default.27k.annotation)
     } else if (nProbes >= 41000 & nProbes <= 41100) {
-        arrayAnnotaton <- c(
+        arrayAnnotation <- c(
             array = "HorvathMammalMethylChip40",
             annotation = "test.unknown")
-    else {
+    } else {
         arrayAnnotation <- c(array = "Unknown", annotation = "Unknown")
     }
     arrayAnnotation
