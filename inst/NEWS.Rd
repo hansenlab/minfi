@@ -11,6 +11,7 @@
     I when using convertArray / combineArrays.  Reported by Jenny van
     Dongen.
     \item {v1.27.3} Fixed error in dmpFinder.
+    \item Added preliminary support for HorvathMammalMethylChip40.
   }
 }
 
