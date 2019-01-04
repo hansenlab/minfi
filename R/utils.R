@@ -224,12 +224,12 @@ ilogit2 <- function(x) 2^x / (1 + 2^x)
     x.only <- setdiff(names(x), names(y))
     y.only <- setdiff(names(y), names(x))
     if (length(x.only) > 0) {
-        df.add <- x[1, x.only, drop=TRUE]
+        df.add <- x[1, x.only, drop = FALSE]
         is.na(df.add[1, ]) <- TRUE
         y <- cbind(y, df.add)
     }
     if (length(y.only) > 0) {
-        df.add <- y[1, y.only, drop-TRUE]
+        df.add <- y[1, y.only, drop = FALSE]
         is.na(df.add[1, ]) <- TRUE
         x <- cbind(x, df.add)
     }
