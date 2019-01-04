@@ -1,5 +1,5 @@
 Package: minfi
-Version: 1.28.1
+Version: 1.28.2
 Title: Analyze Illumina Infinium DNA methylation arrays
 Description: Tools to analyze & visualize Illumina Infinium methylation arrays.
 Authors@R: c(person(c("Kasper", "Daniel"), "Hansen", role = c("cre", "aut"),
@@ -99,5 +99,5 @@ License: Artistic-2.0
 URL: https://github.com/hansenlab/minfi
 BugReports: https://github.com/hansenlab/minfi/issues
 LazyData: yes
-biocViews: DNAMethylation, DifferentialMethylation, Epigenetics, Microarray, MethylationArray,
+biocViews: ImmunoOncology, DNAMethylation, DifferentialMethylation, Epigenetics, Microarray, MethylationArray,
 	   MultiChannel, TwoChannel, DataImport, Normalization, Preprocessing, QualityControl
