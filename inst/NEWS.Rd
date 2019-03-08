@@ -2,6 +2,16 @@
 \title{Minfi News}
 \encoding{UTF-8}
 
+\section{Version 1.28}{
+  \itemize{
+    \item {v1.28.4} Fixed a bug in \code{detectionP} where the function
+    always returned NA for a 27k array. Reported by Laurenz Holcik.
+    \item {v1.28.4} Fixed a bug in \code{preprocessNoob} where the
+    function would error when supplied an input data set with only 1
+    sample (when using default arguments). Reported by Matt Oldach. 
+  }
+}
+
 \section{Version 1.27}{
   \itemize{
     \item {v1.27.2} Fix bug in \code{preprocessQuantile()} that arose when
