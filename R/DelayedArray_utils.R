@@ -36,8 +36,8 @@ blockApplyWithRealization <- function(x, FUN, ..., sink = NULL, x_grid = NULL,
     FUN <- match.fun(FUN)
 
     # Check conformable dots_grids and sinks_grids
-    x_grid <- DelayedArray:::.normarg_grid(x_grid, x)
-    sink_grid <- DelayedArray:::.normarg_grid(sink_grid, sink)
+    x_grid <- DelayedArray:::normarg_grid(x_grid, x)
+    sink_grid <- DelayedArray:::normarg_grid(sink_grid, sink)
     if (!identical(dim(x_grid), dim(sink_grid))) {
         stop("non-conformable 'x_grid' and 'sink_grid'")
     }
@@ -81,7 +81,7 @@ blockMapply <- function(FUN, ..., MoreArgs = NULL, grids = NULL,
         grids <- replicate(length(dots), NULL)
     }
     grids <- mapply(
-        FUN = DelayedArray:::.normarg_grid,
+        FUN = DelayedArray:::normarg_grid,
         grids,
         dots,
         SIMPLIFY = FALSE,
@@ -144,7 +144,7 @@ blockMapplyWithRealization <- function(FUN, ..., MoreArgs = NULL, sinks = NULL,
         stopifnot(is.list(dots_grids))
     }
     dots_grids <- mapply(
-        FUN = DelayedArray:::.normarg_grid,
+        FUN = DelayedArray:::normarg_grid,
         dots_grids,
         dots,
         SIMPLIFY = FALSE,
@@ -155,7 +155,7 @@ blockMapplyWithRealization <- function(FUN, ..., MoreArgs = NULL, sinks = NULL,
         stopifnot(is.list(sinks_grids))
     }
     sinks_grids <- mapply(
-        FUN = DelayedArray:::.normarg_grid,
+        FUN = DelayedArray:::normarg_grid,
         sinks_grids,
         sinks,
         SIMPLIFY = FALSE,
