@@ -226,10 +226,10 @@ getControlAddress <- function(object,
     if (asList) {
         ctrls <- getProbeInfo(object, type = "Control")
         out <- split(ctrls$Address, ctrls$Type)
-        return(out[names(out) %in% controlType])
+        return(out[tolower(names(out)) %in% tolower(controlType)])
     } else {
         ctrls <- getProbeInfo(object, type = "Control")
-        out <- ctrls[ctrls$Type %in% controlType, "Address"]
+        out <- ctrls[tolower(ctrls$Type) %in% tolower(controlType), "Address"]
     }
     out
 }

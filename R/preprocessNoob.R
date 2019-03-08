@@ -119,13 +119,13 @@ dyeCorrection <- function(Meth, Unmeth, Red, Green, control_probes,
     }
 
     Green <- list(
-        M = Meth[Green_probes, , drop = FALSE],
-        U = Unmeth[Green_probes, , drop = FALSE],
-        D2 = Meth[d2.probes, , drop = FALSE])
+        M = Meth[Green_probes,, drop=FALSE],
+        U = Unmeth[Green_probes,, drop=FALSE],
+        D2 = Meth[d2.probes,, drop=FALSE])
     Red <- list(
-        M = Meth[Red_probes, , drop = FALSE],
-        U = Unmeth[Red_probes, , drop = FALSE],
-        D2 = Unmeth[d2.probes, ])
+        M = Meth[Red_probes,, drop=FALSE],
+        U = Unmeth[Red_probes,, drop=FALSE],
+        D2 = Unmeth[d2.probes,, drop=FALSE ])
 
     # NOTE: Adjust Red regardless of reference or equalization approach
     #       but only adjust Green if using older reference method
