@@ -4,9 +4,9 @@
 
 \section{Version 1.29}{
   \itemize{
-    \item {v1.29.3} Fixed a bug in \code{detectionP} where the function
+    \item {v1.29.4} Fixed a bug in \code{detectionP} where the function
     always returned NA for a 27k array. Reported by Laurenz Holcik.
-    \item {v1.29.3} Fixed a bug in \code{preprocessNoob} where the
+    \item {v1.29.4} Fixed a bug in \code{preprocessNoob} where the
     function would error when supplied an input data set with only 1
     sample (when using default arguments). Reported by Matt Oldach. 
   }
