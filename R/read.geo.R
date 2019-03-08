@@ -47,7 +47,7 @@ makeGenomicRatioSetFromMatrix <- function(mat,rownames = NULL, pData = NULL,
     }
 
     if (is.null(rownames)) {
-        rownmaes <- rownames(mat)
+        rownames <- rownames(mat)
     } else {
         if (length(rownames) != nrow(mat)) {
             stop("Number of rows of mat and length of rownames must match.")
@@ -86,7 +86,7 @@ makeGenomicRatioSetFromMatrix <- function(mat,rownames = NULL, pData = NULL,
              "IlluminaHumanMethylation450k probe names.")
     }
 
-    # NOTE: we give no warning if some of the rownmaes have no match.
+    # NOTE: we give no warning if some of the rownames have no match.
     ind1 <- match(common,rownames(mat))
     ind2 <- match(common,locusNames)
 
@@ -329,7 +329,7 @@ readGEORawFile <- function(filename, sep = ",", Uname = "Unmethylated signal",
              "IlluminaHumanMethylation450k probe names.")
     }
 
-    # NOTE: We give no warning if some of the rownmaes have no match.
+    # NOTE: We give no warning if some of the rownames have no match.
     ind1 <- match(common,rownames(mat))
     ind2 <- match(common,locusNames)
 

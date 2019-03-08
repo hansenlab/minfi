@@ -44,7 +44,7 @@ Are \code{Beta} or \code{M} values being downloaded.
 \details{
 Many 450K data is provided as csv files. This function permits you to
 convert a matrix of values into the class that is used by functions such
-as \code{bumphunter} and \code{blockFinder}. The rownmaes of \code{mat}
+as \code{bumphunter} and \code{blockFinder}. The rownames of \code{mat}
 are used to match the 450K array features. Alternatively the rownames
 can be supplied directly through \code{rownames}.
 }
