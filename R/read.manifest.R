@@ -94,6 +94,7 @@ read.manifest.Mammal <- function(file, type = 2) {
             colClasses = c(rep("character", 4)))[, 1:4]
         TypeControl <- controls[, 1:4]
         names(TypeControl) <- c("Address", "Type", "Color", "ExtendedType")
+        TypeControl$Type  <- toupper(TypeControl$Type)
         TypeControl <- as(TypeControl, "DataFrame")
     }
         

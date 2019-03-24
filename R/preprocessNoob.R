@@ -80,14 +80,14 @@ dyeCorrection <- function(Meth, Unmeth, Red, Green, control_probes,
                           "IlluminaHumanMethylationEPIC",
                           "HorvathMammalMethylChip40")) {
         CG.controls <- which(
-            tolower(rownames(internal.controls[[1]])) %in% tolower(c("NORM_C", "NORM_G")))
+            rownames(internal.controls[[1]]) %in% c("NORM_C", "NORM_G"))
         AT.controls <- which(
-            tolower(rownames(internal.controls[[1]])) %in% tolower(c("NORM_A", "NORM_T")))
+            rownames(internal.controls[[1]]) %in% c("NORM_A", "NORM_T"))
     } else {
         CG.controls <- which(
-            tolower(rownames(internal.controls[[1]])) %in% tolower(c("Normalization-Green")))
+            rownames(internal.controls[[1]]) %in% c("Normalization-Green"))
         AT.controls <- which(
-            tolower(rownames(internal.controls[[1]])) %in% tolower(c("Normalization-Red")))
+            rownames(internal.controls[[1]]) %in% c("Normalization-Red"))
     }
 
     # Dye bias normalization with the corrected Illumina control probes
