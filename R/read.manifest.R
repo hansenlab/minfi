@@ -1,6 +1,6 @@
 # Internal functions -----------------------------------------------------------
 
-read.manifest.Mammal <- function(file) {
+read.manifest.Mammal <- function(file, type = 2) {
     # NOTE: As is, requires grep
     control.line <- system(
         sprintf("grep -n \\\\[Controls\\\\] %s", file), intern = TRUE)
@@ -8,19 +8,25 @@ read.manifest.Mammal <- function(file) {
     stopifnot(length(control.line) == 1 &&
                   is.integer(control.line) &&
                   !is.na(control.line))
-    assay.line <- system(
-        sprintf("grep -n \\\\[Assay\\\\] %s", file), intern = TRUE)
-    assay.line <- as.integer(sub(":.*", "", assay.line))
-    stopifnot(length(assay.line) == 1 &&
+    if(type == 1) {
+        assay.line <- system(
+            sprintf("grep -n \\\\[Assay\\\\] %s", file), intern = TRUE)
+        assay.line <- as.integer(sub(":.*", "", assay.line))
+        stopifnot(length(assay.line) == 1 &&
                   is.integer(assay.line) &&
                   !is.na(assay.line))
+    } else {
+        assay.line  <- 0
+    }
     colNames <- readLines(file, n = assay.line + 1L)[assay.line + 1L]
     colNames <- strsplit(colNames, ",")[[1]]
     colClasses <- rep("character", length(colNames))
     names(colClasses) <- colNames
     names(colClasses) <- make.names(names(colClasses))
     colClasses[c("MAPINFO")] <- "integer"
-    colClasses <- c(colClasses, drop = "logical")
+    if(type == 1) {
+        colClasses <- c(colClasses, drop = "logical")
+    }
     manifest <- read.table(
         file = file,
         header = FALSE,
@@ -32,14 +38,20 @@ read.manifest.Mammal <- function(file) {
         colClasses = colClasses,
         nrows = control.line - assay.line - 2L)
     manifest$drop <- NULL
+    if(type == 2) {
+        names(manifest)[c(1,2,30)] <- c("Name", "Internal_Name", "Internal_Name2")
+    }
+    
     manifest$AddressA_ID <- gsub("^0*", "", manifest$AddressA_ID)
     manifest$AddressB_ID <- gsub("^0*", "", manifest$AddressB_ID)
+    
     TypeI <- manifest[
         manifest$Infinium_Design_Type == "I",
         c("Name", "AddressA_ID", "AddressB_ID", "Color_Channel", "Next_Base",
           "AlleleA_ProbeSeq", "AlleleB_ProbeSeq")]
     names(TypeI)[c(2, 3, 4, 5, 6, 7)] <- c(
         "AddressA", "AddressB", "Color", "NextBase", "ProbeSeqA", "ProbeSeqB")
+    
     TypeI <- as(TypeI, "DataFrame")
     TypeI$ProbeSeqA <- DNAStringSet(TypeI$ProbeSeqA)
     TypeI$ProbeSeqB <- DNAStringSet(TypeI$ProbeSeqB)
@@ -61,17 +73,31 @@ read.manifest.Mammal <- function(file) {
     TypeSnpII <- TypeII[grep("^rs", TypeII$Name), ]
     TypeII <- TypeII[-grep("^rs", TypeII$Name), ]
 
-    controls <- read.table(
-        file = file,
-        skip = control.line,
-        sep = ",",
-        comment.char = "",
-        quote = "",
-        colClasses = c(rep("character", 5)))[, 1:5]
-    TypeControl <- controls[, 1:4]
-    names(TypeControl) <- c("Address", "Type", "Color", "ExtendedType")
-    TypeControl <- as(TypeControl, "DataFrame")
-
+    if(type == 1) {
+        controls <- read.table(
+            file = file,
+            skip = control.line,
+            sep = ",",
+            comment.char = "",
+            quote = "",
+            colClasses = c(rep("character", 5)))[, 1:5]
+        TypeControl <- controls[, 1:4]
+        names(TypeControl) <- c("Address", "Type", "Color", "ExtendedType")
+        TypeControl <- as(TypeControl, "DataFrame")
+    } else {
+        controls <- read.table(
+            file = file,
+            skip = control.line,
+            sep = ",",
+            comment.char = "",
+            quote = "",
+            colClasses = c(rep("character", 4)))[, 1:4]
+        TypeControl <- controls[, 1:4]
+        names(TypeControl) <- c("Address", "Type", "Color", "ExtendedType")
+        TypeControl <- as(TypeControl, "DataFrame")
+    }
+        
+    
     list(
         manifestList = list(
             TypeI = TypeI,

@@ -80,14 +80,14 @@ dyeCorrection <- function(Meth, Unmeth, Red, Green, control_probes,
                           "IlluminaHumanMethylationEPIC",
                           "HorvathMammalMethylChip40")) {
         CG.controls <- which(
-            rownames(internal.controls[[1]]) %in% c("NORM_C", "NORM_G"))
+            tolower(rownames(internal.controls[[1]])) %in% tolower(c("NORM_C", "NORM_G")))
         AT.controls <- which(
-            rownames(internal.controls[[1]]) %in% c("NORM_A", "NORM_T"))
+            tolower(rownames(internal.controls[[1]])) %in% tolower(c("NORM_A", "NORM_T")))
     } else {
         CG.controls <- which(
-            rownames(internal.controls[[1]]) %in% c("Normalization-Green"))
+            tolower(rownames(internal.controls[[1]])) %in% tolower(c("Normalization-Green")))
         AT.controls <- which(
-            rownames(internal.controls[[1]]) %in% c("Normalization-Red"))
+            tolower(rownames(internal.controls[[1]])) %in% tolower(c("Normalization-Red")))
     }
 
     # Dye bias normalization with the corrected Illumina control probes
@@ -176,7 +176,7 @@ setMethod(
         # Threshold Meth and Unmeth to be positive
         Meth[Meth <= 0] <- 1L
         Unmeth[Unmeth <= 0] <- 1L
-
+        
         # NormExp estimates for Green and Red
         dat <- list(
             Green = list(
