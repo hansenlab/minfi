@@ -60,7 +60,7 @@ makeGenomicRatioSetFromMatrix <- function(mat,rownames = NULL, pData = NULL,
     if (is.null(pData)) {
         pData <- DataFrame(X1 = seq_len(ncol(mat)), row.names = colnames(mat))
     }
-    if (class(pData) != "DataFrame") {
+    if (!is(pData, "DataFrame")) {
         stop(sprintf(
             "'pData' must be DataFrame or data.frame. It is a %s.",
             class(pData)))
