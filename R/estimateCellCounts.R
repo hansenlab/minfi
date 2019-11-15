@@ -297,8 +297,7 @@ estimateCellCounts <- function(rgSet, compositeCellType = "Blood",
         sampleNames = c(colnames(rgSet), colnames(referenceRGset)),
         studyIndex = rep(
             x = c("user", "reference"),
-            times = c(ncol(rgSet), ncol(referenceRGset))),
-        stringsAsFactors = FALSE)
+            times = c(ncol(rgSet), ncol(referenceRGset))))
     referencePd <- colData(referenceRGset)
     combinedRGset <- combineArrays(
         object1 = rgSet,
