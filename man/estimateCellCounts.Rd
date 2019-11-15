@@ -103,6 +103,11 @@ batch effects.
   \emph{DNA methylation of cord blood cell types: Applications for mixed cell birth studies.}
   Epigenetics (2016) 11:5.
   doi:\href{http://dx.doi.org/10.1080/15592294.2016.1161875}{10.1080/15592294.2016.1161875}.
+
+  Y Jiang, H Zhang, SV Andrews, H Arshad, S Ewart, JW Holloway, MD Fallin, KM Bakulski, and W Karmaus.
+  \emph{Estimation of Eosinophil Cells in Cord Blood with References Based on Blood in Adults via Bayesian Measurement Error Modeling.}
+  Bioinformatics (2019).
+  doi:\href{https://doi.org/10.1093/bioinformatics/btz839}{10.1093/bioinformatics/btz839}. 
 }
 
 \author{
