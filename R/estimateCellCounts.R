@@ -452,6 +452,19 @@ estimateCellCounts <- function(rgSet, compositeCellType = "Blood",
     counts <- projectCellType(getBeta(mSet)[rownames(coefs), ], coefs)
     rownames(counts) <- colnames(rgSet)
 
+    if (bayesEst == TRUE){
+        if (verbose) message("[estimateCellCounts] Estimating ",inferCellType," composition using Bayesian measurement error model.\n")
+            if (!("Gran" %in% cellTypes) && inferCellType == "Eos"){
+                    message("[estimateCellCounts] It is recommended for 'Gran' to be included in cellTypes argument for eosinophil estimation.\n")
+            } else {
+                    if (length(cellTypes) < 3){
+                        warning("[estimateCellCounts] At least 3 requested cell types recommended for Bayesian measurement error model.\n")
+                    }
+                        counts <- Bayes.estimate(rgSet, counts, referencePkg, compositeCellType, inferReference = inferReference,
+                            inferCellType = inferCellType, minDiff = minDiff, maxDiff = maxDiff, verbose = verbose)
+            }
+    }   
+    
     if (meanPlot) {
         smeans <- compData$sampleMeans
         smeans <- smeans[order(names(smeans))]
