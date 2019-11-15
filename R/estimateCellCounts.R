@@ -351,9 +351,27 @@ estimateCellCounts <- function(rgSet, compositeCellType = "Blood",
         stop("the sample/column names in the user set must not be in the ",
              "reference data ")
     }
+    bayesEst <- FALSE
+    bayesParams <- data.frame(compositeCellType = c("CordBlood"), inferCellType = c("Eos"), inferReference = c("Blood"), minDiff = c(-0.85), maxDiff = c(0.26)) #Can be modified when additional priors are estimated. 
     if (!all(cellTypes %in% referenceRGset$CellType)) {
-        stop(sprintf("all elements of argument 'cellTypes' needs to be part of the reference phenoData columns 'CellType' (containg the following elements: '%s')",
-                     paste(unique(referenceRGset$cellType), collapse = "', '")))
+        inferCellType <- cellTypes[!cellTypes%in%referenceRGset$CellType]
+        validrow <- which(bayesParams$inferCellType %in% inferCellType)
+        if (length(validrow) == 1){
+            if(bayesParams$compositeCellType[validrow] %in% compositeCellType){
+                bayesEst <- TRUE
+                bayesParams <- bayesParams[validrow,]
+                validrow <- match(compositeCellType, bayesParams$compositeCellType)
+               
+                inferCellType <- as.character(with(bayesParams, inferCellType[validrow]))
+                cellTypes <- cellTypes[!cellTypes %in% inferCellType]
+                inferReference <- as.character(with(bayesParams, inferReference[validrow]))
+                minDiff <- with(bayesParams, minDiff[validrow])
+                maxDiff <-  with(bayesParams, maxDiff[validrow])
+            }
+        } else{
+            stop(paste0("all elements of argument 'cellTypes' need to be part of the reference phenoData columns 'CellType' (containg the following elements: ",
+             paste(unique(referenceRGset$CellType), collapse = "', '"),") or have known priors to supply to Bayesian measurement error inference function."))
+        }
     }
     if (length(unique(cellTypes)) < 2) {
         stop("At least 2 cell types must be provided.")
