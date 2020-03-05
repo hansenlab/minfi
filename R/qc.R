@@ -68,7 +68,7 @@ controlStripPlot <- function(rgSet,
         ctl <- rbind(
             cbind(channel = "Red", ctlR),
             cbind(channel = "Green", ctlG))
-        if (any((ctl$value < xlim[1]) || (ctl$value > xlim[2]))) {
+        if (any((ctl$value < xlim[1]) | (ctl$value > xlim[2]))) {
             message("Warning: ", controlType, " probes outside plot range")
         }
         fig <- xyplot(
