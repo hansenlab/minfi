@@ -70,7 +70,7 @@ setMethod(
         # and type
         # NOTE: This is ultimately coerced to the output DelayedMatrix objects,
         #       `detP`
-        detP_sink <- DelayedArray:::RealizationSink(
+        detP_sink <- DelayedArray::AutoRealizationSink(
             dim = c(length(locusNames), ncol(Red)),
             dimnames = list(locusNames, colnames(Red)),
             type = "double")

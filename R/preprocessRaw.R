@@ -89,12 +89,12 @@ setMethod(
         # NOTE: Don't do `U_sink <- M_sink` or else these will reference the
         #       same object and clobber each other when written to!
         ans_type <- .highestType(Red, Green)
-        M_sink <- DelayedArray:::RealizationSink(
+        M_sink <- DelayedArray::AutoRealizationSink(
             dim = c(length(locusNames), ncol(Red)),
             dimnames = list(locusNames, colnames(Red)),
             type = ans_type)
         on.exit(close(M_sink))
-        U_sink <- DelayedArray:::RealizationSink(
+        U_sink <- DelayedArray::AutoRealizationSink(
             dim = c(length(locusNames), ncol(Red)),
             dimnames = list(locusNames, colnames(Red)),
             type = ans_type)

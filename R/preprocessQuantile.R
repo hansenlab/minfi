@@ -166,7 +166,7 @@ preprocessQuantile <- function(object, fixOutliers = TRUE,
                 xIndex = xIndex,
                 yIndex = yIndex,
                 sex = sex)
-            if (!is.null(getRealizationBackend())) {
+            if (!is.null(getAutoRealizationBackend())) {
                 U <- realize(U)
             }
             M <- .qnormNotStratified(
@@ -175,7 +175,7 @@ preprocessQuantile <- function(object, fixOutliers = TRUE,
                 xIndex = xIndex,
                 yIndex = yIndex,
                 sex = sex)
-            if (!is.null(getRealizationBackend())) {
+            if (!is.null(getAutoRealizationBackend())) {
                 M <- realize(M)
             }
         } else {
@@ -190,7 +190,7 @@ preprocessQuantile <- function(object, fixOutliers = TRUE,
                 sex = sex,
                 probeType = probeType,
                 regionType = regionType)
-            if (!is.null(getRealizationBackend())) {
+            if (!is.null(getAutoRealizationBackend())) {
                 U <- realize(U)
             }
             M <- .qnormStratified(
@@ -201,7 +201,7 @@ preprocessQuantile <- function(object, fixOutliers = TRUE,
                 sex = sex,
                 probeType = probeType,
                 regionType = regionType)
-            if (!is.null(getRealizationBackend())) {
+            if (!is.null(getAutoRealizationBackend())) {
                 M <- realize(M)
             }
         }

@@ -41,7 +41,7 @@ read.metharray <- function(basenames, extended = FALSE, verbose = FALSE,
     #       general there is no advantage to using a DelayedMatrix with an
     #       ordinary matrix as the seed over directly using the ordinary matrix
     #       (at least within minfi).
-    BACKEND <- getRealizationBackend()
+    BACKEND <- getAutoRealizationBackend()
     BPREDO <- list()
     BPPARAM <- SerialParam()
 

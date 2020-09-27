@@ -40,7 +40,7 @@ setMethod(
         # and type.
         # NOTE: This is ultimately coerced to the output DelayedMatrix object.
         ans_type <- type(x)
-        sink <- DelayedArray:::RealizationSink(
+        sink <- DelayedArray::AutoRealizationSink(
             dim = c(2L * nrow(probe_info), ncol(x)),
             dimnames = list(
                 c(probe_info$AddressA, probe_info$AddressB), colnames(x)),

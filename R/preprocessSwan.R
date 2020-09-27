@@ -135,7 +135,7 @@ setMethod(
         # NOTE: This is ultimately coerced to the output DelayedMatrix object
         # NOTE: SWAN can return non-integer values, so fill a "double" sink
         ans_type <- "double"
-        sink <- DelayedArray:::RealizationSink(
+        sink <- DelayedArray::AutoRealizationSink(
             dim = c(nrow(x), ncol(x)),
             dimnames = dimnames(x),
             type = ans_type)

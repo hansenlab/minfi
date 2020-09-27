@@ -173,7 +173,7 @@ setMethod(
         # NOTE: .cpgCollapse() can return non-integer values, so fill a "double"
         #       sink
         ans_type <- "double"
-        sink <- DelayedArray:::RealizationSink(
+        sink <- DelayedArray::AutoRealizationSink(
             dim = c(n_clusters, ncol(x)),
             type = ans_type)
         on.exit(close(sink))

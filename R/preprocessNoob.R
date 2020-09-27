@@ -262,12 +262,12 @@ setMethod(
         #       reference the same object and clobber each other when written
         #       to!
         ans_type <- "double"
-        M_sink <- DelayedArray:::RealizationSink(
+        M_sink <- DelayedArray::AutoRealizationSink(
             dim = dim(Meth),
             dimnames = dimnames(Meth),
             type = ans_type)
         on.exit(close(M_sink))
-        U_sink <- DelayedArray:::RealizationSink(
+        U_sink <- DelayedArray::AutoRealizationSink(
             dim = dim(Unmeth),
             dimnames = dimnames(Unmeth),
             type = ans_type)
