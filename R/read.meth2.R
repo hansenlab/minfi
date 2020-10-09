@@ -114,7 +114,7 @@ read.metharray2 <- function(basenames,
             readIDAT(xx)[["Quants"]]
         })
         Mean <- do.call(cbind, lapply(Quants, function(xx) xx[rownames.out, "Mean", drop=FALSE]))
-        write_block(x = sink, viewport = viewport, block = Mean)
+        write_block(sink, viewport = viewport, block = Mean)
     }
     Gmean_sink <- HDF5RealizationSink(
         dim = c(ans_nrow, ans_ncol),
