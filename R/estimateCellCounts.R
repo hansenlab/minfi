@@ -218,6 +218,91 @@ validationCellType <- function(Y, pheno, modelFix, modelBatch=NULL,
         degFree = degFree)
 }
 
+Bayes.estimate <- function(rgSet, counts, referencePkg, compositeCellType, 
+    inferReference = "Blood", inferCellType = "Eos", minDiff = 0.028, maxDiff = 0.168, verbose = verbose){
+
+    if (verbose) message("[estimateCellCounts] Generating ",inferReference," estimates to predict cell type ",inferCellType," in ",compositeCellType,".\n")
+    cellTypes <- colnames(counts)
+
+    referencePkg <- sub(compositeCellType, inferReference, referencePkg)
+    if (!require(referencePkg, character.only = TRUE)) {
+        stop(sprintf("Could not find reference data package for compositeCellType '%s' and referencePlatform '%s' (inferred package name is '%s')",
+                     compositeCellType, platform, referencePkg))
+    }
+
+    data(list = referencePkg)
+    referenceRGset <- get(referencePkg)
+
+    if (!all(cellTypes %in% referenceRGset$CellType)) {
+        cellTypes <- cellTypes[cellTypes %in% referenceRGset$CellType]
+    }
+
+    processMethod <- get("preprocessQuantile")
+    probeSelect <- "both"
+
+    newpd <- DataFrame(
+        sampleNames = c(colnames(rgSet), colnames(referenceRGset)),
+        studyIndex = rep(
+            x = c("user", "reference"),
+            times = c(ncol(rgSet), ncol(referenceRGset))))
+    referencePd <- colData(referenceRGset)
+    combinedRGset <- combineArrays(
+        object1 = rgSet,
+        object2 = referenceRGset,
+        outType = "IlluminaHumanMethylation450k")
+    colData(combinedRGset) <- newpd
+    colnames(combinedRGset) <- newpd$sampleNames
+    rm(referenceRGset)
+
+    combinedMset <- processMethod(combinedRGset)
+    referenceMset <- combinedMset[, combinedMset$studyIndex == "reference"]
+    colData(referenceMset) <- as(referencePd, "DataFrame")
+    mSet <- combinedMset[, combinedMset$studyIndex == "user"]
+    colData(mSet) <- as(colData(rgSet), "DataFrame")
+    rm(combinedMset)
+
+    compData <- pickCompProbes(
+        mSet = referenceMset,
+        cellTypes = c(cellTypes, inferCellType), 
+        compositeCellType = inferReference,
+        probeSelect = probeSelect)
+    coefs <- compData$coefEsts
+
+    inferprop <- projectCellType(getBeta(mSet)[rownames(coefs), ], coefs)
+
+    if (verbose) message("[estimateCellCounts] Performing ",inferCellType," estimation in ", compositeCellType,".\n")
+    counts[counts < 0.000001] = 0.000001
+    counts.logit = log(counts/(1-counts))
+
+    inferprop[inferprop < 0.000001] = 0.000001
+    inferprop.logit = log(inferprop/(1-inferprop))
+
+    diff = inferprop.logit[,cellTypes] - counts.logit[,cellTypes]
+
+    y = inferprop.logit[,inferCellType]
+    taumaxVAR = 1/min(apply(diff, 2, var))
+    tauminVAR = 1/max(apply(diff, 2, var))
+    S2inv = 1/10^4
+    n = dim(inferprop.logit)[1]
+    max.steps = 50000
+    mu = matrix(NA, nrow = n, ncol = max.steps)
+    ###Sample for posterior mu
+    for (i in 1:max.steps){
+        v = runif(1, minDiff, maxDiff)
+        sigmainv = runif(1, tauminVAR, taumaxVAR)
+        mu.mean = sigmainv*(y-v)/(sigmainv+S2inv)
+        mu.var = 1/(sigmainv+S2inv)
+        mu[,i] = rnorm(n, mu.mean, mu.var)
+    }
+
+    EOS = apply(mu, 1, quantile, probs = 0.5)
+    EOS.prop = round(exp(EOS)/(1+exp(EOS)), digit = 4)
+
+    cell.prop = cbind(counts, Eos = EOS.prop)
+    cell.prop
+}
+
+
 # Exported functions -----------------------------------------------------------
 
 estimateCellCounts <- function(rgSet, compositeCellType = "Blood",
@@ -228,6 +313,7 @@ estimateCellCounts <- function(rgSet, compositeCellType = "Blood",
                                    "IlluminaHumanMethylation450k",
                                    "IlluminaHumanMethylationEPIC",
                                    "IlluminaHumanMethylation27k"),
+                               bayesMethod = TRUE,
                                returnAll = FALSE, meanPlot = FALSE,
                                verbose = TRUE, ...) {
 
@@ -266,10 +352,32 @@ estimateCellCounts <- function(rgSet, compositeCellType = "Blood",
         stop("the sample/column names in the user set must not be in the ",
              "reference data ")
     }
+    bayesEst <- FALSE
+    bayesParams <- data.frame(compositeCellType = c("CordBlood"), inferCellType = c("Eos"), inferReference = c("Blood"), minDiff = c(0.028), maxDiff = c(0.168)) #Can be modified when additional priors are estimated. 
     if (!all(cellTypes %in% referenceRGset$CellType)) {
-        stop(sprintf("all elements of argument 'cellTypes' needs to be part of the reference phenoData columns 'CellType' (containg the following elements: '%s')",
-                     paste(unique(referenceRGset$cellType), collapse = "', '")))
-    }
+        if(bayesMethod == TRUE){
+            inferCellType <- cellTypes[!cellTypes%in%referenceRGset$CellType]
+            validrow <- which(bayesParams$inferCellType %in% inferCellType)
+            if (length(validrow) == 1){
+                if(bayesParams$compositeCellType[validrow] %in% compositeCellType){
+                    bayesEst <- TRUE
+                    bayesParams <- bayesParams[validrow,]
+                    validrow <- match(compositeCellType, bayesParams$compositeCellType)
+                   
+                    inferCellType <- as.character(with(bayesParams, inferCellType[validrow]))
+                    cellTypes <- cellTypes[!cellTypes %in% inferCellType]
+                    inferReference <- as.character(with(bayesParams, inferReference[validrow]))
+                    minDiff <- with(bayesParams, minDiff[validrow])
+                    maxDiff <-  with(bayesParams, maxDiff[validrow])
+                }
+            } else{
+                stop("If element of argument 'cellTypes' is not part of reference phenoData columns and bayesMethod = TRUE, must specify cell type/tissue combination with known priors for Bayesian measurement error inference function. See documentation for additional details.")
+            }
+        } else{
+            stop(paste0("all elements of argument 'cellTypes' need to be part of the reference phenoData columns 'CellType' (containg the following elements: ",
+                paste(unique(referenceRGset$CellType), collapse = "', '"),") or set bayesMethod = TRUE."))
+        }
+    } 
     if (length(unique(cellTypes)) < 2) {
         stop("At least 2 cell types must be provided.")
     }
@@ -297,8 +405,7 @@ estimateCellCounts <- function(rgSet, compositeCellType = "Blood",
         sampleNames = c(colnames(rgSet), colnames(referenceRGset)),
         studyIndex = rep(
             x = c("user", "reference"),
-            times = c(ncol(rgSet), ncol(referenceRGset))),
-        stringsAsFactors = FALSE)
+            times = c(ncol(rgSet), ncol(referenceRGset))))
     referencePd <- colData(referenceRGset)
     combinedRGset <- combineArrays(
         object1 = rgSet,
@@ -349,6 +456,19 @@ estimateCellCounts <- function(rgSet, compositeCellType = "Blood",
     if (verbose) message("[estimateCellCounts] Estimating composition.\n")
     counts <- projectCellType(getBeta(mSet)[rownames(coefs), ], coefs)
     rownames(counts) <- colnames(rgSet)
+
+    if (bayesEst == TRUE){
+        if (verbose) message("[estimateCellCounts] Estimating ",inferCellType," composition using Bayesian measurement error model.\n")
+            if (!("Gran" %in% cellTypes) && inferCellType == "Eos"){
+                    message("[estimateCellCounts] It is recommended for 'Gran' to be included in cellTypes argument for eosinophil estimation.\n")
+            } else {
+                    if (length(cellTypes) < 3){
+                        warning("[estimateCellCounts] At least 3 requested cell types recommended for Bayesian measurement error model.\n")
+                    }
+                        counts <- Bayes.estimate(rgSet, counts, referencePkg, compositeCellType, inferReference = inferReference,
+                            inferCellType = inferCellType, minDiff = minDiff, maxDiff = maxDiff, verbose = verbose)
+            }
+    }   
 
     if (meanPlot) {
         smeans <- compData$sampleMeans

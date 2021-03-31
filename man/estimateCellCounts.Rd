@@ -15,6 +15,7 @@ estimateCellCounts(rgSet, compositeCellType = "Blood",
                    referencePlatform = c("IlluminaHumanMethylation450k",
                                          "IlluminaHumanMethylationEPIC",
                                          "IlluminaHumanMethylation27k"),
+                   bayesMethod = TRUE,
                    returnAll = FALSE, meanPlot = FALSE, verbose = TRUE, \dots)
 }
 \arguments{
@@ -39,6 +40,7 @@ estimateCellCounts(rgSet, compositeCellType = "Blood",
   \item{referencePlatform}{The platform for the reference dataset; if
     the input \code{rgSet} belongs to another platform, it will be
     converted using \code{\link{convertArray}}.}
+  \item{bayesMethod}{Should the Bayesian measurement error inference method be used to estimate elements of cellTypes that are not included in the specified reference platform? See details.}
   \item{returnAll}{Should the composition table and the normalized user
     supplied data be return?}
   \item{verbose}{Should the function be verbose?}
@@ -66,6 +68,8 @@ via the \code{cellTypes} argument. For blood, these are "Bcell", "CD4T", "CD8T",
 For cord blood, these are "Bcell", "CD4T", "CD8T", "Gran", "Mono", "Neu", and "nRBC". For frontal
 cortex, these are "NeuN_neg" and "NeuN_pos". See documentation of individual reference packages for
 more details.
+
+When \code{bayesMethod} is TRUE, and elements of \code{cellTypes} are not in the specified reference data package, the function will attempt to use a Bayesian measurement error procedure to estimate the additional cell type. Currently, this feature only supports eosinophil estimation when \code{compositeCellType} is "CordBlood", but additional cell type - tissue combinations will be added in the future. See Jiang and Zhang et al. for additional details.
 
 The \code{meanPlot} should be used to check for large batch effects in the data,
 reducing the confidence placed in the composition estimates. This plot
@@ -103,6 +107,11 @@ batch effects.
   \emph{DNA methylation of cord blood cell types: Applications for mixed cell birth studies.}
   Epigenetics (2016) 11:5.
   doi:\href{http://dx.doi.org/10.1080/15592294.2016.1161875}{10.1080/15592294.2016.1161875}.
+
+  Y Jiang, H Zhang, SV Andrews, H Arshad, S Ewart, JW Holloway, MD Fallin, KM Bakulski, and W Karmaus.
+  \emph{Estimation of Eosinophil Cells in Cord Blood with References Based on Blood in Adults via Bayesian Measurement Error Modeling.}
+  Bioinformatics (2019).
+  doi:\href{https://doi.org/10.1093/bioinformatics/btz839}{10.1093/bioinformatics/btz839}. 
 }
 
 \author{
