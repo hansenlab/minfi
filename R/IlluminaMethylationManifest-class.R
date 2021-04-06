@@ -105,6 +105,22 @@ setValidity("IlluminaMethylationManifest", function(object) {
     if (is.null(msg)) TRUE else msg
 })
 
+# updateObject() ---------------------------------------------------------------
+
+setMethod(
+    "updateObject",
+    signature(object = "IlluminaMethylationManifest"),
+    function(object, ..., verbose=FALSE) {
+        if (verbose) message("updateObject(object = 'IlluminaMethylationManifest')")
+        for (name in ls(object@data, all.names=TRUE)) {
+            x <- get(name, envir=object@data, inherits=FALSE)
+            x <- updateObject(x, ..., verbose=verbose)
+            assign(name, x, envir=object@data)
+        }
+        object
+    }
+)
+
 # Internal functions -----------------------------------------------------------
 
 .getProbePositionsDetailed <- function(map) {
@@ -249,12 +265,12 @@ setMethod("show", "IlluminaMethylationManifest", function(object) {
 setMethod(
     "getManifest",
     signature(object = "IlluminaMethylationManifest"),
-          function(object) object
+          function(object) updateObject(object)
 )
 
 setMethod("getManifest", signature(object = "character"), function(object) {
     maniString <- .getManifestString(object)
     if (!require(maniString, character.only = TRUE))
         stop(sprintf("cannot load manifest package %s", maniString))
-    get(maniString)
+    updateObject(get(maniString))
 })

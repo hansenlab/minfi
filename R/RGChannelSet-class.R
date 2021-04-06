@@ -224,7 +224,7 @@ setMethod("getManifest", signature(object = "RGChannelSet"), function(object) {
     if (!require(maniString, character.only = TRUE)) {
         stop(sprintf("cannot load manifest package %s", maniString))
     }
-    get(maniString)
+    updateObject(get(maniString))
 })
 
 setMethod("getBeta", signature(object = "RGChannelSet"), function(object, ...) {
