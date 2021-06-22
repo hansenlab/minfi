@@ -115,7 +115,9 @@ setMethod(
         for (name in ls(object@data, all.names=TRUE)) {
             x <- get(name, envir=object@data, inherits=FALSE)
             x <- updateObject(x, ..., verbose=verbose)
+            unlockBinding(name, env=object@data)
             assign(name, x, envir=object@data)
+            lockBinding(name, env=object@data)
         }
         object
     }
@@ -265,12 +267,13 @@ setMethod("show", "IlluminaMethylationManifest", function(object) {
 setMethod(
     "getManifest",
     signature(object = "IlluminaMethylationManifest"),
-          function(object) updateObject(object)
+          function(object) object # removed updateObject(object)
 )
 
 setMethod("getManifest", signature(object = "character"), function(object) {
     maniString <- .getManifestString(object)
     if (!require(maniString, character.only = TRUE))
         stop(sprintf("cannot load manifest package %s", maniString))
-    updateObject(get(maniString))
+    ## updateObject(get(maniString))
+    get(maniString)
 })

@@ -23,6 +23,10 @@
         arrayAnnotation <- c(
             array = "HorvathMammalMethylChip40",
             annotation = "test.unknown")
+    } else if (nProbes >= 43650 & nProbes <= 43680) {
+        arrayAnnotation <- c(
+            array = "IlluminaHumanMethylationAllergy",
+            annotation = .default.allergy.annotation)
     } else {
         arrayAnnotation <- c(array = "Unknown", annotation = "Unknown")
     }

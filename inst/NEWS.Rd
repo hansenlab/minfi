@@ -2,6 +2,12 @@
 \title{Minfi News}
 \encoding{UTF-8}
 
+\section{Version 1.39}{
+  \itemize{
+    \item {v1.39.1} Initial support for the Allergy and Asthma array.
+  }
+}
+
 \section{Version 1.29}{
   \itemize{
     \item {v1.29.4} Fixed a bug in \code{detectionP} where the function

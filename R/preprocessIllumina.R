@@ -6,7 +6,7 @@ normalize.illumina.control <- function(rgSet, reference = 1) {
     Green <- getGreen(rgSet)
     Red <- getRed(rgSet)
 
-    if (.is450k(rgSet) || .isEPIC(rgSet)) {
+    if (.is450k(rgSet) || .isEPIC(rgSet) || .isAllergy(rgSet)) {
         AT.controls <- getControlAddress(
             object = rgSet,
             controlType = c("NORM_A", "NORM_T"))
@@ -42,7 +42,7 @@ bgcorrect.illumina <- function(rgSet) {
     .isRGOrStop(rgSet)
     Green <- getGreen(rgSet)
     Red <- getRed(rgSet)
-    if (.is450k(rgSet) || .isEPIC(rgSet)) {
+    if (.is450k(rgSet) || .isEPIC(rgSet) || .isAllergy(rgSet)) {
         NegControls <- getControlAddress(rgSet, controlType = "NEGATIVE")
     }
     if (.is27k(rgSet)) {

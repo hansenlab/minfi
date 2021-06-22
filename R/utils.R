@@ -7,6 +7,7 @@ utils::globalVariables(c("channel"))
 .default.27k.annotation  <- "ilmn12.hg19"
 .default.450k.annotation <- "ilmn12.hg19"
 .default.epic.annotation <- "ilm10b4.hg19"
+.default.allergy.annotation <- "ilm10.hg19"
 .metharray.types <- c("IlluminaHumanMethylation450k",
                       "IlluminaHumanMethylationEPIC",
                       "IlluminaHumanMethylation27k")
@@ -195,6 +196,10 @@ ilogit2 <- function(x) 2^x / (1 + 2^x)
 
 .isEPIC <- function(object) {
     annotation(object)["array"] == "IlluminaHumanMethylationEPIC"
+}
+
+.isAllergy <- function(object) {
+    annotation(object)["array"] == "IlluminaHumanMethylationAllergy"
 }
 
 .harmonizeSex <- function(vector) {
