@@ -192,6 +192,107 @@ read.manifest.Allergy <- function(file) {
 }
 
 
+read.manifest.sesame.Allergy <- function(file) {
+    ID_column <- "IlmnID"
+    colNames <- readLines(file, n = 1)
+    colNames <- strsplit(colNames, ",")[[1]]
+    colClasses <- rep("character", length(colNames))
+    names(colClasses) <- colNames
+    names(colClasses) <- make.names(names(colClasses))
+    colClasses[c("MAPINFO")] <- "integer"
+    manifest <- read.table(
+        file = file,
+        header = TRUE,
+        sep = ",",
+        comment.char = "",
+        colClasses = colClasses,
+        quote = "")
+    names(manifest)[names(manifest) == "Probe_ID"] <- "IlmnID"
+    names(manifest)[names(manifest) == "U"] <- "AddressA_ID"
+    names(manifest)[names(manifest) == "M"] <- "AddressB_ID"
+    manifest$Infinium_Design_Type <- sub("1", "I", manifest$Infinium_Design_Type)
+    manifest$Infinium_Design_Type <- sub("2", "II", manifest$Infinium_Design_Type)
+    manifest$Color_Channel <- sub("Both", "", manifest$Color_Channel)
+    controls.idx <- grep("^ctl_", manifest$IlmnID)
+    nocontrols.idx <- grep("^ctl_", manifest$IlmnID, invert = TRUE)
+    controls <- manifest[controls.idx,]
+    manifest <- manifest[nocontrols.idx,]
+    dupNames <- unique(manifest$Name[duplicated(manifest$Name)])
+    manifest <- manifest[! manifest$Name %in% dupNames,]
+    TypeI <- manifest[
+        manifest$Infinium_Design_Type == "I",
+        c(ID_column, "AddressA_ID", "AddressB_ID", "Color_Channel", "Next_Base",
+          "AlleleA_ProbeSeq", "AlleleB_ProbeSeq")]
+    names(TypeI) <- c("Name", "AddressA", "AddressB", "Color", "NextBase", "ProbeSeqA", "ProbeSeqB")
+    TypeI$NextBase[is.na(TypeI$NextBase)] <- ""
+    TypeI$Color[is.na(TypeI$Color)] <- ""
+    TypeI <- as(TypeI, "DataFrame")
+    TypeI$ProbeSeqA <- DNAStringSet(TypeI$ProbeSeqA)
+    TypeI$ProbeSeqB <- DNAStringSet(TypeI$ProbeSeqB)
+    TypeI$NextBase <- DNAStringSet(TypeI$NextBase)
+    TypeI$nCpG <- as.integer(
+        oligonucleotideFrequency(TypeI$ProbeSeqB, width = 2)[, "CG"] - 1L)
+    TypeI$nCpG[TypeI$nCpG < 0] <- 0L
+    TypeSnpI <- TypeI[grep("^rs", TypeI$Name), ]
+    TypeI <- TypeI[grep("^rs", TypeI$Name, invert = TRUE), ]
+
+    TypeII <- manifest[
+        manifest$Infinium_Design_Type == "II",
+        c(ID_column, "AddressA_ID", "AlleleA_ProbeSeq")]
+    names(TypeII) <- c("Name", "AddressA", "ProbeSeqA")
+    TypeII <- as(TypeII, "DataFrame")
+    TypeII$ProbeSeqA <- DNAStringSet(TypeII$ProbeSeqA)
+    TypeII$nCpG <- as.integer(letterFrequency(TypeII$ProbeSeqA, letters = "R"))
+    TypeII$nCpG[TypeII$nCpG < 0] <- 0L
+    TypeSnpII <- TypeII[grep("^rs", TypeII$Name), ]
+    TypeII <- TypeII[grep("^rs", TypeII$Name, invert=TRUE), ]
+
+    TypeControl <- as(controls[, c("AddressA_ID", "Probe_Type", "IlmnID")], "DataFrame")
+    names(TypeControl) <- c("Address", "Type", "ExtendedType")
+    TypeControl$Type <- sub("BISULFITE_CONVERSION_", "BISULFITE CONVERSION ", TypeControl$Type)
+    TypeControl$Type <- sub("SPECIFICITY_", "SPECIFICITY ", TypeControl$Type)
+    TypeControl$Type <- sub("TARGET_REMOVAL", "TARGET REMOVAL", TypeControl$Type)
+    TypeControl$ExtendedType <- sub("^ctl_", "", TypeControl$ExtendedType)
+    TypeControl$ExtendedType <- sub("Biotin_5K", "Biotin(5K)", TypeControl$ExtendedType)
+    TypeControl$ExtendedType <- sub("Biotin_Bkg", "Biotin (Bkg)", TypeControl$ExtendedType)
+    TypeControl$ExtendedType <- sub("Biotin_High", "Biotin (High)", TypeControl$ExtendedType)
+    TypeControl$ExtendedType <- sub("BS_Conversion_", "BS Conversion ", TypeControl$ExtendedType)
+    TypeControl$ExtendedType <- sub("I_", "I-", TypeControl$ExtendedType)
+    TypeControl$ExtendedType <- sub("DNP_20K", "DNP(20K)", TypeControl$ExtendedType)
+    TypeControl$ExtendedType <- sub("DNP_Bkg", "DNP (Bkg)", TypeControl$ExtendedType)
+    TypeControl$ExtendedType <- sub("DNP_High", "DNP (High)", TypeControl$ExtendedType)
+    TypeControl$ExtendedType <- sub("Extension_A", "Extension (A)", TypeControl$ExtendedType)
+    TypeControl$ExtendedType <- sub("Extension_C", "Extension (C)", TypeControl$ExtendedType)
+    TypeControl$ExtendedType <- sub("Extension_G", "Extension (G)", TypeControl$ExtendedType)
+    TypeControl$ExtendedType <- sub("Extension_T", "Extension (T)", TypeControl$ExtendedType)
+    TypeControl$ExtendedType <- sub("GT_Mismatch_", "GT Mismatch ", TypeControl$ExtendedType)
+    TypeControl$ExtendedType <- sub("_MM", " (MM)", TypeControl$ExtendedType)
+    TypeControl$ExtendedType <- sub("_PM", " (PM)", TypeControl$ExtendedType)
+    TypeControl$ExtendedType <- sub("Hyb_High", "Hyb (High)", TypeControl$ExtendedType)
+    TypeControl$ExtendedType <- sub("Hyb_Low", "Hyb (Low)", TypeControl$ExtendedType)
+    TypeControl$ExtendedType <- sub("Hyb_Medium", "Hyb (Medium)", TypeControl$ExtendedType)
+    TypeControl$ExtendedType <- sub("NP_A", "NP (A)", TypeControl$ExtendedType)
+    TypeControl$ExtendedType <- sub("NP_C", "NP (C)", TypeControl$ExtendedType)
+    TypeControl$ExtendedType <- sub("NP_G_1", "NP (G) 1", TypeControl$ExtendedType)
+    TypeControl$ExtendedType <- sub("NP_G_2", "NP (G) 2", TypeControl$ExtendedType)
+    TypeControl$ExtendedType <- sub("NP_G_3", "NP (G) 3", TypeControl$ExtendedType)
+    TypeControl$ExtendedType <- sub("NP_G_4", "NP (G) 4", TypeControl$ExtendedType)
+    TypeControl$ExtendedType <- sub("NP_G_5", "NP (G) 5", TypeControl$ExtendedType)
+    TypeControl$ExtendedType <- sub("NP_G", "NP (G)", TypeControl$ExtendedType)
+    TypeControl$ExtendedType <- sub("NP_T", "NP (T)", TypeControl$ExtendedType)
+    TypeControl$ExtendedType <- sub("Negative_", "Negative ", TypeControl$ExtendedType)
+    TypeControl$ExtendedType <- sub("Specificity_", "Specificity ", TypeControl$ExtendedType)
+    TypeControl$ExtendedType <- sub("Target_Removal_", "Target Removal ", TypeControl$ExtendedType)
+    
+    return(list(manifestList = list(
+                    TypeI = TypeI,
+                    TypeII = TypeII,
+                    TypeControl = TypeControl,
+                    TypeSnpI = TypeSnpI,
+                    TypeSnpII = TypeSnpII),
+                manifest = manifest, controls = controls))
+}
+
 
 read.manifest.EPIC <- function(file) {
     # NOTE: As is, requires grep

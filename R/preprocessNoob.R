@@ -78,7 +78,8 @@ dyeCorrection <- function(Meth, Unmeth, Red, Green, control_probes,
 
     if (array_type %in% c("IlluminaHumanMethylation450k",
                           "IlluminaHumanMethylationEPIC",
-                          "HorvathMammalMethylChip40")) {
+                          "HorvathMammalMethylChip40",
+                          "IlluminaHumanMethylationAllergy")) {
         CG.controls <- which(
             rownames(internal.controls[[1]]) %in% c("NORM_C", "NORM_G"))
         AT.controls <- which(
