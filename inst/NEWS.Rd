@@ -5,6 +5,7 @@
 \section{Version 1.39}{
   \itemize{
     \item {v1.39.1} Initial support for the Allergy and Asthma array.
+    \item {v1.39.2} More support for the Allergy and Asthma array.
   }
 }
 

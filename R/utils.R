@@ -10,7 +10,9 @@ utils::globalVariables(c("channel"))
 .default.allergy.annotation <- "ilm10.hg19"
 .metharray.types <- c("IlluminaHumanMethylation450k",
                       "IlluminaHumanMethylationEPIC",
-                      "IlluminaHumanMethylation27k")
+                      "IlluminaHumanMethylation27k"
+                      "IlluminaHumanMethylationAllergy"
+                      "HorvathMammalMethylChip40")
 .seqnames.order.all <- c(paste0("chr", c(1:22, "X", "Y")), "multi", "unmapped")
 .seqnames.order <- paste0("chr", c(1:22, "X", "Y"))
 
