@@ -6,6 +6,7 @@
   \itemize{
     \item {v1.39.1} Initial support for the Allergy and Asthma array.
     \item {v1.39.2} More support for the Allergy and Asthma array.
+    \item {v1.39.3} Bug fix that prevented R CMD build from working.
   }
 }
 
