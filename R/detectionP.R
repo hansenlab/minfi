@@ -78,8 +78,8 @@ setMethod(
 
         # Set up ArrayGrid instances over `Red` and `Green` as well as
         # "parallel" ArrayGrid instance over `detP_sink`.
-        Red_grid <- colGrid(Red)
-        Green_grid <- colGrid(Green)
+        Red_grid <- colAutoGrid(Red)
+        Green_grid <- colAutoGrid(Green)
         detP_sink_grid <- RegularArrayGrid(
             refdim = dim(detP_sink),
             spacings = c(nrow(detP_sink), ncol(detP_sink) / length(Red_grid)))

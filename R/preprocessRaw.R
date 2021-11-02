@@ -102,8 +102,8 @@ setMethod(
 
         # Set up ArrayGrid instances over `Red` and `Green` as well as
         # "parallel" ArrayGrid instances over `M_sink` and `U_sink`.
-        Red_grid <- colGrid(Red)
-        Green_grid <- colGrid(Green)
+        Red_grid <- colAutoGrid(Red)
+        Green_grid <- colAutoGrid(Green)
         M_sink_grid <- RegularArrayGrid(
             refdim = dim(M_sink),
             spacings = c(nrow(M_sink), Red_grid@spacings[2]))

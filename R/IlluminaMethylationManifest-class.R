@@ -174,18 +174,18 @@ setMethod(
 
 # Exported functions -----------------------------------------------------------
 
-IlluminaMethylationManifest <- function(TypeI = new("DataFrame"),
-                                        TypeII = new("DataFrame"),
-                                        TypeControl = new("DataFrame"),
-                                        TypeSnpI = new("DataFrame"),
-                                        TypeSnpII = new("DataFrame"),
+IlluminaMethylationManifest <- function(TypeI = DataFrame(),
+                                        TypeII = DataFrame(),
+                                        TypeControl = DataFrame(),
+                                        TypeSnpI = DataFrame(),
+                                        TypeSnpII = DataFrame(),
                                         annotation = "") {
     data <- new.env(parent = emptyenv())
-    data[["TypeI"]] <- TypeI
-    data[["TypeII"]] <- TypeII
-    data[["TypeControl"]] <- TypeControl
-    data[["TypeSnpI"]] <- TypeSnpI
-    data[["TypeSnpII"]] <- TypeSnpII
+    data[["TypeI"]] <- updateObject(TypeI)
+    data[["TypeII"]] <- updateObject(TypeII)
+    data[["TypeControl"]] <- updateObject(TypeControl)
+    data[["TypeSnpI"]] <- updateObject(TypeSnpI)
+    data[["TypeSnpII"]] <- updateObject(TypeSnpII)
     lockEnvironment(data, bindings = TRUE)
     new("IlluminaMethylationManifest",
         annotation = annotation,
@@ -221,7 +221,7 @@ getProbeInfo <- function(object,
     if (.isMethylOrRatio(object)) {
         out <- out[out$Name %in% rownames(object),]
     }
-    out
+    updateObject(out)
 }
 
 getManifestInfo <- function(object, type = c("nLoci", "locusNames")) {
@@ -256,6 +256,7 @@ getControlAddress <- function(object,
 
 setMethod("show", "IlluminaMethylationManifest", function(object) {
     cat("IlluminaMethylationManifest object\n")
+    object <- updateObject(object)
     .show.annotation(object@annotation)
     cat("Number of type I probes:", nrow(object@data[["TypeI"]]), "\n")
     cat("Number of type II probes:", nrow(object@data[["TypeII"]]), "\n")

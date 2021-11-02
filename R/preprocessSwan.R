@@ -148,7 +148,7 @@ setMethod(
 
         # Set up ArrayGrid instances over `x` as well as "parallel" ArrayGrid
         # instances over `bg` and `sink`.
-        x_grid <- colGrid(x)
+        x_grid <- colAutoGrid(x)
         bg_grid <- RegularArrayGrid(
             refdim = dim(bg),
             spacings = c(nrow(bg), ncol(bg) / length(x_grid)))

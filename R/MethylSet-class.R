@@ -149,6 +149,8 @@ setMethod(
                     getObjectSlots(object)[["phenoData"]])[["data"]],
                 annotation = getObjectSlots(object)[["annotation"]],
                 preprocessMethod = getObjectSlots(object)[["preprocessMethod"]])
+        } else {
+            object <- callNextMethod()
         }
         object
     }

@@ -194,7 +194,7 @@ getAnnotation <- function(object, what = "everything", lociNames = NULL,
     # what <- bestOrder[bestOrder %in% what]
 
     out <- do.call(cbind, lapply(what, function(wh) {
-        .annoGet(wh, envir = annoObject@data)
+        updateObject(.annoGet(wh, envir = annoObject@data))
     }))
 
     if (!is.null(lociNames)) {

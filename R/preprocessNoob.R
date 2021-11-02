@@ -275,8 +275,8 @@ setMethod(
         # `U_sink`. Also set up "parallel" ArrayGrid instances over `GreenOOB`
         # and `RedOOB`, as well as `Red` and `Green` if performing dye
         # correction.
-        Meth_grid <- colGrid(Meth)
-        Unmeth_grid <- colGrid(Unmeth)
+        Meth_grid <- colAutoGrid(Meth)
+        Unmeth_grid <- colAutoGrid(Unmeth)
         M_sink_grid <- RegularArrayGrid(
             refdim = dim(M_sink),
             spacings = c(nrow(M_sink), ncol(M_sink) / length(Meth_grid)))

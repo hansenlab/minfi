@@ -22,11 +22,11 @@
 \usage{
 ## Constructor
 
-IlluminaMethylationManifest(TypeI = new("DataFrame"),
-                            TypeII = new("DataFrame"),
-                            TypeControl = new("DataFrame"),
-                            TypeSnpI = new("DataFrame"),
-                            TypeSnpII = new("DataFrame"),
+IlluminaMethylationManifest(TypeI = DataFrame(),
+                            TypeII = DataFrame(),
+                            TypeControl = DataFrame(),
+                            TypeSnpI = DataFrame(),
+                            TypeSnpII = DataFrame(),
                             annotation = "")
 
 ## Data extraction
