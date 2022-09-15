@@ -15,11 +15,15 @@
         arrayAnnotation <- c(
             array = "IlluminaHumanMethylationEPIC",
             annotation = .default.epic.annotation)
-    } else if (nProbes >= 54000 && nProbes <= 56000) {
+    } else if (nProbes >= 55200 && nProbes <= 55400) {
         arrayAnnotation <- c(
             array = "IlluminaHumanMethylation27k",
             annotation = .default.27k.annotation)
-    } else if (nProbes >= 41000 & nProbes <= 41100) {
+    } else if (nProbes >= 54700 && nProbes <= 54800) {
+        arrayAnnotation <- c(
+            array = "IlluminaHumanMethylationAllergy",
+            annotation = .default.allergy.annotation)
+    }  else if (nProbes >= 41000 & nProbes <= 41100) {
         arrayAnnotation <- c(
             array = "HorvathMammalMethylChip40",
             annotation = "test.unknown")

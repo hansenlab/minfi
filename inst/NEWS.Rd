@@ -2,6 +2,13 @@
 \title{Minfi News}
 \encoding{UTF-8}
 
+\section{Version 1.43}{
+  \itemize{
+    \item {v1.43.1} Tightened the recognition code for 27k data to avoid
+    conflict with the next release of the Allergy and Asthma array.
+  }
+}
+
 \section{Version 1.39}{
   \itemize{
     \item {v1.39.1} Initial support for the Allergy and Asthma array.
