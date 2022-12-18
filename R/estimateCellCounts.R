@@ -54,6 +54,7 @@ pickCompProbes <- function(mSet, cellTypes = NULL, numProbes = 50,
     }
 
     trainingProbes <- unique(unlist(probeList))
+    trainingProbes <- trainingProbes[!is.na(trainingProbes)]
     p <- p[trainingProbes,]
 
     pMeans <- colMeans2(p)
