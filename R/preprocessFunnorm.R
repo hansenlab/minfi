@@ -16,10 +16,12 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
 
     # Background correction and dye bias normalization:
     if (bgCorr){
-        if(verbose && dyeCorr) {
-            message("[preprocessFunnorm] Background and dye bias correction with noob")
-        } else {
-            message("[preprocessFunnorm] Background correction with noob")
+        if(verbose) {
+            if(dyeCorr) {
+                message("[preprocessFunnorm] Background and dye bias correction with noob")
+            } else {
+                message("[preprocessFunnorm] Background correction with noob")
+            }
         }
         gmSet <- preprocessNoob(rgSet, dyeCorr = dyeCorr)
         if(verbose) message("[preprocessFunnorm] Mapping to genome")
