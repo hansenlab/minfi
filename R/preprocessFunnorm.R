@@ -209,12 +209,18 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
     index <- match("BISULFITE CONVERSION I", controlNames)
     if (array=="IlluminaHumanMethylation450k"){
         addr <- getCtrlsAddr(exType = sprintf("BS Conversion I%sC%s", c(" ", "-", "-"), 1:3), index = index)
+    } else if (array == "IlluminaMouseMethylation") {
+        ids <- paste0(rep(c(396, 140), each = 2), rep(c("U", "C"), each = 2)) # mouse BS1 ids
+        addr <- getCtrlsAddr(exType = sprintf("BS1-%s_MUS", ids), index = index)
     } else {
         addr <- getCtrlsAddr(exType = sprintf("BS Conversion I%sC%s", c("-", "-"), 1:2), index = index)
     }
     greenControls.current <- greenControls[[ index ]][addr,,drop=FALSE]
     if (array=="IlluminaHumanMethylation450k"){
         addr <- getCtrlsAddr(exType = sprintf("BS Conversion I-C%s", 4:6), index = index)
+    } else if (array == "IlluminaMouseMethylation"){
+        ids <- paste0(rep(c(409, 318, 317), each = 2), rep(c("U", "C"), each = 2)) # mouse BS1 ids
+        addr <- getCtrlsAddr(exType = sprintf("BS1-%s_MUS", ids), index = index)
     } else {
         addr <- getCtrlsAddr(exType = sprintf("BS Conversion I-C%s", 3:5), index = index)
     }
@@ -228,17 +234,33 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
 
     ## Staining
     index <- match("STAINING", controlNames)
-    addr <- getCtrlsAddr(exType = "Biotin (High)", index = index)
+    if (array == "IlluminaMouseMethylation"){
+        addr <- getCtrlsAddr(exType = "STN-Biotin-High", index = index)
+    } else {
+        addr <- getCtrlsAddr(exType = "Biotin (High)", index = index)
+    }
     stain.green <- t(greenControls[[ index ]][addr,,drop=FALSE])
-    addr <- getCtrlsAddr(exType = "DNP (High)", index = index)
+    if (array == "IlluminaMouseMethylation"){
+        addr <- getCtrlsAddr(exType = "STN-DNP-High", index = index)
+    } else {
+        addr <- getCtrlsAddr(exType = "DNP (High)", index = index)
+    }
     stain.red <- t(redControls[[ index ]][addr,, drop=FALSE ])
 
     ## Extension
     index <-    match("EXTENSION", controlNames)
-    addr <- getCtrlsAddr(exType = sprintf("Extension (%s)", c("A", "T")), index = index)
+    if (array == "IlluminaMouseMethylation"){
+        addr <- getCtrlsAddr(exType = sprintf("EXT-%s", c("A", "T")), index = index)
+    } else {
+        addr <- getCtrlsAddr(exType = sprintf("Extension (%s)", c("A", "T")), index = index)
+    }
     extension.red <- t(redControls[[index]][addr,,drop=FALSE])
     colnames(extension.red) <- paste0("extRed", 1:ncol(extension.red))
-    addr <- getCtrlsAddr(exType = sprintf("Extension (%s)", c("C", "G")), index = index)
+    if (array == "IlluminaMouseMethylation"){
+        addr <- getCtrlsAddr(exType = sprintf("EXT-%s", c("C", "G")), index = index)
+    }  else {
+        addr <- getCtrlsAddr(exType = sprintf("Extension (%s)", c("C", "G")), index = index)
+    }
     extension.green <- t(greenControls[[index]][addr,,drop=FALSE])
     colnames(extension.green) <- paste0("extGrn", 1:ncol(extension.green))
 
@@ -254,10 +276,18 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
 
     ## Non-polymorphic probes
     index <- match("NON-POLYMORPHIC", controlNames)
-    addr <- getCtrlsAddr(exType = sprintf("NP (%s)", c("A", "T")), index = index)
+    if (array == "IlluminaMouseMethylation"){
+        addr <- getCtrlsAddr(exType = sprintf("NPM-%s_MUS", c("A", "T")), index = index)
+    } else {
+        addr <- getCtrlsAddr(exType = sprintf("NP (%s)", c("A", "T")), index = index)
+    }
     nonpoly.red <- t(redControls[[index]][addr, ,drop=FALSE])
     colnames(nonpoly.red) <- paste0("nonpolyRed", 1:ncol(nonpoly.red))
-    addr <- getCtrlsAddr(exType = sprintf("NP (%s)", c("C", "G")), index = index)
+    if (array == "IlluminaMouseMethylation"){
+        addr <- getCtrlsAddr(exType = sprintf("NPM-%s_MUS", c("C", "G")), index = index)
+    } else {
+        addr <- getCtrlsAddr(exType = sprintf("NP (%s)", c("C", "G")), index = index)
+    }
     nonpoly.green <- t(greenControls[[index]][addr, ,drop=FALSE])
     colnames(nonpoly.green) <- paste0("nonpolyGrn", 1:ncol(nonpoly.green))
 
@@ -274,7 +304,12 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
 
     ## Specificity I
     index <- match("SPECIFICITY I", controlNames)
-    addr <- getCtrlsAddr(exType = sprintf("GT Mismatch %s (PM)", 1:3), index = index)
+    if(array == "IlluminaMouseMethylation"){
+        ids <- paste0(rep(c("PM", "MM"), 3), rep(c(1:3), each = 2))
+        addr <- getCtrlsAddr(exType = sprintf("SP1-%s_HSA", ids), index = index)
+    } else {
+        addr <- getCtrlsAddr(exType = sprintf("GT Mismatch %s (PM)", 1:3), index = index)
+    }
     greenControls.current <- greenControls[[index]][addr,,drop=FALSE]
     redControls.current <- redControls[[index]][addr,,drop=FALSE]
     spec1.green <- t(greenControls.current)
@@ -283,7 +318,12 @@ preprocessFunnorm <- function(rgSet, nPCs=2, sex = NULL, bgCorr = TRUE, dyeCorr 
         colMeans2(greenControls.current, na.rm = TRUE)
 
     index <- match("SPECIFICITY I", controlNames) # Added that line
-    addr <- getCtrlsAddr(exType = sprintf("GT Mismatch %s (PM)", 4:6), index = index)
+    if(array == "IlluminaMouseMethylation"){
+        ids <- paste0(rep(c("PM", "MM"), 3), rep(c(4:6), each = 2))
+        addr <- getCtrlsAddr(exType = sprintf("SP1-%s_HSA", ids), index = index)
+    } else {
+        addr <- getCtrlsAddr(exType = sprintf("GT Mismatch %s (PM)", 4:6), index = index)
+    }
     greenControls.current <- greenControls[[index]][addr,,drop=FALSE]
     redControls.current <- redControls[[index]][addr,,drop=FALSE]
     spec1.red <- t(redControls.current)

@@ -5,11 +5,39 @@
         arrayAnnotation <- c(
             array = "IlluminaHumanMethylation450k",
             annotation = .default.450k.annotation)
+    } else if(nProbes >= 361000 && nProbes <= 362000){
+        arrayAnnotation <- c(
+            array = "IlluminaMouseMethylation",
+            annotation = "12.v1.mm10")
+
+        # Install package if needed
+        if(!require("devtools")) install.packages("devtools") # install devtools
+        if(!require("IlluminaMouseMethylationmanifest")) devtools::install_github("chiaraherzog/IlluminaMouseMethylationmanifest")
+        if(!require("IlluminaMouseMethylationanno.12.v1.mm10")) devtools::install_github("chiaraherzog/IlluminaMouseMethylationanno.12.v1.mm10")
+
+        # Load library
+        suppressPackageStartupMessages(library(IlluminaMouseMethylationmanifest))
+        suppressPackageStartupMessages(library(IlluminaMouseMethylationanno.12.v1.mm10))
+
     } else if (nProbes >= 1050000 && nProbes <= 1053000) {
         # NOTE: "Current EPIC scan type"
         arrayAnnotation <- c(
             array = "IlluminaHumanMethylationEPIC",
             annotation = .default.epic.annotation)
+    } else if(nProbes >= 1104000 && nProbes <= 1110000){
+        arrayAnnotation <- c(
+            array = "IlluminaHumanMethylationEPICv2",
+            annotation = "20a1.hg38")
+
+        # Install package if needed
+        if(!require("devtools")) install.packages("devtools") # install devtools
+        if(!require("IlluminaHumanMethylationEPICv2manifest")) devtools::install_github("jokergoo/IlluminaHumanMethylationEPICv2manifest")
+        if(!require("IlluminaHumanMethylationEPICv2anno.20a1.hg38")) devtools::install_github("jokergoo/IlluminaHumanMethylationEPICv2anno.20a1.hg38")
+
+        # Load library
+        suppressPackageStartupMessages(library(IlluminaHumanMethylationEPICv2manifest))
+        suppressPackageStartupMessages(library(IlluminaHumanMethylationEPICv2anno.20a1.hg38))
+
     } else if (nProbes >= 1032000 && nProbes <= 1033000) {
         # NOTE: "Old EPIC scan type"
         arrayAnnotation <- c(
