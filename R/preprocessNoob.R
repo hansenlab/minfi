@@ -384,10 +384,11 @@ preprocessNoob <- function(rgSet, offset = 15, dyeCorr = TRUE, verbose = FALSE,
     GreenOOB <- oob[["Grn"]]
     RedOOB <- oob[["Red"]]
     MSet <- preprocessRaw(rgSet)
-    probe.type <- getProbeType(MSet, withColor = TRUE)
-    Green_probes <- which(probe.type == "IGrn")
-    Red_probes <- which(probe.type == "IRed")
-    d2.probes <- which(probe.type == "II")
+    anno <- getAnnotation(MSet)
+    probe.type <- paste0(anno$Type, anno$Color)
+    Green_probes <- intersect(rownames(MSet), anno$Name[probe.type == "IGrn"])
+    Red_probes <- intersect(rownames(MSet), anno$Name[probe.type == "IRed"])
+    d2.probes <- intersect(rownames(MSet), anno$Name[probe.type == "II"])
     Meth <- getMeth(MSet)
     Unmeth <- getUnmeth(MSet)
 
